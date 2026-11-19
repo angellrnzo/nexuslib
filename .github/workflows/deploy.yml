@@ -27,10 +27,10 @@ jobs:
       - name: Configurar Pages
         uses: actions/configure-pages@v4
 
-      - name: Subir artefacto web (solo carpeta GitHub/)
+      - name: Subir artefacto web
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './GitHub'
+          path: '.'
 
       - name: Desplegar en GitHub Pages
         id: deployment
