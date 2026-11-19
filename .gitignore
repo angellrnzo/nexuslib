@@ -1,0 +1,15 @@
+# Archivos del sistema operativo y editores
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+# Archivos temporales de bloqueo de Office/Excel
+~$*.xlsx
+~$*.xls
+
+# Logs y configuraciones de editor
+*.log
+.vscode/
+.idea/

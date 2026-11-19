@@ -1,0 +1,2613 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>NexusLib</title>
+  <link rel="preconnect" href="https://image.tmdb.org" crossorigin>
+  <link rel="preconnect" href="https://cdn.cloudflare.steamstatic.com" crossorigin>
+  <link rel="preconnect" href="https://covers.openlibrary.org" crossorigin>
+  <link rel="preconnect" href="https://s4.anilist.co" crossorigin>
+  <meta name="theme-color" content="#0b0e14">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" media="print" onload="this.media='all'">
+  <style>
+    :root {
+      --bg: #0b0e14;
+      --panel: #1b2838;
+      --accent: #66c0f4;
+      --text: #c7d5e0;
+      --gold: #ffd700;
+      --border: rgba(255,255,255,0.1);
+      --btn-primary: #66c0f4;
+      --success: #5ba32b;
+      --warning: #d6a918;
+      --danger: #c93b3b;
+      --wish: #ff4d6d;
+      --angel-color: #66c0f4;
+      --talmai-color: #ff4d6d;
+      --t-fast: 150ms;
+      --t-base: 220ms;
+      --t-slow: 320ms;
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-inout: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      background: radial-gradient(circle at top left, #1b2838, #0b0e14 80%);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: calc(160px + env(safe-area-inset-top, 0px)) 12px calc(30px + env(safe-area-inset-bottom, 0px)) 12px;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      touch-action: pan-y;
+    }
+
+    body.view-stats {
+      padding-top: calc(85px + env(safe-area-inset-top, 0px));
+    }
+
+    /* ICONOS PLANOS VECTORIALES (SVG) */
+    .ico {
+      width: 14px;
+      height: 14px;
+      display: inline-block;
+      vertical-align: -2px;
+      flex-shrink: 0;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .ico-sm { width: 12px; height: 12px; vertical-align: -1.5px; }
+    .ico-lg { width: 16px; height: 16px; }
+    .ico-fill { fill: currentColor; stroke: none; }
+    .ico-angel { color: var(--angel-color); }
+    .ico-talmai { color: var(--talmai-color); }
+    .ico-gold { color: var(--gold); fill: var(--gold); stroke: none; }
+    .ico-wish { color: var(--wish); fill: var(--wish); stroke: none; }
+
+    .card, .btn, .tab-btn, .modal-close, .player-summary, .star, .accordion summary, .status-select, .filter-group select, .filter-reset, .wish-toggle, .btn-trailer {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: #2a475e; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+    #app-screen { max-width: 1400px; margin: 0 auto; width: 100%; }
+
+    .top-header {
+      position: fixed;
+      top: calc(10px + env(safe-area-inset-top, 0px));
+      left: 10px;
+      right: 10px;
+      width: auto;
+      max-width: 1400px;
+      margin: 0 auto;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background: transparent;
+    }
+
+    .category-tabs {
+      display: flex;
+      gap: 4px;
+      background: rgba(16, 24, 36, 0.98);
+      padding: 4px 6px;
+      border-radius: 30px;
+      border: 1px solid rgba(102, 192, 244, 0.22);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .category-tabs::-webkit-scrollbar { display: none; }
+
+    .tab-btn {
+      flex: 1;
+      min-width: max-content;
+      padding: 6px 10px;
+      border: none;
+      border-radius: 20px;
+      background: transparent;
+      color: #8f98a0;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: background-color var(--t-base) var(--ease-inout), color var(--t-base) var(--ease-inout), box-shadow var(--t-base) var(--ease-inout);
+    }
+    .tab-btn.active {
+      background: var(--accent);
+      color: #0b0e14;
+      box-shadow: 0 2px 10px rgba(102, 192, 244, 0.4);
+    }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      background: linear-gradient(180deg, rgba(27, 40, 56, 0.99) 0%, rgba(20, 30, 45, 0.99) 100%);
+      padding: 6px 10px;
+      border-radius: 16px;
+      border: 1px solid rgba(102, 192, 244, 0.25);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+      position: relative;
+    }
+
+    .controls-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .search-wrapper {
+      flex-grow: 1;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.45);
+      border-radius: 20px;
+      padding: 0 12px;
+      height: 34px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .search-wrapper:focus-within { border-color: var(--accent); }
+    .search-wrapper .ico { margin-right: 8px; color: #8f98a0; }
+    #inputBuscar { width: 100%; min-width: 0; border: none; background: transparent; color: white; outline: none; font-family: 'Inter', sans-serif; font-size: 13px; }
+
+    .add-wrapper {
+      display: flex;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.45);
+      border-radius: 20px;
+      padding: 0 4px 0 10px;
+      height: 34px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      position: relative;
+      flex-grow: 1;
+      min-width: 0;
+      transition: flex-grow var(--t-slow) var(--ease-inout), width var(--t-slow) var(--ease-inout), background-color var(--t-slow) var(--ease-inout), border-color var(--t-slow) var(--ease-inout), box-shadow var(--t-slow) var(--ease-inout);
+    }
+    .add-wrapper.expanded {
+      flex-grow: 1;
+      width: 100%;
+      background: rgba(11, 14, 20, 0.98);
+      border-color: var(--accent);
+      box-shadow: 0 0 20px rgba(102, 192, 244, 0.4);
+    }
+    
+    .btn-clear-add {
+      background: transparent; border: none; color: #8f98a0; cursor: pointer;
+      width: 24px; height: 24px; border-radius: 50%; display: none;
+      align-items: center; justify-content: center; flex-shrink: 0; padding: 0;
+    }
+    .btn-clear-add:hover { color: #fff; background: rgba(255,255,255,0.1); }
+    .add-wrapper.has-text .btn-clear-add { display: inline-flex; }
+
+    #inputAgregar { width: 100%; min-width: 0; border: none; background: transparent; color: white; outline: none; font-family: 'Inter', sans-serif; font-size: 13px; }
+
+    .right-controls {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-shrink: 0;
+      opacity: 1;
+      transform: translateX(0);
+      max-width: 250px;
+      overflow: hidden;
+      transition: flex-grow var(--t-slow) var(--ease-inout), width var(--t-slow) var(--ease-inout), background-color var(--t-slow) var(--ease-inout), border-color var(--t-slow) var(--ease-inout), box-shadow var(--t-slow) var(--ease-inout);
+    }
+    .right-controls.hidden {
+      opacity: 0;
+      transform: translateX(20px);
+      max-width: 0;
+      gap: 0;
+      pointer-events: none;
+    }
+
+    .search-results-dropdown {
+      display: none;
+      position: absolute;
+      top: 42px;
+      left: 0;
+      width: 100%;
+      max-height: 280px;
+      overflow-y: auto;
+      background: rgba(20, 30, 45, 0.99);
+      border: 1px solid rgba(102, 192, 244, 0.45);
+      border-radius: 12px;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.9);
+      z-index: 10001;
+      padding: 6px;
+    }
+    .search-results-dropdown.open { display: block; }
+    .search-result-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color var(--t-fast) var(--ease-out);
+    }
+    .search-result-item:hover { background: rgba(102, 192, 244, 0.16); }
+    .search-result-item img {
+      width: 34px; height: 48px; object-fit: cover; border-radius: 5px; background: #111; flex-shrink: 0;
+    }
+    .search-result-info { flex: 1; min-width: 0; }
+    .search-result-title { font-size: 12px; font-weight: 800; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .search-result-sub { font-size: 10px; color: #8f98a0; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .search-result-badge { font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 10px; background: rgba(102,192,244,0.18); color: var(--accent); flex-shrink: 0; }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+      border: none; cursor: pointer; font-weight: 700;
+      position: relative; overflow: hidden; font-size: 13px; flex-shrink: 0;
+      transition: transform var(--t-fast) var(--ease-out), background-color var(--t-fast) var(--ease-out), border-color var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out), box-shadow var(--t-fast) var(--ease-out), opacity var(--t-fast) var(--ease-out);
+    }
+    .btn:active { transform: scale(0.95); }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    .btn-circle {
+      width: 32px; height: 32px; border-radius: 50%; padding: 0;
+      background: rgba(42, 71, 94, 0.85); color: #fff; border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .btn-circle.active { background: var(--accent); color: #0b0e14; border-color: var(--accent); }
+    .btn-circle.has-filters { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(102, 192, 244, 0.25); }
+    .btn-circle.has-filters::after {
+      content: ''; position: absolute; top: 3px; right: 3px; width: 6px; height: 6px;
+      border-radius: 50%; background: #a4d007;
+    }
+
+    .btn-primary {
+      background: var(--btn-primary); color: #0b0e14; border-radius: 50%;
+      width: 26px; height: 26px; padding: 0; font-size: 15px; font-weight: 900; flex-shrink: 0;
+    }
+
+    #progress-container {
+      width: 100%; display: none; margin-top: 2px;
+      background: rgba(0,0,0,0.8); border-radius: 8px; overflow: hidden; height: 10px; position: relative;
+    }
+    #progress-bar { height: 100%; background: linear-gradient(90deg, var(--warning), #ffeb3b); width: 0%; transition: width var(--t-slow) var(--ease-out); }
+    #progress-text {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 9px; font-weight: bold; color: #0b0e14;
+    }
+
+    .stats-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; margin-top: 6px; }
+    .stat-pill {
+      display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px;
+      background: rgba(24, 35, 50, 0.78); border: 1px solid rgba(102, 192, 244, 0.16);
+      font-size: 11px; font-weight: 700; color: #c7d5e0;
+    }
+    .stat-pill strong { color: #fff; }
+
+    /* PANEL DE FILTROS */
+    .filter-panel {
+      position: fixed;
+      top: calc(165px + env(safe-area-inset-top, 0px));
+      left: 12px;
+      right: 12px;
+      max-width: 350px;
+      margin: 0 auto;
+      background: linear-gradient(180deg, rgba(27, 40, 56, 0.99) 0%, rgba(18, 27, 40, 0.99) 100%);
+      border: 1px solid rgba(102, 192, 244, 0.35);
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.85);
+      z-index: 9998;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: calc(100dvh - 185px);
+      overflow-y: auto;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: opacity var(--t-base) var(--ease-out), visibility var(--t-base) var(--ease-out), transform var(--t-base) var(--ease-out);
+    }
+    .filter-panel.open { opacity: 1; visibility: visible; transform: translateY(0); }
+    .filter-group { display: flex; flex-direction: column; gap: 4px; width: 100%; }
+    .filter-group:empty { display: none; }
+    .filter-group label { font-size: 11px; color: #8f98a0; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; }
+    .filter-group select {
+      background: rgba(0,0,0,0.45); color: white; border: 1px solid rgba(255,255,255,0.12);
+      padding: 7px 10px; border-radius: 8px; font-size: 12px; outline: none; cursor: pointer; width: 100%;
+    }
+    .filter-reset {
+      width: 100%; margin-top: 4px; padding: 8px;
+      background: rgba(201, 59, 59, 0.15); color: #ff6b6b;
+      border: 1px solid rgba(201, 59, 59, 0.3); border-radius: 8px;
+      cursor: pointer; font-weight: 700; font-size: 12px;
+    }
+
+    #grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+      transition: opacity var(--t-base) var(--ease-out), transform var(--t-base) var(--ease-out);
+      width: 100%;
+    }
+    @media (min-width: 601px) {
+      #grid.poster-mode {
+        grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+        gap: 16px;
+      }
+      #grid.poster-mode > .card {
+        display: flex;
+        flex-direction: column;
+      }
+      #grid.poster-mode .img-container {
+        width: 100%;
+        min-width: 0;
+        height: auto;
+        aspect-ratio: 2 / 3;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px 12px 0 0;
+      }
+      #grid.poster-mode .card-content {
+        padding: 10px 12px;
+        justify-content: flex-start;
+        flex-grow: 1;
+        min-width: 0;
+      }
+      #grid.poster-mode .top-badge {
+        top: 8px;
+        left: 8px;
+        padding: 3px 8px;
+        font-size: 10px;
+        max-width: calc(60% - 10px);
+      }
+      #grid.poster-mode .wishlist-badge {
+        top: 8px;
+        bottom: auto;
+        right: 8px;
+        padding: 3px 8px;
+        font-size: 10px;
+      }
+    }
+
+    #grid > .card {
+      content-visibility: auto;
+      contain-intrinsic-size: 0 320px;
+      background: #182332; border-radius: 12px; overflow: hidden;
+      border: 1px solid rgba(102, 192, 244, 0.24);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+      cursor: pointer; display: flex; flex-direction: column;
+      min-width: 0;
+      transition: transform var(--t-base) var(--ease-out), border-color var(--t-base) var(--ease-out);
+    }
+
+    .img-container {
+      position: relative; width: 100%; aspect-ratio: 460 / 215;
+      background-color: #131922; overflow: hidden;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    #grid.poster-mode .img-container { aspect-ratio: 2 / 3; }
+    .img-container img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform var(--t-slow) var(--ease-out); }
+
+    .top-badge {
+      position: absolute; top: 8px; left: 8px; z-index: 5;
+      max-width: calc(56% - 10px);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      padding: 3px 8px; border-radius: 20px;
+      background: rgba(11, 14, 20, 0.85); backdrop-filter: blur(6px);
+      border: 1px solid rgba(102, 192, 244, 0.55);
+      font-size: 10px; font-weight: 800; color: var(--accent);
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .wishlist-badge {
+      position: absolute; top: 8px; right: 8px; z-index: 5;
+      padding: 3px 8px; border-radius: 20px;
+      background: rgba(11, 14, 20, 0.85); backdrop-filter: blur(6px);
+      border: 1px solid rgba(255, 77, 109, 0.65);
+      font-size: 10px; font-weight: 800; color: #fff;
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+
+    .card-content { padding: 12px; display: flex; flex-direction: column; flex-grow: 1; min-width: 0; }
+    .card-title {
+      font-size: 14px; font-weight: 800; color: #fff; margin-bottom: 3px;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+      overflow: hidden; overflow-wrap: break-word; word-break: break-word;
+    }
+    .card-dev {
+      font-size: 11px; color: #8f98a0; margin-bottom: 10px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    .status-container { display: flex; gap: 5px; flex-wrap: wrap; margin-top: auto; }
+    .status-chip {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 8px; border-radius: 20px; font-size: 10px; font-weight: 700;
+      border: 1px solid transparent; max-width: 100%;
+    }
+    .status-none { background: rgba(255,255,255,0.05); color: #8f98a0; border-color: rgba(255,255,255,0.12); }
+    .status-playing { background: rgba(214, 169, 24, 0.15); color: #f4d03f; border-color: rgba(214, 169, 24, 0.4); }
+    .status-done { background: rgba(91, 163, 43, 0.15); color: #8fe35e; border-color: rgba(91, 163, 43, 0.4); }
+
+    /* VISTA DE ESTADÍSTICAS REORGANIZADA Y COMPACTA */
+    #stats-view { display: none; flex-direction: column; gap: 8px; animation: fadeIn var(--t-base) var(--ease-out); width: 100%; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    .stats-selectors-row {
+      display: flex;
+      gap: 6px;
+      background: rgba(16, 24, 36, 0.95);
+      padding: 5px;
+      border-radius: 10px;
+      border: 1px solid rgba(102, 192, 244, 0.22);
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .stats-selectors-row::-webkit-scrollbar { display: none; }
+
+    .stats-prof-btn, .stats-cat-btn {
+      flex: 1;
+      min-width: max-content;
+      padding: 6px 8px;
+      border: none;
+      border-radius: 7px;
+      background: transparent;
+      color: #8f98a0;
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: background-color var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out), box-shadow var(--t-fast) var(--ease-out);
+    }
+    .stats-prof-btn.active, .stats-cat-btn.active {
+      background: var(--accent);
+      color: #0b0e14;
+      box-shadow: 0 2px 8px rgba(102, 192, 244, 0.3);
+    }
+    .stats-prof-btn.active .ico-angel,
+    .stats-prof-btn.active .ico-talmai,
+    .tab-btn.active .ico,
+    .match-tab.active .ico {
+      color: #0b0e14;
+    }
+
+    .stats-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
+    }
+    .stat-card {
+      background: linear-gradient(180deg, rgba(27, 40, 56, 0.95) 0%, rgba(18, 27, 40, 0.95) 100%);
+      border: 1px solid rgba(102, 192, 244, 0.22);
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+      cursor: pointer;
+      user-select: none;
+      transition: border-color var(--t-fast) var(--ease-out);
+      min-width: 0;
+    }
+    .stat-card:hover { border-color: var(--accent); }
+    .stat-card-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .stat-card-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #8f98a0; font-weight: 800; }
+    .stat-card-value { font-size: 22px; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 6px; }
+    .stat-card-sub { font-size: 11px; color: #c7d5e0; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+    .stat-toggle-lbl { font-size: 11px; color: var(--accent); display: inline-flex; align-items: center; gap: 4px; font-weight: 700; }
+    .stat-toggle-lbl .ico { transition: transform var(--t-base) var(--ease-out); }
+    .stat-card.open .stat-toggle-lbl .ico { transform: rotate(180deg); }
+
+    /* ACORDEÓN DESPLEGABLE DE GRÁFICOS */
+    .stat-accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: max-height var(--t-slow) var(--ease-inout), opacity var(--t-slow) var(--ease-inout), padding-top var(--t-slow) var(--ease-inout), margin-top var(--t-slow) var(--ease-inout), border-top-width var(--t-slow) var(--ease-inout);
+      border-top: 0px solid rgba(255,255,255,0.08);
+      padding-top: 0px;
+      margin-top: 0px;
+    }
+    .stat-card.open .stat-accordion-content {
+      max-height: 220px;
+      opacity: 1;
+      border-top-width: 1px;
+      padding-top: 8px;
+      margin-top: 4px;
+    }
+    .stat-detail-line { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+    .stat-bar-row { display: flex; flex-direction: column; gap: 3px; font-size: 11px; }
+    .stat-bar-labels { display: flex; justify-content: space-between; align-items: center; font-weight: 700; color: #8f98a0; }
+    .stat-bar-labels span:first-child { display: inline-flex; align-items: center; gap: 5px; }
+    .stat-bar-track { width: 100%; height: 5px; background: rgba(255,255,255,0.06); border-radius: 4px; overflow: hidden; display: flex; }
+    .stat-bar-fill-angel { height: 100%; background: var(--angel-color); transition: width var(--t-slow) var(--ease-out); }
+    .stat-bar-fill-talmai { height: 100%; background: var(--talmai-color); transition: width var(--t-slow) var(--ease-out); }
+
+    /* MODALES GENERALES */
+    #modal, #modal-papelera, #modal-match {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(6, 9, 14, 0.88); z-index: 10000;
+      justify-content: center; align-items: center; opacity: 0;
+      transition: opacity var(--t-base) var(--ease-out); padding: 10px;
+    }
+    .modal-content {
+      background: #182332; padding: 20px; border-radius: 16px; width: 100%; max-width: 620px; min-width: 0;
+      max-height: 90dvh; overflow-y: auto; overflow-x: hidden; position: relative;
+      border: 1px solid rgba(102, 192, 244, 0.38);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9);
+      transform: translateY(10px) scale(0.985);
+      transition: transform var(--t-base) var(--ease-out);
+    }
+    #modal[style*="opacity: 1"] .modal-content,
+    #modal-papelera[style*="opacity: 1"] .modal-content,
+    #modal-match[style*="opacity: 1"] .modal-content {
+      transform: translateY(0) scale(1);
+    }
+    .modal-close {
+      position: sticky; top: 0; float: right; z-index: 50;
+      width: 36px; height: 36px; margin-left: 10px; margin-bottom: -36px;
+      border-radius: 50%; background: rgba(13, 19, 27, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.25); color: #fff; font-size: 18px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+
+    .modal-header-grid { display: flex; gap: 16px; margin-bottom: 14px; align-items: flex-start; width: 100%; }
+    .modal-header-grid.landscape { flex-direction: column; }
+    .modal-img {
+      width: 100%; display: block; border-radius: 8px;
+      aspect-ratio: 460 / 215; object-fit: cover; border: 1px solid rgba(255, 255, 255, 0.1);
+      background: #131922;
+    }
+    .modal-header-grid.poster {
+      display: grid;
+      grid-template-columns: 144px minmax(0, 1fr);
+      grid-template-areas: "media body";
+      align-items: start;
+      gap: 16px;
+    }
+    .modal-header-grid.poster .modal-img {
+      grid-area: media;
+      width: 100%;
+      max-width: 144px;
+      margin: 0;
+      aspect-ratio: 2 / 3;
+      object-position: center top;
+    }
+    .modal-header-grid.poster .modal-header-info {
+      grid-area: body;
+      min-width: 0;
+    }
+    .modal-header-info { flex: 1; min-width: 0; width: 100%; }
+
+    .trailer-bar { margin-bottom: 14px; }
+    .btn-trailer {
+      width: 100%; padding: 9px 12px; border-radius: 8px;
+      background: rgba(102, 192, 244, 0.12); border: 1px solid rgba(102, 192, 244, 0.35);
+      color: var(--accent); font-size: 12px; font-weight: 800; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .btn-trailer.active { background: rgba(201, 59, 59, 0.14); border-color: rgba(201, 59, 59, 0.4); color: #ff8585; }
+    .trailer-box { display: none; margin-top: 8px; border-radius: 8px; overflow: hidden; background: #000; }
+    .trailer-box iframe, .trailer-box video { width: 100%; aspect-ratio: 16 / 9; display: block; border: 0; max-height: 320px; }
+
+    .modal-title {
+      color: #fff; margin: 0 0 4px 0; font-size: 20px; font-weight: 900; padding-right: 40px;
+      overflow-wrap: break-word; word-break: break-word; display: flex; align-items: center; gap: 8px;
+    }
+    .modal-subtitle {
+      display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 6px 10px;
+      font-size: 12px; color: #8f98a0; margin-bottom: 10px; width: 100%;
+    }
+    .modal-subtitle span:first-child { overflow-wrap: break-word; min-width: 0; }
+    .modal-price { color: #a4d007; font-weight: 800; font-size: 13px; flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px; }
+
+    .version-badges { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+    .badge-ver { padding: 4px 9px; border-radius: 20px; font-size: 10px; font-weight: 800; }
+    .badge-patch { background: rgba(255, 255, 255, 0.1); color: #fff; }
+    .badge-estable { background: rgba(91, 163, 43, 0.15); color: #8fe35e; }
+    .badge-beta { background: rgba(214, 169, 24, 0.15); color: #f4d03f; }
+
+    .modal-genres { font-size: 12px; color: #66c0f4; margin-bottom: 10px; font-weight: 600; overflow-wrap: break-word; display: flex; align-items: center; gap: 5px; }
+    .modal-desc { line-height: 1.5; font-size: 13px; color: #c7d5e0; margin-bottom: 15px; overflow-wrap: break-word; }
+
+    .accordion { margin-bottom: 15px; border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 8px; overflow: hidden; }
+    .accordion summary { padding: 10px 12px; background: rgba(255,255,255,0.05); cursor: pointer; font-weight: 700; color: #fff; font-size: 13px; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+    .accordion summary::-webkit-details-marker { display: none; }
+    .accordion-content { padding: 12px; background: rgba(0,0,0,0.2); display: flex; flex-direction: column; gap: 8px; font-size: 12px; }
+    .detail-row { display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 4px; gap: 10px; }
+    .detail-label { color: #8f98a0; flex-shrink: 0; }
+    .detail-val { color: #fff; text-align: right; overflow-wrap: anywhere; word-break: break-word; }
+
+    .carousel-container { margin-bottom: 16px; }
+    .carousel-title { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+    .carousel { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 6px; }
+    .carousel img { flex: 0 0 75%; height: 140px; object-fit: cover; border-radius: 6px; cursor: pointer; }
+
+    .tracking-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; align-items: start; }
+    .player-accordion { background: rgba(0,0,0,0.4); border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); overflow: hidden; min-width: 0; }
+    .player-accordion.active { border-color: var(--accent); }
+    .player-summary { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 12px; cursor: pointer; }
+    .player-info-left { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-width: 0; }
+    .player-info-left h4 { margin: 0; color: #fff; font-size: 14px; font-weight: 800; display: inline-flex; align-items: center; gap: 5px; }
+    .player-info-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .preview-stars { font-size: 12px; color: var(--gold); font-weight: 800; display: inline-flex; align-items: center; gap: 3px; }
+    .preview-stars.no-stars { color: #8f98a0; font-weight: 500; }
+
+    .player-details { max-height: 0; overflow: hidden; opacity: 0; padding: 0 12px; transition: max-height var(--t-slow) var(--ease-inout), opacity var(--t-slow) var(--ease-inout), padding var(--t-slow) var(--ease-inout); }
+    .player-accordion.active .player-details { max-height: 560px; opacity: 1; padding: 12px; border-top: 1px solid rgba(255,255,255,0.06); }
+
+    .wish-toggle {
+      width: 100%; padding: 8px; margin-bottom: 8px; border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.14);
+      color: #c7d5e0; font-size: 12px; font-weight: 700; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .wish-toggle.active { background: rgba(255, 77, 109, 0.16); border-color: rgba(255, 77, 109, 0.55); color: #ff8fa3; }
+
+    .status-select, .progress-input {
+      width: 100%; padding: 8px 10px; border-radius: 8px; background: rgba(0,0,0,0.35);
+      color: white; border: 1px solid var(--border); margin-bottom: 8px; font-size: 12px; outline: none;
+    }
+    .progress-input:focus, .status-select:focus { border-color: var(--accent); }
+
+    .stars { display: flex; gap: 3px; cursor: pointer; justify-content: center; padding-bottom: 8px; }
+    .star { font-size: 20px; color: #333; user-select: none; }
+    .star.active { color: var(--gold); }
+
+    .player-note {
+      width: 100%; max-width: 100%; min-height: 48px; padding: 8px; border-radius: 8px;
+      background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff; font-family: 'Inter', sans-serif; font-size: 11px; outline: none;
+      resize: vertical;
+    }
+
+    .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 15px; }
+    .btn-full { grid-column: span 2; }
+    .action-buttons .btn { padding: 10px; border-radius: 8px; font-size: 12px; text-decoration: none; border: 1px solid transparent; text-align: center; justify-content: center; }
+    .btn-steam { background: rgba(102, 192, 244, 0.1); color: var(--accent); border-color: rgba(102, 192, 244, 0.3); }
+    .btn-db { background: rgba(255, 255, 255, 0.05); color: #fff; border-color: rgba(255, 255, 255, 0.1); }
+    .btn-repair { background: rgba(214, 169, 24, 0.1); color: #f4d03f; border-color: rgba(214, 169, 24, 0.3); }
+    .btn-delete { background: rgba(201, 59, 59, 0.1); color: #ff6b6b; border-color: rgba(201, 59, 59, 0.3); }
+
+    .papelera-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+    .papelera-item { display: flex; justify-content: space-between; align-items: center; gap: 10px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; border: 1px solid var(--border); }
+    .papelera-item-info { min-width: 0; flex: 1; }
+    .papelera-item-title { font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .match-container { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+    .match-tabs { display: flex; gap: 5px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; overflow-x: auto; scrollbar-width: none; }
+    .match-tabs::-webkit-scrollbar { display: none; }
+    .match-tab {
+      background: rgba(255,255,255,0.05); border: none; color: #8f98a0; padding: 6px 10px;
+      border-radius: 12px; font-size: 11px; font-weight: 700; cursor: pointer; flex-shrink: 0;
+      display: inline-flex; align-items: center; gap: 5px;
+    }
+    .match-tab.active { background: var(--accent); color: #0b0e14; }
+    .match-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; max-height: 48dvh; overflow-y: auto; padding-right: 4px; }
+    .match-card {
+      background: rgba(0,0,0,0.3); border: 1px solid rgba(102,192,244,0.2); border-radius: 8px;
+      overflow: hidden; display: flex; flex-direction: column; cursor: pointer; transition: transform var(--t-fast) var(--ease-out), border-color var(--t-fast) var(--ease-out); min-width: 0;
+    }
+    .match-card:hover { transform: translateY(-2px); border-color: var(--accent); }
+    .match-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; background: #000; }
+    .match-card-body { padding: 6px; display: flex; flex-direction: column; flex-grow: 1; min-width: 0; }
+    .match-card-title {
+      font-size: 11px; font-weight: 800; color: #fff; margin-bottom: 3px;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+
+    #toast-container {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      width: max-content; max-width: calc(100vw - 24px);
+      z-index: 20000; display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none;
+    }
+    .toast {
+      background: rgba(24, 35, 50, 0.96); color: #fff; padding: 8px 16px; border-radius: 25px;
+      border: 1px solid rgba(102, 192, 244, 0.45); font-size: 12px; font-weight: 700;
+      text-align: center; max-width: 100%;
+      opacity: 0; transform: translateY(10px); transition: opacity var(--t-base) var(--ease-out), transform var(--t-base) var(--ease-out);
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.success { border-color: rgba(91, 163, 43, 0.75); color: #b7f592; }
+    .toast.warning { border-color: rgba(214, 169, 24, 0.75); color: #ffe380; }
+    .toast.error { border-color: rgba(201, 59, 59, 0.75); color: #ff9999; }
+
+    .spinner-container { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 45vh; grid-column: 1 / -1; }
+    .spinner { width: 35px; height: 35px; border: 3px solid rgba(102, 192, 244, 0.2); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 10px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .modal-content { padding: 14px; border-radius: 14px; }
+      .modal-title { font-size: 17px; padding-right: 36px; }
+      .stats-cards-grid { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+      .tracking-container { grid-template-columns: 1fr; }
+      #grid.poster-mode {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      #grid.poster-mode > .card {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto auto;
+        grid-template-areas:
+          "media"
+          "body";
+      }
+      #grid.poster-mode .img-container {
+        grid-area: media;
+        width: 100%;
+        min-width: 0;
+        height: auto;
+        aspect-ratio: 2 / 3;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px 12px 0 0;
+      }
+      #grid.poster-mode .card-content {
+        grid-area: body;
+      }
+      .modal-header-grid.poster {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto auto;
+        grid-template-areas:
+          "media"
+          "body";
+        text-align: left;
+        gap: 12px;
+      }
+      .modal-header-grid.poster .modal-img {
+        grid-area: media;
+        width: 100%;
+        max-width: 210px;
+        margin: 0 auto;
+        aspect-ratio: 2 / 3;
+      }
+      .modal-header-grid.poster .modal-header-info {
+        grid-area: body;
+      }
+      .modal-header-grid.poster .modal-title { padding-right: 36px; justify-content: flex-start; font-size: 17px; }
+      .modal-header-grid.poster .version-badges { justify-content: flex-start; }
+      .modal-header-grid.poster .modal-genres { justify-content: flex-start; }
+      .tab-btn { padding: 7px 8px; font-size: 11px; }
+      .tab-btn .ico { width: 16px; height: 16px; }
+      .tab-btn .tab-text { display: none; }
+    }
+
+    .chapter-tracker-box { background: rgba(16, 24, 36, 0.75); border: 1px solid rgba(102, 192, 244, 0.25); border-radius: 8px; padding: 8px; margin-bottom: 8px; }
+    .chapter-inputs-row { display: flex; align-items: center; gap: 5px; margin-bottom: 6px; }
+    .chapter-num-input { width: 100%; min-width: 0; padding: 6px; border-radius: 6px; background: rgba(0, 0, 0, 0.45); border: 1px solid rgba(255, 255, 255, 0.14); color: #fff; font-size: 12px; font-weight: 700; text-align: center; outline: none; }
+    .chapter-num-input:focus { border-color: var(--accent); }
+    .chapter-num-input:disabled { opacity: 0.7; cursor: not-allowed; }
+    .chapter-sep { color: #8f98a0; font-weight: 900; font-size: 13px; flex-shrink: 0; }
+    .chapter-pct-badge { background: rgba(102, 192, 244, 0.18); color: var(--accent); font-size: 10px; font-weight: 900; padding: 3px 6px; border-radius: 6px; min-width: 42px; text-align: center; flex-shrink: 0; }
+    .reading-progress-track { width: 100%; height: 5px; background: rgba(255, 255, 255, 0.08); border-radius: 5px; overflow: hidden; }
+    .reading-progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #5ba32b); width: 0%; transition: width var(--t-slow) var(--ease-out); }
+    .card-reading-bar { margin-top: 6px; display: flex; flex-direction: column; gap: 3px; }
+    .card-reading-labels { display: flex; justify-content: space-between; font-size: 10px; font-weight: 700; color: #8f98a0; }
+  </style>
+</head>
+<body>
+  <!-- LIBRERÍA DE ICONOS SVG PLANOS -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none;" aria-hidden="true">
+    <symbol id="i-gamepad" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="4"/><path d="M6 12h4M8 10v4"/><circle cx="15.5" cy="11" r="1" fill="currentColor" stroke="none"/><circle cx="17.5" cy="13" r="1" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-film" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 4v16M17 4v16M2 12h20M2 8h5M2 16h5M17 8h5M17 16h5"/></symbol>
+    <symbol id="i-tv" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="13" rx="2"/><polyline points="17 2 12 7 7 2"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></symbol>
+    <symbol id="i-manga" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></symbol>
+    <symbol id="i-stats" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></symbol>
+    <symbol id="i-heart-fill" viewBox="0 0 24 24"><path fill="currentColor" stroke="none" d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></symbol>
+    <symbol id="i-dice" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="15.5" cy="8.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="8.5" cy="15.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15.5" r="1.2" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-filter" viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></symbol>
+    <symbol id="i-sync" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><polygon fill="currentColor" stroke="none" points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></symbol>
+    <symbol id="i-tag" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><polygon fill="currentColor" stroke="none" points="5 3 19 12 5 21 5 3"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+    <symbol id="i-camera" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></symbol>
+    <symbol id="i-note" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></symbol>
+    <symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></symbol>
+    <symbol id="i-chevron-down" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></symbol>
+  </svg>
+
+  <div id="app-screen">
+    <div class="top-header">
+      <div class="category-tabs">
+        <button class="tab-btn active" data-cat="Juegos" title="Juegos" onclick="cambiarCategoria('Juegos')">
+          <svg class="ico"><use href="#i-gamepad"/></svg> <span class="tab-text">Juegos</span>
+        </button>
+        <button class="tab-btn" data-cat="Peliculas_Series" title="Cine y Series" onclick="cambiarCategoria('Peliculas_Series')">
+          <svg class="ico"><use href="#i-film"/></svg> <span class="tab-text">Cine y Series</span>
+        </button>
+        <button class="tab-btn" data-cat="Libros" title="Libros" onclick="cambiarCategoria('Libros')">
+          <svg class="ico"><use href="#i-book"/></svg> <span class="tab-text">Libros</span>
+        </button>
+        <button class="tab-btn" data-cat="Mangas" title="Mangas" onclick="cambiarCategoria('Mangas')">
+          <svg class="ico"><use href="#i-manga"/></svg> <span class="tab-text">Mangas</span>
+        </button>
+        <button class="tab-btn" data-cat="Estadisticas" title="Estadísticas" onclick="cambiarCategoria('Estadisticas')">
+          <svg class="ico"><use href="#i-stats"/></svg> <span class="tab-text">Stats</span>
+        </button>
+      </div>
+
+      <div class="controls" id="main-controls-box">
+        <div class="controls-row">
+          <div class="search-wrapper">
+            <svg class="ico"><use href="#i-search"/></svg>
+            <input type="text" id="inputBuscar" placeholder="Filtrar juegos por título, dev, género o tag..." oninput="filtrarItemsDebounced()">
+          </div>
+        </div>
+
+        <div class="controls-row">
+          <div class="add-wrapper" id="add-wrapper-box">
+            <svg class="ico ico-sm" style="color:#8f98a0; margin-right:6px;"><use href="#i-plus"/></svg>
+            <input type="text" id="inputAgregar" placeholder="AppID, URL o nombre..." onfocus="activarModoBusquedaAgregar(true)" oninput="syncAddClearBtn(); autocompletarAgregarDebounced()" onkeydown="if(event.key==='Enter') manejarAgregar()">
+            <button type="button" class="btn-clear-add" onclick="cerrarBusquedaAgregar(true)" title="Limpiar">
+              <svg class="ico ico-sm"><use href="#i-x"/></svg>
+            </button>
+            <button id="btn-add" class="btn btn-primary" onclick="manejarAgregar()" title="Buscar o añadir" style="margin-left:3px;">
+              <svg class="ico ico-sm"><use href="#i-plus"/></svg>
+            </button>
+            <div id="search-dropdown" class="search-results-dropdown"></div>
+          </div>
+
+          <div class="right-controls" id="right-ctrls">
+            <button class="btn btn-circle" onclick="abrirMatchModal()" title="Modo Match de Pareja" style="color:#ff8fa3;">
+              <svg class="ico"><use href="#i-heart-fill"/></svg>
+            </button>
+            <button class="btn btn-circle" onclick="elegirAleatorio()" title="Elección aleatoria">
+              <svg class="ico"><use href="#i-dice"/></svg>
+            </button>
+            <button id="btn-toggle-filtros" class="btn btn-circle" onclick="toggleFiltros(event)" title="Filtros y Orden">
+              <svg class="ico"><use href="#i-filter"/></svg>
+            </button>
+            <button id="btn-sync" class="btn btn-circle" onclick="forzarSincronizacion()" title="Sincronizar pestaña actual">
+              <svg class="ico"><use href="#i-sync"/></svg>
+            </button>
+            <button class="btn btn-circle" onclick="abrirPapelera()" title="Papelera" style="color:#ff6b6b;">
+              <svg class="ico"><use href="#i-trash"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div id="progress-container">
+          <div id="progress-bar"></div>
+          <div id="progress-text">Iniciando...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL DE FILTROS -->
+    <div id="panel-filtros" class="filter-panel" onclick="event.stopPropagation()">
+      <div class="filter-group">
+        <label><svg class="ico ico-sm ico-angel"><use href="#i-user"/></svg> Angel (Estado)</label>
+        <select id="filter-angel" onchange="filtrarItems()">
+          <option value="todos">Todos</option>
+          <option value="No jugado">Pendiente</option>
+          <option value="En proceso">En proceso</option>
+          <option value="Completado">Completado</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label><svg class="ico ico-sm ico-talmai"><use href="#i-user"/></svg> Talmai (Estado)</label>
+        <select id="filter-talmai" onchange="filtrarItems()">
+          <option value="todos">Todos</option>
+          <option value="No jugado">Pendiente</option>
+          <option value="En proceso">En proceso</option>
+          <option value="Completado">Completado</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label><svg class="ico ico-sm ico-gold"><use href="#i-star"/></svg> Nota Mínima Angel</label>
+        <select id="filter-nota-angel" onchange="filtrarItems()">
+          <option value="0">Todas las notas</option>
+          <option value="5">5+ (2.5/5 o 5/10)</option>
+          <option value="7">7+ (3.5/5 o 7/10)</option>
+          <option value="9">9+ (4.5/5 o 9/10)</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label><svg class="ico ico-sm ico-gold"><use href="#i-star"/></svg> Nota Mínima Talmai</label>
+        <select id="filter-nota-talmai" onchange="filtrarItems()">
+          <option value="0">Todas las notas</option>
+          <option value="5">5+ (2.5/5 o 5/10)</option>
+          <option value="7">7+ (3.5/5 o 7/10)</option>
+          <option value="9">9+ (4.5/5 o 9/10)</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label><svg class="ico ico-sm ico-wish"><use href="#i-heart-fill"/></svg> Lista de Deseados</label>
+        <select id="filter-deseado" onchange="filtrarItems()">
+          <option value="todos">Todos</option>
+          <option value="cualquiera">Angel o Talmai</option>
+          <option value="angel">Solo Angel</option>
+          <option value="talmai">Solo Talmai</option>
+          <option value="ambos">Ambos</option>
+        </select>
+      </div>
+      <div class="filter-group" id="extra-filter-1"></div>
+      <div class="filter-group" id="extra-filter-2"></div>
+      <div class="filter-group" id="extra-filter-3"></div>
+
+      <div class="filter-group">
+        <label>Ordenar por</label>
+        <select id="filter-orden" onchange="filtrarItems()">
+          <option value="az">Alfabético (A - Z)</option>
+          <option value="za">Alfabético (Z - A)</option>
+          <option value="recientes">Últimos añadidos</option>
+          <option value="nota-angel">Nota de Angel</option>
+          <option value="nota-talmai">Nota de Talmai</option>
+          <option value="puntuacion">Puntuación</option>
+        </select>
+      </div>
+      <button class="filter-reset" onclick="resetFiltros()">Limpiar Filtros</button>
+    </div>
+
+    <div id="stats-bar" class="stats-bar" style="display:none;"></div>
+    <div id="grid"></div>
+
+    <!-- VISTA DE ESTADÍSTICAS REORGANIZADA Y COMPACTA -->
+    <div id="stats-view">
+      <div class="stats-selectors-row">
+        <button class="stats-prof-btn active" data-prof="ambos" onclick="cambiarPerfilStats('ambos')">
+          <svg class="ico ico-sm"><use href="#i-users"/></svg> Ambos
+        </button>
+        <button class="stats-prof-btn" data-prof="angel" onclick="cambiarPerfilStats('angel')">
+          <svg class="ico ico-sm ico-angel"><use href="#i-user"/></svg> Angel
+        </button>
+        <button class="stats-prof-btn" data-prof="talmai" onclick="cambiarPerfilStats('talmai')">
+          <svg class="ico ico-sm ico-talmai"><use href="#i-user"/></svg> Talmai
+        </button>
+      </div>
+      <div class="stats-selectors-row">
+        <button class="stats-cat-btn active" data-statcat="todas" onclick="cambiarCategoriaStats('todas')">
+          <svg class="ico ico-sm"><use href="#i-globe"/></svg> Global
+        </button>
+        <button class="stats-cat-btn" data-statcat="Juegos" onclick="cambiarCategoriaStats('Juegos')">
+          <svg class="ico ico-sm"><use href="#i-gamepad"/></svg> Juegos
+        </button>
+        <button class="stats-cat-btn" data-statcat="Peliculas_Series" onclick="cambiarCategoriaStats('Peliculas_Series')">
+          <svg class="ico ico-sm"><use href="#i-film"/></svg> Cine
+        </button>
+        <button class="stats-cat-btn" data-statcat="Libros" onclick="cambiarCategoriaStats('Libros')">
+          <svg class="ico ico-sm"><use href="#i-book"/></svg> Libros
+        </button>
+        <button class="stats-cat-btn" data-statcat="Mangas" onclick="cambiarCategoriaStats('Mangas')">
+          <svg class="ico ico-sm"><use href="#i-manga"/></svg> Mangas
+        </button>
+      </div>
+      <div class="stats-cards-grid" id="stats-cards-container"></div>
+    </div>
+  </div>
+
+  <!-- MODAL DETALLE -->
+  <div id="modal" onclick="cerrarModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="cerrarModal()">
+        <svg class="ico"><use href="#i-x"/></svg>
+      </button>
+      <div id="m-header-grid" class="modal-header-grid landscape">
+        <img id="m-img" class="modal-img" src="" loading="lazy" decoding="async" referrerpolicy="no-referrer">
+        <div class="modal-header-info">
+          <h2 id="m-titulo" class="modal-title"></h2>
+          <div class="modal-subtitle">
+            <span id="m-dev"></span>
+            <span id="m-price" class="modal-price"></span>
+          </div>
+          <div id="m-badges" class="version-badges"></div>
+          <div id="m-genres" class="modal-genres"></div>
+        </div>
+      </div>
+
+      <div id="m-trailer-bar" class="trailer-bar" style="display:none;">
+        <button type="button" id="btn-toggle-trailer" class="btn-trailer" onclick="toggleTrailer()">
+          <svg class="ico ico-sm"><use href="#i-play"/></svg> Ver Tráiler
+        </button>
+        <div id="m-trailer-box" class="trailer-box"></div>
+      </div>
+
+      <p id="m-desc" class="modal-desc"></p>
+
+      <details id="m-details-accordion" class="accordion">
+        <summary>
+          <span>Ver ficha técnica completa</span>
+          <svg class="ico ico-sm"><use href="#i-chevron-down"/></svg>
+        </summary>
+        <div class="accordion-content" id="m-details-list"></div>
+      </details>
+
+      <div class="carousel-container" id="m-screenshots-container" style="display:none;">
+        <div class="carousel-title"><svg class="ico"><use href="#i-camera"/></svg> Capturas</div>
+        <div class="carousel" id="m-screenshots"></div>
+      </div>
+
+      <div class="tracking-container">
+        <div class="player-accordion" id="acc-angel">
+          <div class="player-summary" onclick="togglePlayerAccordion('angel')">
+            <div class="player-info-left">
+              <h4>
+                <svg class="ico ico-angel"><use href="#i-user"/></svg> Angel
+                <span id="sum-wish-angel" style="display:none;"><svg class="ico ico-sm ico-wish"><use href="#i-heart-fill"/></svg></span>
+                <span id="sum-note-angel" style="display:none;"><svg class="ico ico-sm" style="color:var(--accent);"><use href="#i-note"/></svg></span>
+              </h4>
+              <div class="status-chip status-none" id="sum-status-angel">Pendiente</div>
+            </div>
+            <div class="player-info-right">
+              <span class="preview-stars no-stars" id="sum-stars-angel">Sin nota</span>
+              <svg class="ico ico-sm"><use href="#i-chevron-down"/></svg>
+            </div>
+          </div>
+          <div class="player-details">
+            <button type="button" id="btn-wish-angel" class="wish-toggle" onclick="toggleDeseado('Angel')">
+              <svg class="ico ico-sm"><use href="#i-heart"/></svg> Marcar como deseado
+            </button>
+            <select id="select-estado-angel" class="status-select" onchange="guardarTracking('Angel')">
+              <option value="No jugado">Pendiente / No jugado</option>
+              <option value="En proceso">En proceso</option>
+              <option value="Completado">Completado</option>
+            </select>
+            <input type="text" id="prog-angel" class="progress-input" placeholder="Progreso (ej. T2 E04)..." onchange="guardarTracking('Angel')">
+            <div id="chap-box-angel" class="chapter-tracker-box" style="display:none;">
+              <div style="font-size:11px;color:#8f98a0;font-weight:700;margin-bottom:5px;display:flex;justify-content:space-between;align-items:center;gap:6px;">
+                <span style="display:inline-flex;align-items:center;gap:4px;"><svg class="ico ico-sm"><use href="#i-book"/></svg> Capítulos leídos</span>
+                <span id="chap-hint-angel" style="color:var(--accent);">Total manual</span>
+              </div>
+              <div class="chapter-inputs-row">
+                <input type="number" min="0" id="chap-cur-angel" class="chapter-num-input" placeholder="Leídos" onchange="actualizarCapitulosUI('Angel')">
+                <span class="chapter-sep">/</span>
+                <input type="number" min="0" id="chap-tot-angel" class="chapter-num-input" placeholder="Total" onchange="guardarTotalCapsDesdeModal('Angel')">
+                <span id="chap-pct-angel" class="chapter-pct-badge">0%</span>
+              </div>
+              <div class="reading-progress-track">
+                <div id="chap-bar-angel" class="reading-progress-fill"></div>
+              </div>
+            </div>
+            <div class="stars" id="stars-angel"></div>
+            <textarea id="note-angel" class="player-note" placeholder="Apunte rápido de Angel..." onchange="guardarNotaJugador('Angel', this.value)"></textarea>
+          </div>
+        </div>
+
+        <div class="player-accordion" id="acc-talmai">
+          <div class="player-summary" onclick="togglePlayerAccordion('talmai')">
+            <div class="player-info-left">
+              <h4>
+                <svg class="ico ico-talmai"><use href="#i-user"/></svg> Talmai
+                <span id="sum-wish-talmai" style="display:none;"><svg class="ico ico-sm ico-wish"><use href="#i-heart-fill"/></svg></span>
+                <span id="sum-note-talmai" style="display:none;"><svg class="ico ico-sm" style="color:var(--accent);"><use href="#i-note"/></svg></span>
+              </h4>
+              <div class="status-chip status-none" id="sum-status-talmai">Pendiente</div>
+            </div>
+            <div class="player-info-right">
+              <span class="preview-stars no-stars" id="sum-stars-talmai">Sin nota</span>
+              <svg class="ico ico-sm"><use href="#i-chevron-down"/></svg>
+            </div>
+          </div>
+          <div class="player-details">
+            <button type="button" id="btn-wish-talmai" class="wish-toggle" onclick="toggleDeseado('Talmai')">
+              <svg class="ico ico-sm"><use href="#i-heart"/></svg> Marcar como deseado
+            </button>
+            <select id="select-estado-talmai" class="status-select" onchange="guardarTracking('Talmai')">
+              <option value="No jugado">Pendiente / No jugado</option>
+              <option value="En proceso">En proceso</option>
+              <option value="Completado">Completado</option>
+            </select>
+            <input type="text" id="prog-talmai" class="progress-input" placeholder="Progreso (ej. T2 E04)..." onchange="guardarTracking('Talmai')">
+            <div id="chap-box-talmai" class="chapter-tracker-box" style="display:none;">
+              <div style="font-size:11px;color:#8f98a0;font-weight:700;margin-bottom:5px;display:flex;justify-content:space-between;align-items:center;gap:6px;">
+                <span style="display:inline-flex;align-items:center;gap:4px;"><svg class="ico ico-sm"><use href="#i-book"/></svg> Capítulos leídos</span>
+                <span id="chap-hint-talmai" style="color:var(--accent);">Total manual</span>
+              </div>
+              <div class="chapter-inputs-row">
+                <input type="number" min="0" id="chap-cur-talmai" class="chapter-num-input" placeholder="Leídos" onchange="actualizarCapitulosUI('Talmai')">
+                <span class="chapter-sep">/</span>
+                <input type="number" min="0" id="chap-tot-talmai" class="chapter-num-input" placeholder="Total" onchange="guardarTotalCapsDesdeModal('Talmai')">
+                <span id="chap-pct-talmai" class="chapter-pct-badge">0%</span>
+              </div>
+              <div class="reading-progress-track">
+                <div id="chap-bar-talmai" class="reading-progress-fill"></div>
+              </div>
+            </div>
+            <div class="stars" id="stars-talmai"></div>
+            <textarea id="note-talmai" class="player-note" placeholder="Apunte rápido de Talmai..." onchange="guardarNotaJugador('Talmai', this.value)"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <a href="#" id="btn-ext-1" target="_blank" rel="noopener noreferrer" class="btn btn-steam">Ver ficha</a>
+        <a href="#" id="btn-ext-2" target="_blank" rel="noopener noreferrer" class="btn btn-db">Más info</a>
+        <button id="btn-repair" class="btn btn-repair btn-full" onclick="repararItemActual()">
+          <svg class="ico ico-sm"><use href="#i-wrench"/></svg> Reparar / Actualizar Metadata
+        </button>
+        <button id="btn-delete" class="btn btn-delete btn-full" onclick="eliminarItemActual()">
+          <svg class="ico ico-sm"><use href="#i-trash"/></svg> Mover a Papelera
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL PAPELERA -->
+  <div id="modal-papelera" onclick="cerrarPapelera()">
+    <div class="modal-content" onclick="event.stopPropagation()" style="max-width:500px;">
+      <button class="modal-close" onclick="cerrarPapelera()"><svg class="ico"><use href="#i-x"/></svg></button>
+      <h2 class="modal-title"><svg class="ico ico-lg" style="color:var(--accent);"><use href="#i-trash"/></svg> Papelera de Reciclaje</h2>
+      <div id="lista-papelera" class="papelera-list"></div>
+    </div>
+  </div>
+
+  <!-- MODAL MATCH DE PAREJA -->
+  <div id="modal-match" onclick="cerrarMatchModal()">
+    <div class="modal-content" onclick="event.stopPropagation()" style="max-width:650px;">
+      <button class="modal-close" onclick="cerrarMatchModal()"><svg class="ico"><use href="#i-x"/></svg></button>
+      <h2 class="modal-title"><svg class="ico ico-lg ico-wish"><use href="#i-heart-fill"/></svg> Match de Pareja</h2>
+      <p style="font-size:12px;color:#8f98a0;margin-top:0;">Elementos que ambos tienen en estado Pendiente o en su Lista de Deseados:</p>
+      <div class="match-container">
+        <div class="match-tabs">
+          <button class="match-tab active" data-matchcat="Juegos" onclick="cambiarMatchCat('Juegos')">
+            <svg class="ico ico-sm"><use href="#i-gamepad"/></svg> Juegos
+          </button>
+          <button class="match-tab" data-matchcat="Peliculas_Series" onclick="cambiarMatchCat('Peliculas_Series')">
+            <svg class="ico ico-sm"><use href="#i-film"/></svg> Cine y Series
+          </button>
+          <button class="match-tab" data-matchcat="Libros" onclick="cambiarMatchCat('Libros')">
+            <svg class="ico ico-sm"><use href="#i-book"/></svg> Libros
+          </button>
+          <button class="match-tab" data-matchcat="Mangas" onclick="cambiarMatchCat('Mangas')">
+            <svg class="ico ico-sm"><use href="#i-manga"/></svg> Mangas
+          </button>
+        </div>
+        <div id="match-grid" class="match-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script>
+    const CATEGORY_ORDER = ['Juegos', 'Peliculas_Series', 'Libros', 'Mangas', 'Estadisticas'];
+    var currentCategory = 'Juegos';
+    var elementosPorPagina = 36;
+    var paginaActual = 1;
+    var observer = null;
+    var itemsByCategory = { Juegos: [], Peliculas_Series: [], Libros: [], Mangas: [] };
+    var filteredItems = [];
+    var currentItemId = '';
+    var currentTrailerUrl = '';
+    var hlsInstance = null;
+    var MAX_CACHE_AGE = 12 * 60 * 60 * 1000;
+    const CACHE_VERSION = 'v18';
+    var currentStatsProfile = 'ambos';
+    var currentStatsCategory = 'todas';
+
+    const CAT_CONFIG = {
+      Juegos: { label: 'Juegos', icon: 'i-gamepad', searchPlaceholder: 'Filtrar juegos por título, dev, género o tag...', addPlaceholder: 'AppID, URL o nombre...', poster: false },
+      Peliculas_Series: { label: 'Cine y Series', icon: 'i-film', searchPlaceholder: 'Filtrar películas, series y animes...', addPlaceholder: 'Buscar película, serie o URL...', poster: true },
+      Libros: { label: 'Libros', icon: 'i-book', searchPlaceholder: 'Filtrar libros por título, autor o género...', addPlaceholder: 'Buscar libro, autor o ISBN...', poster: true },
+      Mangas: { label: 'Mangas', icon: 'i-manga', searchPlaceholder: 'Filtrar mangas por título, mangaka o género...', addPlaceholder: 'Buscar manga o URL...', poster: true },
+      Estadisticas: { label: 'Estadísticas', icon: 'i-stats', searchPlaceholder: '', addPlaceholder: '', poster: false }
+    };
+
+    function svgIcon(id, cls) {
+      return `<svg class="ico${cls ? ' ' + cls : ''}"><use href="#${id}"/></svg>`;
+    }
+
+    function debounce(fn, ms) {
+      let t;
+      return function(...args) { clearTimeout(t); t = setTimeout(() => fn.apply(this, args), ms); };
+    }
+    const filtrarItemsDebounced = debounce(() => filtrarItems(), 220);
+
+    function showToast(msg, type) {
+      var c = document.getElementById('toast-container');
+      var t = document.createElement('div');
+      t.className = 'toast' + (type ? ' ' + type : '');
+      t.innerText = msg;
+      c.appendChild(t);
+      requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add('show')));
+      setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 220); }, 3000);
+    }
+
+    /* NAVEGACIÓN POR DESLIZAMIENTO HORIZONTAL (SWIPE) ENTRE PESTAÑAS */
+    function inicializarGestosSwipe() {
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let touchStartTime = 0;
+      let swipeIgnorado = false;
+
+      document.addEventListener('touchstart', function(e) {
+        if (e.touches.length !== 1) { swipeIgnorado = true; return; }
+        const t = e.target;
+        const hayModal =
+          document.getElementById('modal').style.display === 'flex' ||
+          document.getElementById('modal-papelera').style.display === 'flex' ||
+          document.getElementById('modal-match').style.display === 'flex' ||
+          document.getElementById('panel-filtros').classList.contains('open');
+
+        if (hayModal || t.closest('.carousel, .category-tabs, .stats-selectors-row, input, textarea, select')) {
+          swipeIgnorado = true;
+          return;
+        }
+        swipeIgnorado = false;
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        touchStartTime = Date.now();
+      }, { passive: true });
+
+      document.addEventListener('touchend', function(e) {
+        if (swipeIgnorado || e.changedTouches.length !== 1) return;
+        const dx = e.changedTouches[0].clientX - touchStartX;
+        const dy = e.changedTouches[0].clientY - touchStartY;
+        const dt = Date.now() - touchStartTime;
+
+        if (dt < 550 && Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.8) {
+          const idx = CATEGORY_ORDER.indexOf(currentCategory);
+          if (idx === -1) return;
+          if (dx < 0 && idx < CATEGORY_ORDER.length - 1) {
+            cambiarCategoria(CATEGORY_ORDER[idx + 1]);
+          } else if (dx > 0 && idx > 0) {
+            cambiarCategoria(CATEGORY_ORDER[idx - 1]);
+          }
+        }
+      }, { passive: true });
+    }
+
+    window.onload = function() {
+      configurarFiltrosCategoria('Juegos');
+      cargarCategoria('Juegos', false);
+      ['Peliculas_Series', 'Libros', 'Mangas'].forEach(c => precargarCategoriaSilenciosa(c));
+      inicializarGestosSwipe();
+      var inputBuscarEl = document.getElementById('inputBuscar');
+      if (inputBuscarEl) {
+        inputBuscarEl.addEventListener('focus', function() { cerrarBusquedaAgregar(); });
+        inputBuscarEl.addEventListener('click', function() { cerrarBusquedaAgregar(); });
+      }
+      var lastScrollY = window.scrollY || window.pageYOffset || 0;
+      window.addEventListener('scroll', function() {
+        var curY = window.scrollY || window.pageYOffset || 0;
+        if (Math.abs(curY - lastScrollY) > 6 && document.getElementById('add-wrapper-box').classList.contains('expanded')) {
+          cerrarBusquedaAgregar();
+        }
+        lastScrollY = curY;
+      }, { passive: true });
+      var swipeStartX = 0, swipeStartY = 0;
+      document.addEventListener('touchstart', function(e) {
+        if (e.touches.length === 1) {
+          swipeStartX = e.touches[0].clientX;
+          swipeStartY = e.touches[0].clientY;
+        }
+      }, { passive: true });
+      document.addEventListener('touchmove', function(e) {
+        if (e.touches.length !== 1) return;
+        if (!document.getElementById('add-wrapper-box').classList.contains('expanded')) return;
+        var dx = Math.abs(e.touches[0].clientX - swipeStartX);
+        var dy = Math.abs(e.touches[0].clientY - swipeStartY);
+        if (dx > 18 || dy > 18) {
+          cerrarBusquedaAgregar();
+        }
+      }, { passive: true });
+
+      window.addEventListener('popstate', function(event) {
+        var dropdown = document.getElementById('search-dropdown');
+        var panelFiltros = document.getElementById('panel-filtros');
+        var modalDetalle = document.getElementById('modal');
+        var modalPapelera = document.getElementById('modal-papelera');
+        var modalMatch = document.getElementById('modal-match');
+
+        if (modalDetalle.style.display === 'flex') { cerrarModal(); history.pushState(null, '', window.location.href); }
+        else if (modalPapelera.style.display === 'flex') { cerrarPapelera(); history.pushState(null, '', window.location.href); }
+        else if (modalMatch.style.display === 'flex') { cerrarMatchModal(); history.pushState(null, '', window.location.href); }
+        else if (panelFiltros.classList.contains('open')) {
+          panelFiltros.classList.remove('open');
+          document.getElementById('btn-toggle-filtros').classList.remove('active');
+          history.pushState(null, '', window.location.href);
+        }
+        else if (dropdown.classList.contains('open') || document.activeElement === document.getElementById('inputAgregar') || document.getElementById('add-wrapper-box').classList.contains('expanded')) {
+          cerrarBusquedaAgregar();
+          history.pushState(null, '', window.location.href);
+        }
+      });
+      history.pushState(null, '', window.location.href);
+
+      document.addEventListener('click', function(e) {
+        var panel = document.getElementById('panel-filtros');
+        var btn = document.getElementById('btn-toggle-filtros');
+        if (panel.classList.contains('open') && !panel.contains(e.target) && !btn.contains(e.target)) {
+          panel.classList.remove('open');
+          btn.classList.remove('active');
+        }
+        var dd = document.getElementById('search-dropdown');
+        var addWrap = document.querySelector('.add-wrapper');
+        if (dd && dd.classList.contains('open') && !addWrap.contains(e.target)) {
+          cerrarBusquedaAgregar();
+        }
+      });
+    };
+
+    function precargarCategoriaSilenciosa(cat) {
+      try {
+        var raw = localStorage.getItem(`media_lib_${CACHE_VERSION}_${cat}`);
+        var ts = localStorage.getItem(`media_lib_time_${CACHE_VERSION}_${cat}`);
+        if (raw && ts && (Date.now() - Number(ts) < MAX_CACHE_AGE)) {
+          itemsByCategory[cat] = JSON.parse(raw);
+          return;
+        }
+      } catch (e) {}
+
+      google.script.run
+        .withSuccessHandler(function(lista) {
+          itemsByCategory[cat] = Array.isArray(lista) ? lista : [];
+          try {
+            localStorage.setItem(`media_lib_${CACHE_VERSION}_${cat}`, JSON.stringify(itemsByCategory[cat]));
+            localStorage.setItem(`media_lib_time_${CACHE_VERSION}_${cat}`, String(Date.now()));
+          } catch (e) {}
+          if (currentCategory === 'Estadisticas') renderizarEstadisticas();
+        })
+        .getItems(cat);
+    }
+
+    function activarModoBusquedaAgregar(activar) {
+      var box = document.getElementById('add-wrapper-box');
+      var rightCtrls = document.getElementById('right-ctrls');
+      if (activar && !box.classList.contains('expanded')) {
+        box.classList.add('expanded');
+        rightCtrls.classList.add('hidden');
+        history.pushState(null, '', window.location.href);
+      }
+    }
+
+    function syncAddClearBtn() {
+      var box = document.getElementById('add-wrapper-box');
+      var inp = document.getElementById('inputAgregar');
+      if (box && inp) box.classList.toggle('has-text', inp.value.trim().length > 0);
+    }
+
+    function cerrarBusquedaAgregar(soloLimpiar) {
+      var input = document.getElementById('inputAgregar');
+      input.value = '';
+      syncAddClearBtn();
+      document.getElementById('search-dropdown').classList.remove('open');
+      if (soloLimpiar) {
+        activarModoBusquedaAgregar(true);
+        input.focus();
+        return;
+      }
+      document.getElementById('add-wrapper-box').classList.remove('expanded');
+      document.getElementById('right-ctrls').classList.remove('hidden');
+      if (document.activeElement === input) input.blur();
+    }
+
+    const autocompletarAgregarDebounced = debounce(function() {
+      var val = document.getElementById('inputAgregar').value.trim();
+      if (val.length < 3) {
+        document.getElementById('search-dropdown').classList.remove('open');
+        return;
+      }
+      var esUrlOId = /^\d+$/.test(val) || val.includes('http://') || val.includes('https://') || /^(movie|tv|al)-\d+$/i.test(val);
+      if (!esUrlOId) manejarAgregar(true);
+    }, 500);
+
+    function cambiarCategoria(cat) {
+      if (cat === currentCategory) return;
+      currentCategory = cat;
+      paginaActual = 1;
+
+      var panel = document.getElementById('panel-filtros');
+      if (panel.classList.contains('open')) {
+        panel.classList.remove('open');
+        document.getElementById('btn-toggle-filtros').classList.remove('active');
+      }
+
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-cat') === cat);
+      });
+
+      var grid = document.getElementById('grid');
+      var statsView = document.getElementById('stats-view');
+      var controlsBox = document.getElementById('main-controls-box');
+      var statsBar = document.getElementById('stats-bar');
+
+      if (cat === 'Estadisticas') {
+        grid.style.display = 'none';
+        statsBar.style.display = 'none';
+        controlsBox.style.display = 'none';
+        statsView.style.display = 'flex';
+        document.body.classList.add('view-stats');
+        ['Juegos', 'Peliculas_Series', 'Libros', 'Mangas'].forEach(c => precargarCategoriaSilenciosa(c));
+        renderizarEstadisticas();
+        return;
+      } else {
+        document.body.classList.remove('view-stats');
+        controlsBox.style.display = 'flex';
+        statsView.style.display = 'none';
+        grid.style.display = 'grid';
+      }
+
+      var cfg = CAT_CONFIG[cat];
+      document.getElementById('inputBuscar').value = '';
+      document.getElementById('inputBuscar').placeholder = cfg.searchPlaceholder;
+      document.getElementById('inputAgregar').value = '';
+      document.getElementById('inputAgregar').placeholder = cfg.addPlaceholder;
+      cerrarBusquedaAgregar();
+
+      grid.classList.toggle('poster-mode', cfg.poster);
+
+      configurarFiltrosCategoria(cat);
+      resetFiltros(true);
+      cargarCategoria(cat, false);
+    }
+
+    function cargarCategoria(cat, forzarRed) {
+      if (cat === 'Estadisticas') return;
+      if (!forzarRed) {
+        try {
+          var raw = localStorage.getItem(`media_lib_${CACHE_VERSION}_${cat}`);
+          var ts = localStorage.getItem(`media_lib_time_${CACHE_VERSION}_${cat}`);
+          if (raw && ts && (Date.now() - Number(ts) < MAX_CACHE_AGE)) {
+            itemsByCategory[cat] = JSON.parse(raw);
+            filtrarItems();
+            return;
+          }
+        } catch (e) {}
+      }
+
+      var grid = document.getElementById('grid');
+      if (currentCategory === cat) {
+        grid.innerHTML = '<div class="spinner-container"><div class="spinner"></div><div style="color:var(--accent);font-weight:700;">Cargando ' + CAT_CONFIG[cat].label + '...</div></div>';
+      }
+
+      google.script.run
+        .withSuccessHandler(function(lista) {
+          itemsByCategory[cat] = Array.isArray(lista) ? lista : [];
+          try {
+            localStorage.setItem(`media_lib_${CACHE_VERSION}_${cat}`, JSON.stringify(itemsByCategory[cat]));
+            localStorage.setItem(`media_lib_time_${CACHE_VERSION}_${cat}`, String(Date.now()));
+          } catch (e) {}
+          if (currentCategory === cat) filtrarItems();
+          else if (currentCategory === 'Estadisticas') renderizarEstadisticas();
+        })
+        .withFailureHandler(function(err) {
+          if (currentCategory === cat) {
+            grid.innerHTML = '<p style="text-align:center;grid-column:1/-1;color:#ff6b6b;">Error: ' + escaparHTML(err.message) + '</p>';
+          }
+        })
+        .getItems(cat);
+    }
+
+    function forzarSincronizacion() {
+      if (currentCategory === 'Estadisticas') {
+        ['Juegos', 'Peliculas_Series', 'Libros', 'Mangas'].forEach(c => cargarCategoria(c, true));
+        showToast('Actualizando estadísticas...', 'success');
+      } else {
+        cargarCategoria(currentCategory, true);
+      }
+    }
+
+    function configurarFiltrosCategoria(cat) {
+      var f1 = document.getElementById('extra-filter-1');
+      var f2 = document.getElementById('extra-filter-2');
+      var f3 = document.getElementById('extra-filter-3');
+
+      if (cat === 'Juegos') {
+        f1.innerHTML = '<label>Modo / Co-op</label><select id="f-extra-1" onchange="filtrarItems()"><option value="todos">Todos</option><option value="coop">Cualquier Co-op</option><option value="Un jugador">Un jugador</option><option value="Multijugador">Multijugador</option></select>';
+        f2.innerHTML = '<label>Steam Deck</label><select id="f-extra-2" onchange="filtrarItems()"><option value="todos">Todos</option><option value="Verificado">Verificado</option><option value="Jugable">Jugable</option></select>';
+        f3.innerHTML = '<label>Precio</label><select id="f-extra-3" onchange="filtrarItems()"><option value="todos">Todos</option><option value="gratis">Gratis</option><option value="pago">De Pago</option></select>';
+      } else if (cat === 'Peliculas_Series') {
+        f1.innerHTML = '<label>Tipo</label><select id="f-extra-1" onchange="filtrarItems()"><option value="todos">Todos</option><option value="Película">Películas</option><option value="Serie">Series / Animes</option></select>';
+        f2.innerHTML = '<label>Plataforma</label><select id="f-extra-2" onchange="filtrarItems()"><option value="todos">Todas</option><option value="Netflix">Netflix</option><option value="Crunchyroll">Crunchyroll</option><option value="Max">Max</option><option value="Prime">Prime Video</option><option value="Disney">Disney+</option></select>';
+        f3.innerHTML = '<label>Estado</label><select id="f-extra-3" onchange="filtrarItems()"><option value="todos">Todos</option><option value="En emisión">En emisión</option><option value="Finalizada">Finalizada</option></select>';
+      } else if (cat === 'Libros') {
+        f1.innerHTML = '<label>Extensión</label><select id="f-extra-1" onchange="filtrarItems()"><option value="todos">Todas</option><option value="corto">Corto (&lt; 250 págs)</option><option value="medio">Medio (250 - 500)</option><option value="largo">Largo (&gt; 500 págs)</option></select>';
+        f2.innerHTML = ''; f3.innerHTML = '';
+      } else if (cat === 'Mangas') {
+        f1.innerHTML = '<label>Estado</label><select id="f-extra-1" onchange="filtrarItems()"><option value="todos">Todos</option><option value="En emisión">En emisión</option><option value="Finalizado">Finalizado</option></select>';
+        f2.innerHTML = '<label>Demografía</label><select id="f-extra-2" onchange="filtrarItems()"><option value="todos">Todas</option><option value="Shounen">Shounen</option><option value="Seinen">Seinen</option><option value="Shoujo">Shoujo</option><option value="Josei">Josei</option></select>';
+        f3.innerHTML = '';
+      }
+    }
+
+    function toggleFiltros(e) {
+      e.stopPropagation();
+      cerrarBusquedaAgregar();
+      var panel = document.getElementById('panel-filtros');
+      panel.classList.toggle('open');
+      document.getElementById('btn-toggle-filtros').classList.toggle('active');
+      if (panel.classList.contains('open')) {
+        history.pushState(null, '', window.location.href);
+      }
+    }
+
+    function resetFiltros(noRender) {
+      document.getElementById('filter-angel').value = 'todos';
+      document.getElementById('filter-talmai').value = 'todos';
+      document.getElementById('filter-nota-angel').value = '0';
+      document.getElementById('filter-nota-talmai').value = '0';
+      document.getElementById('filter-deseado').value = 'todos';
+      document.getElementById('filter-orden').value = 'az';
+      ['f-extra-1', 'f-extra-2', 'f-extra-3'].forEach(id => {
+        var el = document.getElementById(id);
+        if (el) el.value = 'todos';
+      });
+      if (!noRender) filtrarItems();
+    }
+
+    function filtrarItems() {
+      paginaActual = 1;
+      var lista = itemsByCategory[currentCategory] || [];
+      var q = document.getElementById('inputBuscar').value.toLowerCase().trim();
+      var fAngel = document.getElementById('filter-angel').value;
+      var fTalmai = document.getElementById('filter-talmai').value;
+      var notaAngelMin = parseInt(document.getElementById('filter-nota-angel').value, 10) || 0;
+      var notaTalmaiMin = parseInt(document.getElementById('filter-nota-talmai').value, 10) || 0;
+      var fDeseado = document.getElementById('filter-deseado').value;
+      var fOrden = document.getElementById('filter-orden').value;
+      var e1 = document.getElementById('f-extra-1')?.value || 'todos';
+      var e2 = document.getElementById('f-extra-2')?.value || 'todos';
+      var e3 = document.getElementById('f-extra-3')?.value || 'todos';
+
+      var hayFiltros = fAngel !== 'todos' || fTalmai !== 'todos' || notaAngelMin > 0 || notaTalmaiMin > 0 || fDeseado !== 'todos' || e1 !== 'todos' || e2 !== 'todos' || e3 !== 'todos' || fOrden !== 'az' || q.length > 0;
+      document.getElementById('btn-toggle-filtros').classList.toggle('has-filters', hayFiltros);
+
+      var filtrados = lista.filter(function(it) {
+        var matchQ = !q ||
+          String(it.titulo).toLowerCase().includes(q) ||
+          String(it.creador).toLowerCase().includes(q) ||
+          String(it.generos).toLowerCase().includes(q) ||
+          String(it.tags || '').toLowerCase().includes(q) ||
+          String(it.id).toLowerCase().includes(q);
+
+        var estA = it.estadoAngel || 'No jugado';
+        var estT = it.estadoTalmai || 'No jugado';
+        if (fAngel !== 'todos' && estA !== fAngel) return false;
+        if (fTalmai !== 'todos' && estT !== fTalmai) return false;
+
+        var ptsA = Number(it.estrellasAngel) || 0;
+        var ptsT = Number(it.estrellasTalmai) || 0;
+        if (notaAngelMin > 0 && ptsA < notaAngelMin) return false;
+        if (notaTalmaiMin > 0 && ptsT < notaTalmaiMin) return false;
+
+        var dA = Boolean(it.deseadoAngel);
+        var dT = Boolean(it.deseadoTalmai);
+        if (fDeseado === 'cualquiera' && !(dA || dT)) return false;
+        if (fDeseado === 'angel' && !dA) return false;
+        if (fDeseado === 'talmai' && !dT) return false;
+        if (fDeseado === 'ambos' && !(dA && dT)) return false;
+
+        if (currentCategory === 'Juegos') {
+          var modos = String(it.modos || '').toLowerCase();
+          if (e1 === 'coop' && !(modos.includes('co-op') || modos.includes('cooperativo') || modos.includes('remote play'))) return false;
+          if (e1 !== 'todos' && e1 !== 'coop' && !modos.includes(e1.toLowerCase())) return false;
+          if (e2 !== 'todos' && !String(it.steamdeck || '').toLowerCase().includes(e2.toLowerCase())) return false;
+          var pr = String(it.precio || '').toLowerCase();
+          var gratis = pr.includes('gratis') || pr.includes('free');
+          if (e3 === 'gratis' && !gratis) return false;
+          if (e3 === 'pago' && (gratis || !pr || pr === 'n/a')) return false;
+        } else if (currentCategory === 'Peliculas_Series') {
+          if (e1 !== 'todos' && it.tipo !== e1) return false;
+          if (e2 !== 'todos' && !String(it.plataformas || '').toLowerCase().includes(e2.toLowerCase())) return false;
+          if (e3 !== 'todos' && !String(it.estadoEmision || '').toLowerCase().includes(e3.toLowerCase())) return false;
+        } else if (currentCategory === 'Libros') {
+          var pags = parseInt(String(it.extension || '').replace(/\D/g, ''), 10) || 0;
+          if (e1 === 'corto' && (pags === 0 || pags >= 250)) return false;
+          if (e1 === 'medio' && (pags < 250 || pags > 500)) return false;
+          if (e1 === 'largo' && pags <= 500) return false;
+        } else if (currentCategory === 'Mangas') {
+          if (e1 !== 'todos' && !String(it.estadoEmision || '').toLowerCase().includes(e1.toLowerCase())) return false;
+          if (e2 !== 'todos' && !String(it.demografia || '').toLowerCase().includes(e2.toLowerCase())) return false;
+        }
+
+        return matchQ;
+      });
+
+      filteredItems = [].concat(filtrados).sort(function(a, b) {
+        if (fOrden === 'za') return String(b.titulo).localeCompare(String(a.titulo));
+        if (fOrden === 'recientes') return (b.index || 0) - (a.index || 0);
+        if (fOrden === 'nota-angel') return (b.estrellasAngel || 0) - (a.estrellasAngel || 0);
+        if (fOrden === 'nota-talmai') return (b.estrellasTalmai || 0) - (a.estrellasTalmai || 0);
+        if (fOrden === 'puntuacion') return (parseFloat(formatearPuntuacionBadge_(b.puntuacion)) || 0) - (parseFloat(formatearPuntuacionBadge_(a.puntuacion)) || 0);
+        return String(a.titulo).localeCompare(String(b.titulo));
+      });
+
+      actualizarStats(lista.length, filteredItems.length);
+      renderGrid(filteredItems);
+    }
+
+    function actualizarStats(total, mostrados) {
+      var bar = document.getElementById('stats-bar');
+      if (!total) { bar.style.display = 'none'; return; }
+      var lista = itemsByCategory[currentCategory] || [];
+      var cA = lista.filter(x => x.estadoAngel === 'Completado').length;
+      var cT = lista.filter(x => x.estadoTalmai === 'Completado').length;
+      var des = lista.filter(x => x.deseadoAngel || x.deseadoTalmai).length;
+
+      bar.style.display = 'flex';
+      bar.innerHTML =
+        `<div class="stat-pill">${svgIcon('i-folder', 'ico-sm')} Mostrando <strong>${mostrados} / ${total}</strong></div>` +
+        `<div class="stat-pill">${svgIcon('i-user', 'ico-sm ico-angel')} Completados: <strong>${cA}</strong></div>` +
+        `<div class="stat-pill">${svgIcon('i-user', 'ico-sm ico-talmai')} Completados: <strong>${cT}</strong></div>` +
+        `<div class="stat-pill">${svgIcon('i-heart-fill', 'ico-sm ico-wish')} Deseados: <strong>${des}</strong></div>`;
+    }
+
+    function escaparHTML(s) {
+      return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    const FALLBACK_SVG = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='450'><rect width='100%25' height='100%25' fill='%23171a21'/><text x='50%25' y='50%25' fill='%2366c0f4' font-family='sans-serif' font-size='16' font-weight='bold' text-anchor='middle' dominant-baseline='middle'>Sin Imagen</text></svg>";
+
+    function renderGrid(items) {
+      var grid = document.getElementById('grid');
+      if (!items || items.length === 0) {
+        grid.innerHTML = '<p style="text-align:center;grid-column:1/-1;color:#8f98a0;margin-top:30px;">No hay elementos en esta vista.</p>';
+        return;
+      }
+      var itemsVisibles = items.slice(0, paginaActual * elementosPorPagina);
+      var frag = document.createDocumentFragment();
+
+      itemsVisibles.forEach(function(it) {
+        var card = document.createElement('div');
+        card.className = 'card';
+        card.onclick = () => abrirModal(it.id);
+
+        var cA = it.estadoAngel === 'Completado' ? 'status-done' : (it.estadoAngel === 'En proceso' ? 'status-playing' : 'status-none');
+        var cT = it.estadoTalmai === 'Completado' ? 'status-done' : (it.estadoTalmai === 'En proceso' ? 'status-playing' : 'status-none');
+
+        var topBadgeHTML = '';
+        if (currentCategory === 'Juegos') {
+          var m = String(it.modos || '').toLowerCase();
+          if (m.includes('co-op') || m.includes('cooperativo')) topBadgeHTML = `<div class="top-badge">${svgIcon('i-users', 'ico-sm')} Co-op</div>`;
+        } else if (currentCategory === 'Peliculas_Series' && it.tipo) {
+          topBadgeHTML = `<div class="top-badge">${it.tipo === 'Serie' ? svgIcon('i-tv', 'ico-sm') + ' Serie' : svgIcon('i-film', 'ico-sm') + ' Película'}</div>`;
+        } else if (currentCategory === 'Libros' && it.extension && it.extension !== 'N/A') {
+          topBadgeHTML = `<div class="top-badge">${svgIcon('i-book', 'ico-sm')} ${escaparHTML(it.extension)}</div>`;
+        } else if (currentCategory === 'Mangas' && it.demografia) {
+          topBadgeHTML = `<div class="top-badge">${svgIcon('i-manga', 'ico-sm')} ${escaparHTML(it.demografia)}</div>`;
+        }
+
+        var wishBadgeHTML = (it.deseadoAngel || it.deseadoTalmai) ?
+          `<div class="wishlist-badge">${svgIcon('i-heart-fill', 'ico-sm ico-wish')}${it.deseadoAngel ? svgIcon('i-user', 'ico-sm ico-angel') : ''}${it.deseadoTalmai ? svgIcon('i-user', 'ico-sm ico-talmai') : ''}</div>` : '';
+        var estLabelA = (!it.estadoAngel || it.estadoAngel === 'No jugado') ? 'Pendiente' : it.estadoAngel;
+        var estLabelT = (!it.estadoTalmai || it.estadoTalmai === 'No jugado') ? 'Pendiente' : it.estadoTalmai;
+
+        card.innerHTML = `
+          <div class="img-container">
+            ${topBadgeHTML} ${wishBadgeHTML}
+            <img src="${escaparHTML(it.portada)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src=FALLBACK_SVG;">
+          </div>
+          <div class="card-content">
+            <div class="card-title">${escaparHTML(it.titulo)}</div>
+            <div class="card-dev">${escaparHTML((it.creador && String(it.creador).toLowerCase() !== 'undefined') ? it.creador : ((it.autor && String(it.autor).toLowerCase() !== 'undefined') ? it.autor : 'Autor por definir'))}</div>
+            <div class="status-container">
+              <div class="status-chip ${cA}">${svgIcon('i-user', 'ico-sm ico-angel')} ${escaparHTML(estLabelA)}</div>
+              <div class="status-chip ${cT}">${svgIcon('i-user', 'ico-sm ico-talmai')} ${escaparHTML(estLabelT)}</div>
+            </div>
+            ${generarBarraLecturaCard(it)}
+          </div>`;
+        frag.appendChild(card);
+      });
+      grid.replaceChildren(frag);
+
+      if (itemsVisibles.length < items.length) {
+        var sentinel = document.createElement('div');
+        sentinel.id = 'scroll-sentinel';
+        sentinel.style.gridColumn = '1 / -1'; sentinel.style.height = '35px'; sentinel.style.textAlign = 'center';
+        sentinel.innerHTML = '<span style="color:#8f98a0;font-size:11px;">Cargando más...</span>';
+        grid.appendChild(sentinel);
+        configurarObserver();
+      }
+    }
+
+    function configurarObserver() {
+      if (observer) observer.disconnect();
+      var sentinel = document.getElementById('scroll-sentinel');
+      if (!sentinel) return;
+      observer = new IntersectionObserver(function(entries) {
+        if (entries[0].isIntersecting) { paginaActual++; renderGrid(filteredItems); }
+      }, { rootMargin: '250px' });
+      observer.observe(sentinel);
+    }
+
+    function manejarAgregar(silencioso) {
+      var val = document.getElementById('inputAgregar').value.trim();
+      if (!val) { if (!silencioso) showToast('Escribe un nombre, ID o URL.', 'warning'); return; }
+
+      var esDirecto = false;
+      if (currentCategory === 'Juegos' && (/^\d+$/.test(val) || val.includes('steampowered.com/app/'))) esDirecto = true;
+      if (currentCategory === 'Peliculas_Series' && (/^(movie|tv)-\d+$/i.test(val) || val.includes('themoviedb.org/'))) esDirecto = true;
+      if (currentCategory === 'Mangas' && (/^(al-)?\d+$/i.test(val) || val.includes('myanimelist.net/manga/') || val.includes('anilist.co/manga/'))) esDirecto = true;
+
+      if (esDirecto) { ejecutarAgregarDirecto(val); return; }
+
+      activarModoBusquedaAgregar(true);
+
+      var btn = document.getElementById('btn-add');
+      var dd = document.getElementById('search-dropdown');
+      btn.innerHTML = '...'; btn.disabled = true;
+      dd.innerHTML = '<div style="padding:12px;text-align:center;color:var(--accent);font-size:12px;">Buscando coincidencias...</div>';
+      dd.classList.add('open');
+
+      var finalizado = false;
+      var timer = setTimeout(function() {
+        if (finalizado) return;
+        finalizado = true;
+        btn.innerHTML = svgIcon('i-plus', 'ico-sm'); btn.disabled = false;
+        dd.innerHTML = '<div style="padding:12px;text-align:center;color:#ff8585;font-size:12px;">Tiempo agotado. Intenta de nuevo.</div>';
+      }, 12000);
+
+      google.script.run
+        .withSuccessHandler(function(resultados) {
+          if (finalizado) return;
+          finalizado = true; clearTimeout(timer);
+          btn.innerHTML = svgIcon('i-plus', 'ico-sm'); btn.disabled = false;
+          if (!resultados || resultados.length === 0) {
+            dd.innerHTML = '<div style="padding:12px;text-align:center;color:#8f98a0;font-size:12px;">Sin resultados.</div>';
+            return;
+          }
+          dd.innerHTML = resultados.map(r => `
+            <div class="search-result-item" onclick="ejecutarAgregarDirecto('${escaparHTML(r.id)}')">
+              <img src="${escaparHTML(r.portada)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src=FALLBACK_SVG;">
+              <div class="search-result-info">
+                <div class="search-result-title">${escaparHTML(r.titulo)}</div>
+                <div class="search-result-sub">${escaparHTML(r.subtitulo)}</div>
+              </div>
+              <span class="search-result-badge">+ Añadir</span>
+            </div>
+          `).join('');
+        })
+        .withFailureHandler(function(err) {
+          if (finalizado) return;
+          finalizado = true; clearTimeout(timer);
+          btn.innerHTML = svgIcon('i-plus', 'ico-sm'); btn.disabled = false;
+          dd.classList.remove('open');
+          showToast(err.message, 'error');
+        })
+        .buscarCatalogoExterno(currentCategory, val);
+    }
+
+    function ejecutarAgregarDirecto(idOUrl) {
+      var btn = document.getElementById('btn-add');
+      document.getElementById('search-dropdown').classList.remove('open');
+      btn.innerHTML = '...'; btn.disabled = true;
+
+      google.script.run
+        .withSuccessHandler(function(res) {
+          btn.innerHTML = svgIcon('i-plus', 'ico-sm'); btn.disabled = false;
+          if (res.success) {
+            document.getElementById('inputAgregar').value = '';
+            cerrarBusquedaAgregar();
+            showToast(res.msg, 'success');
+            forzarSincronizacion();
+          } else {
+            showToast(res.msg || 'No se pudo añadir', 'warning');
+          }
+        })
+        .withFailureHandler(function(err) {
+          btn.innerHTML = svgIcon('i-plus', 'ico-sm'); btn.disabled = false;
+          showToast('Error: ' + err.message, 'error');
+        })
+        .agregarItem(currentCategory, idOUrl);
+    }
+
+    function formatearPuntuacionBadge_(val) {
+      if (val === null || val === undefined) return '';
+      var s = String(val).trim();
+      if (!s || s === 'N/A' || s.toLowerCase() === 'undefined' || s.toLowerCase() === 'null' || s === 'NaT') return '';
+      // Bloquea fechas (YYYY-MM-DD, ISO o DD/MM/YYYY) para no mostrarlas como puntuación
+      if (/^\d{4}-\d{2}-\d{2}/.test(s) || /^\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}$/.test(s)) return '';
+      return s;
+    }
+
+    function abrirModal(id) {
+      var lista = itemsByCategory[currentCategory] || [];
+      var indexEnFiltrados = filteredItems.findIndex(x => String(x.id) === String(id));
+      if (indexEnFiltrados !== -1) {
+        var paginaRequerida = Math.floor(indexEnFiltrados / elementosPorPagina) + 1;
+        if (paginaRequerida > paginaActual) {
+          paginaActual = paginaRequerida;
+          renderGrid(filteredItems);
+        }
+      }
+
+      var it = lista.find(x => String(x.id) === String(id));
+      if (!it) return;
+
+      currentItemId = it.id;
+      detenerTrailer();
+
+      var headerGrid = document.getElementById('m-header-grid');
+      headerGrid.className = 'modal-header-grid ' + (CAT_CONFIG[currentCategory].poster ? 'poster' : 'landscape');
+
+      var mImg = document.getElementById('m-img');
+      mImg.onerror = function() { this.onerror = null; this.src = FALLBACK_SVG; };
+      mImg.src = it.portada || FALLBACK_SVG;
+
+      var autorTexto = (it.creador && String(it.creador).trim() && String(it.creador).trim().toLowerCase() !== 'undefined')
+        ? String(it.creador).trim()
+        : ((it.autor && String(it.autor).trim() && String(it.autor).trim().toLowerCase() !== 'undefined')
+          ? String(it.autor).trim()
+          : 'Autor por definir');
+
+      document.getElementById('m-titulo').innerText = it.titulo || 'Sin título';
+      document.getElementById('m-dev').innerText = autorTexto;
+      var puntLimpia = formatearPuntuacionBadge_(it.puntuacion);
+      document.getElementById('m-price').innerHTML = currentCategory === 'Juegos'
+        ? escaparHTML(it.precio || '')
+        : (puntLimpia ? `${svgIcon('i-star', 'ico-sm ico-gold')} ${escaparHTML(puntLimpia)}` : '');
+      document.getElementById('m-genres').innerHTML = `${svgIcon('i-tag', 'ico-sm')} ${escaparHTML((it.generos && String(it.generos).toLowerCase() !== 'undefined') ? it.generos : 'Sin géneros')}`;
+      document.getElementById('m-desc').innerText = (it.descripcion && String(it.descripcion).toLowerCase() !== 'undefined') ? it.descripcion : 'Sin descripción.';
+
+      var badges = document.getElementById('m-badges');
+      if (currentCategory === 'Juegos') {
+        var rawBuild = String(it.buildEstable || it.versionEstable || 'N/A').trim();
+        var buildTexto = /^estable:/i.test(rawBuild) ? rawBuild : ('Build: ' + rawBuild);
+        var badgeBuild = `<div class="badge-ver badge-estable">${escaparHTML(buildTexto)}</div>`;
+        var badgeFecha = (it.fechaEstable && it.fechaEstable !== 'N/A' && it.fechaEstable !== '-')
+          ? `<div class="badge-ver badge-patch">Fecha Build: ${escaparHTML(it.fechaEstable)}</div>`
+          : '';
+        var badgeBeta = (it.beta && it.beta !== 'N/A' && it.beta !== '-')
+          ? `<div class="badge-ver badge-beta">Beta: ${escaparHTML(it.beta)}</div>`
+          : '';
+        badges.innerHTML = badgeBuild + badgeFecha + badgeBeta;
+      } else if (currentCategory === 'Libros') {
+        var bBook1 = (it.estadoEmision && it.estadoEmision !== 'N/A') ? `<div class="badge-ver badge-estable">${escaparHTML(it.estadoEmision)}</div>` : '';
+        var bBook2 = (it.extension && it.extension !== 'N/A') ? `<div class="badge-ver badge-patch">${escaparHTML(it.extension)}</div>` : `<div class="badge-ver badge-patch">N/A</div>`;
+        var bBook3 = (it.fecha && it.fecha !== 'N/A') ? `<div class="badge-ver badge-beta">${escaparHTML(it.fecha)}</div>` : '';
+        var bBook4 = (it.isbn && it.isbn !== 'N/A') ? `<div class="badge-ver badge-patch">ISBN: ${escaparHTML(it.isbn)}</div>` : '';
+        badges.innerHTML = bBook1 + bBook2 + bBook3 + bBook4;
+      } else {
+        var b1 = it.estadoEmision ? `<div class="badge-ver badge-estable">${escaparHTML(it.estadoEmision)}</div>` : '';
+        var b2 = it.extension ? `<div class="badge-ver badge-patch">${escaparHTML(it.extension)}</div>` : '';
+        var b3 = (it.plataformas || it.demografia) ? `<div class="badge-ver badge-beta">${escaparHTML(it.plataformas || it.demografia)}</div>` : '';
+        badges.innerHTML = b1 + b2 + b3;
+      }
+
+      var trBar = document.getElementById('m-trailer-bar');
+      var admiteTrailer = (currentCategory === 'Juegos' || currentCategory === 'Peliculas_Series');
+      var rawTr = String(it.trailer || '').trim();
+      if (admiteTrailer && rawTr.startsWith('http')) {
+        currentTrailerUrl = rawTr;
+        trBar.style.display = 'block';
+        document.getElementById('btn-toggle-trailer').innerHTML = `${svgIcon('i-play', 'ico-sm')} Ver Tráiler`;
+      } else {
+        currentTrailerUrl = '';
+        trBar.style.display = 'none';
+      }
+
+      var rows = [['ID', it.id], ['Autor', autorTexto], ['Lanzamiento / Fecha', it.fecha], ['Editorial / Estudio', it.editorial]];
+      if (currentCategory === 'Juegos') {
+        rows.push(
+          ['Build Estable', it.buildEstable],
+          ['Fecha Build', it.fechaEstable],
+          ['Beta', it.beta],
+          ['Nota Parche', it.notaParche],
+          ['Modos', it.modos],
+          ['Steam Deck', it.steamdeck],
+          ['DLCs', it.dlcs],
+          ['Tags', it.tags]
+        );
+      }
+      else if (currentCategory === 'Peliculas_Series') { rows.push(['Tipo', it.tipo], ['Duración / Temporadas', it.extension], ['Plataformas', it.plataformas]); }
+      else if (currentCategory === 'Libros') {
+        var capsTotal = obtenerTotalCapitulosItem(it);
+        rows.push(['Páginas', it.extension], ['ISBN', it.isbn], ['Capítulos Totales', capsTotal > 0 ? capsTotal : 'N/A'], ['Puntuación', puntLimpia || 'N/A']);
+      }
+      else if (currentCategory === 'Mangas') { rows.push(['Tomos / Capítulos', it.extension], ['Demografía', it.demografia]); }
+
+      document.getElementById('m-details-list').innerHTML = rows
+        .filter(r => r[1] && r[1] !== 'N/A')
+        .map(r => `<div class="detail-row"><span class="detail-label">${r[0]}:</span><span class="detail-val">${escaparHTML(r[1])}</span></div>`)
+        .join('');
+
+      var carWrap = document.getElementById('m-screenshots-container');
+      var car = document.getElementById('m-screenshots');
+      car.innerHTML = '';
+      if (currentCategory === 'Juegos' && it.capturas) {
+        var urls = it.capturas.split(',').map(u => u.trim()).filter(u => u.startsWith('http'));
+        if (urls.length > 0) {
+          carWrap.style.display = 'block';
+          urls.forEach(u => {
+            var img = document.createElement('img');
+            img.src = u; img.loading = 'lazy'; img.decoding = 'async'; img.referrerPolicy = 'no-referrer';
+            img.onclick = () => window.open(u, '_blank');
+            car.appendChild(img);
+          });
+        } else carWrap.style.display = 'none';
+      } else carWrap.style.display = 'none';
+
+      var b1El = document.getElementById('btn-ext-1');
+      var b2El = document.getElementById('btn-ext-2');
+      if (currentCategory === 'Juegos') {
+        b1El.innerText = 'Ver en Steam'; b1El.href = `https://store.steampowered.com/app/${it.id}/?l=spanish`;
+        b2El.innerText = 'SteamDB'; b2El.href = `https://steamdb.info/app/${it.id}/`;
+      } else if (currentCategory === 'Peliculas_Series') {
+        var p = String(it.id).split('-');
+        b1El.innerText = 'Ver en TMDB'; b1El.href = `https://www.themoviedb.org/${p[0]}/${p[1] || p[0]}`;
+        b2El.innerText = 'JustWatch'; b2El.href = `https://www.justwatch.com/es/buscar?q=${encodeURIComponent(it.titulo)}`;
+      } else if (currentCategory === 'Libros') {
+        var bookId = String(it.id || '').trim();
+        b1El.innerText = 'Open Library';
+        if (/^OL\d+M$/i.test(bookId)) {
+          b1El.href = `https://openlibrary.org/books/${encodeURIComponent(bookId)}`;
+        } else if (/^OL\d+W$/i.test(bookId)) {
+          b1El.href = `https://openlibrary.org/works/${encodeURIComponent(bookId)}`;
+        } else {
+          b1El.href = `https://openlibrary.org/search?q=${encodeURIComponent(it.titulo)}`;
+        }
+        b2El.innerText = 'Goodreads'; b2El.href = `https://www.goodreads.com/search?q=${encodeURIComponent(it.titulo)}`;
+      } else if (currentCategory === 'Mangas') {
+        var isAL = String(it.id).startsWith('al-');
+        b1El.innerText = isAL ? 'Ver en AniList' : 'MyAnimeList';
+        b1El.href = isAL ? `https://anilist.co/manga/${String(it.id).replace('al-', '')}` : `https://myanimelist.net/manga/${it.id}`;
+        b2El.innerText = 'Buscar en AniList'; b2El.href = `https://anilist.co/search/manga?search=${encodeURIComponent(it.titulo)}`;
+      }
+
+      var esLectura = (currentCategory === 'Libros' || currentCategory === 'Mangas');
+      var showProg = (currentCategory === 'Peliculas_Series');
+      document.getElementById('prog-angel').style.display = showProg ? 'block' : 'none';
+      document.getElementById('prog-talmai').style.display = showProg ? 'block' : 'none';
+      document.getElementById('chap-box-angel').style.display = esLectura ? 'block' : 'none';
+      document.getElementById('chap-box-talmai').style.display = esLectura ? 'block' : 'none';
+
+      ['Angel', 'Talmai'].forEach(p => {
+        var k = p.toLowerCase();
+        var est = it['estado' + p] || 'No jugado';
+        var pts = it['estrellas' + p] || 0;
+        var wish = Boolean(it['deseado' + p]);
+        var prog = it['progreso' + p] || '';
+        var nota = it['nota' + p] || '';
+
+        document.getElementById('acc-' + k).classList.remove('active');
+        document.getElementById('select-estado-' + k).value = est;
+        document.getElementById('prog-' + k).value = prog;
+        document.getElementById('note-' + k).value = nota;
+        if (esLectura) inicializarCapitulosModal(k, it, prog);
+        renderEstrellas('stars-' + k, pts, p);
+        actualizarResumenJugador(k, est, pts, wish, nota);
+      });
+
+      resetearDesplegablesModal();
+
+      var modal = document.getElementById('modal');
+      modal.style.display = 'flex';
+      requestAnimationFrame(() => requestAnimationFrame(() => modal.style.opacity = '1'));
+      history.pushState(null, '', window.location.href);
+    }
+
+    function resetearDesplegablesModal() {
+      var detAcc = document.getElementById('m-details-accordion');
+      if (detAcc) detAcc.open = false;
+      var accAngel = document.getElementById('acc-angel');
+      var accTalmai = document.getElementById('acc-talmai');
+      if (accAngel) accAngel.classList.remove('active');
+      if (accTalmai) accTalmai.classList.remove('active');
+    }
+
+    function cerrarModal() {
+      detenerTrailer();
+      resetearDesplegablesModal();
+      var modal = document.getElementById('modal');
+      modal.style.opacity = '0';
+      setTimeout(() => modal.style.display = 'none', 220);
+    }
+
+    function togglePlayerAccordion(k) {
+      var el = document.getElementById('acc-' + k);
+      var open = el.classList.contains('active');
+      document.getElementById('acc-angel').classList.remove('active');
+      document.getElementById('acc-talmai').classList.remove('active');
+      if (!open) el.classList.add('active');
+    }
+
+    function actualizarResumenJugador(k, est, pts, wish, nota) {
+      var stEl = document.getElementById('sum-status-' + k);
+      stEl.innerText = (!est || est === 'No jugado') ? 'Pendiente' : est;
+      stEl.className = 'status-chip ' + (est === 'Completado' ? 'status-done' : (est === 'En proceso' ? 'status-playing' : 'status-none'));
+
+      var ptsEl = document.getElementById('sum-stars-' + k);
+      ptsEl.innerHTML = pts > 0 ? `${svgIcon('i-star', 'ico-sm ico-gold')} ${pts}/10` : 'Sin nota';
+      ptsEl.classList.toggle('no-stars', !(pts > 0));
+
+      document.getElementById('sum-wish-' + k).style.display = wish ? 'inline-flex' : 'none';
+      document.getElementById('sum-note-' + k).style.display = String(nota || '').trim() ? 'inline-flex' : 'none';
+
+      var wBtn = document.getElementById('btn-wish-' + k);
+      wBtn.classList.toggle('active', wish);
+      wBtn.innerHTML = wish ?
+        `${svgIcon('i-heart-fill', 'ico-sm ico-wish')} En deseados` :
+        `${svgIcon('i-heart', 'ico-sm')} Marcar como deseado`;
+    }
+
+    function renderEstrellas(containerId, valor, persona) {
+      var c = document.getElementById(containerId);
+      c.innerHTML = '';
+      for (var i = 1; i <= 10; i++) {
+        var s = document.createElement('span');
+        s.className = 'star ' + (i <= valor * 2 ? 'active' : '');
+        s.innerHTML = '&#9733;';
+        s.onclick = (function(idx) {
+          return function() {
+            var nuevaNota = idx * 0.5;
+            renderEstrellas(containerId, nuevaNota, persona);
+            guardarTracking(persona, nuevaNota);
+          };
+        })(i);
+        c.appendChild(s);
+      }
+    }
+
+    function extraerNumeroCapitulo(progStr) {
+      const m = String(progStr || '').match(/(\d+)/);
+      return m ? parseInt(m[1], 10) : 0;
+    }
+
+    function obtenerTotalCapitulosItem(it) {
+      if (it.capitulosTotales && Number(it.capitulosTotales) > 0) return Number(it.capitulosTotales);
+      const mCaps = String(it.extension || '').match(/(\d+)\s*caps/i);
+      if (mCaps) return parseInt(mCaps[1], 10);
+      return 0;
+    }
+
+    function calcularPorcentajeLectura(actual, total) {
+      if (!total || total <= 0 || !actual || actual <= 0) return 0;
+      return Math.min(100, Math.round((actual / total) * 100));
+    }
+
+    function generarBarraLecturaCard(it) {
+      if (currentCategory !== 'Libros' && currentCategory !== 'Mangas') return '';
+      const total = obtenerTotalCapitulosItem(it);
+      const actA = extraerNumeroCapitulo(it.progresoAngel);
+      const actT = extraerNumeroCapitulo(it.progresoTalmai);
+      if (!total && !actA && !actT) return '';
+
+      let html = '<div class="card-reading-bar">';
+      if (actA > 0 || it.estadoAngel === 'En proceso') {
+        const pctA = calcularPorcentajeLectura(actA, total);
+        const txtA = total > 0 ? `${svgIcon('i-user', 'ico-sm ico-angel')} Cap. ${actA}/${total} (${pctA}%)` : `${svgIcon('i-user', 'ico-sm ico-angel')} Cap. ${actA}`;
+        html += `<div class="card-reading-labels"><span>${txtA}</span></div>` +
+                (total > 0 ? `<div class="reading-progress-track"><div class="reading-progress-fill" style="width:${pctA}%"></div></div>` : '');
+      }
+      if (actT > 0 || it.estadoTalmai === 'En proceso') {
+        const pctT = calcularPorcentajeLectura(actT, total);
+        const txtT = total > 0 ? `${svgIcon('i-user', 'ico-sm ico-talmai')} Cap. ${actT}/${total} (${pctT}%)` : `${svgIcon('i-user', 'ico-sm ico-talmai')} Cap. ${actT}`;
+        html += `<div class="card-reading-labels"><span>${txtT}</span></div>` +
+                (total > 0 ? `<div class="reading-progress-track"><div class="reading-progress-fill" style="width:${pctT}%"></div></div>` : '');
+      }
+      html += '</div>';
+      return html;
+    }
+
+    function inicializarCapitulosModal(k, it, progStr) {
+      const actual = extraerNumeroCapitulo(progStr);
+      const total = obtenerTotalCapitulosItem(it);
+      const curEl = document.getElementById('chap-cur-' + k);
+      const totEl = document.getElementById('chap-tot-' + k);
+      const hintEl = document.getElementById('chap-hint-' + k);
+
+      curEl.value = actual > 0 ? actual : '';
+      totEl.value = total > 0 ? total : '';
+
+      if (currentCategory === 'Mangas') {
+        totEl.disabled = true;
+        totEl.placeholder = 'Auto';
+        hintEl.innerText = 'Auto API (semanal)';
+      } else {
+        totEl.disabled = false;
+        totEl.placeholder = 'Desconocido';
+        hintEl.innerText = 'Total editable';
+      }
+      refrescarPorcentajeUI(k, actual, total);
+    }
+
+    function refrescarPorcentajeUI(k, actual, total) {
+      const pct = calcularPorcentajeLectura(actual, total);
+      document.getElementById('chap-pct-' + k).innerText = pct + '%';
+      document.getElementById('chap-bar-' + k).style.width = pct + '%';
+    }
+
+    function actualizarCapitulosUI(persona) {
+      const k = persona.toLowerCase();
+      const actual = Math.max(0, parseInt(document.getElementById('chap-cur-' + k).value, 10) || 0);
+      const total = Math.max(0, parseInt(document.getElementById('chap-tot-' + k).value, 10) || 0);
+      refrescarPorcentajeUI(k, actual, total);
+
+      document.getElementById('prog-' + k).value = actual > 0 ? `Cap. ${actual}` : '';
+      if (actual > 0 && (!document.getElementById('select-estado-' + k).value || document.getElementById('select-estado-' + k).value === 'No jugado')) {
+        document.getElementById('select-estado-' + k).value = (total > 0 && actual >= total) ? 'Completado' : 'En proceso';
+      }
+      guardarTracking(persona);
+    }
+
+    function guardarTotalCapsDesdeModal(persona) {
+      if (currentCategory === 'Mangas') return;
+      const k = persona.toLowerCase();
+      const total = Math.max(0, parseInt(document.getElementById('chap-tot-' + k).value, 10) || 0);
+      const otroK = k === 'angel' ? 'talmai' : 'angel';
+      document.getElementById('chap-tot-' + otroK).value = total > 0 ? total : '';
+
+      const actK = Math.max(0, parseInt(document.getElementById('chap-cur-' + k).value, 10) || 0);
+      const actOtro = Math.max(0, parseInt(document.getElementById('chap-cur-' + otroK).value, 10) || 0);
+      refrescarPorcentajeUI(k, actK, total);
+      refrescarPorcentajeUI(otroK, actOtro, total);
+
+      const it = (itemsByCategory[currentCategory] || []).find(x => String(x.id) === String(currentItemId));
+      if (it) {
+        it.capitulosTotales = total;
+        try { localStorage.setItem(`media_lib_${CACHE_VERSION}_${currentCategory}`, JSON.stringify(itemsByCategory[currentCategory])); } catch (e) {}
+        filtrarItems();
+      }
+      google.script.run.guardarTotalCapitulos(currentCategory, currentItemId, total);
+    }
+
+    function guardarTracking(persona, estrellasOverride) {
+      var it = (itemsByCategory[currentCategory] || []).find(x => String(x.id) === String(currentItemId));
+      if (!it) return;
+      var k = persona.toLowerCase();
+      var est = document.getElementById('select-estado-' + k).value || 'No jugado';
+      var prog = document.getElementById('prog-' + k).value;
+      var pts = estrellasOverride !== undefined ? estrellasOverride : (it['estrellas' + persona] || 0);
+
+      it['estado' + persona] = est;
+      it['estrellas' + persona] = pts;
+      it['progreso' + persona] = prog;
+
+      actualizarResumenJugador(k, est, pts, Boolean(it['deseado' + persona]), it['nota' + persona]);
+      try { localStorage.setItem(`media_lib_${CACHE_VERSION}_${currentCategory}`, JSON.stringify(itemsByCategory[currentCategory])); } catch (e) {}
+      filtrarItems();
+
+      google.script.run.guardarProgresoItem(currentCategory, currentItemId, persona, est, pts, prog);
+    }
+
+    function toggleDeseado(persona) {
+      var it = (itemsByCategory[currentCategory] || []).find(x => String(x.id) === String(currentItemId));
+      if (!it) return;
+      var k = persona.toLowerCase();
+      var nuevo = !Boolean(it['deseado' + persona]);
+      it['deseado' + persona] = nuevo;
+
+      actualizarResumenJugador(k, it['estado' + persona] || 'No jugado', it['estrellas' + persona] || 0, nuevo, it['nota' + persona]);
+      try { localStorage.setItem(`media_lib_${CACHE_VERSION}_${currentCategory}`, JSON.stringify(itemsByCategory[currentCategory])); } catch (e) {}
+      filtrarItems();
+
+      google.script.run.guardarDeseadoItem(currentCategory, currentItemId, persona, nuevo);
+    }
+
+    function guardarNotaJugador(persona, valor) {
+      var it = (itemsByCategory[currentCategory] || []).find(x => String(x.id) === String(currentItemId));
+      if (!it) return;
+      var k = persona.toLowerCase();
+      it['nota' + persona] = valor;
+      actualizarResumenJugador(k, it['estado' + persona] || 'No jugado', it['estrellas' + persona] || 0, Boolean(it['deseado' + persona]), valor);
+      try { localStorage.setItem(`media_lib_${CACHE_VERSION}_${currentCategory}`, JSON.stringify(itemsByCategory[currentCategory])); } catch (e) {}
+      google.script.run.guardarNotaItem(currentCategory, currentItemId, persona, valor);
+    }
+
+    function repararItemActual() {
+      var btn = document.getElementById('btn-repair');
+      btn.disabled = true; btn.innerText = 'Actualizando...';
+      google.script.run
+        .withSuccessHandler(function(res) {
+          btn.disabled = false; btn.innerHTML = `${svgIcon('i-wrench', 'ico-sm')} Reparar / Actualizar Metadata`;
+          if (res.success && res.data) {
+            var lista = itemsByCategory[currentCategory];
+            var idx = lista.findIndex(x => String(x.id) === String(currentItemId));
+            if (idx !== -1) lista[idx] = res.data;
+            try { localStorage.setItem(`media_lib_${CACHE_VERSION}_${currentCategory}`, JSON.stringify(lista)); } catch (e) {}
+            abrirModal(res.data.id);
+            filtrarItems();
+            showToast('Ficha actualizada.', 'success');
+          } else showToast(res.msg || 'Error al actualizar', 'error');
+        })
+        .withFailureHandler(function(err) {
+          btn.disabled = false; btn.innerHTML = `${svgIcon('i-wrench', 'ico-sm')} Reparar / Actualizar Metadata`;
+          showToast('Error: ' + err.message, 'error');
+        })
+        .repararItemIndividual(currentCategory, currentItemId);
+    }
+
+    function eliminarItemActual() {
+      if (!confirm('¿Mover a la Papelera?')) return;
+      google.script.run
+        .withSuccessHandler(function(res) {
+          if (res.success) {
+            showToast('Movido a la papelera.', 'warning');
+            cerrarModal();
+            forzarSincronizacion();
+          } else {
+            showToast(res.msg || 'No se pudo eliminar', 'error');
+          }
+        })
+        .withFailureHandler(function(err) {
+          showToast('Error: ' + err.message, 'error');
+        })
+        .eliminarItem(currentCategory, currentItemId);
+    }
+
+    function cambiarPerfilStats(prof) {
+      currentStatsProfile = prof;
+      document.querySelectorAll('.stats-prof-btn').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-prof') === prof);
+      });
+      renderizarEstadisticas();
+    }
+
+    function cambiarCategoriaStats(cat) {
+      currentStatsCategory = cat;
+      document.querySelectorAll('.stats-cat-btn').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-statcat') === cat);
+      });
+      renderizarEstadisticas();
+    }
+
+    function toggleStatCard(cardEl) {
+      cardEl.classList.toggle('open');
+    }
+
+    function renderizarEstadisticas() {
+      var container = document.getElementById('stats-cards-container');
+      var catsToProcess = currentStatsCategory === 'todas' ? ['Juegos', 'Peliculas_Series', 'Libros', 'Mangas'] : [currentStatsCategory];
+      var catTitulo = currentStatsCategory === 'todas' ? 'Global' : (CAT_CONFIG[currentStatsCategory]?.label || currentStatsCategory);
+
+      let totalElementos = 0;
+      let compAngel = 0, compTalmai = 0;
+      let procAngel = 0, procTalmai = 0;
+      let wishAngel = 0, wishTalmai = 0;
+      let sumaNotasA = 0, cuentaNotasA = 0;
+      let sumaNotasT = 0, cuentaNotasT = 0;
+      let distribucion = { Juegos: 0, 'Cine/Series': 0, Libros: 0, Mangas: 0 };
+
+      ['Juegos', 'Peliculas_Series', 'Libros', 'Mangas'].forEach(cat => {
+        var lista = itemsByCategory[cat] || [];
+        distribucion[cat === 'Peliculas_Series' ? 'Cine/Series' : (cat === 'Mangas' ? 'Mangas' : (cat === 'Libros' ? 'Libros' : 'Juegos'))] = lista.length;
+      });
+
+      catsToProcess.forEach(cat => {
+        var lista = itemsByCategory[cat] || [];
+        totalElementos += lista.length;
+
+        lista.forEach(it => {
+          var estA = it.estadoAngel || 'No jugado';
+          var estT = it.estadoTalmai || 'No jugado';
+          var desA = Boolean(it.deseadoAngel);
+          var desT = Boolean(it.deseadoTalmai);
+          var notaA = Number(it.estrellasAngel) || 0;
+          var notaT = Number(it.estrellasTalmai) || 0;
+
+          if (estA === 'Completado') compAngel++;
+          if (estT === 'Completado') compTalmai++;
+          if (estA === 'En proceso') procAngel++;
+          if (estT === 'En proceso') procTalmai++;
+          if (desA) wishAngel++;
+          if (desT) wishTalmai++;
+          if (notaA > 0) { sumaNotasA += notaA; cuentaNotasA++; }
+          if (notaT > 0) { sumaNotasT += notaT; cuentaNotasT++; }
+        });
+      });
+
+      const profTitulo = currentStatsProfile === 'ambos' ? 'Ambos' : (currentStatsProfile === 'angel' ? 'Angel' : 'Talmai');
+      let valCompletados = currentStatsProfile === 'ambos' ? (compAngel + compTalmai) : (currentStatsProfile === 'angel' ? compAngel : compTalmai);
+      let valProceso = currentStatsProfile === 'ambos' ? (procAngel + procTalmai) : (currentStatsProfile === 'angel' ? procAngel : procTalmai);
+      let valDeseados = currentStatsProfile === 'ambos' ? (wishAngel + wishTalmai) : (currentStatsProfile === 'angel' ? wishAngel : wishTalmai);
+
+      let notaMediaA = cuentaNotasA > 0 ? (sumaNotasA / cuentaNotasA).toFixed(1) : '0.0';
+      let notaMediaT = cuentaNotasT > 0 ? (sumaNotasT / cuentaNotasT).toFixed(1) : '0.0';
+      let notaMediaVal = currentStatsProfile === 'ambos' ?
+        ((cuentaNotasA + cuentaNotasT) > 0 ? ((sumaNotasA + sumaNotasT) / (cuentaNotasA + cuentaNotasT)).toFixed(1) : '0.0') :
+        (currentStatsProfile === 'angel' ? notaMediaA : notaMediaT);
+
+      let pctCompA = totalElementos > 0 ? Math.round((compAngel / totalElementos) * 100) : 0;
+      let pctCompT = totalElementos > 0 ? Math.round((compTalmai / totalElementos) * 100) : 0;
+      let pctProcA = totalElementos > 0 ? Math.round((procAngel / totalElementos) * 100) : 0;
+      let pctProcT = totalElementos > 0 ? Math.round((procTalmai / totalElementos) * 100) : 0;
+      let pctWishA = totalElementos > 0 ? Math.round((wishAngel / totalElementos) * 100) : 0;
+      let pctWishT = totalElementos > 0 ? Math.round((wishTalmai / totalElementos) * 100) : 0;
+
+      const toggleHdr = `<span class="stat-toggle-lbl">Desplegar ${svgIcon('i-chevron-down', 'ico-sm')}</span>`;
+
+      container.innerHTML = `
+        <div class="stat-card" onclick="toggleStatCard(this)">
+          <div class="stat-card-header">
+            <div class="stat-card-title">Biblioteca Total (${escaparHTML(catTitulo)})</div>
+            ${toggleHdr}
+          </div>
+          <div class="stat-card-value">${totalElementos}</div>
+          <div class="stat-card-sub"><span>Elementos registrados</span><span>${escaparHTML(catTitulo)}</span></div>
+          <div class="stat-accordion-content">
+            <div style="font-size:11px;color:#8f98a0;margin-bottom:2px;">Desglose general:</div>
+            <div class="stat-detail-line">${svgIcon('i-gamepad', 'ico-sm')} Juegos: <strong>${distribucion.Juegos}</strong></div>
+            <div class="stat-detail-line">${svgIcon('i-film', 'ico-sm')} Cine/Series: <strong>${distribucion['Cine/Series']}</strong></div>
+            <div class="stat-detail-line">${svgIcon('i-book', 'ico-sm')} Libros: <strong>${distribucion.Libros}</strong></div>
+            <div class="stat-detail-line">${svgIcon('i-manga', 'ico-sm')} Mangas: <strong>${distribucion.Mangas}</strong></div>
+          </div>
+        </div>
+
+        <div class="stat-card" onclick="toggleStatCard(this)">
+          <div class="stat-card-header">
+            <div class="stat-card-title">Completados</div>
+            ${toggleHdr}
+          </div>
+          <div class="stat-card-value">${valCompletados}</div>
+          <div class="stat-card-sub"><span>Fines de obra alcanzados</span><span>${escaparHTML(profTitulo)}</span></div>
+          <div class="stat-accordion-content">
+            <div class="stat-bar-row">
+              <div class="stat-bar-labels"><span style="color:var(--angel-color);">${svgIcon('i-user', 'ico-sm ico-angel')} Angel: ${compAngel}</span><span>${pctCompA}%</span></div>
+              <div class="stat-bar-track"><div class="stat-bar-fill-angel" style="width:${pctCompA}%"></div></div>
+            </div>
+            <div class="stat-bar-row" style="margin-top:4px;">
+              <div class="stat-bar-labels"><span style="color:var(--talmai-color);">${svgIcon('i-user', 'ico-sm ico-talmai')} Talmai: ${compTalmai}</span><span>${pctCompT}%</span></div>
+              <div class="stat-bar-track"><div class="stat-bar-fill-talmai" style="width:${pctCompT}%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card" onclick="toggleStatCard(this)">
+          <div class="stat-card-header">
+            <div class="stat-card-title">En Proceso</div>
+            ${toggleHdr}
+          </div>
+          <div class="stat-card-value">${valProceso}</div>
+          <div class="stat-card-sub"><span>Actualmente activos</span><span>${escaparHTML(profTitulo)}</span></div>
+          <div class="stat-accordion-content">
+            <div class="stat-bar-row">
+              <div class="stat-bar-labels"><span style="color:var(--angel-color);">${svgIcon('i-user', 'ico-sm ico-angel')} Angel: ${procAngel}</span><span>${pctProcA}%</span></div>
+              <div class="stat-bar-track"><div class="stat-bar-fill-angel" style="width:${pctProcA}%"></div></div>
+            </div>
+            <div class="stat-bar-row" style="margin-top:4px;">
+              <div class="stat-bar-labels"><span style="color:var(--talmai-color);">${svgIcon('i-user', 'ico-sm ico-talmai')} Talmai: ${procTalmai}</span><span>${pctProcT}%</span></div>
+              <div class="stat-bar-track"><div class="stat-bar-fill-talmai" style="width:${pctProcT}%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card" onclick="toggleStatCard(this)">
+          <div class="stat-card-header">
+            <div class="stat-card-title">Lista de Deseados</div>
+            ${toggleHdr}
+          </div>
+          <div class="stat-card-value">${valDeseados}</div>
+          <div class="stat-card-sub"><span>Guardados en wishlist</span><span>${escaparHTML(profTitulo)}</span></div>
+          <div class="stat-accordion-content">
+            <div class="stat-bar-row">
+              <div class="stat-bar-labels"><span style="color:var(--angel-color);">${svgIcon('i-user', 'ico-sm ico-angel')} Angel: ${wishAngel}</span><span>${pctWishA}%</span></div>
+              <div class="stat-bar-track"><div class="stat-bar-fill-angel" style="width:${pctWishA}%"></div></div>
+            </div>
+            <div class="stat-bar-row" style="margin-top:4px;">
+              <div class="stat-bar-labels"><span style="color:var(--talmai-color);">${svgIcon('i-user', 'ico-sm ico-talmai')} Talmai: ${wishTalmai}</span><span>${pctWishT}%</span></div>
+              <div class="stat-bar-track"><div class="stat-bar-fill-talmai" style="width:${pctWishT}%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card" onclick="toggleStatCard(this)">
+          <div class="stat-card-header">
+            <div class="stat-card-title">Nota Media Otorgada</div>
+            ${toggleHdr}
+          </div>
+          <div class="stat-card-value">${svgIcon('i-star', 'ico-lg ico-gold')} ${notaMediaVal} / 10</div>
+          <div class="stat-card-sub"><span>Basado en valoraciones</span><span>${escaparHTML(profTitulo)}</span></div>
+          <div class="stat-accordion-content">
+            <div class="stat-detail-line">${svgIcon('i-user', 'ico-sm ico-angel')} Nota media Angel: <strong>${notaMediaA} / 10</strong> (${cuentaNotasA} valoraciones)</div>
+            <div class="stat-detail-line">${svgIcon('i-user', 'ico-sm ico-talmai')} Nota media Talmai: <strong>${notaMediaT} / 10</strong> (${cuentaNotasT} valoraciones)</div>
+          </div>
+        </div>
+      `;
+    }
+
+    var currentMatchCategory = 'Juegos';
+    function abrirMatchModal() {
+      ['Juegos', 'Peliculas_Series', 'Libros', 'Mangas'].forEach(c => precargarCategoriaSilenciosa(c));
+      var modal = document.getElementById('modal-match');
+      modal.style.display = 'flex';
+      requestAnimationFrame(() => requestAnimationFrame(() => modal.style.opacity = '1'));
+      renderMatchGrid(currentMatchCategory);
+      history.pushState(null, '', window.location.href);
+    }
+
+    function cerrarMatchModal() {
+      var modal = document.getElementById('modal-match');
+      modal.style.opacity = '0';
+      setTimeout(() => modal.style.display = 'none', 220);
+    }
+
+    function cambiarMatchCat(cat) {
+      currentMatchCategory = cat;
+      document.querySelectorAll('.match-tab').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-matchcat') === cat);
+      });
+      renderMatchGrid(cat);
+    }
+
+    function seleccionarMatchItem(cat, id) {
+      cerrarMatchModal();
+      if (currentCategory !== cat) {
+        cambiarCategoria(cat);
+      }
+      abrirModal(id);
+    }
+
+    function renderMatchGrid(cat) {
+      var gridEl = document.getElementById('match-grid');
+      var lista = itemsByCategory[cat] || [];
+
+      var matches = lista.filter(it => {
+        var pendienteAngel = (!it.estadoAngel || it.estadoAngel === 'No jugado');
+        var pendienteTalmai = (!it.estadoTalmai || it.estadoTalmai === 'No jugado');
+        var deseadoAngel = Boolean(it.deseadoAngel);
+        var deseadoTalmai = Boolean(it.deseadoTalmai);
+
+        return (pendienteAngel && pendienteTalmai) || (deseadoAngel && deseadoTalmai);
+      });
+
+      if (matches.length === 0) {
+        gridEl.innerHTML = '<p style="text-align:center;color:#8f98a0;grid-column:1/-1;padding:20px;">No hay coincidencias en esta categoría.</p>';
+        return;
+      }
+
+      gridEl.innerHTML = matches.map(it => `
+        <div class="match-card" onclick="seleccionarMatchItem('${escaparHTML(cat)}', '${escaparHTML(it.id)}')">
+          <img src="${escaparHTML(it.portada)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src=FALLBACK_SVG;">
+          <div class="match-card-body">
+            <div class="match-card-title">${escaparHTML(it.titulo)}</div>
+            <div style="font-size:10px;color:var(--accent);margin-top:auto;display:inline-flex;align-items:center;gap:4px;">${svgIcon('i-heart-fill', 'ico-sm ico-wish')} Coincidencia</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function abrirPapelera() {
+      var m = document.getElementById('modal-papelera');
+      var l = document.getElementById('lista-papelera');
+      l.innerHTML = '<div class="spinner" style="margin:20px auto;"></div>';
+      m.style.display = 'flex';
+      requestAnimationFrame(() => requestAnimationFrame(() => m.style.opacity = '1'));
+      history.pushState(null, '', window.location.href);
+
+      google.script.run
+        .withSuccessHandler(function(items) {
+          if (!items || items.length === 0) {
+            l.innerHTML = '<p style="text-align:center;color:#8f98a0;">La papelera está vacía.</p>';
+            return;
+          }
+          l.innerHTML = items.map(it => `
+            <div class="papelera-item">
+              <div class="papelera-item-info">
+                <div class="papelera-item-title">${escaparHTML(it.titulo)}</div>
+                <div style="font-size:11px;color:#8f98a0;">${escaparHTML(it.categoria)}</div>
+              </div>
+              <button class="btn btn-primary" style="width:auto;padding:5px 12px;border-radius:20px;font-size:11px;" onclick="restaurarDesdePapelera('${escaparHTML(it.categoria)}','${escaparHTML(it.id)}')">Restaurar</button>
+            </div>
+          `).join('');
+        })
+        .withFailureHandler(function(err) {
+          l.innerHTML = '<p style="text-align:center;color:#ff6b6b;">Error al cargar papelera: ' + escaparHTML(err.message) + '</p>';
+        })
+        .getItemsEliminados();
+    }
+
+    function cerrarPapelera() {
+      var m = document.getElementById('modal-papelera');
+      m.style.opacity = '0';
+      setTimeout(() => m.style.display = 'none', 220);
+    }
+
+    function restaurarDesdePapelera(cat, id) {
+      google.script.run
+        .withSuccessHandler(function(res) {
+          if (res.success) {
+            showToast('Restaurado en ' + cat, 'success');
+            cerrarPapelera();
+            cargarCategoria(cat, true);
+          } else {
+            showToast('No se pudo restaurar el elemento.', 'error');
+          }
+        })
+        .withFailureHandler(function(err) {
+          showToast('Error: ' + err.message, 'error');
+        })
+        .restaurarItem(cat, id);
+    }
+
+    function elegirAleatorio() {
+      var pool = filteredItems.length > 0 ? filteredItems : (itemsByCategory[currentCategory] || []);
+      if (pool.length === 0) return showToast('No hay elementos para elegir.', 'warning');
+      var el = pool[Math.floor(Math.random() * pool.length)];
+      showToast('Elegido: ' + el.titulo, 'success');
+      abrirModal(el.id);
+    }
+
+    function extraerYouTubeId(url) {
+      var m = String(url || '').match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+      return m ? m[1] : null;
+    }
+
+    function toggleTrailer() {
+      var box = document.getElementById('m-trailer-box');
+      var btn = document.getElementById('btn-toggle-trailer');
+      if (box.style.display === 'block') return detenerTrailer();
+
+      detenerTrailer();
+      box.style.display = 'block';
+      btn.classList.add('active');
+      btn.innerHTML = `${svgIcon('i-x', 'ico-sm')} Ocultar Tráiler`;
+
+      var ytId = extraerYouTubeId(currentTrailerUrl);
+      if (ytId) {
+        var iframe = document.createElement('iframe');
+        iframe.src = `https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&rel=0`;
+        iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+        iframe.allowFullscreen = true;
+        box.appendChild(iframe);
+        return;
+      }
+
+      var video = document.createElement('video');
+      video.controls = true; video.playsInline = true; video.autoplay = true;
+      box.appendChild(video);
+
+      if (currentTrailerUrl.includes('.m3u8')) {
+        const iniciarHls = () => {
+          if (typeof Hls !== 'undefined' && Hls.isSupported()) {
+            hlsInstance = new Hls();
+            hlsInstance.loadSource(currentTrailerUrl);
+            hlsInstance.attachMedia(video);
+          } else { video.src = currentTrailerUrl; }
+        };
+        if (typeof Hls === 'undefined') {
+          const s = document.createElement('script');
+          s.src = 'https://cdn.jsdelivr.net/npm/hls.js@1';
+          s.onload = iniciarHls;
+          document.head.appendChild(s);
+        } else { iniciarHls(); }
+      } else { video.src = currentTrailerUrl; }
+    }
+
+    function detenerTrailer() {
+      var box = document.getElementById('m-trailer-box');
+      var btn = document.getElementById('btn-toggle-trailer');
+      if (hlsInstance) { try { hlsInstance.destroy(); } catch (e) {} hlsInstance = null; }
+      if (box) { box.innerHTML = ''; box.style.display = 'none'; }
+      if (btn) { btn.classList.remove('active'); btn.innerHTML = `${svgIcon('i-play', 'ico-sm')} Ver Tráiler`; }
+    }
+  </script>
+</body>
+</html>
