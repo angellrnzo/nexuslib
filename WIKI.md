@@ -189,10 +189,10 @@ Para obras con progreso secuencial:
 
 ## 4. Capa de Despliegue PWA (GitHub Pages)
 
-La carpeta [GitHub/](GitHub/) contiene el contenedor estático que encapsula la aplicación para servirla como PWA instalable.
+Los archivos web estáticos (`index.html`, `manifest.json`, `service-worker.js`, iconos) se ubican en la raíz del repositorio para ser servidos directamente por GitHub Pages como PWA instalable.
 
 ### 4.1. Estructura del Contenedor Iframe
-El archivo `GitHub/index.html` sirve un iframe al 100% del viewport:
+El archivo `index.html` sirve un iframe al 100% del viewport:
 ```html
 <iframe 
     src="https://script.google.com/macros/s/.../exec" 
@@ -203,13 +203,13 @@ El archivo `GitHub/index.html` sirve un iframe al 100% del viewport:
 * **`allow="clipboard-write; fullscreen; autoplay"`:** Otorga permisos al iframe interno para reproducir tráilers a pantalla completa y gestionar el portapapeles.
 
 ### 4.2. Service Worker y Estrategia de Caché Offline
-El archivo `GitHub/service-worker.js` implementa la versión de caché `nexuslib-cache-v2`:
+El archivo `service-worker.js` implementa la versión de caché `nexuslib-cache-v2`:
 * En el evento `install`: Llama a `self.skipWaiting()` y precachea los recursos locales esenciales (`index.html`, `manifest.json`, iconos).
 * En el evento `activate`: Itera sobre las claves de caché y purga cualquier versión obsoleta.
 * En el evento `fetch`: Responde con estrategia *Cache First* para recursos locales, con fallback a red.
 
 ### 4.3. Manifiesto PWA e Iconografía Adaptativa
-El archivo `GitHub/manifest.json` define:
+El archivo `manifest.json` define:
 * `display: standalone`: Oculta la barra de direcciones del navegador en móviles.
 * `theme_color: #0b0e14` y `background_color: #0b0e14`: Coherencia visual con la paleta de la aplicación.
 * `"purpose": "any maskable"`: Soporte para iconos adaptativos en Android, evitando bordes blancos o paddings innecesarios.
@@ -242,7 +242,7 @@ Ubicado en [.github/workflows/backup-excel.yml](.github/workflows/backup-excel.y
 
 ### La web muestra una pantalla en blanco o error de CORS
 * **Causa:** La URL de despliegue de Apps Script (`/exec`) ha cambiado o no tiene acceso público configurado.
-* **Solución:** En Apps Script, verifica que la implementación esté configurada con: *Ejecutar como: Yo* y *Quién tiene acceso: Cualquier usuario*. Asegúrate de que la URL en `GitHub/index.html` coincida exactamente con la URL de la última versión desplegada.
+* **Solución:** En Apps Script, verifica que la implementación esté configurada con: *Ejecutar como: Yo* y *Quién tiene acceso: Cualquier usuario*. Asegúrate de que la URL en `index.html` coincida exactamente con la URL de la última versión desplegada.
 
 ### No aparecen resultados al buscar películas o series
 * **Causa:** Falta configurar la clave de API de TMDB.

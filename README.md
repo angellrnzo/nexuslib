@@ -123,18 +123,17 @@ NexusLib/
 │   └── workflows/
 │       ├── deploy.yml            # CI/CD: Despliegue continuo de la PWA a GitHub Pages
 │       └── backup-excel.yml      # Cron semanal: Exporta y guarda GameList.xlsx en el repo
-├── GitHub/                       # Frontend Web estático servido en GitHub Pages
-│   ├── index.html                # Contenedor iframe optimizado con políticas seguras
-│   ├── manifest.json             # Manifiesto PWA (iconos adaptativos maskable, theme #0b0e14)
-│   ├── service-worker.js         # Service Worker con estrategia de caché v2 y auto-limpieza
-│   ├── icon-192.png              # Icono PWA para dispositivos móviles (192x192)
-│   └── icon-512.png              # Icono PWA en alta resolución (512x512)
 ├── AppScript/                    # Código fuente del Backend y Base de Datos
 │   ├── WebAPP.gs                 # Servidor API en Google Apps Script
 │   ├── Index.html                # Single Page Application (SPA) ejecutada dentro de Apps Script
-│   ├── GameList.xlsx             # Plantilla y base de datos relacional de ejemplo
-│   └── backup_v1/                # Copia de seguridad local versionada
+│   └── GameList.xlsx             # Plantilla y base de datos relacional de ejemplo
 ├── .gitignore                    # Exclusiones de archivos del sistema y bloqueos de Excel
+├── .nojekyll                     # Desactiva el procesador Jekyll en GitHub Pages
+├── icon-192.png                  # Icono PWA para dispositivos móviles (192x192)
+├── icon-512.png                  # Icono PWA en alta resolución (512x512)
+├── index.html                    # Contenedor PWA optimizado con políticas de iframe seguro
+├── manifest.json                 # Manifiesto PWA (iconos adaptativos maskable, theme #0b0e14)
+├── service-worker.js             # Service Worker con estrategia de caché v2 y auto-limpieza
 ├── README.md                     # Documentación principal del proyecto
 └── WIKI.md                       # Especificación técnica exhaustiva y manual de desarrollo
 ```
@@ -154,7 +153,7 @@ NexusLib/
    * Tipo: *Aplicación web*.
    * Ejecutar como: *Yo*.
    * Quién tiene acceso: *Cualquier usuario*.
-6. Copia la URL terminada en `/exec` y pégala en el atributo `src` del iframe en `GitHub/index.html`.
+6. Copia la URL terminada en `/exec` y pégala en el atributo `src` del iframe en `index.html`.
 
 ### 2. Despliegue del Frontend (GitHub Pages)
 1. Sube este repositorio a tu cuenta de GitHub.
