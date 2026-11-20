@@ -1322,6 +1322,10 @@
       document.addEventListener('touchmove', function(e) {
         if (e.touches.length !== 1) return;
         if (!document.getElementById('add-wrapper-box').classList.contains('expanded')) return;
+        
+        // No cerrar si el toque se origina dentro del dropdown de resultados
+        if (e.target.closest('#search-dropdown')) return;
+
         var dx = Math.abs(e.touches[0].clientX - swipeStartX);
         var dy = Math.abs(e.touches[0].clientY - swipeStartY);
         if (dx > 18 || dy > 18) {
