@@ -22,3 +22,9 @@ Couple's Match Algorithm: Identifies items that both users have pending or in th
 Multimedia Integration: Integrated trailer playback (YouTube, MP4, WebM, and HLS .m3u8 via hls.js).
 Data Safety: A JSON-based "Papelera" (Trash) system in Google Sheets allows for item restoration, and automatic weekly backups ensure data persistence.
 The project is exceptionally well-structured, combining the accessibility of a web app with the power of Google's cloud ecosystem and third-party media APIs.
+
+Se debe ajustar que al estar dentro de la barra de busqueda superior (filtro) al echar hacia atrás en móvil pueda salir de barra ya que no lo hace como la barra de agregar juego.
+
+Modificar html para que en la ficha completa del juego en todas del parche las fechas que se encuentran en cada casilla entre corchetes (ejemp. [2026-11-05]) se omitan al mostrar para que se vea solo la nota del parche.
+
+Mejora de funcionamiento: al abrir un elemento y desplazarme hacia abajo, cierro y abro el siguiente baja a esa posición. quiero que si cierro el juego, serie o película, libro o manga reinicie la casilla para que se pueda apreciar el elemento completo.
