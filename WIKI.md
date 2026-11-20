@@ -28,6 +28,12 @@ This document is the technical and architectural reference manual for **NexusLib
    - [Continuous Deployment (deploy.yml)](#51-continuous-deployment-deployyml)
    - [Automated Weekly Excel Backup (backup-excel.yml)](#52-automated-weekly-excel-backup-backupexcylyml)
 6. [Troubleshooting Guide](#6-troubleshooting-guide)
+7. [v2 Target Architecture & Roadmap](#7-v2-target-architecture--roadmap)
+   - [Migration Overview (v1 ➔ v2)](#71-migration-overview-v1--v2)
+   - [UI Guardrails & Motion Tokens](#72-ui-guardrails--motion-tokens)
+   - [PostgreSQL Schema Summary (Supabase)](#73-postgresql-schema-summary-supabase)
+   - [Android APK Pipeline (Capacitor + GitHub Actions)](#74-android-apk-pipeline-capacitor--github-actions)
+   - [Phase Ordering Rationale](#75-phase-ordering-rationale)
 
 ---
 
@@ -255,6 +261,97 @@ Located at [.github/workflows/backup-excel.yml](.github/workflows/backup-excel.y
 ### Changes to Apps Script code don't show up in the PWA
 * **Cause:** In Google Apps Script, editing code doesn't automatically update the active `/exec` URL.
 * **Fix:** Click **Deploy** → **Manage deployments** → pencil icon → under *Version* select **New version** → click **Deploy**.
+
+---
+
+## 7. v2 Target Architecture & Roadmap
+
+> Everything in this section is **planned**, not yet implemented. See [road.md](AppScript/road.md) for the living audit and phase status.
+
+### 7.1. Migration Overview (v1 ➔ v2)
+
+```text
+LEGACY (v1.x)                          TARGET (v2.0)
+GitHub Pages PWA                       Android Native App (.apk)
+  └─ iframe                            └─ Capacitor WebView Shell
+       └─ GAS doGet()                       └─ HTTPS / WSS (Realtime)
+            └─ Google Sheets                    └─ Supabase Postgres (RLS)
+                 ▲                                 ▲
+                 └─ Weekly .xlsx backup            └─ Edge Functions / Workers
+                                                        ▲
+                                              GitHub Releases (signed .apk)
+```
+
+Key shifts:
+- **Database:** Google Sheets ➔ PostgreSQL (Supabase) with Row-Level Security.
+- **Backend:** `WebAPP.gs` RPC ➔ Edge Functions / Cloudflare Workers proxying Steam/TMDB/OpenLibrary/AniList.
+- **Auth:** implicit shared sheet ➔ multi-user JWT (`auth.users`) with personal libraries.
+- **Libraries:** single shared catalog ➔ per-user `libraries` linkable via `invite_code`, enabling cross-library match views without merging private lists.
+
+### 7.2. UI Guardrails & Motion Tokens
+
+Rules for all frontend work (v1 and v2):
+
+1. **Zero Layout Shift (GPU-only):** Animate strictly `transform`/`opacity`; never animate `height`/`width`/`margin`/`padding` inside `#grid` (avoids `IntersectionObserver` drift).
+2. **Respect `content-visibility: auto`:** Keep burst/particle animations inside `.img-container` (`overflow: hidden`).
+3. **Touch Gesture Isolation:** Isolate vertical modal drags vs. horizontal carousels with `e.stopPropagation()` and axis-locking (`|dy| > |dx| * 1.8`).
+4. **Navigation Stack Integrity:** Sync modal dismissals with `history.popstate` on web and Capacitor `App.addListener('backButton')` on Android.
+5. **Backdrop Blur Budget:** `backdrop-filter: blur()` only on static modal backdrops; never on scrolling grid cards.
+6. **Reduced-Motion Compliance:** Override all keyframe animations under `@media (prefers-reduced-motion: reduce)`.
+
+```css
+:root {
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-sheet: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@keyframes igHeartBurst {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.2) rotate(-12deg); }
+  25%  { opacity: 1; transform: translate(-50%, -50%) scale(1.22) rotate(6deg); }
+  55%  { opacity: 1; transform: translate(-50%, -50%) scale(0.95) rotate(-2deg); }
+  80%  { opacity: 1; transform: translate(-50%, -50%) scale(1.04) rotate(0deg); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.35); }
+}
+@keyframes slideInRight { from { opacity: 0; transform: translateX(22px); }  to { opacity: 1; transform: translateX(0); } }
+@keyframes slideInLeft  { from { opacity: 0; transform: translateX(-22px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes shimmerWave  { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+```
+
+### 7.3. PostgreSQL Schema Summary (Supabase)
+
+> Full DDL will live in `database/schema.sql` when Phase 4 starts.
+
+**How cross-user linking works:** each user owns a personal `libraries` workspace. Exchanging a 10-char `invite_code` creates a `library_links` row (`pending` → `accepted`). Since both libraries reference the same canonical `media_items.id`, the views detect titles both linked users marked `is_wishlisted` or `status = 'backlog'` — without exposing private `personal_notes`.
+
+| Table | Purpose |
+| :--- | :--- |
+| `profiles` | User accounts (UUID → `auth.users`), username, avatar, accent color, preferences JSONB. |
+| `libraries` | Personal workspaces with unique `invite_code`. |
+| `library_members` | Membership + role (`owner`/`editor`/`viewer`). |
+| `library_links` | Bidirectional library links (`pending`/`accepted`/`blocked`, `match_enabled`); unique index prevents duplicate pairs in either direction. |
+| `media_items` | Global deduplicated catalog — `UNIQUE(category, provider, external_id)`, metadata JSONB, cover/banner/trailer URLs. |
+| `library_items` | Per-library catalog entries + soft-delete Trash (`deleted_at`). |
+| `user_media_tracking` | Per-user status, rating (1.0–10.0), progress, `is_wishlisted`, notes. |
+
+**Key DB objects:**
+- `v_library_matches` — intra-library match (≥2 members wishlist/backlog the same item).
+- `v_cross_library_matches` — cross-library match with `mutual_wishlist` flag and user display names.
+- `request_library_link(my_library_id, invite_code)` — `SECURITY DEFINER` RPC creating a pending link.
+- `bootstrap_user_default_library()` trigger — auto-creates a personal library on signup.
+- RLS on all tables; `pg_trgm` + GIN indexes on title/genres/metadata.
+
+**⚠️ Dedup caveat:** `UNIQUE(category, provider, external_id)` must keep `movie` and `series` strictly separated for TMDB — the same TMDB id space is shared, so the ETL must map `search/multi` results to the correct category before insert.
+
+### 7.4. Android APK Pipeline (Capacitor + GitHub Actions)
+
+1. **Init wrapper:** `npm i @capacitor/{core,cli,android,app,haptics,status-bar,splash-screen,network}` → `npx cap init "NexusLib" com.nexuslib.app --web-dir=www` → `npx cap add android`.
+2. **Native bridge:** `backgroundColor: '#0b0e14'` + dark StatusBar (no white flash); haptics on wishlist/star actions; `backButton` listener closes modals/filters.
+3. **Signing:** `keytool` release keystore → GitHub Secrets (`ANDROID_KEYSTORE_BASE64`, passwords, alias).
+4. **CI/CD:** `.github/workflows/build-apk.yml` on `v*` tags — Node 20 + Java 17 + Android SDK → `npx cap sync android` → `./gradlew assembleRelease` → publish `app-release.apk` to GitHub Releases.
+
+### 7.5. Phase Ordering Rationale
+
+Phases are ordered by **user-visible impact per effort**: UX fixes and motion deliver immediate perceived quality; backend hardening (fetchAll, health checks, offline mode) is invisible until something breaks; the v2 migration is the largest bet and only makes sense once v1 feels polished. See `AppScript/road.md` for the full phase checklist.
 
 ---
 

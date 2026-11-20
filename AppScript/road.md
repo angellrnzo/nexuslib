@@ -11,6 +11,8 @@
 | **Frontend** | SPA in iframe shell (`Index.html`) | Same SPA via Capacitor Android WebView |
 | **Hosting & CI/CD** | GitHub Pages + Actions (weekly `.xlsx` backups) | + automated signed `.apk` releases |
 
+> 📖 Deep technical detail for v2 (schema, guardrails, APK pipeline) lives in [WIKI.md](../WIKI.md#7-v2-target-architecture--roadmap). Full SQL DDL will live in `database/schema.sql` once Phase 4 starts.
+
 ---
 
 ## 🏗️ Architecture & Components (v1 — Current)
@@ -77,96 +79,42 @@
 | **API Key Health Check** | 🔴 **PENDING** | Keys load from `ScriptProperties` (`WebAPP.gs` L4-5, TMDB fallback L182-184) but no diagnostic function validates them before use. |
 | **Offline Read-Only Mode** | 🔴 **PENDING** | No `navigator.onLine` or `online`/`offline` listeners; write buttons stay active without connection. |
 | **DOM Recycling (Virtual List)** | 🔴 **PENDING** | `IntersectionObserver` pagination (36/page) rebuilds the whole fragment via `grid.replaceChildren()` (~L1741). Partial mitigation: `content-visibility: auto` on `.card` (~L392). |
-| **Cross-User Library Linking (`library_links`)** | 🔴 **PENDING** *(v2)* | New capability: link separate user libraries via invite code and compute real-time matches across independent catalogs. |
+| **Cross-User Library Linking (`library_links`)** | 🔴 **PENDING** *(v2)* | Link separate user libraries via invite code and compute real-time matches across independent catalogs. |
 
 ---
 
-## 🛡️ UI Architecture Guardrails
+## 🗺️ Execution Roadmap
 
-Rules for all frontend work (v1 and v2):
-
-1. **Zero Layout Shift (GPU-only):** Animate strictly `transform`/`opacity`; never animate `height`/`width`/`margin`/`padding` inside `#grid` (avoids `IntersectionObserver` drift).
-2. **Respect `content-visibility: auto`:** Keep burst/particle animations inside `.img-container` (`overflow: hidden`).
-3. **Touch Gesture Isolation:** Isolate vertical modal drags vs. horizontal carousels with `e.stopPropagation()` and axis-locking (`|dy| > |dx| * 1.8`).
-4. **Navigation Stack Integrity:** Sync modal dismissals with `history.popstate` on web and Capacitor `App.addListener('backButton')` on Android.
-5. **Backdrop Blur Budget:** `backdrop-filter: blur()` only on static modal backdrops; never on scrolling grid cards.
-6. **Reduced-Motion Compliance:** Override all keyframe animations under `@media (prefers-reduced-motion: reduce)`.
-
-```css
-:root {
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --ease-sheet: cubic-bezier(0.32, 0.72, 0, 1);
-}
-
-@keyframes igHeartBurst { /* scale 0.2 → 1.22 → 0.95 → 1.04 → fade */ }
-@keyframes slideInRight  { from { opacity: 0; transform: translateX(22px); }  to { opacity: 1; transform: translateX(0); } }
-@keyframes slideInLeft   { from { opacity: 0; transform: translateX(-22px); } to { opacity: 1; transform: translateX(0); } }
-@keyframes shimmerWave   { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
-```
-
----
-
-## 🗄️ v2 Database Schema (PostgreSQL / Supabase — Planned)
-
-> Full DDL will live in `database/schema.sql` when Phase 4 starts. Summary below.
-
-**How cross-user linking works:** each user owns a personal `libraries` workspace. Exchanging a 10-char `invite_code` creates a bidirectional `library_links` row. Since both libraries reference the same canonical `media_items.id`, the views automatically detect titles both linked users marked `is_wishlisted` or `status = 'backlog'` — without exposing private notes.
-
-| Table | Purpose |
-| :--- | :--- |
-| `profiles` | User accounts (UUID → `auth.users`), username, avatar, accent color, preferences JSONB. |
-| `libraries` | Personal workspaces with unique `invite_code`. |
-| `library_members` | Membership + role (`owner`/`editor`/`viewer`). |
-| `library_links` | Bidirectional links between libraries (`pending`/`accepted`/`blocked`, `match_enabled`); unique index prevents duplicate pairs either direction. |
-| `media_items` | Global deduplicated catalog (`UNIQUE(category, provider, external_id)`), metadata JSONB, cover/banner/trailer URLs. |
-| `library_items` | Per-library catalog entries + soft-delete Trash (`deleted_at`). |
-| `user_media_tracking` | Per-user status, rating (1.0–10.0), progress, `is_wishlisted`, notes. |
-
-**Key DB objects:**
-- `v_library_matches` — intra-library match view (≥2 users wishlist/backlog same item).
-- `v_cross_library_matches` — cross-library match view with `mutual_wishlist` flag and user display names.
-- `request_library_link(my_library_id, invite_code)` — SECURITY DEFINER RPC to create a pending link.
-- `bootstrap_user_default_library()` trigger — auto-creates a personal library on profile signup.
-- RLS enabled on all tables; `pg_trgm` + GIN indexes for title/genre/metadata search.
-
----
-
-## 📱 v2 Android APK Pipeline (Capacitor + GitHub Actions — Planned)
-
-1. **Init wrapper:** `npm i @capacitor/{core,cli,android,app,haptics,status-bar,splash-screen,network}` → `npx cap init "NexusLib" com.nexuslib.app --web-dir=www` → `npx cap add android`.
-2. **Native bridge:** `backgroundColor: '#0b0e14'` + dark StatusBar (no white flash); haptics on wishlist/star actions; `backButton` listener closes modals/filters.
-3. **Signing:** `keytool` release keystore → GitHub Secrets (`ANDROID_KEYSTORE_BASE64`, passwords, alias).
-4. **CI/CD:** `.github/workflows/build-apk.yml` on `v*` tags — Node 20 + Java 17 + Android SDK → `npx cap sync android` → `./gradlew assembleRelease` → publish `app-release.apk` to GitHub Releases.
-
----
-
-## 🚀 Execution Roadmap
+> Ordered by **user-visible impact per effort**. Phase 3 (motion) outranks Phase 4 (backend hardening) because backend items are invisible to users.
 
 ### 📍 Phase 1: Immediate UX Fixes (v1.x — High Priority)
 1. **Top Search History** — `focus` → `pushState` on `#inputBuscar` (~L1303); `blur()` on `popstate` (~L1335).
 2. **Patch Note Dates** — strip `[YYYY-MM-DD]` via regex when rendering `it.notaParche` (~L1937).
 3. **Modal Scroll Reset** — `.modal-content.scrollTop = 0` in `abrirModal()`/`cerrarModal()` (~L1855/~L2040).
 
-### 📍 Phase 2: Backend & Offline Resilience (v1.x)
+### 📍 Phase 2: Visual Motion System — Instagram/X Patterns (v1.x)
+- **2A:** Skeleton shimmer cards + `--ease-spring` micro-interactions.
+- **2B:** Directional swipe transitions (`slideInRight`/`slideInLeft`) + sliding tab pill.
+- **2C:** Double-tap heart burst in `.img-container` for instant wishlist.
+- **2D:** Bottom-sheet modals with pull-to-dismiss + scroll-snap screenshot carousel.
+- *Follow the UI guardrails in [WIKI.md](../WIKI.md#7-v2-target-architecture--roadmap).*
+
+### 📍 Phase 3: Backend & Offline Resilience (v1.x)
 1. **Parallel Open Library** — refactor `resolverAutoresOpenLibrary_` with `UrlFetchApp.fetchAll()`.
 2. **API Key Health** — `?action=health` diagnostic for `TMDB_API_KEY` / `STEAMGRIDDB_API_KEY`.
 3. **Offline Read-Only** — `online`/`offline` listeners disabling write actions + toast.
 
-### 📍 Phase 3: Instagram/X Visual Motion System (v1.x)
-- **3A:** Skeleton shimmer cards + `--ease-spring` micro-interactions.
-- **3B:** Directional swipe transitions (`slideInRight`/`slideInLeft`) + sliding tab pill.
-- **3C:** Double-tap heart burst in `.img-container` for instant wishlist.
-- **3D:** Bottom-sheet modals with pull-to-dismiss + scroll-snap screenshot carousel.
-
 ### 📍 Phase 4: Cloud SQL & Auth (v2.0)
-1. Deploy `schema.sql` on Supabase (Auth + profiles/libraries/media_items/tracking).
+1. Deploy `database/schema.sql` on Supabase (Auth + profiles/libraries/media_items/tracking).
 2. Migrate Steam/TMDB/OpenLibrary/AniList resolvers from `WebAPP.gs` to Edge Functions / Workers.
 3. ETL: import `GameList.xlsx` into PostgreSQL mapped to user UUIDs.
 
-### 📍 Phase 5: Cross-User Library Linking (v2.0)
+### 📍 Phase 5: Cross-User Library Linking (v2.0) — ⚠️ Decision pending
 1. Invite-code UI + `library_links` (`request_library_link()`).
 2. Link approval/revocation + `match_enabled` toggle (private notes never exposed).
 3. Unified Match feed querying `v_library_matches` + `v_cross_library_matches` with realtime subscriptions.
+
+> **Open question:** with only Angel & Talmai as users, does "linking" mean *linking their two personal libraries* (simpler — `v_library_matches` may already suffice) or *multi-user library sharing* (full `library_links` needed)? Resolve before building the invite-code UI.
 
 ### 📍 Phase 6: Android APK & Release CI/CD (v2.0)
 1. Capacitor integration (Haptics, StatusBar, Network, BackButton).
