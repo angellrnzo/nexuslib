@@ -1,10 +1,10 @@
 <div align="center">
 
 # 🌌 NexusLib
-### *Plataforma Multimedia Colaborativa & Progressive Web App (PWA)*
+### *Collaborative Multimedia Platform & Progressive Web App (PWA)*
 
-Gestión, seguimiento y sincronización en tiempo real de **Videojuegos, Cine/Series, Libros y Mangas**.  
-Diseñado para sincronizarse en la nube con **Google Sheets**, operado por un backend en **Google Apps Script** y servido estáticamente mediante **GitHub Pages**.
+Real-time tracking and synchronization of **Video Games, Movies/Series, Books, and Manga**.  
+Cloud-synced via **Google Sheets**, powered by a **Google Apps Script** backend, and statically hosted on **GitHub Pages**.
 
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live%20Demo-brightgreen?style=for-the-badge&logo=github)](https://angellrnzo.github.io/nexuslib/)
 [![PWA Ready](https://img.shields.io/badge/PWA-Installable%20Mobile%20%26%20Desktop-orange?style=for-the-badge&logo=pwa)](https://angellrnzo.github.io/nexuslib/)
@@ -13,190 +13,192 @@ Diseñado para sincronizarse en la nube con **Google Sheets**, operado por un ba
 
 ---
 
-[🌐 Ver Aplicación en Vivo](https://angellrnzo.github.io/nexuslib/) • [📖 Consultar la Wiki Técnica](WIKI.md) • [Reportar Bug](https://github.com/angellrnzo/nexuslib/issues)
+[🌐 Live App](https://angellrnzo.github.io/nexuslib/) • [📖 Technical Wiki](WIKI.md) • [📋 Roadmap & Audit](AppScript/road.md) • [Report a Bug](https://github.com/angellrnzo/nexuslib/issues)
 
 </div>
 
 ---
 
-## 📑 Tabla de Contenidos
-- [✨ Características Principales](#-características-principales)
-- [🏛️ Arquitectura del Sistema](#️-arquitectura-del-sistema)
-- [🛠️ Stack Tecnológico](#️-stack-tecnológico)
-- [📂 Estructura del Repositorio](#-estructura-del-repositorio)
-- [🚀 Despliegue e Instalación](#-despliegue-e-instalación)
-- [🔄 Automatización y Backups](#-automatización-y-backups)
-- [📖 Wiki Técnica](#-wiki-técnica)
-- [👨‍💻 Autor](#-autor)
-- [📄 Licencia](#-licencia)
+## 📑 Table of Contents
+- [✨ Key Features](#-key-features)
+- [🏛️ System Architecture](#️-system-architecture)
+- [🛠️ Tech Stack](#️-tech-stack)
+- [📂 Repository Structure](#-repository-structure)
+- [🚀 Deployment & Setup](#-deployment--setup)
+- [🔄 Automation & Backups](#-automation--backups)
+- [📖 Technical Wiki](#-technical-wiki)
+- [👨‍💻 Author](#-author)
+- [📄 License](#-license)
 
 ---
 
-## ✨ Características Principales
+## ✨ Key Features
 
-### 🎮 Gestión Multimedia Multi-Categoría
-* **Videojuegos:** Detección de Steam AppIDs, builds estables, ramas beta, notas de parches, compatibilidad con Steam Deck, tags y capturas de alta resolución.
-* **Cine y Series:** Integración con catálogo TMDB, temporadas, capítulos, estado de emisión, plataformas de streaming disponibles (Netflix, Prime, Max, Crunchyroll, etc.) y tráilers integrados.
-* **Libros:** Búsqueda por ISBN o Work ID en Open Library, páginas, demografía, editorial y fecha de publicación.
-* **Mangas:** Búsqueda en AniList GraphQL (compatible con IDs de MyAnimeList), recuento de tomos, demografía y capítulos totales.
+### 🎮 Multi-Category Media Management
+* **Video Games:** Steam AppID detection, stable builds, beta branches, patch notes, Steam Deck compatibility, tags, and high-resolution screenshots.
+* **Movies & Series:** TMDB catalog integration, seasons/episodes, airing status, streaming platform availability (Netflix, Prime, Max, Crunchyroll, etc.), and embedded trailers.
+* **Books:** Search by ISBN or Work ID on Open Library, pages, audience demographics, publisher, and publication date.
+* **Manga:** AniList GraphQL search (compatible with MyAnimeList IDs), volume count, demographics, and total chapters.
 
-### 👥 Seguimiento Colaborativo en Pareja (Angel & Talmai)
-* **Perfiles independientes:** Registro de estado individual (*Pendiente, En proceso, Completado*), notas personales, listas de deseados y valoraciones en escala 1 a 10.
-* **❤️ Match de Pareja:** Algoritmo interactivo que cruza las bibliotecas para descubrir al instante obras que ambos tienen pendientes o en su lista de deseados mutua.
-* **📊 Estadísticas Comparativas:** Métricas cruzadas, notas medias otorgadas, porcentaje de obras completadas y gráficos de barras dinámicos por perfil.
-* **📖 Seguimiento de Lectura:** Barra de progreso porcentual y seguimiento dinámico de capítulos leídos en mangas y libros.
+### 👥 Couple Collaborative Tracking (Angel & Talmai)
+* **Independent profiles:** Per-user status (*Pending, In Progress, Completed*), personal notes, wishlists, and 1-to-10 star ratings.
+* **❤️ Couple Match:** Interactive algorithm that cross-references both libraries to instantly surface titles both users have pending or mutually wishlisted.
+* **📊 Comparative Statistics:** Cross metrics, average ratings, completion percentages, and dynamic bar charts per profile.
+* **📖 Reading Progress:** Percentage progress bar and dynamic chapter tracking for manga and books.
 
-### 📱 Experiencia PWA de Alto Rendimiento
-* **60 FPS en Móviles:** Virtualización y paginación infinita con `IntersectionObserver` y `content-visibility: auto` (lotes de 36 tarjetas).
-* **Navegación Táctil (Swipe):** Deslizamiento horizontal natural entre pestañas de categorías.
-* **Reproductor HLS & YouTube:** Soporte de tráilers en streaming sin salir de la app (inyección dinámica de `hls.js` para `.m3u8`).
-* **Caché Inteligente:** Almacenamiento local `v19` con expiración de 12 horas para tiempos de carga ultrarrápidos y ahorro de cuota en Google Sheets.
-* **Integración Nativa Móvil:** Historial `popstate` para cierre fluido de modales con el botón físico "Atrás" de Android e iOS.
+### 📱 High-Performance PWA Experience
+* **60 FPS on Mobile:** Virtualization and infinite pagination with `IntersectionObserver` and `content-visibility: auto` (batches of 36 cards).
+* **Touch Navigation (Swipe):** Natural horizontal swiping between category tabs.
+* **HLS & YouTube Player:** In-app trailer streaming without leaving the app (dynamic `hls.js` injection for `.m3u8`).
+* **Smart Cache:** `v19` local storage with 12-hour expiration for lightning-fast loads and reduced Google Sheets quota usage.
+* **Native Mobile Integration:** `popstate` history handling for smooth modal dismissal via the Android/iOS hardware "Back" button.
 
 ---
 
-## 🏛️ Arquitectura del Sistema
+## 🏛️ System Architecture
 
 ```mermaid
 flowchart TD
-    subgraph Frontend["Capa Frontend (GitHub Pages / PWA)"]
+    subgraph Frontend["Frontend Layer (GitHub Pages / PWA)"]
         UI["SPA Wrapper (index.html)"]
         SW["Service Worker (nexuslib-cache-v2)"]
         Manifest["manifest.json (Standalone / Maskable)"]
     end
 
-    subgraph Backend["Capa Backend (Google Apps Script - V8)"]
+    subgraph Backend["Backend Layer (Google Apps Script - V8)"]
         Router["doGet() - XFrameOptionsMode.ALLOWALL"]
-        API["Controlador CRUD / getItems()"]
-        Batch["Procesador por Lotes (Triggers 15s)"]
+        API["CRUD Controller / getItems()"]
+        Batch["Batch Processor (15s Triggers)"]
     end
 
-    subgraph ExternalAPIs["Proveedores de Metadata Externa"]
+    subgraph ExternalAPIs["External Metadata Providers"]
         Steam["Steam API / Store / PICS / SteamGridDB"]
         TMDB["The Movie Database (TMDB v3)"]
         OpenLib["Open Library REST API"]
         AniList["AniList GraphQL API (AL / MAL)"]
     end
 
-    subgraph Database["Capa de Persistencia"]
+    subgraph Database["Persistence Layer"]
         Sheets[("Google Sheets (GameList)")]
-        Trash[("Pestaña Papelera (JSON Stored)")]
+        Trash[("Papelera Tab (JSON Stored)")]
         DriveBackup[("Google Drive (.xlsx Backups)")]
     end
 
-    subgraph Automation["Automatizaciones GitHub Actions"]
-        DeployAction["deploy.yml (Deploy continuo a Pages)"]
-        BackupAction["backup-excel.yml (Export semanal .xlsx)"]
+    subgraph Automation["GitHub Actions Automation"]
+        DeployAction["deploy.yml (Continuous deploy to Pages)"]
+        BackupAction["backup-excel.yml (Weekly .xlsx export)"]
     end
 
-    UI <--> |PostMessage / Iframe Seguro| Router
+    UI <--> |PostMessage / Secure Iframe| Router
     Router --> API
     API <--> ExternalAPIs
     API <--> Sheets
     API <--> Trash
     Batch --> Sheets
     Sheets --> DriveBackup
-    Sheets -.-> |Export semanal .xlsx| BackupAction
+    Sheets -.-> |Weekly .xlsx export| BackupAction
     DeployAction --> UI
 ```
 
 ---
 
-## 🛠️ Stack Tecnológico
+## 🛠️ Tech Stack
 
-| Capa | Tecnologías |
+| Layer | Technologies |
 | :--- | :--- |
-| **Frontend** | HTML5 Semántico, CSS3 Moderno (Custom Properties, Flexbox, Grid), JavaScript Vainilla (ES6+), Web Workers, Service Worker API |
-| **Diseño / UI** | Dark Mode Theme (estilo Steam / Plex), Iconografía SVG Vectorial Inline, Backdrop Filter Blur |
-| **Backend** | Google Apps Script (Motor V8), `UrlFetchApp`, `PropertiesService`, `ScriptApp` (Time Triggers) |
-| **Base de Datos** | Google Sheets API con mapeo relacional de cabeceras dinámicas (`HEADER_TO_KEY`) |
-| **APIs Externas** | Steam Store API, SteamCMD PICS, TMDB API v3, Open Library API, AniList GraphQL API |
+| **Frontend** | Semantic HTML5, Modern CSS3 (Custom Properties, Flexbox, Grid), Vanilla JavaScript (ES6+), Service Worker API |
+| **Design / UI** | Dark Mode Theme (Steam / Plex style), Inline Vector SVG Iconography, Backdrop Filter Blur |
+| **Backend** | Google Apps Script (V8 Engine), `UrlFetchApp`, `PropertiesService`, `ScriptApp` (Time Triggers) |
+| **Database** | Google Sheets API with dynamic header mapping (`HEADER_TO_KEY`) |
+| **External APIs** | Steam Store API, SteamCMD PICS, TMDB API v3, Open Library API, AniList GraphQL API |
 | **CI/CD & DevOps** | GitHub Actions (`deploy-pages`, Cron Workflows), GitHub Pages |
 
 ---
 
-## 📂 Estructura del Repositorio
+## 📂 Repository Structure
 
 ```text
 NexusLib/
 ├── .github/
 │   └── workflows/
-│       ├── deploy.yml            # CI/CD: Despliegue continuo de la PWA a GitHub Pages
-│       └── backup-excel.yml      # Cron semanal: Exporta y guarda GameList.xlsx en el repo
-├── AppScript/                    # Código fuente del Backend y Base de Datos
-│   ├── WebAPP.gs                 # Servidor API en Google Apps Script
-│   ├── Index.html                # Single Page Application (SPA) ejecutada dentro de Apps Script
-│   └── GameList.xlsx             # Plantilla y base de datos relacional de ejemplo
-├── .gitignore                    # Exclusiones de archivos del sistema y bloqueos de Excel
-├── .nojekyll                     # Desactiva el procesador Jekyll en GitHub Pages
-├── icon-192.png                  # Icono PWA para dispositivos móviles (192x192)
-├── icon-512.png                  # Icono PWA en alta resolución (512x512)
-├── index.html                    # Contenedor PWA optimizado con políticas de iframe seguro
-├── manifest.json                 # Manifiesto PWA (iconos adaptativos maskable, theme #0b0e14)
-├── service-worker.js             # Service Worker con estrategia de caché v2 y auto-limpieza
-├── README.md                     # Documentación principal del proyecto
-└── WIKI.md                       # Especificación técnica exhaustiva y manual de desarrollo
+│       ├── deploy.yml            # CI/CD: Continuous PWA deployment to GitHub Pages
+│       └── backup-excel.yml      # Weekly cron: Exports and commits GameList.xlsx to the repo
+├── AppScript/                    # Backend source code and database
+│   ├── WebAPP.gs                 # Google Apps Script API server
+│   ├── Index.html                # Single Page Application (SPA) run inside Apps Script
+│   ├── road.md                   # Project overview, audit & execution roadmap
+│   └── GameList.xlsx             # Example relational database template
+├── .gitignore                    # System file and Excel lock exclusions
+├── .nojekyll                     # Disables the Jekyll processor on GitHub Pages
+├── icon-192.png                  # PWA icon for mobile devices (192x192)
+├── icon-512.png                  # High-resolution PWA icon (512x512)
+├── icon-maskable-512.png         # Adaptive maskable PWA icon (512x512)
+├── index.html                    # PWA container with secure iframe policies
+├── manifest.json                 # PWA manifest (adaptive maskable icons, theme #0b0e14)
+├── service-worker.js             # Service Worker with v2 cache strategy and auto-cleanup
+├── README.md                     # Main project documentation
+└── WIKI.md                       # Exhaustive technical specification & dev handbook
 ```
 
 ---
 
-## 🚀 Despliegue e Instalación
+## 🚀 Deployment & Setup
 
-### 1. Despliegue del Backend (Google Apps Script)
-1. Crea una nueva hoja de cálculo en [Google Sheets](https://sheets.new) o importa `AppScript/GameList.xlsx`.
-2. Ve a **Extensiones** $\rightarrow$ **Apps Script**.
-3. Copia el contenido de `AppScript/WebAPP.gs` en el archivo de código (`Código.gs`) y crea un archivo HTML llamado `Index` con el contenido de `AppScript/Index.html`.
-4. En **Configuración del proyecto** $\rightarrow$ **Propiedades del script**, añade tu clave de TMDB:
-   * `TMDB_API_KEY`: Tu clave de The Movie Database.
-   * `STEAMGRIDDB_API_KEY` *(Opcional)*: Para portadas alternativas de Steam.
-5. Pulsa en **Implementar** $\rightarrow$ **Nueva implementación**:
-   * Tipo: *Aplicación web*.
-   * Ejecutar como: *Yo*.
-   * Quién tiene acceso: *Cualquier usuario*.
-6. Copia la URL terminada en `/exec` y pégala en el atributo `src` del iframe en `index.html`.
+### 1. Deploying the Backend (Google Apps Script)
+1. Create a new spreadsheet in [Google Sheets](https://sheets.new) or import `AppScript/GameList.xlsx`.
+2. Go to **Extensions** → **Apps Script**.
+3. Copy the contents of `AppScript/WebAPP.gs` into the code file (`Code.gs`) and create an HTML file named `Index` with the contents of `AppScript/Index.html`.
+4. In **Project Settings** → **Script Properties**, add your API keys:
+   * `TMDB_API_KEY`: Your The Movie Database key.
+   * `STEAMGRIDDB_API_KEY` *(Optional)*: For alternative Steam covers.
+5. Click **Deploy** → **New deployment**:
+   * Type: *Web app*.
+   * Execute as: *Me*.
+   * Who has access: *Anyone*.
+6. Copy the URL ending in `/exec` and paste it into the iframe `src` attribute in `index.html`.
 
-### 2. Despliegue del Frontend (GitHub Pages)
-1. Sube este repositorio a tu cuenta de GitHub.
-2. Ve a **Settings** $\rightarrow$ **Pages**.
-3. En **Build and deployment** $\rightarrow$ **Source**, selecciona **`GitHub Actions`**.
-4. ¡Listo! La PWA se publicará automáticamente en tu subdominio de GitHub Pages.
-
----
-
-## 🔄 Automatización y Backups
-
-El proyecto incorpora un sistema doble de copias de seguridad automáticas:
-
-1. **Backup Semanal en GitHub Actions:**  
-   El workflow [.github/workflows/backup-excel.yml](.github/workflows/backup-excel.yml) se ejecuta **cada domingo a las 3:00 AM UTC**. Descarga la hoja de cálculo viva en formato `.xlsx` y actualiza automáticamente `AppScript/GameList.xlsx` con un commit sin intervención humana.
-2. **Backup Semanal en Google Drive:**  
-   Desde el menú superior **NexusLib** en Google Sheets, puedes activar `Activar backup semanal automático (.xlsx)` para guardar copias fechadas históricas dentro de una carpeta `NexusLib_Backups` en tu propia unidad de Google Drive.
+### 2. Deploying the Frontend (GitHub Pages)
+1. Push this repository to your GitHub account.
+2. Go to **Settings** → **Pages**.
+3. Under **Build and deployment** → **Source**, select **`GitHub Actions`**.
+4. Done! The PWA will be published automatically on your GitHub Pages subdomain.
 
 ---
 
-## 📖 Wiki Técnica
+## 🔄 Automation & Backups
 
-Para consultar la arquitectura profunda, el flujo de datos, los algoritmos de recuperación ante caídas de APIs y el modelo de datos detallado:
+The project includes a dual automatic backup system:
 
-👉 **[Leer la Wiki Completa de NexusLib (WIKI.md)](WIKI.md)**
+1. **Weekly GitHub Actions Backup:**  
+   The workflow [.github/workflows/backup-excel.yml](.github/workflows/backup-excel.yml) runs **every Sunday at 3:00 AM UTC**. It downloads the live spreadsheet as `.xlsx` and automatically updates `AppScript/GameList.xlsx` with a commit — no human intervention required.
+2. **Weekly Google Drive Backup:**  
+   From the **NexusLib** menu in Google Sheets, you can enable `Activar backup semanal automático (.xlsx)` to save dated historical copies inside a `NexusLib_Backups` folder in your own Google Drive.
 
 ---
 
-## 👨‍💻 Autor
+## 📖 Technical Wiki
 
-Desarrollado con dedicación por **Angel Lorenzo**.
+For deep architecture, data flow, API-failure recovery algorithms, and the detailed data model:
+
+👉 **[Read the Full NexusLib Wiki (WIKI.md)](WIKI.md)**
+
+---
+
+## 👨‍💻 Author
+
+Developed with dedication by **Angel Lorenzo**.
 
 <p align="left">
   <a href="https://www.linkedin.com/in/angellrnzo/" target="_blank">
-    <img src="https://img.shields.io/badge/LinkedIn-Angel%20Lorenzo-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn de Angel Lorenzo" />
+    <img src="https://img.shields.io/badge/LinkedIn-Angel%20Lorenzo-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="Angel Lorenzo LinkedIn" />
   </a>
   <a href="https://github.com/angellrnzo" target="_blank">
-    <img src="https://img.shields.io/badge/GitHub-angellrnzo-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub de Angel Lorenzo" />
+    <img src="https://img.shields.io/badge/GitHub-angellrnzo-181717?style=for-the-badge&logo=github&logoColor=white" alt="Angel Lorenzo GitHub" />
   </a>
 </p>
 
 ---
 
-## 📄 Licencia
+## 📄 License
 
-Este proyecto está bajo la Licencia **MIT**. Consulta el archivo `LICENSE` para más información.
+This project is licensed under the **MIT License**. See the `LICENSE` file for more information.

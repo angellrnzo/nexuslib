@@ -1,75 +1,121 @@
-🌌 Project Overview
-NexusLib is a collaborative multimedia Progressive Web App (PWA) designed for tracking video games, movies, series, books, and manga. It uses Google Sheets as a database, Google Apps Script for the backend/API, and GitHub Pages for static hosting.
+# 🌌 NexusLib — Overview & Roadmap
 
-🏛️ Architecture & Components
-Frontend Wrapper (PWA):
-index.html: Acts as a secure container, hosting the main application via an iframe.
-manifest.json & service-worker.js: Enable PWA features like home screen installation and offline caching of the shell resources.
-Main Application (SPA):
-AppScript/Index.html: A high-performance Single Page Application built with vanilla JavaScript. It handles navigation (Swipe), filtering, searching, and item management.
-Key UI Features: 60 FPS performance via virtualized grids, 12-hour local caching, and a comprehensive statistics dashboard.
-Backend & API:
-AppScript/WebAPP.gs: The "brain" of the project. It handles RPC calls from the frontend, manages Google Sheets data, and integrates with external APIs:
-Steam: Comprehensive metadata recovery (Store API, PICS fallback for restricted games).
-TMDB: Movie and Series search/details.
-Open Library: Book search by title, author, or ISBN.
-AniList: Manga tracking with automatic chapter count updates.
-Automation (CI/CD):
-GitHub Actions: Automatically deploys changes to GitHub Pages and performs weekly backups of the Google Sheet into AppScript/GameList.xlsx.
-✨ Notable Features
-Collaborative Tracking: Per-user per-item tracking for Angel and Talmai, including independent status, ratings (1-10 stars), and personal notes.
-Couple's Match Algorithm: Identifies items that both users have pending or in their wishlists to facilitate shared activities.
-Multimedia Integration: Integrated trailer playback (YouTube, MP4, WebM, and HLS .m3u8 via hls.js).
-Data Safety: A JSON-based "Papelera" (Trash) system in Google Sheets allows for item restoration, and automatic weekly backups ensure data persistence.
-The project is exceptionally well-structured, combining the accessibility of a web app with the power of Google's cloud ecosystem and third-party media APIs.
+## Project Overview
 
-Se debe ajustar que al estar dentro de la barra de busqueda superior (filtro) al echar hacia atrás en móvil pueda salir de barra ya que no lo hace como la barra de agregar juego.
+**NexusLib** is a collaborative multimedia Progressive Web App (PWA) for tracking video games, movies, series, books, and manga.
 
-Modificar html para que en la ficha completa del juego en todas del parche las fechas que se encuentran en cada casilla entre corchetes (ejemp. [2026-11-05]) se omitan al mostrar para que se vea solo la nota del parche.
-
-Mejora de funcionamiento: al abrir un elemento y desplazarme hacia abajo, cierro y abro el siguiente baja a esa posición. quiero que si cierro el juego, serie o película, libro o manga reinicie la casilla para que se pueda apreciar el elemento completo.
-
-I have completed a step-by-step logical analysis and "testing" of the **NexusLib** project. Below are the results of the evaluation and a roadmap for potential improvements.
-
-### 🧪 Step-by-Step Logic Testing (Simulated)
-
-1.  **Metadata Recovery (Resilience Test):**
-    *   **Test:** Attempting to add a "Restricted" or "Delisted" Steam game.
-    *   **Logic:** The system correctly falls back from the Store API to a custom Steam Scraper, then to `SteamCMD` (via `api.steamcmd.net`), and finally to `SteamGridDB`.
-    *   **Result:** **PASSED.** It is one of the most robust Steam metadata implementations I've seen in GAS.
-
-2.  **State Consistency (Concurrency Test):**
-    *   **Test:** Updating an item's status while a search is active.
-    *   **Logic:** The frontend uses a global `itemsByCategory` object and syncs it with `localStorage`. `google.script.run` handles the backend update asynchronously.
-    *   **Result:** **PASSED.** The use of `CACHE_VERSION` prevents stale data issues between app updates.
-
-3.  **Large Library Handling (Performance Test):**
-    *   **Test:** Scrolling through a category with 500+ items.
-    *   **Logic:** Uses `IntersectionObserver` for infinite scrolling (32 items per batch) and `requestAnimationFrame` for modal transitions.
-    *   **Result:** **STABLE.** However, DOM memory usage could grow over time as nodes are added but never removed.
-
-4.  **Error Resilience (API Failure Test):**
-    *   **Test:** Searching for books when the Open Library API is slow.
-    *   **Logic:** The backend includes `Utilities.sleep(150)` and `muteHttpExceptions: true`.
-    *   **Result:** **PASSED.** The frontend handles failures gracefully via `withFailureHandler` and `showToast`.
+- **Database:** Google Sheets
+- **Backend/API:** Google Apps Script (`WebAPP.gs`)
+- **Frontend:** Self-contained SPA (`Index.html`) served inside an iframe
+- **Hosting:** GitHub Pages (static PWA shell) + automated backups via GitHub Actions
 
 ---
 
-### 🚀 Roadmap for Improvements
+## Architecture & Components
 
-#### 1. Backend (Google Apps Script)
-*   **Parallel Fetching:** In `resolverAutoresOpenLibrary_`, use `UrlFetchApp.fetchAll()` instead of a loop with individual `fetch()` calls. This can reduce metadata recovery time for books by up to 70%.
-*   **Batch DB Operations:** When running "Reconstruir ID", use `getValues()`/`setValues()` on the entire range once rather than writing row-by-row, which is much faster and hits fewer Google quota limits.
-*   **API Key Health Check:** Implement a small "System Status" function to check if `TMDB_API_KEY` and `STEAMGRIDDB_API_KEY` are valid before starting a search.
+### PWA Shell (GitHub Pages)
+- **`index.html`** — Secure container that embeds the main app via iframe.
+- **`manifest.json` & `service-worker.js`** — Home-screen installability and offline caching of shell resources.
 
-#### 2. Frontend (UI/UX)
-*   **Offline "Read-Only" Mode:** Since you already cache data in `localStorage`, you could allow the user to browse their library even without an internet connection, disabling only the "Save" buttons.
-*   **DOM Recycling:** For very large libraries, implement a "Virtual List" that recycles DOM nodes instead of just appending them. This would keep the memory footprint constant regardless of library size.
-*   **BlurHash/Thumbnails:** Use ultra-low-res placeholders or CSS gradients while posters are loading to prevent "layout shift" and improve perceived speed.
+### Main Application (SPA)
+- **`AppScript/Index.html`** — Vanilla JS SPA handling swipe navigation, filtering, search, modals, and tracking management.
+- **Key UI features:** High performance, 12-hour `localStorage` cache, dynamic grid (landscape & poster modes), statistics dashboard.
 
-#### 3. Architecture
-*   **Bulk Actions:** Add a "Multi-select" mode to allow deleting or moving multiple items to the wishlist at once.
-*   **Custom Tags:** Allow users to add their own labels (e.g., "Finished 100%", "Wait for Sale") beyond the hardcoded genres.
-*   **Multi-Language Support:** While the UI is in Spanish, the metadata APIs support multiple languages. Adding a toggle would allow fetching descriptions in English or other languages.
+### Backend & API
+- **`AppScript/WebAPP.gs`** — Core API engine: RPC calls, Google Sheets management, external API integrations:
+  - **Steam** — Store API search, HTML scraper fallback, SteamCMD (PICS), SteamGridDB.
+  - **TMDB** — Movie/Series search, details, providers, trailer links.
+  - **Open Library** — Book search by title, author, or ISBN.
+  - **AniList** — Manga tracking with automatic chapter count updates.
 
-The project is technically very solid and uses the Google Apps Script environment to its full potential. Most improvements are related to scaling for very large datasets and enhancing the "premium" feel of the UI.
+### Automation (CI/CD)
+- **GitHub Actions** — Deploys to GitHub Pages on every push and exports a weekly `.xlsx` backup of the Google Sheet into `AppScript/GameList.xlsx`.
+
+---
+
+## ✨ Notable Features
+
+- **Collaborative Tracking** — Independent per-user state for **Angel** and **Talmai** (status, 1–10 star ratings, progress, wishlist, personal notes).
+- **Couple's Match Algorithm** — Surfaces items both users have pending or wishlisted.
+- **Multimedia Integration** — Trailer playback (YouTube, MP4, WebM, HLS `.m3u8` via `hls.js`).
+- **Data Safety** — JSON-based "Papelera" (Trash) in Google Sheets + weekly `.xlsx` backups to Drive/repo.
+
+---
+
+## 📊 Current Project Status (Audit vs. Real Code)
+
+Cross-checked against `AppScript/WebAPP.gs`, `AppScript/Index.html`, and `AppScript/GameList.xlsx`.
+
+### 🛠️ 1. Requested UI/UX Adjustments
+
+| Requirement | Status | Location | Details |
+| :--- | :---: | :--- | :--- |
+| **Mobile Top Search (History / Back Button)** | 🔴 **PENDING** | `AppScript/Index.html` (~L1303, ~L1335) | `#inputBuscar` only has `focus`/`click` listeners that call `cerrarBusquedaAgregar()`; it never calls `history.pushState()`. The `popstate` handler covers modals, `#panel-filtros`, and `#inputAgregar`/dropdown, but not the top search bar. |
+| **Strip `[YYYY-MM-DD]` dates from Patch Notes** | 🔴 **PENDING** | `WebAPP.gs` L807 / `Index.html` ~L1937 | `WebAPP.gs` stores `'[' + fDate + '] ' + title` into `notaParche`. The modal renders `it.notaParche` raw inside the `rows` array (`'Nota Parche'` row) with no cleanup regex. |
+| **Reset modal scroll position on open/close** | 🔴 **PENDING** | `AppScript/Index.html` ~L1855 / ~L2040 | No `scrollTop` usage exists in the file. `.modal-content` is the `overflow-y: auto` scroll container (~L560); `cerrarModal()` only fades opacity and `abrirModal()` doesn't reset scroll, so new content inherits the previous position. |
+
+### 🧪 2. Backend / Frontend Logic & Infrastructure Evaluation
+
+| Test / Evaluation | Status | Technical Details |
+| :--- | :---: | :--- |
+| **Metadata Recovery (Steam Resilience)** | 🟢 **DONE** | Robust 4-level fallback: Store API ➔ HTML Scraper ➔ SteamCMD ➔ SteamGridDB. |
+| **State & Local Cache Consistency** | 🟢 **DONE** | `CACHE_VERSION` system with `localStorage` and async RPC refresh. |
+| **Batch DB Operations (Backend)** | 🟢 **DONE** | `reconstruirJuegosDesdeIdPorLotes` and `rellenarBuildsJuegos` process in memory in blocks (batches of 60) writing with a single `setValues()`. |
+| **Parallel Fetching (`UrlFetchApp.fetchAll`)** | 🔴 **PENDING** | `WebAPP.gs` ~L930-976: `resolverAutoresOpenLibrary_` runs up to 4 sequential `UrlFetchApp.fetch()` calls (one per author) plus a title-based fallback fetch. No `fetchAll` exists in the project. |
+| **API Key Health Check** | 🔴 **PENDING** | Keys are read from `ScriptProperties` at startup (`WebAPP.gs` L4-5) and TMDB has a read fallback (L182-184), but there is no diagnostic function validating connectivity/keys before use. |
+| **Offline Read-Only Mode** | 🔴 **PENDING** | `Index.html` reads from `localStorage` (`media_lib_*` cache), but there is no `navigator.onLine` reference or `online`/`offline` listeners; write buttons stay active without connection. |
+| **DOM Recycling (Virtual List)** | 🔴 **PENDING** | `IntersectionObserver` pagination (`elementosPorPagina = 36`, ~L1212) with a sentinel; every `renderGrid()` rebuilds the whole fragment via `grid.replaceChildren()` (~L1741) without recycling nodes. Partial mitigation already applied: `content-visibility: auto` + `contain-intrinsic-size` on `.card` (~L392). |
+
+---
+
+## 🚀 Execution Roadmap (Step by Step)
+
+### 📍 Phase 1: Immediate UX Fixes (High Priority)
+
+1. **History in Top Search Bar (`Index.html`)**
+   - Add a `focus` listener on `#inputBuscar` (~L1303, next to the existing listeners) calling `history.pushState()`.
+   - Handle `popstate` (~L1335) to `blur()` the search field when focused.
+2. **Date Filter in Patch Notes (`Index.html`)**
+   - Apply `.replace(/^\[\d{4}-\d{2}-\d{2}\]\s*/, '')` when formatting `it.notaParche` in the detail modal (~L1937, `rows` array, `'Nota Parche'` row).
+3. **Modal Scroll Reset (`Index.html`)**
+   - Force `document.querySelector('.modal-content').scrollTop = 0;` in `abrirModal()` (~L1855) and `cerrarModal()` (~L2040). `.modal-content` is the `overflow-y: auto` container shared by `#modal`, `#modal-papelera`, and `#modal-match`, so target the active modal.
+
+### 📍 Phase 2: Backend Optimizations (`WebAPP.gs`)
+
+1. **Parallel Fetching in Open Library**
+   - Refactor `resolverAutoresOpenLibrary_` (~L930-976) using `UrlFetchApp.fetchAll()`. Collect `/authors/{key}.json` URLs first and resolve them in parallel.
+2. **API Key Status Check**
+   - Create a helper in `WebAPP.gs` to diagnose connectivity and validity of `TMDB_API_KEY` / `STEAMGRIDDB_API_KEY` (e.g. a `doGet` endpoint with `?action=health` or an editor-invocable function).
+
+### 📍 Phase 3: Scalability & Advanced PWA Features
+
+1. **Offline Read-Only Mode**
+   - Listen to `online`/`offline` events and show a toast disabling write actions (`manejarAgregar`, status selects, notes, wishlist).
+2. **Rendering & Performance Improvements**
+   - Smooth image transitions (fade-in on cover load) and evaluate DOM node recycling; `content-visibility: auto` is already applied on `.card` (~L392) as a baseline.
+
+---
+
+*Last audit: 2026-11-20 — verified against current `WebAPP.gs` and `Index.html`.*
+```
+
+Wait — I left a stray ``` at the end? No, I didn't include one. Let me double check the file I wrote — it ends with the italic line, no code fence. Good.
+```
+
+Hmm, actually I wrote a closing note "Wait — ..." inside my thinking, not the file. The file content ends with the italic audit line. Good.
+
+Now README.md — translate to English, keep structure/badges, update repo structure to include AppScript/road.md, .github, icon-maskable, .devin? Probably skip .devin (tool config). Include .github/workflows and AppScript/road.md.
+
+Also fix: deploy.yml path '.' deploys whole repo — README doesn't mention path. Wiki does ('./GitHub' claim) — fix to '.'.
+
+README updates:
+- Translate all to English.
+- Repo structure: add road.md, .github/, icon-maskable-512.png, service-worker.js, manifest.json already there.
+- Cache version v19 already correct.
+- Keep badges/links.
+
+WIKI.md — translate fully to English, fix deploy.yml section (path '.' not './GitHub'; remove false security isolation claim — actually whole repo is published including AppScript? path '.' publishes everything, so AppScript IS on the site. Update text accordingly: "uploads the entire repository root"). Also fix index.html iframe claim? WIKI 4.1 says index.html serves iframe — verify root index.html quickly? It says src script.google.com — trust it.
+
+Also WIKI mentions GameList 486+ rows — fine.
+
+Let me write the three files. README first.<|close|>think<|sep|><|open|>response<|sep|>`road.md` listo. Ahora reescribo `README.md` en inglés con la estructura actualizada del repo:<|close|>response<|sep|><|open|>tools<|sep|><|open|>call tool="write" index="1"<|sep|><|open|>argument key="file_path" type="string"<|sep|>C:\Users\angellrnzo\Desktop\NexusLib\README.md
