@@ -150,6 +150,13 @@ create table mods (
 
 Plus RLS policies mirroring the existing per-user tracking rules, and the same modal section reading from `mods` instead of Sheets.
 
+**Migration path (v1 Sheets → v2 SQL):**
+1. ETL alongside the existing `GameList.xlsx` import: each `mods` sheet row resolves `game_id` → canonical `media_items.id` via the same `(category, provider, external_id)` dedup key used for catalog items (Steam AppID → `provider='steam'`).
+2. `user` enum (`angel`/`talmai`) maps to `profiles.id` via the same UUID mapping used for `user_media_tracking`.
+3. `UNIQUE(game_id, user_id, url)` dedups re-saves; rows missing URL fall back to `(game_id, user_id, lower(nombre))` uniqueness.
+
+**Write path in v2:** the "Añadir mod" form posts to an Edge Function `save_mod` (`UPSERT` on the unique key — same pattern as tracking updates); delete via `delete_mod`. No schema changes needed later: adding a source = extend the `fuente` CHECK constraint; adding fields (e.g. `estado`) = nullable columns, no table rebuild.
+
 ### Decisions & open questions
 
 - ~~Version granularity~~ → **resolved:** free text per mod, grouped by version in UI.
