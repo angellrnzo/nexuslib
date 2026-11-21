@@ -120,6 +120,7 @@ New sheet `mods` (separate from the main catalog — do **not** alter existing c
 ### UI (v1)
 
 - **Placement decision (user, 2026-11-21):** mods are an **independent section inside each game's detail modal** — NOT a new top-level category and NOT visible in the main grid/scheme. Access is only via the game itself.
+- **Entry point (user, 2026-11-21):** a **"Mods" button in the game modal's action row, positioned below the "Página Steam" and "SteamDB" buttons and above "Reparar"** — opens the Mods section/view for that game.
 - Game detail modal → collapsible section **"Mods"** (below existing notes):
   - Per-user view matching the app's profile pattern (Angel / Talmai).
   - **Mods grouped by `version_juego`** — collapsible group headers per version (e.g. "v1.2 — 3 mods"), preserving save order inside.
