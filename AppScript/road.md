@@ -206,6 +206,7 @@ Plus RLS policies mirroring the existing per-user tracking rules, and the same m
 2. **API Key Health** — new `doGet` branch `?action=health`: returns JSON `{tmdb: bool, steamdb: bool, steam: bool, sheets: bool}` — `sheets` = `SpreadsheetApp.getActive()` ok; API keys = non-empty `PropertiesService.getScriptProperties().getProperty(...)`. Read-only, no external calls (fast, safe to poll).
 3. **Offline Read-Only** — `Index.html`: `window.addEventListener('online'/'offline')` toggling a body class `.offline`; CSS disables `.btn-guardar`, `.btn-eliminar`, wishlist/star buttons (`pointer-events:none; opacity:.5`) + toast "Sin conexión — solo lectura". Reads already served by v19 cache.
 4. **Game Mods Tracker** — see [spec above](#-planned-feature-game-mods-tracker-v1x--spec-only-not-implemented): per-user mod lists per game (Nexus Mods / Steam Workshop / CurseForge / URL), version-tagged, quick-search links. New `mods` sheet — standalone, no changes to existing schema.
+5. **Steam Reviews Breakdown** — new toggle `#btn-toggle-resenas` styled like `.btn-trailer` (~L609) next to it in `#m-trailer-bar` (~L1045), opening `#m-resenas-box` (same `.trailer-box` pattern ~L616). Backend: in the Steam resolver (`WebAPP.gs` ~L650, `appdetails`) add a second fetch to `https://store.steampowered.com/appreviews/{appid}?json=1&language=spanish&purchase_type=all` — **free, no API key** — storing `resenasSteam` as compact JSON `{pos, neg, score_desc, total}`. Frontend: score badge (Very Positive/etc), % positive, pos/neg counts, bar. Only for `Juegos` with valid Steam appid; hide otherwise (same guard as `admiteTrailer` ~L1920).
 
 ### 📍 Phase 4: Cloud SQL & Auth (v2.0)
 
@@ -215,6 +216,7 @@ Plus RLS policies mirroring the existing per-user tracking rules, and the same m
 2. Edge Functions / Workers replacing `WebAPP.gs` resolvers (Steam Store+fallback chain, TMDB, OpenLibrary, AniList) — same fallback order as v1.
 3. ETL `GameList.xlsx` → PostgreSQL: map sheets rows to `media_items` via `(category, provider, external_id)`; `mods` sheet → `mods` table per spec above.
 4. Auth: Supabase Auth JWT; Angel/Talmai get `profiles` + auto `libraries` via `bootstrap_user_default_library()` trigger.
+5. **Scheduled metadata refresh** — `metadata_updated_at timestamptz` column on `media_items`; weekly cron (pg_cron or scheduled Edge Function) refreshes only stale rows by TTL: **Juegos 7 days** (reviews/prices move fast), **movies/series/books/manga 30 days** (static metadata). Reuses the same resolver fallback chain; review data via free `appreviews` endpoint (no key). Never touches user fields (`user_media_tracking`, notes).
 
 ### 📍 Phase 5: Cross-User Library Linking (v2.0) — ⚠️ Decision pending
 
