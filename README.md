@@ -45,6 +45,7 @@ Cloud-synced via **Google Sheets**, powered by a **Google Apps Script** backend,
 * **❤️ Couple Match:** Interactive algorithm that cross-references both libraries to instantly surface titles both users have pending or mutually wishlisted.
 * **📊 Comparative Statistics:** Cross metrics, average ratings, completion percentages, and dynamic bar charts per profile.
 * **📖 Reading Progress:** Percentage progress bar and dynamic chapter tracking for manga and books.
+* **🎮 Game Mods Tracker** *(planned)* — per-user mod lists inside each game's detail (Nexus Mods / Steam Workshop / CurseForge / custom URL), grouped by game version. Spec in `AppScript/road.md`.
 
 ### 📱 High-Performance PWA Experience
 * **60 FPS on Mobile:** Virtualization and infinite pagination with `IntersectionObserver` and `content-visibility: auto` (batches of 36 cards).

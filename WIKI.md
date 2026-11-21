@@ -332,6 +332,7 @@ Rules for all frontend work (v1 and v2):
 | `media_items` | Global deduplicated catalog — `UNIQUE(category, provider, external_id)`, metadata JSONB, cover/banner/trailer URLs. |
 | `library_items` | Per-library catalog entries + soft-delete Trash (`deleted_at`). |
 | `user_media_tracking` | Per-user status, rating (1.0–10.0), progress, `is_wishlisted`, notes. |
+| `mods` *(planned)* | Per-user mod lists per game — name, source (`nexus_mods`/`steam_workshop`/`curseforge`/`otra_url`), URL, `version_juego` (grouped in UI), notes. Spec in `road.md` → "Game Mods Tracker". |
 
 **Key DB objects:**
 - `v_library_matches` — intra-library match (≥2 members wishlist/backlog the same item).
@@ -355,7 +356,4 @@ Phases are ordered by **user-visible impact per effort**: UX fixes and motion de
 
 ---
 
-*Last updated: 2026-11-20*
-```
-
-Wait, I added a trailing ``` accidentally? Let me check — my content ends with `*Last updated: 2026-11-20*` and then a newline. No closing fence was intended since it's not inside a code block. Good — the content I passed ends with that line. Fine.<|close|>think<|sep|><|open|>response<|sep|>Los tres documentos están reescritos en inglés. Ahora hago el commit y push:<|close|>response<|sep|><|open|>tools<|sep|><|open|>call tool="exec" index="1"<|sep|><|open|>argument key="command" type="string"<|sep|>cd "C:\Users\angellrnzo\Desktop\NexusLib" && git status --short && git diff --stat
+*Last updated: 2026-11-21 — added mods table to v2 schema summary (spec in AppScript/road.md).*
