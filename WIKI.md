@@ -400,6 +400,8 @@ Rules for all frontend work (v1 and v2):
 
 Phases are ordered by **user-visible impact per effort**: UX fixes and motion deliver immediate perceived quality; backend hardening (fetchAll, health checks, offline mode) is invisible until something breaks; the v2 migration is the largest bet and only makes sense once v1 feels polished. See `AppScript/road.md` for the full phase checklist.
 
+> **Status 2026-11-21:** Phase 1 UX fixes are implemented in `Index.html` (commit `b4dc8ef`): Android back dismisses the search filter, patch-note dates are hidden in the UI, and modals reset scroll on open/close. Changes go live after pasting `Index.html` into the Apps Script editor.
+
 ---
 
-*Last updated: 2026-11-21 — added mods table to v2 schema summary (spec in AppScript/road.md).*
+*Last updated: 2026-11-21 — Phase 1 UX fixes implemented; data-source audit + v2 SQL mapping notes in road.md.*
