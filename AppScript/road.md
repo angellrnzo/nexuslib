@@ -169,11 +169,18 @@ Plus RLS policies mirroring the existing per-user tracking rules, and the same m
 3. **Modal Scroll Reset** — `.modal-content.scrollTop = 0` in `abrirModal()`/`cerrarModal()` (~L1855/~L2040).
 
 ### 📍 Phase 2: Visual Motion System — Instagram/X Patterns (v1.x)
-- **2A:** Skeleton shimmer cards + `--ease-spring` micro-interactions.
-- **2B:** Directional swipe transitions (`slideInRight`/`slideInLeft`) + sliding tab pill.
-- **2C:** Double-tap heart burst in `.img-container` for instant wishlist.
-- **2D:** Bottom-sheet modals with pull-to-dismiss + scroll-snap screenshot carousel.
-- *Follow the UI guardrails in [WIKI.md](../WIKI.md#7-v2-target-architecture--roadmap).*
+
+> **Implementation anchors verified 2026-11-21 against `Index.html`:** the app already has a motion token system in `:root` — `--t-fast/base/slow` + `--ease-inout/ease-out` — used by ~30 transitions, plus `@media (prefers-reduced-motion)` (~L745), `@keyframes fadeIn` (~L452) and `spin` (~L743), card hover lift `.card` (~L399), modal enter/exit `.modal-content` (~L564-570), toast (~L734-736), stat-card accordions (~L532) and touch swipe handlers `inicializarGestosSwipe()` (~L1258-1330). **Reuse these — do not introduce parallel timing values.**
+
+**Concrete instructions per pattern:**
+
+- **2A Skeleton shimmer:** replace `.spinner-container` in `cargarCategoria()` (~L1482) with skeleton cards reusing `.card` aspect ratios (460/215 landscape, 2/3 poster). New keyframes `shimmer` (gradient sweep `background-position`), class `.skeleton` with `content-visibility:auto` like `.card` (~L392). Respect `prefers-reduced-motion` (already global ~L745).
+- **2A Spring easing:** add `--ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1)` to `:root`; apply ONLY to `.wish-toggle`, `.star` and `.btn:active` (~L267 already has `scale(0.95)` — swap its timing to spring). Never on scroll/layout transitions.
+- **2B Directional tabs:** `inicializarGestosSwipe()` (~L1258) already tracks swipe direction — expose the last direction (e.g. `data-dir="left|right"`) and in `cambiarCategoria()`/`renderGrid()` (~L1679) animate `#grid` children entry with `slideInRight`/`slideInLeft` (±22px translateX + fade, `var(--t-base)`). Extend the existing `.category-tabs` sliding pill (~L214-221 already transitions flex-grow/translateX).
+- **2C Double-tap heart:** on `.img-container` (~L404) add `dblclick`/double-tap listener (mobile: two `touchend` <300ms apart, reuse swipe threshold logic ~L1280 to not conflict) → toggle wishlist + `igHeartBurst` keyframe (scale 0→1.2→1 fade, ~500ms, heart SVG overlay centered). Must not trigger card click/modal.
+- **2D Bottom sheet:** `.modal-content` (~L559-570) — on `(max-width: 768px)` make it `position:fixed; bottom:0; border-radius:16px 16px 0 0; max-height:85vh` with drag-handle bar; pull-down dismiss via `touchmove` deltaY >80px reusing swipe math. Keep desktop centered modal unchanged.
+- **2D Scroll-snap:** `#m-screenshots` (~L1064) add `scroll-snap-type:x mandatory` + `scroll-snap-align:center` on children; generate dots container under it updated on `scroll` event (IntersectionObserver or scrollLeft math).
+- **Guardrail:** every new animation must degrade under `prefers-reduced-motion` (the existing ~L745 block already nukes durations globally — verify new keyframes don't bypass it).
 
 ### 📍 Phase 3: Backend & Offline Resilience (v1.x)
 1. **Parallel Open Library** — refactor `resolverAutoresOpenLibrary_` with `UrlFetchApp.fetchAll()`.
