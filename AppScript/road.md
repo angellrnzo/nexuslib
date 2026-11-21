@@ -225,6 +225,33 @@ Earlier 404s were wrong id types (id:2 is ANIME, not MANGA) — the code's `Medi
 
 ---
 
+## 🆚 Benchmark vs Similar Apps (2026-11-21)
+
+Reference apps: **Backloggd** (closest — games/anime/books/manga/movies + social), **Trakt.tv** (movies/series scrobbling + lists), **Serializ** (books), **IGDB/Playnite** (game metadata).
+
+| Feature they have | NexusLib status | Priority |
+|---|---|---|
+| Bulk import/scrobbling (Trakt, Steam, GoodReads) | Manual add only | 🔥 High — v2 ETL, one-time |
+| Release calendar for wishlist items | Dates arrive via TMDB/Steam, no view | High — cheap, filter `deseado*` + upcoming `fecha` |
+| Shared activity feed (what each played/read) | Couple's Match exists, no feed | Medium — v2, extends match |
+| Annual goals/challenges ("100 games this year") | Stats exist, no goals | Medium — aggregation only |
+| Per-episode progress for series | Progress exists for books/manga only | Low-Medium |
+| Short reviews per entry | `notaAngel/Talmai` free text already | Low — may already cover |
+| Per-user tags & custom lists | `Tags` column exists (games) | Low — infra partially there |
+
+### Per-User Visibility Controls (social privacy) — 💡 user idea, v2
+
+Each user chooses **what the other user can see** — public-profile style toggles:
+
+- Scope: per category (Juegos / Películas-Series / Libros / Mangas) × per data type (status, rating, wishlist flag, progress, notes).
+- Sensible defaults: statuses + wishlist shared; **notes & ratings private by default** (matches existing "private notes never cross" rule).
+- Storage: `visibility jsonb` on `profiles` (or per `library_link` row if visibility should differ per linked library):
+  `{"Juegos": {"status": true, "rating": false, "notes": false, "wishlist": true}, ...}`
+- Enforced in `v_cross_library_matches` / match queries: filter out fields the owner marked private — the view never exposes them, not just hidden in UI.
+- UI: settings panel per user — matrix of toggles grouped by category.
+
+---
+
 ## 🗺️ Execution Roadmap
 
 > Ordered by **user-visible impact per effort**. Phase 3 (motion) outranks Phase 4 (backend hardening) because backend items are invisible to users.
