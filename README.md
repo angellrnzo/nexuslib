@@ -137,9 +137,10 @@ NexusLib/
 │   └── GameList.xlsx             # Example relational database template
 ├── .gitignore                    # System file and Excel lock exclusions
 ├── .nojekyll                     # Disables the Jekyll processor on GitHub Pages
-├── icon-192.png                  # PWA icon for mobile devices (192x192)
-├── icon-512.png                  # High-resolution PWA icon (512x512)
-├── icon-maskable-512.png         # Adaptive maskable PWA icon (512x512)
+├── icons/                        # PWA icons
+│   ├── icon-192.png              # Mobile icon (192x192)
+│   ├── icon-512.png              # High-resolution icon (512x512)
+│   └── icon-maskable-512.png     # Adaptive maskable icon (512x512)
 ├── index.html                    # PWA container with secure iframe policies
 ├── manifest.json                 # PWA manifest (adaptive maskable icons, theme #0b0e14)
 ├── service-worker.js             # Service Worker with v2 cache strategy and auto-cleanup
