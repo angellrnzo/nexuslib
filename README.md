@@ -17,6 +17,8 @@ Cloud-synced via **Google Sheets**, powered by a **Google Apps Script** backend,
 
 [🌐 Live App](https://angellrnzo.github.io/nexuslib/) • [📖 Technical Wiki](WIKI.md) • [📋 Roadmap & Audit](AppScript/road.md) • [Report a Bug](https://github.com/angellrnzo/nexuslib/issues)
 
+> **Status (2026-11-21):** v1.x in production — Phase 1 UX fixes deployed (`v1.9.0`). Next: Phase 2 motion → Phase 3 backend/mods/reviews → Phase 4 is the **v1→v2 cut** to Supabase (see `road.md` for the cut-over rule).
+
 </div>
 
 ---
