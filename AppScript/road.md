@@ -229,13 +229,15 @@ Earlier 404s were wrong id types (id:2 is ANIME, not MANGA) — the code's `Medi
 
 > Ordered by **user-visible impact per effort**. Phase 3 (motion) outranks Phase 4 (backend hardening) because backend items are invisible to users.
 
-### 📍 Phase 1: Immediate UX Fixes (v1.x — High Priority)
+### 📍 Phase 1: Immediate UX Fixes (v1.x — High Priority) ✅ IMPLEMENTED 2026-11-21
 
 **Spec — implementable as-is:**
 
-1. **Top Search History** — in `Index.html`: on `#inputBuscar` `focus` (~L1303) call `history.pushState({search:true},'')` before showing results; in the existing `popstate` handler (~L1335) add a branch: if state/search active → `input.blur()` + close search dropdown instead of exiting. Verify on Android hardware back.
-2. **Patch Note Dates** — in the modal `rows` renderer (~L1937) wrap `it.notaParche` with `replace(/^\[\d{4}-\d{2}-\d{2}\]\s*/, '')`. Display-only change; DB keeps raw `[date] title` (WebAPP.gs L807 unchanged).
-3. **Modal Scroll Reset** — `.modal-content` is shared by `#modal`, `#modal-papelera`, `#modal-match`: set `scrollTop = 0` inside `abrirModal()` (~L1855) and `cerrarModal()` (~L2040). One-line each; verify trash modal doesn't rely on preserved scroll.
+1. **Top Search History** — ✅ DONE: `#inputBuscar` `focus` (~L1304) pushes `{sf:true}` state once per focus (`busquedaFiltroActiva` flag); `popstate` (~L1346) has a branch that blurs the input and re-arms state. Android back now dismisses the filter field instead of exiting.
+2. **Patch Note Dates** — ✅ DONE: `notaParche` rendered with `replace(/^\[\d{4}-\d{2}-\d{2}\]\s*/, '')` (~L1938). Display-only; DB keeps raw `[date] title`.
+3. **Modal Scroll Reset** — ✅ DONE: `.modal-content` `scrollTop = 0` in `abrirModal()` (~L1870) and `cerrarModal()` (~L2043) — covers `#modal`, `#modal-papelera`, `#modal-match`.
+
+> ⚠️ Deploy note: `Index.html` must be pasted into the Apps Script editor (script.google.com → Index.html) for changes to go live — repo push alone doesn't update the `/exec` app.
 
 ### 📍 Phase 2: Visual Motion System — Instagram/X Patterns (v1.x)
 

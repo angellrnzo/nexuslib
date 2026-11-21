@@ -1216,6 +1216,7 @@
     var filteredItems = [];
     var currentItemId = '';
     var currentTrailerUrl = '';
+    var busquedaFiltroActiva = false;
     var hlsInstance = null;
     var MAX_CACHE_AGE = 12 * 60 * 60 * 1000;
     const CACHE_VERSION = 'v19';
@@ -1301,7 +1302,13 @@
       inicializarGestosSwipe();
       var inputBuscarEl = document.getElementById('inputBuscar');
       if (inputBuscarEl) {
-        inputBuscarEl.addEventListener('focus', function() { cerrarBusquedaAgregar(); });
+        inputBuscarEl.addEventListener('focus', function() {
+          cerrarBusquedaAgregar();
+          if (!busquedaFiltroActiva) {
+            busquedaFiltroActiva = true;
+            history.pushState({ sf: true }, '', window.location.href);
+          }
+        });
         inputBuscarEl.addEventListener('click', function() { cerrarBusquedaAgregar(); });
       }
       var lastScrollY = window.scrollY || window.pageYOffset || 0;
@@ -1346,6 +1353,11 @@
         else if (panelFiltros.classList.contains('open')) {
           panelFiltros.classList.remove('open');
           document.getElementById('btn-toggle-filtros').classList.remove('active');
+          history.pushState(null, '', window.location.href);
+        }
+        else if (busquedaFiltroActiva || document.activeElement === document.getElementById('inputBuscar')) {
+          busquedaFiltroActiva = false;
+          document.getElementById('inputBuscar').blur();
           history.pushState(null, '', window.location.href);
         }
         else if (dropdown.classList.contains('open') || document.activeElement === document.getElementById('inputAgregar') || document.getElementById('add-wrapper-box').classList.contains('expanded')) {
@@ -1866,6 +1878,7 @@
       var it = lista.find(x => String(x.id) === String(id));
       if (!it) return;
 
+      document.querySelectorAll('.modal-content').forEach(function(el) { el.scrollTop = 0; });
       currentItemId = it.id;
       detenerTrailer();
 
@@ -1934,7 +1947,7 @@
           ['Build Estable', it.buildEstable],
           ['Fecha Build', it.fechaEstable],
           ['Beta', it.beta],
-          ['Nota Parche', it.notaParche],
+          ['Nota Parche', String(it.notaParche || '').replace(/^\[\d{4}-\d{2}-\d{2}\]\s*/, '')],
           ['Modos', it.modos],
           ['Steam Deck', it.steamdeck],
           ['DLCs', it.dlcs],
@@ -2039,6 +2052,7 @@
 
     function cerrarModal() {
       detenerTrailer();
+      document.querySelectorAll('.modal-content').forEach(function(el) { el.scrollTop = 0; });
       resetearDesplegablesModal();
       var modal = document.getElementById('modal');
       modal.style.opacity = '0';
