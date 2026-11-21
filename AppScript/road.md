@@ -83,6 +83,72 @@
 
 ---
 
+## 🔧 Planned Feature: Game Mods Tracker (v1.x — spec only, not implemented)
+
+> **Status:** 📋 **SPEC** — documented 2026-11-21, pending implementation decision.
+> Per-user mod lists per game, inspired by titles like *The Binding of Isaac* (many interesting mods outside Steam Workshop).
+
+### Concept
+
+For each **video game**, each user (Angel / Talmai) can save mods they are interested in — **not to install/apply them**, just to track them inside the app (wishlist-style for mods).
+
+### Data model (v1 — Google Sheets)
+
+New sheet `mods` (separate from the main catalog — do **not** alter existing columns):
+
+| Column | Type | Notes |
+| :--- | :--- | :--- |
+| `id` | string | row id |
+| `game_id` | string | FK → catalog item id (Steam AppID / internal id) |
+| `user` | enum | `angel` / `talmai` (per-user, like `estadoAngel`/`estadoTalmai`) |
+| `nombre` | string | mod name |
+| `fuente` | enum | `nexus_mods` / `steam_workshop` / `curseforge` / `otra_url` |
+| `url` | string | direct link to the mod page |
+| `version_juego` | string | game version/build the mod is confirmed for (e.g. "v1.7.9b", "repentance+") |
+| `notas` | string | load order, dependencies, personal notes |
+| `fecha` | date | when saved |
+
+### Sources & discovery
+
+- **Save:** source selector (`Nexus Mods`, `Steam Workshop`, `CurseForge`, `Otra URL`) + URL field. Free-text name.
+- **Find:** quick-search links per game — buttons opening the game's search page on Nexus Mods / Steam Workshop / CurseForge / Google. No API integration needed (Nexus/CurseForge APIs require keys and approval); plain `https://www.nexusmods.com/<game>/mods?offset=0&limit=20` style links are enough for v1.
+
+### UI (v1)
+
+- Game detail modal → new collapsible section **"Mods"** below existing notes:
+  - Per-user tab or badge (Angel / Talmai) matching the app's profile pattern.
+  - List of saved mods: name, source icon/pill, version tag, link-out icon, delete.
+  - "Añadir mod" form: name + source dropdown + URL + version + notes.
+  - Quick-search row: 3–4 icon buttons (Nexus, Workshop, CurseForge, Google) prefilled with the game title.
+
+### v2 — SQL mapping (Supabase, Phase 4+)
+
+Designed to migrate cleanly — **do not wire it into the current Sheets schema yet**; this is a standalone new function:
+
+```sql
+create table mods (
+  id uuid primary key default gen_random_uuid(),
+  game_id uuid not null references media_items(id) on delete cascade,
+  user_id uuid not null references profiles(id) on delete cascade,
+  nombre text not null,
+  fuente text not null check (fuente in ('nexus_mods','steam_workshop','curseforge','otra_url')),
+  url text,
+  version_juego text,
+  notas text,
+  fecha timestamptz not null default now(),
+  unique (game_id, user_id, url)
+);
+```
+
+Plus RLS policies mirroring the existing per-user tracking rules, and the same modal section reading from `mods` instead of Sheets.
+
+### Open questions
+
+- Version tracking granularity: free text vs. parsed from the game's stored build field?
+- Should mods appear in Couple's Match ("mods both users saved")? Probably yes later via the same matching pattern.
+
+---
+
 ## 🗺️ Execution Roadmap
 
 > Ordered by **user-visible impact per effort**. Phase 3 (motion) outranks Phase 4 (backend hardening) because backend items are invisible to users.
@@ -103,6 +169,7 @@
 1. **Parallel Open Library** — refactor `resolverAutoresOpenLibrary_` with `UrlFetchApp.fetchAll()`.
 2. **API Key Health** — `?action=health` diagnostic for `TMDB_API_KEY` / `STEAMGRIDDB_API_KEY`.
 3. **Offline Read-Only** — `online`/`offline` listeners disabling write actions + toast.
+4. **Game Mods Tracker** — see [spec above](#-planned-feature-game-mods-tracker-v1x--spec-only-not-implemented): per-user mod lists per game (Nexus Mods / Steam Workshop / CurseForge / URL), version-tagged, quick-search links. New `mods` sheet — standalone, no changes to existing schema.
 
 ### 📍 Phase 4: Cloud SQL & Auth (v2.0)
 1. Deploy `database/schema.sql` on Supabase (Auth + profiles/libraries/media_items/tracking).
