@@ -268,6 +268,7 @@ Reference apps: **Backloggd** (closest — games/anime/books/manga/movies + soci
 | SQL schema, Edge Functions, ETL, auth, metadata refresh | **CUT** | 4 |
 | Bulk import (Trakt/Steam/Goodreads), activity feed, visibility controls, mods share, library links | v2 | 5 |
 | Capacitor APK, offline write queue | v2 | 6 |
+| Coleccionables (⭐ optional, high interest), Podcasts (⭐ optional) | v2 late | 7+ |
 
 ---
 
@@ -400,7 +401,9 @@ alter table library_links
 
 ---
 
-### 📍 Phase 7 (candidate): Coleccionables — figuras, juegos de mesa, rompecabezas, LEGO… (v2.x — post-cut)
+### 📍 Phase 7 (candidate — ⭐ OPTIONAL, HIGH INTEREST): Coleccionables — figuras, juegos de mesa, rompecabezas, LEGO… (v2.x — post-cut)
+
+> **Status:** optional future category — user-marked **high interest** (2026-11-21). Build only after v2 core is stable.
 
 > **User idea (2026-11-21):** a general collecting category — differentiator vs Backloggd/Trakt (neither covers collecting well). Consumption → **ownership** model: `tengo` / `quiero` / `vendido`, condition, acquisition date, estimated value.
 
@@ -410,7 +413,12 @@ alter table library_links
 - Reuses `user_media_tracking` pattern (status/rating→valoración/notes) — no new tracking table; new resolver(s) in the Edge Function layer.
 - Fits right of the cut: needs category enum + provider plumbing in SQL.
 
-**Explicitly discarded:** music (streaming owns it; Last.fm covers scrobbling), shopping list (out of scope). **Podcasts: NOT inside Peliculas_Series** — different consumption model (episodic audio via RSS/subscription, no TMDB catalog); if ever wanted it's a separate late-v2 category (`iTunes Search API` + RSS feeds), low priority since series episode tracking doesn't exist yet.
+**Optional future categories (user-marked ⭐ high interest, 2026-11-21):**
+
+- **Coleccionables** — Phase 7 spec below.
+- **Podcasts** — separate late-v2 category if ever wanted: episodic audio via RSS/subscription (iTunes Search API free + feed parsing), progress-per-episode like series. NOT inside Peliculas_Series (different consumption model, no TMDB catalog). Low priority — series episode tracking doesn't exist yet.
+
+**Explicitly discarded:** music (streaming owns it; Last.fm covers scrobbling), shopping list (out of scope).
 
 ---
 

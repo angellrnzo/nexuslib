@@ -12,6 +12,7 @@ Deploy versions for the Apps Script web app are noted per entry.
 - Phase 3: `fetchAll` parallelization, API health check, offline read-only, Game Mods Tracker, Steam Reviews breakdown
 - Phase 3.5: wishlist release calendar, annual stats/goals
 - Phase 4+: Supabase migration (the v1→v2 cut), library links, visibility controls, activity feed, bulk import, Capacitor APK
+- Phase 7 candidates (⭐ optional, high interest): Coleccionables category (LEGO/board games/figures/puzzles, `manual` provider) and Podcasts (RSS episodic)
 
 ## [1.9.0] — 2026-11-21
 

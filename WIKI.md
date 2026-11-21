@@ -400,6 +400,8 @@ Rules for all frontend work (v1 and v2):
 
 Phases are ordered by **user-visible impact per effort**: UX fixes and motion deliver immediate perceived quality; backend hardening (fetchAll, health checks, offline mode) is invisible until something breaks; the v2 migration is the largest bet and only makes sense once v1 feels polished. See `AppScript/road.md` for the full phase checklist.
 
+**Future categories (v2+, optional ⭐ high interest):** *Coleccionables* (figures, board games, puzzles, LEGO — ownership model `tengo/quiero/vendido`, providers Rebrickable/BoardGameGeek/`manual`) and *Podcasts* (RSS episodic, separate category — never inside Peliculas_Series). Full spec in `road.md` → Phase 7.
+
 > **Status 2026-11-21:** Phase 1 UX fixes implemented **and verified in production** (deploy `v1.9.0`, commits `b4dc8ef` + `87f291f`): Android back dismisses the search filter progressively, patch-note dates are hidden, modals reset scroll. Roadmap reorganized with an explicit **v1→v2 cut-over rule** — Phase 4 (Cloud SQL & Auth) is the cut; everything after assumes Supabase. See `AppScript/road.md`.
 
 ---
