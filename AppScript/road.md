@@ -171,9 +171,12 @@ Plus RLS policies mirroring the existing per-user tracking rules, and the same m
 > Ordered by **user-visible impact per effort**. Phase 3 (motion) outranks Phase 4 (backend hardening) because backend items are invisible to users.
 
 ### 📍 Phase 1: Immediate UX Fixes (v1.x — High Priority)
-1. **Top Search History** — `focus` → `pushState` on `#inputBuscar` (~L1303); `blur()` on `popstate` (~L1335).
-2. **Patch Note Dates** — strip `[YYYY-MM-DD]` via regex when rendering `it.notaParche` (~L1937).
-3. **Modal Scroll Reset** — `.modal-content.scrollTop = 0` in `abrirModal()`/`cerrarModal()` (~L1855/~L2040).
+
+**Spec — implementable as-is:**
+
+1. **Top Search History** — in `Index.html`: on `#inputBuscar` `focus` (~L1303) call `history.pushState({search:true},'')` before showing results; in the existing `popstate` handler (~L1335) add a branch: if state/search active → `input.blur()` + close search dropdown instead of exiting. Verify on Android hardware back.
+2. **Patch Note Dates** — in the modal `rows` renderer (~L1937) wrap `it.notaParche` with `replace(/^\[\d{4}-\d{2}-\d{2}\]\s*/, '')`. Display-only change; DB keeps raw `[date] title` (WebAPP.gs L807 unchanged).
+3. **Modal Scroll Reset** — `.modal-content` is shared by `#modal`, `#modal-papelera`, `#modal-match`: set `scrollTop = 0` inside `abrirModal()` (~L1855) and `cerrarModal()` (~L2040). One-line each; verify trash modal doesn't rely on preserved scroll.
 
 ### 📍 Phase 2: Visual Motion System — Instagram/X Patterns (v1.x)
 
@@ -190,27 +193,38 @@ Plus RLS policies mirroring the existing per-user tracking rules, and the same m
 - **Guardrail:** every new animation must degrade under `prefers-reduced-motion` (the existing ~L745 block already nukes durations globally — verify new keyframes don't bypass it).
 
 ### 📍 Phase 3: Backend & Offline Resilience (v1.x)
-1. **Parallel Open Library** — refactor `resolverAutoresOpenLibrary_` with `UrlFetchApp.fetchAll()`.
-2. **API Key Health** — `?action=health` diagnostic for `TMDB_API_KEY` / `STEAMGRIDDB_API_KEY`.
-3. **Offline Read-Only** — `online`/`offline` listeners disabling write actions + toast.
+
+**Spec — implementable as-is:**
+
+1. **Parallel Open Library** — `resolverAutoresOpenLibrary_` (`WebAPP.gs` ~L930-976): collect all `UrlFetchApp.fetch` calls into an array → single `UrlFetchApp.fetchAll(requests)` → map `responses[i].getContentText()` back to authors in order. Preserve the title-fallback path. No schema change.
+2. **API Key Health** — new `doGet` branch `?action=health`: returns JSON `{tmdb: bool, steamdb: bool, steam: bool, sheets: bool}` — `sheets` = `SpreadsheetApp.getActive()` ok; API keys = non-empty `PropertiesService.getScriptProperties().getProperty(...)`. Read-only, no external calls (fast, safe to poll).
+3. **Offline Read-Only** — `Index.html`: `window.addEventListener('online'/'offline')` toggling a body class `.offline`; CSS disables `.btn-guardar`, `.btn-eliminar`, wishlist/star buttons (`pointer-events:none; opacity:.5`) + toast "Sin conexión — solo lectura". Reads already served by v19 cache.
 4. **Game Mods Tracker** — see [spec above](#-planned-feature-game-mods-tracker-v1x--spec-only-not-implemented): per-user mod lists per game (Nexus Mods / Steam Workshop / CurseForge / URL), version-tagged, quick-search links. New `mods` sheet — standalone, no changes to existing schema.
 
 ### 📍 Phase 4: Cloud SQL & Auth (v2.0)
-1. Deploy `database/schema.sql` on Supabase (Auth + profiles/libraries/media_items/tracking).
-2. Migrate Steam/TMDB/OpenLibrary/AniList resolvers from `WebAPP.gs` to Edge Functions / Workers.
-3. ETL: import `GameList.xlsx` into PostgreSQL mapped to user UUIDs.
+
+**Scope — what will be built:**
+1. `database/schema.sql` on Supabase: `profiles`, `libraries`, `library_members`, `library_links`, `media_items`, `library_items`, `user_media_tracking`, `mods` (see WIKI §7.3 for full DDL summary).
+2. Edge Functions / Workers replacing `WebAPP.gs` resolvers (Steam Store+fallback chain, TMDB, OpenLibrary, AniList) — same fallback order as v1.
+3. ETL `GameList.xlsx` → PostgreSQL: map sheets rows to `media_items` via `(category, provider, external_id)`; `mods` sheet → `mods` table per spec above.
+4. Auth: Supabase Auth JWT; Angel/Talmai get `profiles` + auto `libraries` via `bootstrap_user_default_library()` trigger.
 
 ### 📍 Phase 5: Cross-User Library Linking (v2.0) — ⚠️ Decision pending
-1. Invite-code UI + `library_links` (`request_library_link()`).
-2. Link approval/revocation + `match_enabled` toggle (private notes never exposed).
-3. Unified Match feed querying `v_library_matches` + `v_cross_library_matches` with realtime subscriptions.
+
+**Scope — what will be built:**
+1. Invite-code UI: generate/share 10-char `invite_code`, enter code → `request_library_link()` RPC (`pending`).
+2. Approval flow: other user accepts → `accepted`; `match_enabled` toggle per link (private notes never cross).
+3. Match feed: unified view over `v_library_matches` + `v_cross_library_matches` with realtime subscriptions.
+4. **Mods share (opt-in):** when opening a game, prompt "¿ver mods de [otro]?» — read-only view of their `mods` rows for that `game_id` (no auto-match).
 
 > **Open question:** with only Angel & Talmai as users, does "linking" mean *linking their two personal libraries* (simpler — `v_library_matches` may already suffice) or *multi-user library sharing* (full `library_links` needed)? Resolve before building the invite-code UI.
 
 ### 📍 Phase 6: Android APK & Release CI/CD (v2.0)
-1. Capacitor integration (Haptics, StatusBar, Network, BackButton).
-2. Offline-first sync queue (IndexedDB → PostgreSQL `UPSERT` on reconnect).
-3. Signed `.apk` builds on every `v*` tag → GitHub Releases.
+
+**Scope — what will be built:**
+1. `npx cap init/add android` wrapper (`com.nexuslib.app`), dark StatusBar, haptics, `backButton` → modal close (details in WIKI §7.4).
+2. Offline-first: IndexedDB write queue → `UPSERT` sync on reconnect.
+3. `.github/workflows/build-apk.yml` on `v*` tags → signed release → GitHub Releases.
 
 ---
 
