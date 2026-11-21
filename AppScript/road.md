@@ -404,12 +404,13 @@ alter table library_links
 
 > **User idea (2026-11-21):** a general collecting category — differentiator vs Backloggd/Trakt (neither covers collecting well). Consumption → **ownership** model: `tengo` / `quiero` / `vendido`, condition, acquisition date, estimated value.
 
-- One category `Coleccionables` with `tipo` field: `lego`, `juego_mesa`, `figura`, `rompecabezas`, `carta`, `otro`.
-- Provider per subtype: Rebrickable/BrickLink (LEGO set nº), BoardGameGeek (board games — free API), manual/URL for the rest.
+- One category `Coleccionables` with `tipo` field — full subtype list:
+  `lego`, `juego_mesa`, `figura_estatua`, `funko_pop`, `rompecabezas`, `carta_tcg` (Magic/Pokémon/Yu-Gi-Oh), `miniatura_pintada`, `blind_box`, `vinilo`, `memorabilia_deporte`, `sello_moneda`, `otro_manual`.
+- Provider per subtype: Rebrickable/BrickLink (LEGO set nº), BoardGameGeek (board games — free API), **`provider='manual'` for everything without an official API** (funko pops, figures, puzzles…) — user enters name + image URL + fields by hand, same pattern as mods "Otra URL". Manual entry is the norm for most subtypes, not the exception.
 - Reuses `user_media_tracking` pattern (status/rating→valoración/notes) — no new tracking table; new resolver(s) in the Edge Function layer.
 - Fits right of the cut: needs category enum + provider plumbing in SQL.
 
-**Explicitly discarded:** music (streaming owns it; Last.fm covers scrobbling), podcasts (episodic like series — low priority, series episode tracking doesn't exist yet), shopping list (out of scope).
+**Explicitly discarded:** music (streaming owns it; Last.fm covers scrobbling), shopping list (out of scope). **Podcasts: NOT inside Peliculas_Series** — different consumption model (episodic audio via RSS/subscription, no TMDB catalog); if ever wanted it's a separate late-v2 category (`iTunes Search API` + RSS feeds), low priority since series episode tracking doesn't exist yet.
 
 ---
 
