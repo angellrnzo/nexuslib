@@ -373,10 +373,10 @@ Rules for all frontend work (v1 and v2):
 | `profiles` | User accounts (UUID → `auth.users`), username, avatar, accent color, preferences JSONB. |
 | `libraries` | Personal workspaces with unique `invite_code`. |
 | `library_members` | Membership + role (`owner`/`editor`/`viewer`). |
-| `library_links` | Bidirectional library links (`pending`/`accepted`/`blocked`, `match_enabled`); unique index prevents duplicate pairs in either direction. |
+| `library_links` | Bidirectional library links (`pending`/`accepted`/`blocked`, `match_enabled`); unique index prevents duplicate pairs. **Phase 5A adds:** `link_type` (`pareja`/`amigo`/`familia`/`custom`) + `link_label`, and `visibility jsonb` — per-relationship matrix (category × field) controlling what the owner exposes to THAT linked library. Spec in `road.md` → Phase 5A. |
 | `media_items` | Global deduplicated catalog — `UNIQUE(category, provider, external_id)`, metadata JSONB, cover/banner/trailer URLs. |
 | `library_items` | Per-library catalog entries + soft-delete Trash (`deleted_at`). |
-| `user_media_tracking` | Per-user status, rating (1.0–10.0), progress, `is_wishlisted`, notes. |
+| `user_media_tracking` | Per-user status, rating (1.0–10.0), progress, `is_wishlisted`, notes. **Phase 5A adds:** `is_private boolean` — item never crosses any library link regardless of visibility matrices. |
 | `mods` *(planned)* | Per-user mod lists per game — name, source (`nexus_mods`/`steam_workshop`/`curseforge`/`otra_url`), URL, `version_juego` (grouped in UI), notes. Spec in `road.md` → "Game Mods Tracker". |
 
 **Key DB objects:**
@@ -400,7 +400,7 @@ Rules for all frontend work (v1 and v2):
 
 Phases are ordered by **user-visible impact per effort**: UX fixes and motion deliver immediate perceived quality; backend hardening (fetchAll, health checks, offline mode) is invisible until something breaks; the v2 migration is the largest bet and only makes sense once v1 feels polished. See `AppScript/road.md` for the full phase checklist.
 
-> **Status 2026-11-21:** Phase 1 UX fixes are implemented in `Index.html` (commit `b4dc8ef`): Android back dismisses the search filter, patch-note dates are hidden in the UI, and modals reset scroll on open/close. Changes go live after pasting `Index.html` into the Apps Script editor.
+> **Status 2026-11-21:** Phase 1 UX fixes implemented **and verified in production** (deploy `v1.9.0`, commits `b4dc8ef` + `87f291f`): Android back dismisses the search filter progressively, patch-note dates are hidden, modals reset scroll. Roadmap reorganized with an explicit **v1→v2 cut-over rule** — Phase 4 (Cloud SQL & Auth) is the cut; everything after assumes Supabase. See `AppScript/road.md`.
 
 ---
 

@@ -241,14 +241,7 @@ Reference apps: **Backloggd** (closest — games/anime/books/manga/movies + soci
 
 ### Per-User Visibility Controls (social privacy) — 💡 user idea, v2
 
-Each user chooses **what the other user can see** — public-profile style toggles:
-
-- Scope: per category (Juegos / Películas-Series / Libros / Mangas) × per data type (status, rating, wishlist flag, progress, notes).
-- Sensible defaults: statuses + wishlist shared; **notes & ratings private by default** (matches existing "private notes never cross" rule).
-- Storage: `visibility jsonb` on `profiles` (or per `library_link` row if visibility should differ per linked library):
-  `{"Juegos": {"status": true, "rating": false, "notes": false, "wishlist": true}, ...}`
-- Enforced in `v_cross_library_matches` / match queries: filter out fields the owner marked private — the view never exposes them, not just hidden in UI.
-- UI: settings panel per user — matrix of toggles grouped by category.
+> **Superseded by Phase 5A** — final design is **per-relationship** (link_type + visibility matrix on `library_links`) plus per-item `is_private`, not a single global profile setting. See [Phase 5A](#5a--relationship-tags--per-link-visibility-user-idea-2026-11-21).
 
 ---
 
@@ -345,18 +338,57 @@ Each user chooses **what the other user can see** — public-profile style toggl
 6. **Provider extras → `metadata jsonb`** — per the [Data Source Audit](#-data-source-audit-verified-live-2026-11-21): Steam `recommendations.total`/`achievements`/`supported_languages`/`ratings`/`dlc`/`website`, OL `ratings.json` avg+count (fixes `puntuacion` always N/A), AniList `externalLinks`/`format`. Promote hot fields to real columns (`content_rating`, `steam_recommendations`, `average_rating`, `mal_id`, `format`); keep the rest in `metadata`.
 7. **Bulk import pipeline** — Trakt.tv / Steam profile / GoodReads CSV+API → Edge Function `import_external`: map foreign IDs → `(provider, external_id)` dedup key, resolve misses via existing resolvers, write `library_items` + `user_media_tracking` in batches. One-time per user, idempotent (re-run = upsert, no dupes).
 
-### 📍 Phase 5: Cross-User Library Linking (v2.0) — ⚠️ Decision pending
+### 📍 Phase 5: Cross-User Library Linking (v2.0) — ✂️ right of the cut
 
 **Scope — what will be built:**
 
 1. Invite-code UI: generate/share 10-char `invite_code`, enter code → `request_library_link()` RPC (`pending`).
 2. Approval flow: other user accepts → `accepted`; `match_enabled` toggle per link (private notes never cross).
 3. Match feed: unified view over `v_library_matches` + `v_cross_library_matches` with realtime subscriptions.
-4. **Per-User Visibility Controls** — `visibility jsonb` on `profiles` (or per `library_link`): `{category: {status, rating, notes, wishlist, progress}}` toggles. Defaults: statuses+wishlist shared, **notes & ratings private**. Enforced in the match SQL views (filtered fields never leave the DB), not just hidden in UI. Settings panel = toggle matrix grouped by category.
-5. **Shared Activity Feed** — `user_media_tracking` already has timestamps; surface a chronological "Angel jugó X / Talmai leyó Y" feed across linked libraries. Reuses realtime subscriptions from item 3 — cheap add once links exist.
-6. **Mods share (opt-in):** when opening a game, prompt "¿ver mods de [otro]?» — read-only view of their `mods` rows for that `game_id` (no auto-match). Subject to the visibility matrix (item 4) if user wants per-category control over mods too.
 
-> **Open question:** with only Angel & Talmai as users, does "linking" mean *linking their two personal libraries* (simpler — `v_library_matches` may already suffice) or *multi-user library sharing* (full `library_links` needed)? Resolve before building the invite-code UI.
+#### 5A — Relationship Tags & Per-Link Visibility (user idea, 2026-11-21)
+
+> **User requirement:** in v2 the user picks **with whom** to match — libraries are tagged by relationship type (pareja / amigos / familia / custom), and **each relationship gets its own visibility matrix** — what that specific person sees and what doesn't. Plus a per-item "private" flag for entries that never cross any link.
+
+**Schema deltas on `library_links`:**
+
+```sql
+alter table library_links
+  add column link_type text not null default 'amigo'
+    check (link_type in ('pareja','amigo','familia','custom')),
+  add column link_label text,          -- custom name when link_type='custom' ("compis-del-trabajo")
+  add column visibility jsonb not null default
+    '{"Juegos":{"status":true,"rating":false,"notes":false,"wishlist":true,"progress":true,"mods":false},
+      "Peliculas_Series":{...same...}, "Libros":{...}, "Mangas":{...}}'::jsonb;
+  -- visibility is stored on the LINK row = "what the OWNER shares with THAT linked library".
+  -- Direction matters: Angel's link row controls what Angel exposes to Talmai's library.
+```
+
+**Per-item privacy:** add `is_private boolean not null default false` to `user_media_tracking` — a private entry is excluded from **every** cross-library view regardless of the link's visibility matrix ("entrada privada de manera individual").
+
+**Visibility semantics:**
+
+- Matrix axes: **category** (4) × **field** (`status`, `rating`, `wishlist`, `progress`, `notes`, `mods`).
+- Defaults: `status`/`wishlist`/`progress` shared; `rating`/`notes`/`mods` private.
+- Enforcement is **server-side in the SQL views** (`v_cross_library_matches` joins `library_links` and filters columns per `visibility` JSONB) — private fields never leave the database; hiding in UI alone is not acceptable.
+- `match_enabled=false` on a link = no matching with that library at all (independent of visibility — visibility only applies when matching is on).
+
+**UI:**
+
+- Links settings screen: list of linked libraries, each card shows `link_type` badge (💑 pareja / 👥 amigos / 🏷️ custom label), `match_enabled` toggle, and a **visibility matrix editor** (4 categories × 6 fields toggle grid).
+- Per-item: "Privado" toggle in the tracking modal (lock icon) — sets `is_private`; item disappears from all match views and the other user's view of shared catalogs.
+- Match feed can be **filtered by link_type** ("ver solo matches con pareja" / "con amigos") — same feed, segmented chips.
+
+#### 5B — Shared Activity Feed
+
+- `user_media_tracking` already has timestamps; surface a chronological "Angel jugó X / Talmai leyó Y" feed across accepted links. Reuses realtime subscriptions — cheap add once links exist.
+- Feed respects the same visibility matrix + `is_private` (private activity never appears).
+
+#### 5C — Mods share (opt-in)
+
+- When opening a game, prompt "¿ver mods de [otro]?» — read-only view of their `mods` rows for that `game_id` (no auto-match). Governed by the `mods` field in the link's visibility matrix — if `mods:false`, the prompt never appears.
+
+> **Open question:** with only Angel & Talmai as users, does "linking" mean *linking their two personal libraries* (simpler — `v_library_matches` may already suffice) or *multi-user library sharing* (full `library_links` needed)? Resolve before building the invite-code UI. **Note:** the link_type/visibility design above assumes full `library_links` — with only 2 users a single link row still works (one relationship = one row).
 
 ### 📍 Phase 6: Android APK & Release CI/CD (v2.0)
 
