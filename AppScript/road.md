@@ -400,4 +400,17 @@ alter table library_links
 
 ---
 
-*Last consolidated update: 2026-11-21 — Phase 1 ✅ implemented & verified in production; v1→v2 cut-over rule defined (Phase 4 = the cut); benchmark features placed (calendar+stats → v1 Phase 3.5; import/activity/visibility → v2 Phase 5).*
+### 📍 Phase 7 (candidate): Coleccionables — figuras, juegos de mesa, rompecabezas, LEGO… (v2.x — post-cut)
+
+> **User idea (2026-11-21):** a general collecting category — differentiator vs Backloggd/Trakt (neither covers collecting well). Consumption → **ownership** model: `tengo` / `quiero` / `vendido`, condition, acquisition date, estimated value.
+
+- One category `Coleccionables` with `tipo` field: `lego`, `juego_mesa`, `figura`, `rompecabezas`, `carta`, `otro`.
+- Provider per subtype: Rebrickable/BrickLink (LEGO set nº), BoardGameGeek (board games — free API), manual/URL for the rest.
+- Reuses `user_media_tracking` pattern (status/rating→valoración/notes) — no new tracking table; new resolver(s) in the Edge Function layer.
+- Fits right of the cut: needs category enum + provider plumbing in SQL.
+
+**Explicitly discarded:** music (streaming owns it; Last.fm covers scrobbling), podcasts (episodic like series — low priority, series episode tracking doesn't exist yet), shopping list (out of scope).
+
+---
+
+*Last consolidated update: 2026-11-21 — Phase 1 ✅ implemented & verified in production; v1→v2 cut-over rule defined (Phase 4 = the cut); benchmark features placed (calendar+stats → v1 Phase 3.5; import/activity/visibility → v2 Phase 5); Phase 7 candidate = Coleccionables.*
