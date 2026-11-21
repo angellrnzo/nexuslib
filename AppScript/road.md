@@ -252,6 +252,32 @@ Each user chooses **what the other user can see** — public-profile style toggl
 
 ---
 
+## ✂️ v1 → v2 Cut-over Rule
+
+> **Decisión del usuario (2026-11-21):** todo feature nuevo se implementa bajo la arquitectura destino. El roadmap tiene una **línea de corte dura** en Phase 4 (Cloud SQL & Auth).
+
+**The rule:**
+
+- **Left of the cut (Phases 1–3, v1.x):** Google Sheets + Apps Script only. No feature here may depend on `profiles`, `library_links`, SQL views, or Edge Functions. If a spec needs them, it moves right of the cut.
+- **Right of the cut (Phases 4–6, v2.x):** Supabase + Edge Functions. Everything new assumes the SQL schema (`media_items`, `profiles`, `user_media_tracking`, `mods`, `metadata jsonb`, `library_links`). No new Sheets-specific features after the cut — the Sheet survives only as a read-only backup artifact (weekly `.xlsx` export).
+- **Trigger:** the cut happens when Phase 4 starts. On that day: run `database/schema.sql`, execute the ETL (`GameList.xlsx` → `media_items`), deploy Edge Functions, flip `Index.html` to the new API base, and retire `WebAPP.gs` read/write paths (keep it only as fallback during transition).
+- **Feature placement rule for future ideas:** if it needs per-user privacy, cross-user matching, bulk writes, or scheduled jobs → right of the cut. If it's UI polish, single-user reads, or lazy metadata fetches → left of the cut is still allowed but optional.
+
+**Feature placement map (current roadmap):**
+
+| Feature | Side | Phase |
+|---|---|---|
+| UX fixes, motion, fetchAll, health, offline RO | v1 | 1–3 |
+| Mods Tracker (Sheets read/write) | v1 | 3 |
+| Steam Reviews breakdown | v1 | 3 |
+| Release calendar (wishlist) | v1 | 3.5 (new) |
+| Annual stats/goals | v1 | 3.5 (new) |
+| SQL schema, Edge Functions, ETL, auth, metadata refresh | **CUT** | 4 |
+| Bulk import (Trakt/Steam/Goodreads), activity feed, visibility controls, mods share, library links | v2 | 5 |
+| Capacitor APK, offline write queue | v2 | 6 |
+
+---
+
 ## 🗺️ Execution Roadmap
 
 > Ordered by **user-visible impact per effort**. Phase 3 (motion) outranks Phase 4 (backend hardening) because backend items are invisible to users.
@@ -290,7 +316,24 @@ Each user chooses **what the other user can see** — public-profile style toggl
 4. **Game Mods Tracker** — see [spec above](#-planned-feature-game-mods-tracker-v1x--spec-only-not-implemented): per-user mod lists per game (Nexus Mods / Steam Workshop / CurseForge / URL), version-tagged, quick-search links. New `mods` sheet — standalone, no changes to existing schema.
 5. **Steam Reviews Breakdown** — new toggle `#btn-toggle-resenas` styled like `.btn-trailer` (~L609) next to it in `#m-trailer-bar` (~L1045), opening `#m-resenas-box` (same `.trailer-box` pattern ~L616). Backend: the old `appreviews/{appid}?json=1` JSON endpoint is **DEAD** (verified 2026-11-21: all variants return `302 → store homepage`). Real source = scrape `https://store.steampowered.com/app/{appid}/?l=spanish&cc=US` — same HTML fetch + agecheck cookies the resolver already uses as fallback (`WebAPP.gs` ~L686). Extract review summary from the `user_reviews_summary_row` tooltips: `"El X% de las N reseñas ... últimos 30 días son positivas"` (30d window) and `"El Y% de las M reseñas ... en tu idioma son positivas"` (all-time). Store `resenasSteam` as `{pct30, total30, pct, total}` — positive count can come FREE from `recommendations.total` in `appdetails` (see audit §Steam); neg/pos30 derived as `round(pct*total/100)` (approximate, mark with `≈` in UI). Fetch lazily on modal open for `Juegos` only, not at catalog load. Tier = **5-block scale** (client-side, no Steam thresholds): 0-20 "Muy negativas", 20-40 "Mayormente negativas", 40-60 "Neutras", 60-80 "Mayormente positivas", 80-100 "Muy positivas". Frontend renders a **CSS-only chart** (no chart lib — vanilla SPA): (a) a 5-segment gradient bar red→gray→green with a marker/needle at the `pct` position, (b) the tier label under it, (c) big % positive number, pos/neg counts, total reviews, and a **trend chip** comparing `pct30` vs `pct` (↑/↓/→ "vs hace 30 días"). Only for `Juegos` with valid Steam appid; hide otherwise (same guard as `admiteTrailer` ~L1920). Reuse existing motion tokens for bar grow-in (`--t-*`, `transform: scaleX`). Note: Steam's 9-tier label and 5-star histogram are NOT exposed by the public API — this custom 5-block scale is the chosen simplified equivalent.
 
-### 📍 Phase 4: Cloud SQL & Auth (v2.0)
+### 📍 Phase 3.5: Wishlist Release Calendar & Annual Stats (v1.x — read-only, no schema change)
+
+> Both features aggregate data already stored/fetched — **no new columns, no new sheets, no v2 dependency**. Safe to build before the cut.
+
+**3.5A — Release Calendar:**
+
+- Data already arrives: `fecha` column (YYYY-MM-DD or `próximamente`), TMDB `release_date`, Steam `release_date.date` + `coming_soon` flag.
+- UI: new collapsible section in `#stats-grid` (~L532 pattern) or a filter chip "Próximos estrenos" → grid filtered to items where `estado*`/wishlist flag is set AND `fecha` parses to a future date within next 90 days, sorted ascending.
+- Edge cases: `próximamente`/TBD dates → group under "Sin fecha confirmada" at the bottom; past-dated wishlist items drop out automatically.
+- Effort: ~1 frontend function + 1 filter predicate. No backend change.
+
+**3.5B — Annual Stats & Goals:**
+
+- New stats card in `#stats-grid` (accordion pattern ~L532): per user, per year — items completed (`completado`), in-progress count, avg `estrellas`, wishlist size, total played hours equivalent (games: count; books/manga: pages not stored — skip).
+- "Retos" v1 simple: auto-generated goals only (e.g. "10 juegos nuevos este mes", "% de wishlist completado") — no custom goal builder yet; if wanted later it belongs right of the cut (needs `goals` table).
+- All aggregation client-side over `datosGlobales` — already loaded. Effort: ~1 render function.
+
+### 📍 Phase 4: Cloud SQL & Auth (v2.0) — ✂️ **THE CUT**
 
 **Scope — what will be built:**
 
@@ -299,6 +342,8 @@ Each user chooses **what the other user can see** — public-profile style toggl
 3. ETL `GameList.xlsx` → PostgreSQL: map sheets rows to `media_items` via `(category, provider, external_id)`; `mods` sheet → `mods` table per spec above.
 4. Auth: Supabase Auth JWT; Angel/Talmai get `profiles` + auto `libraries` via `bootstrap_user_default_library()` trigger.
 5. **Scheduled metadata refresh** — `metadata_updated_at timestamptz` column on `media_items`; weekly cron (pg_cron or scheduled Edge Function) refreshes only stale rows by TTL: **Juegos 7 days** (reviews/prices move fast), **movies/series/books/manga 30 days** (static metadata). Reuses the same resolver fallback chain; review data via free `appreviews` endpoint (no key). Never touches user fields (`user_media_tracking`, notes).
+6. **Provider extras → `metadata jsonb`** — per the [Data Source Audit](#-data-source-audit-verified-live-2026-11-21): Steam `recommendations.total`/`achievements`/`supported_languages`/`ratings`/`dlc`/`website`, OL `ratings.json` avg+count (fixes `puntuacion` always N/A), AniList `externalLinks`/`format`. Promote hot fields to real columns (`content_rating`, `steam_recommendations`, `average_rating`, `mal_id`, `format`); keep the rest in `metadata`.
+7. **Bulk import pipeline** — Trakt.tv / Steam profile / GoodReads CSV+API → Edge Function `import_external`: map foreign IDs → `(provider, external_id)` dedup key, resolve misses via existing resolvers, write `library_items` + `user_media_tracking` in batches. One-time per user, idempotent (re-run = upsert, no dupes).
 
 ### 📍 Phase 5: Cross-User Library Linking (v2.0) — ⚠️ Decision pending
 
@@ -307,7 +352,9 @@ Each user chooses **what the other user can see** — public-profile style toggl
 1. Invite-code UI: generate/share 10-char `invite_code`, enter code → `request_library_link()` RPC (`pending`).
 2. Approval flow: other user accepts → `accepted`; `match_enabled` toggle per link (private notes never cross).
 3. Match feed: unified view over `v_library_matches` + `v_cross_library_matches` with realtime subscriptions.
-4. **Mods share (opt-in):** when opening a game, prompt "¿ver mods de [otro]?» — read-only view of their `mods` rows for that `game_id` (no auto-match).
+4. **Per-User Visibility Controls** — `visibility jsonb` on `profiles` (or per `library_link`): `{category: {status, rating, notes, wishlist, progress}}` toggles. Defaults: statuses+wishlist shared, **notes & ratings private**. Enforced in the match SQL views (filtered fields never leave the DB), not just hidden in UI. Settings panel = toggle matrix grouped by category.
+5. **Shared Activity Feed** — `user_media_tracking` already has timestamps; surface a chronological "Angel jugó X / Talmai leyó Y" feed across linked libraries. Reuses realtime subscriptions from item 3 — cheap add once links exist.
+6. **Mods share (opt-in):** when opening a game, prompt "¿ver mods de [otro]?» — read-only view of their `mods` rows for that `game_id` (no auto-match). Subject to the visibility matrix (item 4) if user wants per-category control over mods too.
 
 > **Open question:** with only Angel & Talmai as users, does "linking" mean *linking their two personal libraries* (simpler — `v_library_matches` may already suffice) or *multi-user library sharing* (full `library_links` needed)? Resolve before building the invite-code UI.
 
@@ -321,4 +368,4 @@ Each user chooses **what the other user can see** — public-profile style toggl
 
 ---
 
-*Last consolidated update: 2026-11-20 — v1 audit verified against live code; v2 sections are planned.*
+*Last consolidated update: 2026-11-21 — Phase 1 ✅ implemented & verified in production; v1→v2 cut-over rule defined (Phase 4 = the cut); benchmark features placed (calendar+stats → v1 Phase 3.5; import/activity/visibility → v2 Phase 5).*
