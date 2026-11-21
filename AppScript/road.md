@@ -172,6 +172,59 @@ Plus RLS policies mirroring the existing per-user tracking rules, and the same m
 
 ---
 
+## 🔬 Data Source Audit (verified live 2026-11-21)
+
+Real requests made against every provider the backend uses. Findings per category + v2 SQL mapping improvements.
+
+### Juegos — Steam (`appdetails` JSON, verified Cyberpunk 2079)
+
+Fields returned by API but **NOT extracted** by `obtenerMetadataSteam` (`WebAPP.gs` ~L650):
+
+| Field | Value example | Use |
+|---|---|---|
+| `recommendations.total` | 916,028 | **≈ positive review count — FREE, no scraping.** Feeds the reviews chart (pos ≈ this; pct still needs store page or derive) |
+| `achievements.total` | n/a | Could fill a future "logros" stat |
+| `supported_languages` | list | → `plataformas`/language field |
+| `ratings` + `content_descriptors` | ESRB/PEGI | Content rating display |
+| `dlc` | `[2138330,...]` | Currently only counted ("N DLCs") — could store appids for future DLC links |
+| `website` | url | Official site link in modal |
+| `pc_requirements` | html | Min specs (collapse section) |
+| `background` | url | Hero banner (richer than `header_image`) |
+
+### Peliculas_Series — TMDB
+
+Could not test live (API key lives in Apps Script ScriptProperties, not accessible externally). To verify when implementing: `watch/providers` → `plataformas` column, `videos.results[YouTube]` → `trailer`, `credits` → `creador`. `puntuacion` already uses `vote_average`.
+
+### Libros — OpenLibrary (verified)
+
+- **`puntuacion` is always 'N/A'** — but `https://openlibrary.org/works/{id}/ratings.json` returns `{summary:{average, count}}` (verified: GoT work OL45883W → avg 5.0). **Improvement: fetch ratings → fill `puntuacion`.**
+- Search returns huge `isbn` arrays (~150 per book) — code takes first `isbn_13`/`isbn_10`; prefer ES-prefixed ISBNs (`84/97884`) when present.
+- Unused: `ocaid`/`ia` (archive.org full-text scans), `edition_key`.
+
+### Mangas — AniList (verified healthy)
+
+Earlier 404s were wrong id types (id:2 is ANIME, not MANGA) — the code's `Media(id:)` usage is correct. Unused fields worth mapping:
+
+- `externalLinks` → contains MAL link → enables `mal-` id cross-reference
+- `format` → distinguishes Manga / Novel / One-shot / Doujinshi (useful for `tipo`)
+- `popularity`, `studios`, `countryOfOrigin`
+
+### Backup sources tested
+
+| Source | Status | Verdict |
+|---|---|---|
+| Jikan (MyAnimeList wrapper) | timed out from this network | Keep as fallback only — slow/unreliable |
+| Google Books API | `429` without key | Viable backup **with free API key** |
+| Steam `appreviews?json=1` | `302 → homepage` | DEAD — use store-page scrape (already in spec) |
+
+### v2 SQL mapping improvements (`media_items`)
+
+- Add generic `metadata jsonb` column — absorbs provider-specific extras (Steam recommendations, OL ratings, AniList format) without schema churn per source.
+- Dedicated columns worth promoting: `content_rating` (PEGI/ESRB), `official_website`, `average_rating` + `rating_count` (books), `mal_id` + `format` (mangas), `steam_recommendations` (games).
+- `mods` table unaffected.
+
+---
+
 ## 🗺️ Execution Roadmap
 
 > Ordered by **user-visible impact per effort**. Phase 3 (motion) outranks Phase 4 (backend hardening) because backend items are invisible to users.
@@ -206,7 +259,7 @@ Plus RLS policies mirroring the existing per-user tracking rules, and the same m
 2. **API Key Health** — new `doGet` branch `?action=health`: returns JSON `{tmdb: bool, steamdb: bool, steam: bool, sheets: bool}` — `sheets` = `SpreadsheetApp.getActive()` ok; API keys = non-empty `PropertiesService.getScriptProperties().getProperty(...)`. Read-only, no external calls (fast, safe to poll).
 3. **Offline Read-Only** — `Index.html`: `window.addEventListener('online'/'offline')` toggling a body class `.offline`; CSS disables `.btn-guardar`, `.btn-eliminar`, wishlist/star buttons (`pointer-events:none; opacity:.5`) + toast "Sin conexión — solo lectura". Reads already served by v19 cache.
 4. **Game Mods Tracker** — see [spec above](#-planned-feature-game-mods-tracker-v1x--spec-only-not-implemented): per-user mod lists per game (Nexus Mods / Steam Workshop / CurseForge / URL), version-tagged, quick-search links. New `mods` sheet — standalone, no changes to existing schema.
-5. **Steam Reviews Breakdown** — new toggle `#btn-toggle-resenas` styled like `.btn-trailer` (~L609) next to it in `#m-trailer-bar` (~L1045), opening `#m-resenas-box` (same `.trailer-box` pattern ~L616). Backend: the old `appreviews/{appid}?json=1` JSON endpoint is **DEAD** (verified 2026-11-21: all variants return `302 → store homepage`). Real source = scrape `https://store.steampowered.com/app/{appid}/?l=spanish&cc=US` — same HTML fetch + agecheck cookies the resolver already uses as fallback (`WebAPP.gs` ~L686). Extract review summary from the `user_reviews_summary_row` tooltips: `"El X% de las N reseñas ... últimos 30 días son positivas"` (30d window) and `"El Y% de las M reseñas ... en tu idioma son positivas"` (all-time). Store `resenasSteam` as `{pct30, total30, pct, total}` — absolute pos/neg derived as `round(pct*total/100)` (approximate, mark with `≈` in UI). Fetch lazily on modal open for `Juegos` only, not at catalog load. Tier = **5-block scale** (client-side, no Steam thresholds): 0-20 "Muy negativas", 20-40 "Mayormente negativas", 40-60 "Neutras", 60-80 "Mayormente positivas", 80-100 "Muy positivas". Frontend renders a **CSS-only chart** (no chart lib — vanilla SPA): (a) a 5-segment gradient bar red→gray→green with a marker/needle at the `pct` position, (b) the tier label under it, (c) big % positive number, pos/neg counts, total reviews, and a **trend chip** comparing `pct30` vs `pct` (↑/↓/→ "vs hace 30 días"). Only for `Juegos` with valid Steam appid; hide otherwise (same guard as `admiteTrailer` ~L1920). Reuse existing motion tokens for bar grow-in (`--t-*`, `transform: scaleX`). Note: Steam's 9-tier label and 5-star histogram are NOT exposed by the public API — this custom 5-block scale is the chosen simplified equivalent.
+5. **Steam Reviews Breakdown** — new toggle `#btn-toggle-resenas` styled like `.btn-trailer` (~L609) next to it in `#m-trailer-bar` (~L1045), opening `#m-resenas-box` (same `.trailer-box` pattern ~L616). Backend: the old `appreviews/{appid}?json=1` JSON endpoint is **DEAD** (verified 2026-11-21: all variants return `302 → store homepage`). Real source = scrape `https://store.steampowered.com/app/{appid}/?l=spanish&cc=US` — same HTML fetch + agecheck cookies the resolver already uses as fallback (`WebAPP.gs` ~L686). Extract review summary from the `user_reviews_summary_row` tooltips: `"El X% de las N reseñas ... últimos 30 días son positivas"` (30d window) and `"El Y% de las M reseñas ... en tu idioma son positivas"` (all-time). Store `resenasSteam` as `{pct30, total30, pct, total}` — positive count can come FREE from `recommendations.total` in `appdetails` (see audit §Steam); neg/pos30 derived as `round(pct*total/100)` (approximate, mark with `≈` in UI). Fetch lazily on modal open for `Juegos` only, not at catalog load. Tier = **5-block scale** (client-side, no Steam thresholds): 0-20 "Muy negativas", 20-40 "Mayormente negativas", 40-60 "Neutras", 60-80 "Mayormente positivas", 80-100 "Muy positivas". Frontend renders a **CSS-only chart** (no chart lib — vanilla SPA): (a) a 5-segment gradient bar red→gray→green with a marker/needle at the `pct` position, (b) the tier label under it, (c) big % positive number, pos/neg counts, total reviews, and a **trend chip** comparing `pct30` vs `pct` (↑/↓/→ "vs hace 30 días"). Only for `Juegos` with valid Steam appid; hide otherwise (same guard as `admiteTrailer` ~L1920). Reuse existing motion tokens for bar grow-in (`--t-*`, `transform: scaleX`). Note: Steam's 9-tier label and 5-star histogram are NOT exposed by the public API — this custom 5-block scale is the chosen simplified equivalent.
 
 ### 📍 Phase 4: Cloud SQL & Auth (v2.0)
 
