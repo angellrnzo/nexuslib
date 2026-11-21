@@ -104,9 +104,13 @@ New sheet `mods` (separate from the main catalog — do **not** alter existing c
 | `nombre` | string | mod name |
 | `fuente` | enum | `nexus_mods` / `steam_workshop` / `curseforge` / `otra_url` |
 | `url` | string | direct link to the mod page |
-| `version_juego` | string | game version/build the mod is confirmed for (e.g. "v1.7.9b", "repentance+") |
+| `version_juego` | string | **per mod** — game version/build the mod supports (free text, e.g. "v1.7.9b"); mods are **grouped by version** in the UI (3 mods @1.2, 1 @1.1) |
 | `notas` | string | load order, dependencies, personal notes |
 | `fecha` | date | when saved |
+
+> **Decisions (user, 2026-11-21):**
+> - **No status field** — saving a mod already means "I'm interested / might play it". No descargado/instalado states.
+> - **No Couple's Match integration** — mods stay private per user. Optional **1-to-1 sharing**: when opening a game, the user may be asked if they want to view/share mods with the other user — opt-in per session, decided later, never automatic.
 
 ### Sources & discovery
 
@@ -115,11 +119,14 @@ New sheet `mods` (separate from the main catalog — do **not** alter existing c
 
 ### UI (v1)
 
-- Game detail modal → new collapsible section **"Mods"** below existing notes:
-  - Per-user tab or badge (Angel / Talmai) matching the app's profile pattern.
-  - List of saved mods: name, source icon/pill, version tag, link-out icon, delete.
-  - "Añadir mod" form: name + source dropdown + URL + version + notes.
-  - Quick-search row: 3–4 icon buttons (Nexus, Workshop, CurseForge, Google) prefilled with the game title.
+- **Placement decision (user, 2026-11-21):** mods are an **independent section inside each game's detail modal** — NOT a new top-level category and NOT visible in the main grid/scheme. Access is only via the game itself.
+- Game detail modal → collapsible section **"Mods"** (below existing notes):
+  - Per-user view matching the app's profile pattern (Angel / Talmai).
+  - **Mods grouped by `version_juego`** — collapsible group headers per version (e.g. "v1.2 — 3 mods"), preserving save order inside.
+  - Each mod row: name, source pill, version tag (redundant with group but shown), link-out icon, delete.
+  - "Añadir mod" form: name + source dropdown (`Nexus Mods`, `Steam Workshop`, `CurseForge`, `Otra URL`) + URL + version (free text) + notes.
+  - Quick-search row: icon buttons (Nexus, Workshop, CurseForge, Google) prefilled with the game title. **Steam Workshop link can be exact** since games already store Steam AppID: `steamcommunity.com/workshop/browse/?appid=<id>&searchtext=<title>`.
+  - Optional share prompt on game open: "¿Quieres ver los mods de [otro usuario]?" — opt-in only.
 
 ### v2 — SQL mapping (Supabase, Phase 4+)
 
@@ -142,10 +149,12 @@ create table mods (
 
 Plus RLS policies mirroring the existing per-user tracking rules, and the same modal section reading from `mods` instead of Sheets.
 
-### Open questions
+### Decisions & open questions
 
-- Version tracking granularity: free text vs. parsed from the game's stored build field?
-- Should mods appear in Couple's Match ("mods both users saved")? Probably yes later via the same matching pattern.
+- ~~Version granularity~~ → **resolved:** free text per mod, grouped by version in UI.
+- ~~Mod status~~ → **resolved:** none — save = interest only.
+- ~~Couple's Match~~ → **resolved:** excluded; optional 1-to-1 opt-in share prompt on game open.
+- Still open: share mechanics for v1 Sheets (per-request flag vs. simply letting the other user open the same modal section read-only?).
 
 ---
 
