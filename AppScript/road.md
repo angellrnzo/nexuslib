@@ -18,13 +18,16 @@
 ## 🏗️ Architecture & Components (v1 — Current)
 
 ### PWA Shell (GitHub Pages)
+
 - **`index.html`** — Secure container embedding the main app via iframe.
 - **`manifest.json` & `service-worker.js`** — Home-screen installability and offline caching of shell resources (`nexuslib-cache-v2`).
 
 ### Main Application (SPA)
+
 - **`AppScript/Index.html`** — Vanilla JS SPA: swipe navigation, multi-criteria filtering, instant search, detail modals, per-user tracking.
 
 ### Backend & API
+
 - **`AppScript/WebAPP.gs`** — Core API engine and secure proxy for external metadata providers:
   - **Steam** — Store API search, HTML scraper fallback, SteamCMD (PICS), SteamGridDB.
   - **TMDB** — Movie/Series search, details, streaming providers, trailer links.
@@ -32,6 +35,7 @@
   - **AniList** — Manga tracking with automatic chapter count updates.
 
 ### Automation (CI/CD)
+
 - **GitHub Actions** — Deploys to GitHub Pages on every push; weekly `.xlsx` export of the Google Sheet into `AppScript/GameList.xlsx` (`backup-excel.yml`).
 
 ---
@@ -109,6 +113,7 @@ New sheet `mods` (separate from the main catalog — do **not** alter existing c
 | `fecha` | date | when saved |
 
 > **Decisions (user, 2026-11-21):**
+>
 > - **No status field** — saving a mod already means "I'm interested / might play it". No descargado/instalado states.
 > - **No Couple's Match integration** — mods stay private per user. Optional **1-to-1 sharing**: when opening a game, the user may be asked if they want to view/share mods with the other user — opt-in per session, decided later, never automatic.
 
@@ -151,6 +156,7 @@ create table mods (
 Plus RLS policies mirroring the existing per-user tracking rules, and the same modal section reading from `mods` instead of Sheets.
 
 **Migration path (v1 Sheets → v2 SQL):**
+
 1. ETL alongside the existing `GameList.xlsx` import: each `mods` sheet row resolves `game_id` → canonical `media_items.id` via the same `(category, provider, external_id)` dedup key used for catalog items (Steam AppID → `provider='steam'`).
 2. `user` enum (`angel`/`talmai`) maps to `profiles.id` via the same UUID mapping used for `user_media_tracking`.
 3. `UNIQUE(game_id, user_id, url)` dedups re-saves; rows missing URL fall back to `(game_id, user_id, lower(nombre))` uniqueness.
@@ -204,6 +210,7 @@ Plus RLS policies mirroring the existing per-user tracking rules, and the same m
 ### 📍 Phase 4: Cloud SQL & Auth (v2.0)
 
 **Scope — what will be built:**
+
 1. `database/schema.sql` on Supabase: `profiles`, `libraries`, `library_members`, `library_links`, `media_items`, `library_items`, `user_media_tracking`, `mods` (see WIKI §7.3 for full DDL summary).
 2. Edge Functions / Workers replacing `WebAPP.gs` resolvers (Steam Store+fallback chain, TMDB, OpenLibrary, AniList) — same fallback order as v1.
 3. ETL `GameList.xlsx` → PostgreSQL: map sheets rows to `media_items` via `(category, provider, external_id)`; `mods` sheet → `mods` table per spec above.
@@ -212,6 +219,7 @@ Plus RLS policies mirroring the existing per-user tracking rules, and the same m
 ### 📍 Phase 5: Cross-User Library Linking (v2.0) — ⚠️ Decision pending
 
 **Scope — what will be built:**
+
 1. Invite-code UI: generate/share 10-char `invite_code`, enter code → `request_library_link()` RPC (`pending`).
 2. Approval flow: other user accepts → `accepted`; `match_enabled` toggle per link (private notes never cross).
 3. Match feed: unified view over `v_library_matches` + `v_cross_library_matches` with realtime subscriptions.
@@ -222,6 +230,7 @@ Plus RLS policies mirroring the existing per-user tracking rules, and the same m
 ### 📍 Phase 6: Android APK & Release CI/CD (v2.0)
 
 **Scope — what will be built:**
+
 1. `npx cap init/add android` wrapper (`com.nexuslib.app`), dark StatusBar, haptics, `backButton` → modal close (details in WIKI §7.4).
 2. Offline-first: IndexedDB write queue → `UPSERT` sync on reconnect.
 3. `.github/workflows/build-apk.yml` on `v*` tags → signed release → GitHub Releases.

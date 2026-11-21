@@ -1,6 +1,8 @@
+<!-- markdownlint-disable MD041 MD001 -->
 <div align="center">
 
 # 🌌 NexusLib
+
 ### *Collaborative Multimedia Platform & Progressive Web App (PWA)*
 
 Real-time tracking and synchronization of **Video Games, Movies/Series, Books, and Manga**.  
@@ -20,6 +22,7 @@ Cloud-synced via **Google Sheets**, powered by a **Google Apps Script** backend,
 ---
 
 ## 📑 Table of Contents
+
 - [✨ Key Features](#-key-features)
 - [🏛️ System Architecture](#️-system-architecture)
 - [🛠️ Tech Stack](#️-tech-stack)
@@ -35,24 +38,27 @@ Cloud-synced via **Google Sheets**, powered by a **Google Apps Script** backend,
 ## ✨ Key Features
 
 ### 🎮 Multi-Category Media Management
-* **Video Games:** Steam AppID detection, stable builds, beta branches, patch notes, Steam Deck compatibility, tags, and high-resolution screenshots.
-* **Movies & Series:** TMDB catalog integration, seasons/episodes, airing status, streaming platform availability (Netflix, Prime, Max, Crunchyroll, etc.), and embedded trailers.
-* **Books:** Search by ISBN or Work ID on Open Library, pages, audience demographics, publisher, and publication date.
-* **Manga:** AniList GraphQL search (compatible with MyAnimeList IDs), volume count, demographics, and total chapters.
+
+- **Video Games:** Steam AppID detection, stable builds, beta branches, patch notes, Steam Deck compatibility, tags, and high-resolution screenshots.
+- **Movies & Series:** TMDB catalog integration, seasons/episodes, airing status, streaming platform availability (Netflix, Prime, Max, Crunchyroll, etc.), and embedded trailers.
+- **Books:** Search by ISBN or Work ID on Open Library, pages, audience demographics, publisher, and publication date.
+- **Manga:** AniList GraphQL search (compatible with MyAnimeList IDs), volume count, demographics, and total chapters.
 
 ### 👥 Couple Collaborative Tracking (Angel & Talmai)
-* **Independent profiles:** Per-user status (*Pending, In Progress, Completed*), personal notes, wishlists, and 1-to-10 star ratings.
-* **❤️ Couple Match:** Interactive algorithm that cross-references both libraries to instantly surface titles both users have pending or mutually wishlisted.
-* **📊 Comparative Statistics:** Cross metrics, average ratings, completion percentages, and dynamic bar charts per profile.
-* **📖 Reading Progress:** Percentage progress bar and dynamic chapter tracking for manga and books.
-* **🎮 Game Mods Tracker** *(planned)* — per-user mod lists inside each game's detail (Nexus Mods / Steam Workshop / CurseForge / custom URL), grouped by game version. Spec in `AppScript/road.md`.
+
+- **Independent profiles:** Per-user status (*Pending, In Progress, Completed*), personal notes, wishlists, and 1-to-10 star ratings.
+- **❤️ Couple Match:** Interactive algorithm that cross-references both libraries to instantly surface titles both users have pending or mutually wishlisted.
+- **📊 Comparative Statistics:** Cross metrics, average ratings, completion percentages, and dynamic bar charts per profile.
+- **📖 Reading Progress:** Percentage progress bar and dynamic chapter tracking for manga and books.
+- **🎮 Game Mods Tracker** *(planned)* — per-user mod lists inside each game's detail (Nexus Mods / Steam Workshop / CurseForge / custom URL), grouped by game version. Spec in `AppScript/road.md`.
 
 ### 📱 High-Performance PWA Experience
-* **60 FPS on Mobile:** Virtualization and infinite pagination with `IntersectionObserver` and `content-visibility: auto` (batches of 36 cards).
-* **Touch Navigation (Swipe):** Natural horizontal swiping between category tabs.
-* **HLS & YouTube Player:** In-app trailer streaming without leaving the app (dynamic `hls.js` injection for `.m3u8`).
-* **Smart Cache:** `v19` local storage with 12-hour expiration for lightning-fast loads and reduced Google Sheets quota usage.
-* **Native Mobile Integration:** `popstate` history handling for smooth modal dismissal via the Android/iOS hardware "Back" button.
+
+- **60 FPS on Mobile:** Virtualization and infinite pagination with `IntersectionObserver` and `content-visibility: auto` (batches of 36 cards).
+- **Touch Navigation (Swipe):** Natural horizontal swiping between category tabs.
+- **HLS & YouTube Player:** In-app trailer streaming without leaving the app (dynamic `hls.js` injection for `.m3u8`).
+- **Smart Cache:** `v19` local storage with 12-hour expiration for lightning-fast loads and reduced Google Sheets quota usage.
+- **Native Mobile Integration:** `popstate` history handling for smooth modal dismissal via the Android/iOS hardware "Back" button.
 
 ---
 
@@ -146,19 +152,21 @@ NexusLib/
 ## 🚀 Deployment & Setup
 
 ### 1. Deploying the Backend (Google Apps Script)
+
 1. Create a new spreadsheet in [Google Sheets](https://sheets.new) or import `AppScript/GameList.xlsx`.
 2. Go to **Extensions** → **Apps Script**.
 3. Copy the contents of `AppScript/WebAPP.gs` into the code file (`Code.gs`) and create an HTML file named `Index` with the contents of `AppScript/Index.html`.
 4. In **Project Settings** → **Script Properties**, add your API keys:
-   * `TMDB_API_KEY`: Your The Movie Database key.
-   * `STEAMGRIDDB_API_KEY` *(Optional)*: For alternative Steam covers.
+   - `TMDB_API_KEY`: Your The Movie Database key.
+   - `STEAMGRIDDB_API_KEY` *(Optional)*: For alternative Steam covers.
 5. Click **Deploy** → **New deployment**:
-   * Type: *Web app*.
-   * Execute as: *Me*.
-   * Who has access: *Anyone*.
+   - Type: *Web app*.
+   - Execute as: *Me*.
+   - Who has access: *Anyone*.
 6. Copy the URL ending in `/exec` and paste it into the iframe `src` attribute in `index.html`.
 
 ### 2. Deploying the Frontend (GitHub Pages)
+
 1. Push this repository to your GitHub account.
 2. Go to **Settings** → **Pages**.
 3. Under **Build and deployment** → **Source**, select **`GitHub Actions`**.
