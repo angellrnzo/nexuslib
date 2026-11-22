@@ -450,6 +450,16 @@ alter table library_links
 
 - When opening a game, prompt "¿ver mods de [otro]?» — read-only view of their `mods` rows for that `game_id` (no auto-match). Governed by the `mods` field in the link's visibility matrix — if `mods:false`, the prompt never appears.
 
+#### 5D — Lightweight social layer (user idea, 2026-11-22)
+
+> **User direction:** no free-form chat — interactions stay **anchored to shared library items**. Cheap tables + RLS reuse the Phase 5 link model.
+
+- **Shared notes per item**: `shared_note` field on `library_items` (or a small `item_notes` table if notes must be per-user). Visible only to members of the link; respects `is_private` and the `notes` field in the visibility matrix.
+- **"Visto también" reactions**: lightweight ack on status changes (e.g. partner marks a movie watched → 👀 badge on your copy). v1 of the activity feed — cheapest social signal.
+- **`watching_now` ephemeral status**: "Angel está viendo X ahora" — auto-expires, Spotify-style. One nullable column + TTL, no chat infra.
+- **Recommendations with one-click add**: when a linked user shares/recommends an item, the receiver gets an **"Agregar a mi biblioteca"** button → creates a `user_media_tracking` row (or wishlist entry) in *their own* library with `recommended_by` attribution. Turns social signal into action without conversation.
+- Explicitly out: free-form chat/messaging — cost/benefit doesn't justify it vs. item-anchored interactions.
+
 > **Open question:** with only Angel & Talmai as users, does "linking" mean *linking their two personal libraries* (simpler — `v_library_matches` may already suffice) or *multi-user library sharing* (full `library_links` needed)? Resolve before building the invite-code UI. **Note:** the link_type/visibility design above assumes full `library_links` — with only 2 users a single link row still works (one relationship = one row).
 
 ### 📍 Phase 6: Android APK & Release CI/CD (v2.0)
@@ -482,4 +492,4 @@ alter table library_links
 
 ---
 
-*Last consolidated update: 2026-11-21 — Phase 1 ✅ implemented & verified in production; v1→v2 cut-over rule defined (Phase 4 = the cut); benchmark features placed (calendar+stats → v1 Phase 3.5; import/activity/visibility → v2 Phase 5); Phase 7 candidate = Coleccionables.*
+*Last consolidated update: 2026-11-22 — Phase 5D spec added (lightweight social layer: shared notes, "visto también", watching_now, recommendation → one-click add to personal library; free-form chat discarded). Prior: Phase 1 ✅ implemented & verified in production; v1→v2 cut-over rule defined (Phase 4 = the cut); benchmark features placed (calendar+stats → v1 Phase 3.5; import/activity/visibility → v2 Phase 5); Phase 7 candidate = Coleccionables.*

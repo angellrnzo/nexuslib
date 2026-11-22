@@ -379,6 +379,8 @@ Rules for all frontend work (v1 and v2):
 | `user_media_tracking` | Per-user status, rating (1.0–10.0), progress, `is_wishlisted`, notes. **Phase 5A adds:** `is_private boolean` — item never crosses any library link regardless of visibility matrices. |
 | `mods` *(planned)* | Per-user mod lists per game — name, source (`nexus_mods`/`steam_workshop`/`curseforge`/`otra_url`), URL, `version_juego` (grouped in UI), notes. Spec in `road.md` → "Game Mods Tracker". |
 
+**Lightweight social layer (Phase 5D, planned):** item-anchored interactions between linked libraries — shared notes per item, "visto también" reactions, ephemeral `watching_now` status, and recommendations with a one-click "add to my library" button (`recommended_by` attribution). Free-form chat is explicitly out of scope. Spec in `road.md` → Phase 5D.
+
 **Key DB objects:**
 
 - `v_library_matches` — intra-library match (≥2 members wishlist/backlog the same item).
@@ -406,4 +408,4 @@ Phases are ordered by **user-visible impact per effort**: UX fixes and motion de
 
 ---
 
-*Last updated: 2026-11-21 — Phase 1 UX fixes implemented; data-source audit + v2 SQL mapping notes in road.md.*
+*Last updated: 2026-11-22 — Phase 5D social-layer spec noted (roadmap); Phase 1 UX fixes implemented; data-source audit + v2 SQL mapping notes in road.md.*
