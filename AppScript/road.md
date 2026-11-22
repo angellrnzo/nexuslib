@@ -460,6 +460,34 @@ alter table library_links
 - **Recommendations with one-click add**: when a linked user shares/recommends an item, the receiver gets an **"Agregar a mi biblioteca"** button → creates a `user_media_tracking` row (or wishlist entry) in *their own* library with `recommended_by` attribution. Turns social signal into action without conversation.
 - Explicitly out: free-form chat/messaging — cost/benefit doesn't justify it vs. item-anchored interactions.
 
+##### Preset touches (quick reactions, user idea 2026-11-22)
+
+> **Goal:** zero-typing interactions. A row of preset "toques" on any shared/matched item; each touch carries an optional short note and can trigger a real action — closing the loop from "I saw this" to "it's in my library".
+
+| Touch | Label (ES default) | Effect on receiver's library | Notifies sender? |
+| :--- | :--- | :--- | :---: |
+| `interested` | "Me interesa" | Adds item to receiver's **wishlist** with `recommended_by` | ✅ |
+| `save` | "Guárdalo" | Adds item to receiver's **backlog** | ✅ |
+| `watching` | "La estoy viendo" | Sets receiver's `watching_now` to this item | ✅ |
+| `seen` | "Ya la vi" | Sets receiver's status → watched + optional star rating prompt | ✅ |
+| `later` | "Para después" | Wishlist with snooze marker (re-surfaces in N days) | ❌ |
+| `note` | "Mira esto 👀" | Opens note field → posts `shared_note` on the item | ✅ |
+| `vote` | "¿La vemos?" | Creates lightweight poll on the item (2–4 options from shared wishlist) | ✅ |
+
+**Real usage flow (design target):**
+
+1. Partner browsing shared catalog/match feed taps **"Me interesa"** on a movie → it lands in *your* wishlist tagged `recommended_by: partner` → you get a subtle badge/notification.
+2. You open it → see their note ("la escena del final es brutal") → tap **"Ya la vi"** → status updates, optional rating → partner sees the 👀/⭐ ack on their copy.
+3. Or you tap **"La estoy viendo"** → partner sees `watching_now` on the item → later **"¿La vemos?"** poll proposes a watch night from both wishlists.
+
+**Implementation notes:**
+
+- Touches are rows in a `item_touches` table (`item_id`, `from_user_id`, `to_user_id`/`library_id`, `touch_type`, `note`, `created_at`) — or a JSONB array on the link if volume stays tiny; table preferred for realtime + analytics.
+- Each `touch_type` maps to a deterministic write into `user_media_tracking` (status/wishlist/watch-now) — touches are **actions**, not just emoji.
+- Respect `is_private` and the visibility matrix: a touch on a non-shared field never crosses.
+- i18n: touch labels live in the `I18N` dictionary (Phase 2.5) — ES default, EN fallback.
+- Rate-limit: max ~20 touches/hour/link to avoid spam; touches expire visually after N days unless actioned.
+
 > **Open question:** with only Angel & Talmai as users, does "linking" mean *linking their two personal libraries* (simpler — `v_library_matches` may already suffice) or *multi-user library sharing* (full `library_links` needed)? Resolve before building the invite-code UI. **Note:** the link_type/visibility design above assumes full `library_links` — with only 2 users a single link row still works (one relationship = one row).
 
 ### 📍 Phase 6: Android APK & Release CI/CD (v2.0)
@@ -492,4 +520,4 @@ alter table library_links
 
 ---
 
-*Last consolidated update: 2026-11-22 — Phase 5D spec added (lightweight social layer: shared notes, "visto también", watching_now, recommendation → one-click add to personal library; free-form chat discarded). Prior: Phase 1 ✅ implemented & verified in production; v1→v2 cut-over rule defined (Phase 4 = the cut); benchmark features placed (calendar+stats → v1 Phase 3.5; import/activity/visibility → v2 Phase 5); Phase 7 candidate = Coleccionables.*
+*Last consolidated update: 2026-11-22 — Phase 5D spec added (lightweight social layer: shared notes, "visto también", watching_now, preset touches catalog — "Me interesa"/"Ya la vi"/"¿La vemos?" — each mapped to a real library action; free-form chat discarded). Prior: Phase 1 ✅ implemented & verified in production; v1→v2 cut-over rule defined (Phase 4 = the cut); benchmark features placed (calendar+stats → v1 Phase 3.5; import/activity/visibility → v2 Phase 5); Phase 7 candidate = Coleccionables.*

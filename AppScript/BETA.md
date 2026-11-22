@@ -59,3 +59,13 @@
 - Estado: pendiente de implementación (post-cut, junto a Phase 5)
 - Pendiente: resolver open question de Phase 5 (2 usuarios vs multi-usuario) antes de construir
 - Necesito de ti: nada
+
+### 2026-11-22 — Phase 5D: catálogo de toques predeterminados
+
+- Rama/commit: `beta`
+- Cambios: `road.md` → Phase 5D ampliada con tabla de 7 preset touches (`interested`/`save`/`watching`/`seen`/`later`/`note`/`vote`), flujo de uso real de 3 pasos, notas de implementación (`item_touches` table, mapeo touch→acción, rate-limit, i18n). WIKI §7 actualizado
+- Spec origen: petición del usuario — toques tipo "mira aquí interesante" que concluyan en flujo real (recomendación → biblioteca)
+- Cómo probar: n/a (solo spec)
+- Estado: pendiente de implementación (post-cut, junto a Phase 5)
+- Pendiente: resolver open question de Phase 5 antes de construir
+- Necesito de ti: nada
