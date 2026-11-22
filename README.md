@@ -94,7 +94,7 @@ flowchart TD
     end
 
     subgraph Automation["GitHub Actions Automation"]
-        DeployAction["deploy.yml (Continuous deploy to Pages)"]
+        DeployAction["GitHub Pages (native branch deploy)"]
         BackupAction["backup-excel.yml (Weekly .xlsx export)"]
     end
 
@@ -130,8 +130,8 @@ flowchart TD
 NexusLib/
 ├── .github/
 │   └── workflows/
-│       ├── deploy.yml            # CI/CD: Continuous PWA deployment to GitHub Pages
 │       └── backup-excel.yml      # Weekly cron: Exports and commits GameList.xlsx to the repo
+│                                  # (Pages deploys natively from main — no workflow needed)
 ├── AppScript/                    # Backend source code and database
 │   ├── WebAPP.gs                 # Google Apps Script API server
 │   ├── Index.html                # Single Page Application (SPA) run inside Apps Script

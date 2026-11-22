@@ -27,7 +27,7 @@ This document is the technical and architectural reference manual for **NexusLib
    - [Service Worker & Offline Cache Strategy](#42-service-worker--offline-cache-strategy)
    - [PWA Manifest & Adaptive Iconography](#43-pwa-manifest--adaptive-iconography)
 5. [Automation & CI/CD (GitHub Actions)](#5-automation--cicd-github-actions)
-   - [Continuous Deployment (deploy.yml)](#51-continuous-deployment-deployyml)
+   - [Continuous Deployment (GitHub Pages)](#51-continuous-deployment-github-pages)
    - [Automated Weekly Excel Backup (backup-excel.yml)](#52-automated-weekly-excel-backup-backup-excelyml)
 6. [Troubleshooting Guide](#6-troubleshooting-guide)
 7. [v2 Target Architecture & Roadmap](#7-v2-target-architecture--roadmap)
@@ -258,13 +258,11 @@ The `manifest.json` file defines:
 
 ## 5. Automation & CI/CD (GitHub Actions)
 
-### 5.1. Continuous Deployment (deploy.yml)
+### 5.1. Continuous Deployment (native GitHub Pages)
 
-Located at [.github/workflows/deploy.yml](.github/workflows/deploy.yml):
+Pages **Source = "Deploy from a branch" (`main`, root `/`)** — every push to `main` is published automatically by GitHub's internal `pages build and deployment` workflow. The whole repo root is served as static files, including `AppScript/` sources (public but harmless).
 
-- Triggers automatically on every `push` to the `main` branch (plus manual `workflow_dispatch`).
-- Uses the official `actions/upload-pages-artifact@v3` and `actions/deploy-pages@v4` actions.
-- **Deployment scope:** Configured with `path: '.'`, so the **entire repository root** is published to GitHub Pages — including `AppScript/` sources, which are publicly reachable as static files (harmless, but worth knowing).
+> ⚠️ History note (2026-11-22): a custom `.github/workflows/deploy.yml` (upload-pages-artifact + deploy-pages) previously ran in parallel with the native deploy — redundant under branch-source Pages and it produced intermittent `Desplegar en GitHub Pages` failures from the two deployers racing. **Removed**; do not re-add an Actions-based Pages deploy unless the Pages source is switched to "GitHub Actions".
 
 ### 5.2. Automated Weekly Excel Backup (backup-excel.yml)
 
