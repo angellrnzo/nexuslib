@@ -260,6 +260,7 @@ Reference apps: **Backloggd** (closest — games/anime/books/manga/movies + soci
 
 | Feature | Side | Phase |
 |---|---|---|
+| UI polish, single-user reads, lazy metadata fetches, i18n ES/EN | v1 | 2.5 |
 | UX fixes, motion, fetchAll, health, offline RO | v1 | 1–3 |
 | Mods Tracker (Sheets read/write) | v1 | 3 |
 | Steam Reviews breakdown | v1 | 3 |
@@ -345,6 +346,20 @@ See [AppScript/BETA.md](BETA.md) — one entry per working session: what was don
 - **2D Bottom sheet:** `.modal-content` (~L559-570) — on `(max-width: 768px)` make it `position:fixed; bottom:0; border-radius:16px 16px 0 0; max-height:85vh` with drag-handle bar; pull-down dismiss via `touchmove` deltaY >80px reusing swipe math. Keep desktop centered modal unchanged.
 - **2D Scroll-snap:** `#m-screenshots` (~L1064) add `scroll-snap-type:x mandatory` + `scroll-snap-align:center` on children; generate dots container under it updated on `scroll` event (IntersectionObserver or scrollLeft math).
 - **Guardrail:** every new animation must degrade under `prefers-reduced-motion` (the existing ~L745 block already nukes durations globally — verify new keyframes don't bypass it).
+
+### 📍 Phase 2.5: UI Internationalization — ES/EN (v1.x — frontend only)
+
+> **User decision (2026-11-22):** the web app becomes bilingual Spanish/English. **Default language on open: Spanish** (`es`). Repo docs stay in English (project is public/general). All new features must ship with i18n keys from day one — no hardcoded strings.
+
+**Spec — implementable on v1 (left of the cut, no backend dependency):**
+
+1. **String dictionary** — new `I18N` object in `Index.html`: `{ es: { key: "texto" }, en: { key: "text" } }`. Keys grouped by section (`nav.*`, `modal.*`, `filters.*`, `stats.*`, `common.*`).
+2. **`t(key)` helper** — returns `I18N[lang][key] || I18N.es[key] || key`; `lang` from `localStorage('nexuslib_lang')`, default `'es'`.
+3. **Extraction pass** — replace hardcoded UI strings in `Index.html` (buttons, labels, placeholders, toasts, empty states, aria-labels) with `t('...')` calls. Template literals stay; only visible text moves to the dictionary. Estimated several hundred strings — mechanical but large; do it in one focused pass, verify visually per category.
+4. **Language toggle** — selector in the header/settings (globe icon), persists to `localStorage`, re-renders current view without reload (`renderGrid()` / re-open modal).
+5. **API content language** — decision needed per provider: keep `l=spanish` always (content stays ES regardless of UI) OR map UI lang → provider lang params (Steam `l=`, TMDB `language=`, AniList `UserPreferred`?). **Recommendation:** phase 1 = UI strings only, provider content stays Spanish; revisit later if wanted.
+6. **Numbers/dates** — use `Intl.NumberFormat`/`DateTimeFormat` with active locale for ratings, counts, dates.
+7. **Guardrails:** no string concatenation for sentences (word order differs ES/EN — use placeholders like `t('mods.count', {n})`); keep `titulo`/metadata untouched (proper nouns).
 
 ### 📍 Phase 3: Backend & Offline Resilience (v1.x)
 

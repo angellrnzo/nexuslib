@@ -39,3 +39,13 @@
 - Estado: verificado
 - Pendiente: elegir la primera fase beta (candidatas: Phase 2 motion, Phase 3 backend/mods/reviews)
 - Necesito de ti: decidir por qué phase empezamos
+
+### 2026-11-22 — Spec i18n ES/EN añadida al roadmap
+
+- Rama/commit: `beta`
+- Cambios: Phase 2.5 documentada en `road.md` (diccionario `I18N` + `t()`, toggle con `localStorage`, **español por defecto**); fila añadida al mapa de ubicación de features; CHANGELOG Unreleased actualizado
+- Spec origen: petición del usuario — web bilingüe ES/EN, docs del repo se quedan en inglés
+- Cómo probar: n/a (solo spec)
+- Estado: pendiente de implementación
+- Pendiente: extracción de strings de `Index.html` (varios cientos — sesión beta dedicada)
+- Necesito de ti: nada
