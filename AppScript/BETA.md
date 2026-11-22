@@ -49,3 +49,13 @@
 - Estado: pendiente de implementación
 - Pendiente: extracción de strings de `Index.html` (varios cientos — sesión beta dedicada)
 - Necesito de ti: nada
+
+### 2026-11-22 — Spec capa social ligera (Phase 5D)
+
+- Rama/commit: `beta` (`3d4f751`)
+- Cambios: Phase 5D añadida a `road.md` — notas compartidas por ítem, reacciones "visto también", `watching_now` efímero, y recomendaciones con botón "Agregar a mi biblioteca" (`recommended_by`); chat libre descartado explícitamente. WIKI §7 actualizado con la nota de la capa social
+- Spec origen: conversación con el usuario — interacciones sociales ancladas a ítems compartidos, no mensajería
+- Cómo probar: n/a (solo spec)
+- Estado: pendiente de implementación (post-cut, junto a Phase 5)
+- Pendiente: resolver open question de Phase 5 (2 usuarios vs multi-usuario) antes de construir
+- Necesito de ti: nada
