@@ -354,7 +354,7 @@ See [AppScript/BETA.md](BETA.md) — one entry per working session: what was don
 **Spec — implementable on v1 (left of the cut, no backend dependency):**
 
 1. **String dictionary** — new `I18N` object in `Index.html`: `{ es: { key: "texto" }, en: { key: "text" } }`. Keys grouped by section (`nav.*`, `modal.*`, `filters.*`, `stats.*`, `common.*`).
-2. **`t(key)` helper** — returns `I18N[lang][key] || I18N.es[key] || key`; `lang` from `localStorage('nexuslib_lang')`, default `'es'`.
+2. **`t(key)` helper** — returns `I18N[lang][key] || I18N.es[key] || key`; `lang` from `localStorage('nexuslib_lang')`, default `'es'`. The choice is **cached persistently** (localStorage survives PWA restarts; in the v2 native app the same key persists in the WebView, and the preference can later sync to `profiles.preferences` JSONB so it follows the user across devices).
 3. **Extraction pass** — replace hardcoded UI strings in `Index.html` (buttons, labels, placeholders, toasts, empty states, aria-labels) with `t('...')` calls. Template literals stay; only visible text moves to the dictionary. Estimated several hundred strings — mechanical but large; do it in one focused pass, verify visually per category.
 4. **Language toggle** — selector in the header/settings (globe icon), persists to `localStorage`, re-renders current view without reload (`renderGrid()` / re-open modal).
 5. **API content language** — decision needed per provider: keep `l=spanish` always (content stays ES regardless of UI) OR map UI lang → provider lang params (Steam `l=`, TMDB `language=`, AniList `UserPreferred`?). **Recommendation:** phase 1 = UI strings only, provider content stays Spanish; revisit later if wanted.
