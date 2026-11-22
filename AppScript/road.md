@@ -404,7 +404,6 @@ alter table library_links
 ### 📍 Phase 7 (candidate — ⭐ OPTIONAL, HIGH INTEREST): Coleccionables — figuras, juegos de mesa, rompecabezas, LEGO… (v2.x — post-cut)
 
 > **Status:** optional future category — user-marked **high interest** (2026-11-21). Build only after v2 core is stable.
-
 > **User idea (2026-11-21):** a general collecting category — differentiator vs Backloggd/Trakt (neither covers collecting well). Consumption → **ownership** model: `tengo` / `quiero` / `vendido`, condition, acquisition date, estimated value.
 
 - One category `Coleccionables` with `tipo` field — full subtype list:
