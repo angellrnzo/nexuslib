@@ -69,3 +69,13 @@
 - Estado: pendiente de implementación (post-cut, junto a Phase 5)
 - Pendiente: resolver open question de Phase 5 antes de construir
 - Necesito de ti: nada
+
+### 2026-11-22 — Phase 5D: toques por tipo de relación + exclusivos de pareja
+
+- Rama/commit: `beta`
+- Cambios: `road.md` → Phase 5D ampliada: set de touches filtrado por `link_type` (pareja=catálogo completo + exclusivos, amigo=set suave "Me la apunto"/"Buena elección"/"Jaja", familia=mínimo, custom=configurable) y tabla de 4 toques exclusivos de pareja (`react_love`, `date_night`, `inside`, `miss_you_note`). WIKI §7 actualizado
+- Spec origen: petición del usuario — mismas mecánicas pero tono más blando con amigos + reacciones específicas de pareja
+- Cómo probar: n/a (solo spec)
+- Estado: pendiente de implementación (post-cut, junto a Phase 5)
+- Pendiente: resolver open question de Phase 5 antes de construir
+- Necesito de ti: nada

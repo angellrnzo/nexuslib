@@ -488,6 +488,39 @@ alter table library_links
 - i18n: touch labels live in the `I18N` dictionary (Phase 2.5) — ES default, EN fallback.
 - Rate-limit: max ~20 touches/hour/link to avoid spam; touches expire visually after N days unless actioned.
 
+##### Touches per relationship type (user idea 2026-11-22)
+
+> **Concept:** same `item_touches` mechanics, but the **available set and tone scale with `link_type`** — pareja gets the full intimate set; amigos gets a softer, lower-pressure variant; familia gets minimal. Prevents the "partner features" from feeling weird with friends.
+
+| `link_type` | Touches enabled | Tone / what's excluded |
+| :--- | :--- | :--- |
+| `pareja` | Full catalog (all 7) **+ exclusive couple touches** | Intimate: `watching_now`, "¿La vemos?" polls, seen-acks — the couple-flow is the primary use case |
+| `amigo` | `interested`, `save`, `note`, `later` + soft variants | No `watching_now` broadcast, no "¿La vemos?" (that's couple-planning); adds casual reactions: "Buena elección 👍", "Jaja este sí" — acknowledges without tracking pressure |
+| `familia` | `save`, `note` only | Minimal — family links default to the most restrictive visibility anyway; touches stay informational |
+| `custom` | Configurable subset | Owner picks enabled touches in the link's settings (same editor pattern as the visibility matrix) |
+
+**Couple-exclusive touches (`pareja` only — never offered to other link types):**
+
+| Touch | Label (ES) | Effect |
+| :--- | :--- | :--- |
+| `react_love` | "Te quiero 💕" / heart | Pure ack reaction — no library write, shows on the item for both |
+| `date_night` | "Noche de pelis 🌙" | Proposes a watch-together: creates a pending `watching_now` invite both must accept → shared viewing session marker |
+| `inside` | "Nuestra" | Marks the item as a shared-favorites entry (couple-only badge on the item in both libraries) |
+| `miss_you_note` | "Te extraño aquí" | `shared_note` variant styled differently — sentimental note pinned to the item |
+
+These couple touches are the identity layer: they exist **only** because `link_type='pareja'` — the same engine, gated by relationship.
+
+**Soft-variant labels (ES, `amigo` set):**
+
+- `interested` → "Me la apunto" (softer than "Me interesa")
+- `save` → "La guardo"
+- `note` → "Mira esto"
+- `later` → "Luego la veo"
+- `react_good` → "Buena elección" (pure ack, no library write)
+- `react_funny` → "Jaja, esa sí" (pure ack)
+
+**Implementation:** `touch_type` enum stays global; a per-`link_type` allowlist (or per-link override for `custom`) filters which touches render in the UI and which the Edge Function accepts. The DB write is identical — only the label set and enabled subset differ. Reactions (`react_*`) write a touch row with no `user_media_tracking` side-effect.
+
 > **Open question:** with only Angel & Talmai as users, does "linking" mean *linking their two personal libraries* (simpler — `v_library_matches` may already suffice) or *multi-user library sharing* (full `library_links` needed)? Resolve before building the invite-code UI. **Note:** the link_type/visibility design above assumes full `library_links` — with only 2 users a single link row still works (one relationship = one row).
 
 ### 📍 Phase 6: Android APK & Release CI/CD (v2.0)
@@ -520,4 +553,4 @@ alter table library_links
 
 ---
 
-*Last consolidated update: 2026-11-22 — Phase 5D spec added (lightweight social layer: shared notes, "visto también", watching_now, preset touches catalog — "Me interesa"/"Ya la vi"/"¿La vemos?" — each mapped to a real library action; free-form chat discarded). Prior: Phase 1 ✅ implemented & verified in production; v1→v2 cut-over rule defined (Phase 4 = the cut); benchmark features placed (calendar+stats → v1 Phase 3.5; import/activity/visibility → v2 Phase 5); Phase 7 candidate = Coleccionables.*
+*Last consolidated update: 2026-11-22 — Phase 5D spec added (lightweight social layer: shared notes, "visto también", watching_now, preset touches catalog — "Me interesa"/"Ya la vi"/"¿La vemos?" — scaled per `link_type` with couple-exclusive reactions; free-form chat discarded). Prior: Phase 1 ✅ implemented & verified in production; v1→v2 cut-over rule defined (Phase 4 = the cut); benchmark features placed (calendar+stats → v1 Phase 3.5; import/activity/visibility → v2 Phase 5); Phase 7 candidate = Coleccionables.*
