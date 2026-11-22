@@ -27,7 +27,7 @@ This document is the technical and architectural reference manual for **NexusLib
    - [Service Worker & Offline Cache Strategy](#42-service-worker--offline-cache-strategy)
    - [PWA Manifest & Adaptive Iconography](#43-pwa-manifest--adaptive-iconography)
 5. [Automation & CI/CD (GitHub Actions)](#5-automation--cicd-github-actions)
-   - [Continuous Deployment (GitHub Pages)](#51-continuous-deployment-github-pages)
+   - [Continuous Deployment (GitHub Pages)](#51-continuous-deployment-native-github-pages)
    - [Automated Weekly Excel Backup (backup-excel.yml)](#52-automated-weekly-excel-backup-backup-excelyml)
 6. [Troubleshooting Guide](#6-troubleshooting-guide)
 7. [v2 Target Architecture & Roadmap](#7-v2-target-architecture--roadmap)
