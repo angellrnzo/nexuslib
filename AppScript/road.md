@@ -290,7 +290,7 @@ feat/* ← optional short-lived branches for a single phase item, merged into be
 >
 > **Docs vs app (clarified 2026-11-22):** *documentation* may be updated on `main` at any time — it doesn't ship to users. The **app itself is frozen on `main`**: no changes to the frontend (`index.html`, `AppScript/Index.html`, `manifest.json`, `service-worker.js`) or backend (`AppScript/WebAPP.gs`) reach `main` unless we explicitly prepare the deploy **after all work for that release is finished**. Docs track the plan in parallel; the app only moves on promotion day.
 >
-> **Deploy confirmation protocol (2026-11-22):** even when the owner says the deploy phrase, the agent must **not** run any deploy/merge/push to `main` on its own — it must first ask the owner to **write the confirmation command literally** (e.g. `CONFIRMAR DEPLOY`). Only that explicit typed command authorizes the promotion. This prevents accidental deploys from ambiguous phrasing.
+> **Deploy confirmation protocol (2026-11-22):** even when the owner says the deploy phrase, the agent must **not** run any deploy/merge/push to `main` on its own — it must first ask the owner to **write the confirmation command literally**. The authorized command is **`Confirmar deploy`** (exact phrase, case-insensitive). Only that explicit typed command authorizes the promotion. This prevents accidental deploys from ambiguous phrasing.
 
 ### Daily flow
 
