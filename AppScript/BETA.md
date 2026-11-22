@@ -1,8 +1,8 @@
 # BETA — Registro de avances y pruebas
 
 > Un bloque por sesión de trabajo. La rama `beta` es el banco de pruebas;
-> `main` es producción. Ver el flujo completo en `AppScript/road.md` →
-> "Branching, Beta & Release Workflow".
+> `main` es producción y **solo se actualiza con aprobación expresa del
+> owner** — ver `AppScript/road.md` → "Branching, Beta & Release Workflow".
 
 ## Cómo probar una entrada beta
 

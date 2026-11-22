@@ -280,9 +280,12 @@ Reference apps: **Backloggd** (closest — games/anime/books/manga/movies + soci
 
 ```text
 main   ← production. GitHub Pages + Apps Script /exec serve this.
+         NEVER touched without the owner's explicit approval.
 beta   ← integration & testing. Nothing here reaches users.
 feat/* ← optional short-lived branches for a single phase item, merged into beta.
 ```
+
+> **Golden rule:** `main` is only updated when the repository owner explicitly approves a promotion. All day-to-day work lands on `beta`/`feat/*` and is verified via the Apps Script `/dev` URL before promotion.
 
 ### Daily flow
 
