@@ -264,7 +264,7 @@ Pages **Source = "Deploy from a branch" (`main`, root `/`)** — every push to `
 
 > ⚠️ History note (2026-11-22): a custom `.github/workflows/deploy.yml` (upload-pages-artifact + deploy-pages) previously ran in parallel with the native deploy — redundant under branch-source Pages and it produced intermittent `Desplegar en GitHub Pages` failures from the two deployers racing. **Removed**; do not re-add an Actions-based Pages deploy unless the Pages source is switched to "GitHub Actions".
 >
-> **Beta workflow (2026-11-22):** development happens on the `beta` branch; `main` stays production. Beta builds are tested via the Apps Script `/dev` URL (latest saved code, no new version needed); promotion to `/exec` requires merging `beta`→`main` + a new Apps Script deployment version. Full process + daily log in `road.md` → "Branching, Beta & Release Workflow" and `AppScript/BETA.md`.
+> **Beta workflow (2026-11-22):** development happens on the `beta` branch; `main` stays production. Beta builds are tested via the Apps Script `/dev` URL (latest saved code, no new version needed); promotion to `/exec` requires merging `beta`→`main` + a new Apps Script deployment version. **Docs may be updated on `main` anytime (they don't ship); app code (frontend + `WebAPP.gs`) is frozen on `main` until an explicit deploy is prepared after the release work is finished.** Full process + daily log in `road.md` → "Branching, Beta & Release Workflow" and `AppScript/BETA.md`.
 
 ### 5.2. Automated Weekly Excel Backup (backup-excel.yml)
 
@@ -379,7 +379,7 @@ Rules for all frontend work (v1 and v2):
 | `user_media_tracking` | Per-user status, rating (1.0–10.0), progress, `is_wishlisted`, notes. **Phase 5A adds:** `is_private boolean` — item never crosses any library link regardless of visibility matrices. |
 | `mods` *(planned)* | Per-user mod lists per game — name, source (`nexus_mods`/`steam_workshop`/`curseforge`/`otra_url`), URL, `version_juego` (grouped in UI), notes. Spec in `road.md` → "Game Mods Tracker". |
 
-**Lightweight social layer (Phase 5D, planned):** item-anchored interactions between linked libraries — shared notes per item, "visto también" reactions, ephemeral `watching_now` status, preset quick-reaction "toques" scaled by `link_type` — full catalog + couple-exclusive touches for `pareja`, softer casual set for `amigo`, minimal for `familia`, configurable for `custom` — each maps to a real library action, e.g. "Me interesa" → wishlist. and recommendations with a one-click "add to my library" button (`recommended_by` attribution). Free-form chat is explicitly out of scope. Spec in `road.md` → Phase 5D.
+**Lightweight social layer (Phase 5D, planned):** item-anchored interactions between linked libraries — shared notes per item, "visto también" reactions, ephemeral `watching_now` status, preset quick-reaction "toques" scaled by `link_type` — full catalog + couple-exclusive touches for `pareja`, softer casual set for `amigo`, minimal for `familia`, configurable for `custom` — each maps to a real library action, e.g. "Me interesa" → wishlist — plus recommendations with a one-click "add to my library" button (`recommended_by` attribution). Free-form chat is explicitly out of scope. Spec in `road.md` → Phase 5D.
 
 **Key DB objects:**
 
