@@ -272,6 +272,49 @@ Reference apps: **Backloggd** (closest — games/anime/books/manga/movies + soci
 
 ---
 
+## 🔀 Branching, Beta & Release Workflow
+
+> **Setup (2026-11-22):** `beta` branch created from `main`. All new feature work happens on `beta` (or short-lived `feat/*` branches merged into it) until promoted.
+
+### Branch model
+
+```text
+main   ← production. GitHub Pages + Apps Script /exec serve this.
+beta   ← integration & testing. Nothing here reaches users.
+feat/* ← optional short-lived branches for a single phase item, merged into beta.
+```
+
+### Daily flow
+
+1. Pick a spec from the Execution Roadmap → work on `beta` (or `feat/x` → merge to `beta`).
+2. Update `AppScript/BETA.md` with what changed, how to test, and what's pending.
+3. Paste the updated `AppScript/Index.html` into the Apps Script editor (manual step — no clasp).
+4. **Test on `/dev`** — Apps Script test deployment always serves the latest saved code:
+   `https://script.google.com/macros/s/<ID>/dev` — production `/exec` is untouched.
+5. When verified → merge `beta` → `main`, push, create a new Apps Script deployment version for `/exec`.
+
+### Promotion checklist (beta → main)
+
+- [ ] Feature tested on `/dev` on Android + desktop browser
+- [ ] `BETA.md` entry updated (status → verified)
+- [ ] `CHANGELOG.md` Unreleased entry moved under a version
+- [ ] If `index.html`/`service-worker.js`/`manifest.json` changed → bump SW cache version
+- [ ] Merge `beta` → `main`, push (Pages auto-deploys)
+- [ ] New Apps Script version → `/exec` updated
+- [ ] Note deploy version string (e.g. `v1.10.0 — Phase 2 motion`) in CHANGELOG + HANDOFF
+
+### Known limitations while on beta
+
+- GitHub Pages only builds `main` — shell-level changes (`index.html`, `manifest.json`, `service-worker.js`, icons) are NOT testable on beta via Pages; test them locally (`python -m http.server`) or wait for merge.
+- `WebAPP.gs` changes also require manual paste into Apps Script — same `/dev` flow applies.
+- Apps Script quotas are shared between `/dev` and `/exec` — heavy testing counts against the same limits.
+
+### Daily progress log
+
+See [AppScript/BETA.md](BETA.md) — one entry per working session: what was done, test steps, pending items, and anything needed from the user.
+
+---
+
 ## 🗺️ Execution Roadmap
 
 > Ordered by **user-visible impact per effort**. Phase 3 (motion) outranks Phase 4 (backend hardening) because backend items are invisible to users.

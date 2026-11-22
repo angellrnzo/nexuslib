@@ -263,6 +263,8 @@ The `manifest.json` file defines:
 Pages **Source = "Deploy from a branch" (`main`, root `/`)** — every push to `main` is published automatically by GitHub's internal `pages build and deployment` workflow. The whole repo root is served as static files, including `AppScript/` sources (public but harmless).
 
 > ⚠️ History note (2026-11-22): a custom `.github/workflows/deploy.yml` (upload-pages-artifact + deploy-pages) previously ran in parallel with the native deploy — redundant under branch-source Pages and it produced intermittent `Desplegar en GitHub Pages` failures from the two deployers racing. **Removed**; do not re-add an Actions-based Pages deploy unless the Pages source is switched to "GitHub Actions".
+>
+> **Beta workflow (2026-11-22):** development happens on the `beta` branch; `main` stays production. Beta builds are tested via the Apps Script `/dev` URL (latest saved code, no new version needed); promotion to `/exec` requires merging `beta`→`main` + a new Apps Script deployment version. Full process + daily log in `road.md` → "Branching, Beta & Release Workflow" and `AppScript/BETA.md`.
 
 ### 5.2. Automated Weekly Excel Backup (backup-excel.yml)
 
