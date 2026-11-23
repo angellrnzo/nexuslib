@@ -71,6 +71,7 @@
 | **Double-Tap Heart Burst** | 🔴 **PENDING** | `.img-container` (~L404), `renderGrid()` (~L1679) | Double-tap cover → `igHeartBurst` + wishlist toggle without opening the modal. |
 | **Bottom Sheet & Pull-to-Dismiss** | 🔴 **PENDING** | `#modal .modal-content` (~L559, ~L754) | Mobile modals as bottom-sheet drawers with drag handle and pull-to-close. |
 | **Carousel Scroll-Snap & Dots** | 🔴 **PENDING** | `#m-screenshots` (~L1064, ~L1943) | `scroll-snap-type: x mandatory` + dynamic pagination dots for Steam screenshots. |
+| **Image Lightbox Viewer** | 🔴 **PENDING** | `#m-screenshots`, `.carousel img` (~L650) | Fullscreen in-app lightbox for covers/screenshots/backdrops — arrows, keyboard/swipe nav, ESC/backdrop close. Keeps user inside the app (preferred over `window.open`/new tab, which breaks PWA context). User idea 2026-11-23. |
 
 ### 🧪 3. Backend, Infrastructure & Data Audit
 
