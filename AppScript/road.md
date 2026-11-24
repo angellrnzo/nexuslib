@@ -452,6 +452,7 @@ See [AppScript/BETA.md](BETA.md) — one entry per working session: what was don
 - [ ] **`database/schema.sql` written in full** — WIKI §7.3 is a summary; Phase 4 needs the actual DDL (tables, enums, RLS policies, RPCs, triggers, views). Draftable by agent, reviewed before applying.
 - [ ] **ETL field mapping doc** — sheet columns → `media_items`/`user_media_tracking` mapping table (decide `content_rating`, `steam_recommendations`, `average_rating`, `mal_id`, `format` promotions vs JSONB).
 - [x] **Auth method decided** (2026-11-23) — **email-only**: password + magic link, OAuth disabled (see 5E). Remaining user action: configure email provider/SMTP in Supabase dashboard + redirect URLs.
+- [ ] **Optional: TOTP 2FA** — Supabase MFA built-in, no extra infra; testable via API script before UI (see 5E). Per-user opt-in, off by default.
 - [ ] **Bulk import inputs (user exports)** — Trakt.tv data export, Steam profile URL, GoodReads CSV export. Get them before writing `import_external`.
 - [ ] **Metadata refresh scheduler** — pg_cron (Supabase supports) vs scheduled Edge Function; TTLs already decided (7d games / 30d rest).
 - [ ] ⚠️ **Known inconsistency to resolve before coding:** Phase 4 item 5 says reviews via "free `appreviews` endpoint" — audit verified that endpoint is **DEAD** (302 → store). Refresh must use the store-page scrape path (same as Phase 3 reviews) or Steam news — fix the spec line when implementing.
@@ -462,6 +463,7 @@ See [AppScript/BETA.md](BETA.md) — one entry per working session: what was don
 - [ ] Phase 4 done first (hard dependency).
 - [ ] Phase 5A spec approved: `link_type` values, `visibility jsonb` matrix defaults per relationship.
 - [ ] 5E spec approved (2026-11-23): email-only auth (password + magic link), `profiles` privacy columns, per-user visibility settings screen, per-`link_type` visibility defaults.
+- [ ] 5F spec approved (2026-11-23): linking model = two personal libraries + shared zone (`libraries`/`library_members` reuse, per-member tracking inside zone).
 - [ ] **Open question to resolve:** 2-user model vs multi-user — affects invite flow and link cardinality. Decide before DDL finalizes.
 - [ ] Invite-code UX decision (how Talmai enters Angel's code).
 
@@ -694,7 +696,7 @@ These couple touches are the identity layer: they exist **only** because `link_t
 
 **Implementation:** `touch_type` enum stays global; a per-`link_type` allowlist (or per-link override for `custom`) filters which touches render in the UI and which the Edge Function accepts. The DB write is identical — only the label set and enabled subset differ. Reactions (`react_*`) write a touch row with no `user_media_tracking` side-effect.
 
-> **Open question:** with only Angel & Talmai as users, does "linking" mean *linking their two personal libraries* (simpler — `v_library_matches` may already suffice) or *multi-user library sharing* (full `library_links` needed)? Resolve before building the invite-code UI. **Note:** the link_type/visibility design above assumes full `library_links` — with only 2 users a single link row still works (one relationship = one row).
+> **~~Open question~~ RESOLVED (2026-11-23):** linking model = **two personal libraries + one shared zone** — each user keeps their private library, plus a joint `libraries` row for the communal collection. See [5F](#5f--shared-zone--zona-conjunta-user-decision-2026-11-23). The link_type/visibility design assumes full `library_links` — with only 2 users a single link row still works (one relationship = one row).
 
 #### 5E — Profiles, Auth & Per-User Privacy Settings (user decisions 2026-11-23)
 
@@ -735,6 +737,38 @@ These couple touches are the identity layer: they exist **only** because `link_t
 | `custom` | inherits `amigo`, owner adjusts | same |
 
 `is_private` remains the absolute veto on top of any matrix.
+
+**Optional hardening — TOTP 2FA (user request 2026-11-23):**
+
+- Supabase Auth MFA (TOTP) is built-in: `auth.mfa.enroll / challenge / verify` — authenticator apps (Google Authenticator, Authy) scan a QR; session goes `aal1` → `aal2`.
+- **Per-user opt-in** toggle in the account/privacy settings screen — off by default.
+- **Testable via API script during Phase 4, before any UI exists**: enroll → QR/secret → scan → challenge → verify (right code = `aal2`, wrong = rejected). No NexusLib code needed for the proof.
+- Rationale: matters if NexusLib grows beyond 2 users (Phase 7+ candidates, possible public launch) — cheap now through Supabase, painful to retrofit. For 2 users the magic link already covers "something you have"; TOTP is the extra factor for password logins and sensitive actions.
+
+#### 5F — Shared Zone / Zona Conjunta (user decision 2026-11-23)
+
+> **User decision:** the linking model is **two personal libraries + one shared zone** — each user keeps their private library, and a joint space holds the communal collection (movies to watch together, games to play, books to read).
+
+**Model:**
+
+- Personal libraries unchanged (Phase 4 schema: `libraries` + `library_members` + `library_links`).
+- The shared zone is a **regular `libraries` row** (e.g. `name = 'Zona conjunta'`) where both linked users are `library_members` — **reuses the existing schema, no new tables**.
+- Membership flows through the same invite/mutual-approval path: accepting a link can offer "create shared zone"; any `link_type` can have one (the zone name doubles as the `custom` label case).
+- Roles already in schema: `owner` = creator, other member = `editor` (can add/remove zone items); `viewer` reserved for future read-only members.
+
+**Semantics:**
+
+- Zone = **communal catalog**: both members add items; the collection belongs to the zone, not to either personal library.
+- Tracking inside the zone is **per-member**: each user marks their own status/progress — the zone shows "Angel la vio / Talmai pendiente" and feeds the couple touches (`date_night`, `inside`, `watching_now`).
+- `is_private` does **not** apply inside the zone (everything there is shared by definition); removing an item removes it for everyone → confirm dialog.
+- Zone items dedup on `(category, provider, external_id)` via `media_items` — no copies, same canonical catalog.
+- The `library_links.visibility` matrix governs **personal↔personal matching only** — zone contents are visible to members by definition of membership.
+
+**Open sub-questions (resolve at implementation):**
+
+- Multiple zones per user? (one per `pareja` link + one per friends group) — schema allows it; UI decides.
+- Can a zone grow beyond 2 members later (add a third person) or is it fixed at link acceptance?
+- Zone activity in the 5B feed: "añadieron X a la zona conjunta" — yes/no.
 
 ### 📍 Phase 6: Android APK & Release CI/CD (v2.0)
 
