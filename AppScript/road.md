@@ -462,7 +462,7 @@ See [AppScript/BETA.md](BETA.md) — one entry per working session: what was don
 - [ ] **Bulk import inputs (user exports)** — Trakt.tv data export, Steam profile URL, GoodReads CSV export. Get them before writing `import_external`.
 - [x] **Metadata refresh TTLs decided** (2026-11-24) — **Juegos + Mangas: 7 días**; **Peliculas/Series/Libros: 30 días**. Además: al **añadir un item próximo a salir** (edición de cartas, set LEGO, etc.) se fuerza fetch inmediato para verificar fecha/salida real — no esperar al TTL. Mecanismo (pg_cron vs Edge Function) se decide al escribir el DDL.
 - [x] **`appreviews` inconsistency corrected** (2026-11-24) — Phase 4 item 5 below updated: reviews via store-page scrape, not the dead endpoint.
-- [x] **Frontend cut strategy decided** (2026-11-24) — **por categorías, Juegos primero** (95% de los datos): cada categoría migra su capa de datos de `google.script.run` a Edge Functions de forma independiente; el Sheet queda read-only de respaldo hasta completar la última.
+- [x] **Frontend cut strategy decided** (2026-11-24) — **por categorías, Juegos primero** (95% de los datos): cada categoría migra su capa de datos de `google.script.run` a Edge Functions de forma independiente; el Sheet queda read-only de respaldo hasta completar la última. **Cada migración se testea antes de pasar a la siguiente** (verificación funcional en beta por categoría).
 - [ ] Google Apps Script → Edge Function parity checklist (every `doGet` action mapped to a function or dropped).
 - [ ] **Web launch checklist Phase 4 items** — security headers/rate limiting, auth E2E flows, error monitoring, DB backups, cookies review → see "Web Launch Checklist" section.
 
