@@ -381,6 +381,8 @@ Rules for all frontend work (v1 and v2):
 
 **Lightweight social layer (Phase 5D, planned):** item-anchored interactions between linked libraries — shared notes per item, "visto también" reactions, ephemeral `watching_now` status, preset quick-reaction "toques" scaled by `link_type` — full catalog + couple-exclusive touches for `pareja`, softer casual set for `amigo`, minimal for `familia`, configurable for `custom` — each maps to a real library action, e.g. "Me interesa" → wishlist — plus recommendations with a one-click "add to my library" button (`recommended_by` attribution). Free-form chat is explicitly out of scope. Spec in `road.md` → Phase 5D.
 
+**Other planned features (specs in `road.md`):** Game Mods Tracker (per-user mod lists per game), Steam Reviews breakdown (5-block CSS chart), **Game Update History** (Steam patch log via news RSS — v1.x read-only), **Book Editions by Translator** (OpenLibrary editions browser — read-only half v1.x; "my edition" ownership field right of the cut, feeds Phase 5A visibility). **Pre-flight inputs per phase:** `road.md` → "Implementation Inputs Checklist".
+
 **Key DB objects:**
 
 - `v_library_matches` — intra-library match (≥2 members wishlist/backlog the same item).

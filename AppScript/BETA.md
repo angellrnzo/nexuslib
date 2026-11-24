@@ -79,3 +79,13 @@
 - Estado: pendiente de implementación (post-cut, junto a Phase 5)
 - Pendiente: resolver open question de Phase 5 antes de construir
 - Necesito de ti: nada
+
+### 2026-11-23 — Specs: Game Update History + Book Editions + checklist pre-flight
+
+- Rama/commit: `beta`
+- Cambios: `road.md` → dos features nuevas especadas (Steam patch log vía news RSS, lazy-fetch como reviews; ediciones de libros por traductor vía OpenLibrary `works/{key}/editions.json` — mitad read-only v1.x, campo "mi edición" right of the cut y alimenta visibilidad Phase 5A). Phase 3 items 6-7 añadidos, audit OpenLibrary actualizado con editions endpoint. Nueva sección **"Implementation Inputs Checklist"**: insumos/APIs/keys/SQL/decisiones/acciones del usuario requeridos antes de iniciar cada fase (2→7). WIKI §7 actualizado
+- Spec origen: petición del usuario — seguimiento de parches de juegos y ediciones por traductor en libros
+- Cómo probar: n/a (solo spec)
+- Estado: pendiente de implementación (Phase 3 items 6-7 v1.x; ownership de edición post-cut)
+- Pendiente: work key de OpenLibrary por libro (verificar captura en resolver); inconsistencia `appreviews` muerto en Phase 4 item 5 marcada para corregir al implementar
+- Necesito de ti: nada por ahora — la checklist marca qué necesitaré de ti en cada fase (p. ej. proyecto Supabase, exports Trakt/Steam/GoodReads)

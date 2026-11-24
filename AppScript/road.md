@@ -173,6 +173,56 @@ Plus RLS policies mirroring the existing per-user tracking rules, and the same m
 
 ---
 
+## 🔧 Planned Feature: Game Update History — Steam patch log (v1.x — spec only, not implemented)
+
+> **Status:** 📋 **SPEC** — documented 2026-11-23, pending implementation decision.
+> User idea: keep the full patch/changelog history per game — Steam publishes every update on the store page (e.g. *Mewgenics* update history), and users want it tracked inside the app instead of checking Steam manually.
+
+### Patch log concept
+
+For each **video game** with a Steam appid, show the game's **update history** (patches, hotfixes, major updates) with date + title + link to the full patch notes — same lazy-fetch pattern as the Steam Reviews breakdown (Phase 3.5 item 5): fetched on modal open, never at catalog load.
+
+### Data source
+
+- Primary: Steam **news RSS feed** — `https://store.steampowered.com/feeds/news/app/{appid}?l=spanish&cc=US` (public, no key, same domain/cookies as the existing store-page scrape in `WebAPP.gs` ~L686). Items carry `<title>`, `<pubDate>`, `<link>` (full patch post) and `<description>` (summary).
+- Filter client-side or server-side to update-ish titles (`update`, `patch`, `hotfix`, `actualización`, `parche` — EN+ES) OR take last N items regardless; keep it simple: last 10 news items, badge the ones matching update keywords.
+- Full patch notes: link out to the Steam post URL (`<link>`) — fetching+parsing each news post's HTML body is a v2 nicety, not needed for v1.
+- Non-Steam games (no appid) → section hidden, same guard as `admiteTrailer`/`#btn-toggle-resenas`.
+
+### UI
+
+- New collapsible box inside the game modal (same `.trailer-box`/`#m-resenas-box` pattern), toggle button styled like `.btn-trailer`.
+- List: date · title · "ver parche completo ↗" external link. Sorted newest first.
+- Optional later: "installed version" marker — needs storage → **right of the cut** (not v1).
+
+### Backend
+
+- New `doGet` action `?action=steamUpdates&appid={id}` — `UrlFetchApp.fetch` the RSS feed, regex/Xml parse items, return JSON array `[{date, title, url, summary}]`. No schema change, no storage — pure proxy + parse.
+
+---
+
+## 🔧 Planned Feature: Book Editions by Translator (v1.x read-only + v2 ownership)
+
+> **Status:** 📋 **SPEC** — documented 2026-11-23, pending implementation decision.
+> User idea: same book exists in multiple translations/editions and some are better than others — Pedro owns translator X's version, Juan owns translator Y's. Want a per-work **editions list** (translator, publisher, year, language, ISBN) and eventually track *which edition each user owns*.
+
+### Concept — two halves with different cut positions
+
+**Half A — Editions browser (v1.x, read-only, no schema change):**
+
+- Source: OpenLibrary **`works/{key}/editions.json`** — same provider already used for books; returns up to ~100 editions per work with `key`, `title`, `publish_date`, `publishers[]`, `translators[]` (as `{key, name}`), `languages[]` (`{key, name}`), `isbn_10`/`isbn_13`, `ocaid` (archive.org scan link).
+- Backend: new `doGet` action `?action=libroEdiciones&workKey={key}` — fetch editions JSON, normalize to `[{edition, translators, publisher, language, year, isbn, ocaid}]`, sort by `publish_date` desc. New resolver — no changes to existing ones.
+- UI: collapsible "Ediciones" section in the book modal (`.trailer-box` pattern) — table/cards: **traductor · editorial · año · idioma · ISBN**, with archive.org "leer" link when `ocaid` present. ES translations first.
+- Edge cases: works with 1 edition → show section anyway (confirms no alternatives); `translators` often empty → show "sin dato"; non-OL books (manual entries) → section hidden.
+
+**Half B — "My edition" ownership (✂️ right of the cut):**
+
+- Each user marks which edition they own (dropdown populated from Half A + free-text fallback). Needs a stored field → `user_media_tracking.edition jsonb` (or `edition_id` + `edition_label`) in Phase 4 schema.
+- **Synergy with Phase 5A:** edition becomes a visibility-matrix field — Angel can expose "tengo la edición de Enrique de Juan" to `pareja` while hiding it from `amigo`. Same mechanism, one more field.
+- Community "best translation" ratings → out of scope (would need per-edition social layer; revisit only if editions get heavy use).
+
+---
+
 ## 🔬 Data Source Audit (verified live 2026-11-21)
 
 Real requests made against every provider the backend uses. Findings per category + v2 SQL mapping improvements.
@@ -200,6 +250,7 @@ Could not test live (API key lives in Apps Script ScriptProperties, not accessib
 
 - **`puntuacion` is always 'N/A'** — but `https://openlibrary.org/works/{id}/ratings.json` returns `{summary:{average, count}}` (verified: GoT work OL45883W → avg 5.0). **Improvement: fetch ratings → fill `puntuacion`.**
 - Search returns huge `isbn` arrays (~150 per book) — code takes first `isbn_13`/`isbn_10`; prefer ES-prefixed ISBNs (`84/97884`) when present.
+- **`works/{key}/editions.json` exists** — returns per-edition `translators[]`, `publishers[]`, `languages[]`, `publish_date`, `isbn_*`, `ocaid`. Powers the planned "Book Editions by Translator" feature (spec above). Limit ~100 editions/work, `limit`/`offset` params available.
 - Unused: `ocaid`/`ia` (archive.org full-text scans), `edition_key`.
 
 ### Mangas — AniList (verified healthy)
@@ -324,6 +375,77 @@ See [AppScript/BETA.md](BETA.md) — one entry per working session: what was don
 
 ---
 
+## 📦 Implementation Inputs Checklist (pre-flight)
+
+> Everything that must be **ready before starting** each phase — APIs, credentials, SQL/schema work, decisions, and user actions. Check items off mentally before writing code; if something is missing, resolve it first (don't discover it mid-implementation).
+
+### Phase 2 — Motion system (v1.x)
+
+- [ ] Motion token values approved (`--ease-spring`, `--t-*` durations/easings) — pick concrete numbers before coding CSS.
+- [ ] List of surfaces getting directional transitions (modal open/close directions, tab switches).
+- [ ] No external APIs, no schema, no credentials.
+
+### Phase 2.5 — i18n ES/EN (v1.x)
+
+- [ ] String inventory: extract every hardcoded ES string from `index.html`/`Index.html` (buttons, labels, toasts, empty states).
+- [ ] Decision: hand-rolled `STR` dict + `?lang=` param (consistent with current vanilla SPA) vs tiny i18n lib — default: hand-rolled.
+- [ ] EN translations for the full inventory (bulk of the work — can be drafted by agent, reviewed by user).
+- [ ] No APIs/SQL.
+
+### Phase 3 — Backend & offline (v1.x)
+
+- [ ] **Mods Tracker:** new `mods` sheet must exist in `GameList.xlsx` with headers (`juego`, `nombre`, `fuente`, `url`, `version_juego`, `notas`, `usuario`) — **user action: create the sheet** before coding the backend branch.
+- [ ] **Steam Reviews:** nothing external — reuses existing store-page scrape + agecheck cookies; needs valid Steam appid in game rows (already present).
+- [ ] **Game Update History:** Steam news RSS `feeds/news/app/{appid}` — public, no key; same cookie chain as reviews. Needs appid only.
+- [ ] **Book Editions:** OpenLibrary `works/{key}/editions.json` — free, no key. **Input needed:** the OL **work key** (not edition key) per book — verify resolver captures it at search time or derive via edition→`works[]`; if missing, add work-key capture to the resolver first.
+- [ ] **Open Library `fetchAll`:** just refactor `resolverAutoresOpenLibrary_` — no inputs.
+- [ ] **Health check + offline read-only:** no inputs.
+
+### Phase 3.5 — Read-only aggregations (v1.x)
+
+- [ ] Nothing — all data already stored/fetched. Pure frontend functions over `datosGlobales`.
+
+### Phase 4 — THE CUT (v2.0)
+
+- [ ] **Supabase project created** — **user action**: sign up, create project (pick region closest to users), copy **URL + anon key + service_role key** into Apps Script Properties / Edge secrets.
+- [ ] **`database/schema.sql` written in full** — WIKI §7.3 is a summary; Phase 4 needs the actual DDL (tables, enums, RLS policies, RPCs, triggers, views). Draftable by agent, reviewed before applying.
+- [ ] **ETL field mapping doc** — sheet columns → `media_items`/`user_media_tracking` mapping table (decide `content_rating`, `steam_recommendations`, `average_rating`, `mal_id`, `format` promotions vs JSONB).
+- [ ] **Auth method decided** — email+password vs Google OAuth (or both); redirect URLs configured in Supabase dashboard (**user action** in dashboard).
+- [ ] **Bulk import inputs (user exports)** — Trakt.tv data export, Steam profile URL, GoodReads CSV export. Get them before writing `import_external`.
+- [ ] **Metadata refresh scheduler** — pg_cron (Supabase supports) vs scheduled Edge Function; TTLs already decided (7d games / 30d rest).
+- [ ] ⚠️ **Known inconsistency to resolve before coding:** Phase 4 item 5 says reviews via "free `appreviews` endpoint" — audit verified that endpoint is **DEAD** (302 → store). Refresh must use the store-page scrape path (same as Phase 3 reviews) or Steam news — fix the spec line when implementing.
+- [ ] Google Apps Script → Edge Function parity checklist (every `doGet` action mapped to a function or dropped).
+
+### Phase 5 — Cross-user linking (v2.0)
+
+- [ ] Phase 4 done first (hard dependency).
+- [ ] Phase 5A spec approved: `link_type` values, `visibility jsonb` matrix defaults per relationship.
+- [ ] **Open question to resolve:** 2-user model vs multi-user — affects invite flow and link cardinality. Decide before DDL finalizes.
+- [ ] Invite-code UX decision (how Talmai enters Angel's code).
+
+### Phase 5D — Social layer (v2.x)
+
+- [ ] Phase 5 done first.
+- [ ] `item_touches` DDL + touch→action mapping table approved (preset list exists in spec — couple-exclusive 4 touches need user sign-off on wording ES/EN).
+- [ ] Rate-limit values decided (e.g. max touches/hour/user).
+- [ ] i18n strings for all touch labels (depends on Phase 2.5 pattern).
+
+### Phase 6 — Android APK (v2.0)
+
+- [ ] Capacitor installed in the v2 frontend (`npx cap init/add android`) — app id `com.nexuslib.app` confirmed.
+- [ ] **Signing keystore generated** — `keytool` once, stored safely (**user keeps backup** — losing it = can't update the app).
+- [ ] GitHub repo secrets for release signing (`ANDROID_KEYSTORE_*` etc.).
+- [ ] Offline write-queue design approved (IndexedDB → sync on reconnect).
+
+### Phase 7 — Coleccionables (v2.x, optional ⭐)
+
+- [ ] Provider keys decided: Rebrickable API key (free tier), BoardGameGeek API key (free, registered app), or accept `provider='manual'` for all.
+- [ ] Subtype field list finalized (lego / juego_mesa / figura / funko / rompecabezas / tcg / miniatura / blind_box / vinilo / memorabilia / otro).
+- [ ] Ownership model confirmed: `tengo` / `quiero` / `vendido` + condition + value fields.
+- [ ] Only start after v2 core is stable (user-marked high interest but explicitly optional).
+
+---
+
 ## 🗺️ Execution Roadmap
 
 > Ordered by **user-visible impact per effort**. Phase 3 (motion) outranks Phase 4 (backend hardening) because backend items are invisible to users.
@@ -375,6 +497,8 @@ See [AppScript/BETA.md](BETA.md) — one entry per working session: what was don
 3. **Offline Read-Only** — `Index.html`: `window.addEventListener('online'/'offline')` toggling a body class `.offline`; CSS disables `.btn-guardar`, `.btn-eliminar`, wishlist/star buttons (`pointer-events:none; opacity:.5`) + toast "Sin conexión — solo lectura". Reads already served by v19 cache.
 4. **Game Mods Tracker** — see [spec above](#-planned-feature-game-mods-tracker-v1x--spec-only-not-implemented): per-user mod lists per game (Nexus Mods / Steam Workshop / CurseForge / URL), version-tagged, quick-search links. New `mods` sheet — standalone, no changes to existing schema.
 5. **Steam Reviews Breakdown** — new toggle `#btn-toggle-resenas` styled like `.btn-trailer` (~L609) next to it in `#m-trailer-bar` (~L1045), opening `#m-resenas-box` (same `.trailer-box` pattern ~L616). Backend: the old `appreviews/{appid}?json=1` JSON endpoint is **DEAD** (verified 2026-11-21: all variants return `302 → store homepage`). Real source = scrape `https://store.steampowered.com/app/{appid}/?l=spanish&cc=US` — same HTML fetch + agecheck cookies the resolver already uses as fallback (`WebAPP.gs` ~L686). Extract review summary from the `user_reviews_summary_row` tooltips: `"El X% de las N reseñas ... últimos 30 días son positivas"` (30d window) and `"El Y% de las M reseñas ... en tu idioma son positivas"` (all-time). Store `resenasSteam` as `{pct30, total30, pct, total}` — positive count can come FREE from `recommendations.total` in `appdetails` (see audit §Steam); neg/pos30 derived as `round(pct*total/100)` (approximate, mark with `≈` in UI). Fetch lazily on modal open for `Juegos` only, not at catalog load. Tier = **5-block scale** (client-side, no Steam thresholds): 0-20 "Muy negativas", 20-40 "Mayormente negativas", 40-60 "Neutras", 60-80 "Mayormente positivas", 80-100 "Muy positivas". Frontend renders a **CSS-only chart** (no chart lib — vanilla SPA): (a) a 5-segment gradient bar red→gray→green with a marker/needle at the `pct` position, (b) the tier label under it, (c) big % positive number, pos/neg counts, total reviews, and a **trend chip** comparing `pct30` vs `pct` (↑/↓/→ "vs hace 30 días"). Only for `Juegos` with valid Steam appid; hide otherwise (same guard as `admiteTrailer` ~L1920). Reuse existing motion tokens for bar grow-in (`--t-*`, `transform: scaleX`). Note: Steam's 9-tier label and 5-star histogram are NOT exposed by the public API — this custom 5-block scale is the chosen simplified equivalent.
+6. **Game Update History** — see [spec above](#-planned-feature-game-update-history--steam-patch-log-v1x--spec-only-not-implemented): lazy RSS scrape of Steam news per appid on modal open, collapsible patch list with external "full patch" links. No schema change.
+7. **Book Editions Browser** — see [spec above](#-planned-feature-book-editions-by-translator-v1x-read-only--v2-ownership): OpenLibrary `works/{key}/editions.json` resolver + "Ediciones" section in book modal (translator · publisher · year · language · ISBN). Read-only half only — the "my edition" ownership field is right of the cut (Phase 4/5A).
 
 ### 📍 Phase 3.5: Wishlist Release Calendar & Annual Stats (v1.x — read-only, no schema change)
 
