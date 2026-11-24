@@ -410,4 +410,4 @@ Phases are ordered by **user-visible impact per effort**: UX fixes and motion de
 
 ---
 
-*Last updated: 2026-11-22 — Phase 5D social-layer spec noted (roadmap); Phase 1 UX fixes implemented; data-source audit + v2 SQL mapping notes in road.md.*
+*Last updated: 2026-11-23 — Phase 3 items 6-7 specs (game update history, book editions) + pre-flight inputs checklist in road.md; DESIGN.md added as design-system reference.*

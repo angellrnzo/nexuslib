@@ -1,176 +1,176 @@
 # NexusLib — DESIGN.md
 
-> Design system de la PWA. Fuente de verdad visual para agentes e
-> implementadores. Los valores reflejan `AppScript/Index.html` (v1 actual);
-> los items marcados **[Phase 2]** son specs del roadmap, no implementados.
-> Spec de motion completa: `AppScript/road.md` → Phase 2.
+> Visual design system for the PWA. Single source of truth for agents and
+> implementers. Values reflect `AppScript/Index.html` (current v1); items
+> marked **[Phase 2]** are roadmap specs, not yet implemented.
+> Full motion spec: `AppScript/road.md` → Phase 2.
 
-## 1. Producto y tono
+## 1. Product and tone
 
-- Biblioteca multimedia personal (películas/series, juegos, libros, manga)
-- Audiencia: 2 usuarias principales (Angel, Talmai) + futura capa social
-- Estilo: dark cinema — UI oscura tipo Steam/Netflix, acentos azul y rosa
-- Idiomas: ES primario, EN vía Phase 2.5 (i18n)
+- Personal multimedia library (movies/series, games, books, manga)
+- Audience: 2 primary users (Angel, Talmai) + future social layer
+- Style: dark cinema — Steam/Netflix-like dark UI, blue and pink accents
+- Languages: ES primary, EN via Phase 2.5 (i18n)
 
 ## 2. Color
 
 ### Tokens (`:root`)
 
-| Token | Valor | Uso |
+| Token | Value | Use |
 | :--- | :--- | :--- |
-| `--bg` | `#0b0e14` | Fondo base |
-| `--panel` | `#1b2838` | Superficies (header gradiente) |
-| `--accent` | `#66c0f4` | Azul primario — acciones, foco, badges |
-| `--text` | `#c7d5e0` | Texto cuerpo |
-| `--gold` | `#ffd700` | Estrellas, logros |
-| `--border` | `rgba(255,255,255,0.1)` | Bordes sutiles |
-| `--btn-primary` | `#66c0f4` | CTA principal |
-| `--success` | `#5ba32b` | Confirmaciones |
-| `--warning` | `#d6a918` | Avisos |
-| `--danger` | `#c93b3b` | Errores/eliminar |
-| `--wish` | `#ff4d6d` | Wishlist — rosa |
-| `--angel-color` | `#66c0f4` | Identidad Angel (= accent) |
-| `--talmai-color` | `#ff4d6d` | Identidad Talmai (= wish) |
+| `--bg` | `#0b0e14` | Base background |
+| `--panel` | `#1b2838` | Surfaces (header gradient) |
+| `--accent` | `#66c0f4` | Primary blue — actions, focus, badges |
+| `--text` | `#c7d5e0` | Body text |
+| `--gold` | `#ffd700` | Stars, achievements |
+| `--border` | `rgba(255,255,255,0.1)` | Subtle borders |
+| `--btn-primary` | `#66c0f4` | Primary CTA |
+| `--success` | `#5ba32b` | Confirmations |
+| `--warning` | `#d6a918` | Warnings |
+| `--danger` | `#c93b3b` | Errors/destructive |
+| `--wish` | `#ff4d6d` | Wishlist — pink |
+| `--angel-color` | `#66c0f4` | Angel identity (= accent) |
+| `--talmai-color` | `#ff4d6d` | Talmai identity (= wish) |
 
-### Reglas de color
+### Color rules
 
-- Fondos: `radial-gradient(circle at top left, #1b2838, #0b0e14 80%)` en body
-- Acento funcional por semántica: `--wish` wishlist, `--gold` ratings,
-  `--danger` destructivo, `--success` guardado
-- Colores de usuaria (`--angel-color`/`--talmai-color`) solo en contextos
-  sociales/match — nunca en UI genérica
-- Overlays de modal: `rgba(6, 9, 14, 0.88)`; bordes de modal con tinte de
-  accent `rgba(102,192,244,0.38)`
+- Backgrounds: `radial-gradient(circle at top left, #1b2838, #0b0e14 80%)` on body
+- Semantic accents: `--wish` wishlist, `--gold` ratings, `--danger`
+  destructive, `--success` saved
+- User colors (`--angel-color`/`--talmai-color`) only in social/match
+  contexts — never in generic UI
+- Modal overlays: `rgba(6, 9, 14, 0.88)`; modal borders tinted with accent
+  `rgba(102,192,244,0.38)`
 
-## 3. Tipografía
+## 3. Typography
 
-- **Familia única:** `'Inter', sans-serif` — todo el texto
-- Escala en uso (px): 9 (badges mínimos), 10-11 (subtítulos, resultados),
-  12-13 (body, inputs, títulos de card), 15-18 (botones, títulos modal),
-  20 (stars), ~24+ (títulos destacados)
-- Pesos: 700-900 para títulos/botones/tablas; 400 body
+- **Single family:** `'Inter', sans-serif` — all text
+- Scale in use (px): 9 (min badges), 10-11 (subtitles, results), 12-13
+  (body, inputs, card titles), 15-18 (buttons, modal titles), 20 (stars),
+  ~24+ (display titles)
+- Weights: 700-900 for titles/buttons/tables; 400 body
 - `-webkit-font-smoothing: antialiased` global
 
-## 4. Layout y espaciado
+## 4. Layout and spacing
 
-- Mobile-first PWA; `padding` de body con `env(safe-area-inset-*)` para
-  notch/home indicator (Android Capacitor futuro)
-- Grid de cards `#grid` con modo `poster-mode` (switch vista lista/poster)
-- `max-width` en modales: 620px; `max-height: 90dvh` con scroll interno
-- Touch: `touch-action: pan-y` (scroll vertical libre, sin zoom por gesto)
-- `-webkit-tap-highlight-color: transparent` en todos los interactivos
+- Mobile-first PWA; body `padding` uses `env(safe-area-inset-*)` for
+  notch/home indicator (future Android Capacitor)
+- Card grid `#grid` with `poster-mode` view switch (list ↔ poster)
+- Modal `max-width`: 620px; `max-height: 90dvh` with internal scroll
+- Touch: `touch-action: pan-y` (free vertical scroll, no pinch zoom)
+- `-webkit-tap-highlight-color: transparent` on all interactives
 
 ## 5. Motion tokens
 
-### Actual (implementado)
+### Implemented
 
-| Token | Valor | Uso |
+| Token | Value | Use |
 | :--- | :--- | :--- |
-| `--t-fast` | `150ms` | Hover/focus sutil |
-| `--t-base` | `220ms` | Transiciones estándar (modal, toast) |
-| `--t-slow` | `320ms` | Entradas/emphasis |
-| `--ease-out` | `cubic-bezier(0.22, 1, 0.36, 1)` | Salidas/entradas — default |
-| `--ease-inout` | `cubic-bezier(0.4, 0, 0.2, 1)` | Movimientos bidireccionales |
+| `--t-fast` | `150ms` | Subtle hover/focus |
+| `--t-base` | `220ms` | Standard transitions (modal, toast) |
+| `--t-slow` | `320ms` | Entrances/emphasis |
+| `--ease-out` | `cubic-bezier(0.22, 1, 0.36, 1)` | Entrances/exits — default |
+| `--ease-inout` | `cubic-bezier(0.4, 0, 0.2, 1)` | Bidirectional movement |
 
-### Patrones de animación actuales
+### Current animation patterns
 
-- **Modal:** overlay `opacity 0→1` + `.modal-content` `translateY(10px)
-  scale(0.985) → translateY(0) scale(1)` con `--t-base --ease-out`;
-  scroll reseteado al abrir (Phase 1)
-- **Toast:** `translateY` + opacity, clases `.success/.warning/.error`
-  con borde coloreado
-- **Tab active:** cambio de color + icono (`transition` en `.tab-btn`)
+- **Modal:** overlay `opacity 0→1` + `.modal-content`
+  `translateY(10px) scale(0.985) → translateY(0) scale(1)` with
+  `--t-base --ease-out`; scroll reset on open (Phase 1)
+- **Toast:** `translateY` + opacity, `.success/.warning/.error` classes
+  with colored border
+- **Active tab:** color + icon change (`transition` on `.tab-btn`)
 
-### [Phase 2] Planeado — no implementado
+### [Phase 2] Planned — not implemented
 
-- `--ease-spring` (spring physics) para micro-interacciones de cards
-- Skeleton shimmer en cargas (reemplaza spinner/spinner-text)
-- Transiciones direccionales en navegación de modales
-- Doble-tap corazón en posters
-- Bottom sheet pattern para filtros/acciones
-- Scroll-snap en carruseles; **lightbox** para screenshots (overlay in-app,
-  flechas, ESC/cierra — nunca nueva ventana)
+- `--ease-spring` (spring physics) for card micro-interactions
+- Skeleton shimmer on loads (replaces spinner/text)
+- Directional transitions on modal navigation
+- Double-tap heart on posters
+- Bottom sheet pattern for filters/actions
+- Scroll-snap on carousels; **lightbox** for screenshots (in-app overlay,
+  arrows, ESC/close — never a new window)
 
-## 6. Componentes
+## 6. Components
 
 ### Cards (`#grid > .card`)
 
-- `.card-content` padding 12px, layout column
-- `.card-title` / `.card-dev` — título y metadatos truncados
-- Estados: hover lift **[Phase 2]**, skeleton loading **[Phase 2]**
+- `.card-content` 12px padding, column layout
+- `.card-title` / `.card-dev` — truncated title and metadata
+- States: hover lift **[Phase 2]**, skeleton loading **[Phase 2]**
 
 ### Tabs (`.tab-btn`)
 
-- Pills con icono SVG + label; `.active` con fondo accent
-- Cambio de vista: `#grid.poster-mode` (lista ↔ póster)
+- Pills with SVG icon + label; `.active` accent background
+- View switch: `#grid.poster-mode` (list ↔ poster)
 
-### Botones
+### Buttons
 
-- `.btn-primary` — CTA (accent sólido)
-- `.btn` genérico, `.btn-trailer` (toggle trailer — `.active` rojo
-  `rgba(201,59,59,…)`), `.wish-toggle` (`.active` rosa `--wish`),
+- `.btn-primary` — CTA (solid accent)
+- `.btn` generic, `.btn-trailer` (trailer toggle — `.active` red
+  `rgba(201,59,59,…)`), `.wish-toggle` (`.active` pink `--wish`),
   `.filter-reset`, `.status-select`
-- Todos: `border-radius`, `cursor:pointer`, sin tap-highlight
+- All: `border-radius`, `cursor:pointer`, no tap-highlight
 
 ### Modal (`#modal`, `#modal-papelera`, `#modal-match`)
 
-- 3 instancias comparten `.modal-content` (mismo patrón visual)
-- Header: `.modal-header-grid` (img + info), modos `poster`/`landscape`
-- `.modal-close` sticky top-right, círculo 36px
-- Secciones internas con patrón `.trailer-box` reutilizable
-  (reviews, updates, ediciones — ver specs Phase 3)
+- 3 instances share the `.modal-content` pattern
+- Header: `.modal-header-grid` (img + info), `poster`/`landscape` modes
+- `.modal-close` sticky top-right, 36px circle
+- Inner sections reuse the `.trailer-box` pattern (reviews, updates,
+  editions — see Phase 3 specs)
 
-### Carrusel (`.carousel`)
+### Carousel (`.carousel`)
 
-- `display:flex; overflow-x:auto` — screenshots de películas
-- Imágenes `flex: 0 0 75%; height:140px` — peek del siguiente item
+- `display:flex; overflow-x:auto` — movie screenshots
+- Images `flex: 0 0 75%; height:140px` — next-item peek
 - **[Phase 2]** scroll-snap + dots + lightbox viewer
 
 ### Rating (`.star`)
 
-- 5 estrellas SVG/character, `.active` → `--gold`, inactivas `#333`
-- Usado en filtros "Nota Mínima" por usuaria
+- 5 SVG/character stars, `.active` → `--gold`, inactive `#333`
+- Used in per-user "Minimum Rating" filters
 
 ### Badges / tags
 
-- `.search-result-badge` — pill 10px, fondo `rgba(102,192,244,0.18)`,
-  texto accent
-- Estado de item: pills por `status` con colores semánticos
+- `.search-result-badge` — 10px pill, `rgba(102,192,244,0.18)`
+  background, accent text
+- Item status pills with semantic colors
 
 ### Toast (`#toast-container`)
 
-- Esquina, apilados; `.show` visible; variantes success/warning/error
+- Corner, stacked; `.show` visible; success/warning/error variants
 
-### Iconografía
+### Iconography
 
-- **Sprite SVG inline** `<symbol id="i-*">` + `<svg class="ico"><use>`
-- Tamaños: `.ico` 14px, `.ico-sm` 12px, `.ico-lg` 16px
-- `.ico-fill` relleno sólido; modificadores `.ico-angel`, `.ico-talmai`,
-  `.ico-gold`, `.ico-wish` para color semántico
-- Trazos: `stroke-width:2`, `linecap/linejoin: round` — estilo outline plano
+- **Inline SVG sprite** `<symbol id="i-*">` + `<svg class="ico"><use>`
+- Sizes: `.ico` 14px, `.ico-sm` 12px, `.ico-lg` 16px
+- `.ico-fill` solid fill; modifiers `.ico-angel`, `.ico-talmai`,
+  `.ico-gold`, `.ico-wish` for semantic color
+- Strokes: `stroke-width:2`, `linecap/linejoin: round` — flat outline style
 
 ## 7. Responsive / PWA
 
-- Viewport mobile; funciona en desktop con max-width implícito
-- `manifest.json` + `service-worker.js` — instalable, offline read-only
+- Mobile viewport; desktop works via implicit max-width
+- `manifest.json` + `service-worker.js` — installable, offline read-only
   **[Phase 3]**
-- Safe areas iOS/Android contempladas en padding
-- **[Phase 6]** Capacitor: mismos safe-area insets + status bar styling
+- iOS/Android safe areas covered in padding
+- **[Phase 6]** Capacitor: same safe-area insets + status bar styling
 
-## 8. Accesibilidad y reglas duras
+## 8. Accessibility and hard rules
 
-- Contraste: texto `#c7d5e0` sobre `#0b0e14` (~10:1) — cumple AA
-- Foco visible en todos los interactivos (no `outline:none` sin reemplazo)
-- `aria-*` en modales y controles (mejorar gradualmente — Phase 2)
-- Sin emojis en UI — solo SVG del sprite
-- `user-select:none` en estrellas/controles táctiles
+- Contrast: `#c7d5e0` text on `#0b0e14` (~10:1) — passes AA
+- Visible focus on all interactives (no bare `outline:none`)
+- `aria-*` on modals and controls (improve gradually — Phase 2)
+- No emojis in UI — sprite SVG only
+- `user-select:none` on stars/touch controls
 
-## 9. Referencias externas
+## 9. External references
 
-Skills de diseño instaladas en `.devin/skills/` del workspace:
+Design/animation skills installed in the workspace `.devin/skills/`:
 
-- `impeccable` — auditoría de UI anti-"AI slop" (61 reglas + comandos
-  critique/audit/polish; incluye refs `android.md`/`ios.md` para Phase 6)
+- `impeccable` (pbakaus) — anti-"AI slop" UI audit (61 rules + critique/
+  audit/polish commands; includes `android.md`/`ios.md` refs for Phase 6)
 - `animate`, `animation-vocabulary`, `animation-performance`,
   `review-animations`, `improve-animations`, `find-animation-opportunities`,
-  `apple-design` (emilkowalski/skills) — guías de motion para Phase 2
+  `apple-design` (emilkowalski/skills) — motion guides for Phase 2

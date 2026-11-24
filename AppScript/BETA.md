@@ -3,6 +3,9 @@
 > Un bloque por sesión de trabajo. La rama `beta` es el banco de pruebas;
 > `main` es producción y **solo se actualiza con aprobación expresa del
 > owner** — ver `AppScript/road.md` → "Branching, Beta & Release Workflow".
+> Excepción: la documentación (`.md`) puede sincronizarse a `main` en
+> cualquier momento (no llega a usuarios); el código de la app queda
+> congelado hasta deploy explícito.
 
 ## Cómo probar una entrada beta
 
@@ -89,3 +92,13 @@
 - Estado: pendiente de implementación (Phase 3 items 6-7 v1.x; ownership de edición post-cut)
 - Pendiente: work key de OpenLibrary por libro (verificar captura en resolver); inconsistencia `appreviews` muerto en Phase 4 item 5 marcada para corregir al implementar
 - Necesito de ti: nada por ahora — la checklist marca qué necesitaré de ti en cada fase (p. ej. proyecto Supabase, exports Trakt/Steam/GoodReads)
+
+### 2026-11-23 — Auditoría de consistencia docs + DESIGN.md en inglés
+
+- Rama/commit: `beta`
+- Cambios: README (links a DESIGN.md, estado al día, features nuevas listadas, árbol con BETA.md/DESIGN.md), CHANGELOG Unreleased (nuevas specs por fase), BETA.md (excepción docs→main aclarada en header), WIKI (last-updated), DESIGN.md traducido a inglés para alinear con el set técnico (README/WIKI/road/CHANGELOG en inglés; BETA.md queda en español como log de trabajo)
+- Spec origen: petición del usuario — auditar sincronización idioma/formatos del set de docs
+- Cómo probar: n/a (solo docs)
+- Estado: docs sincronizadas, lint 0 issues en los 6 `.md`
+- Pendiente: convención de idioma — técnico en inglés, log de trabajo en español
+- Necesito de ti: nada

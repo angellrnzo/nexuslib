@@ -8,11 +8,11 @@ Deploy versions for the Apps Script web app are noted per entry.
 
 ### Planned (see `AppScript/road.md`)
 
-- Phase 2: motion system (skeleton shimmer, spring easing, directional tabs, double-tap heart, bottom sheet, scroll-snap)
+- Phase 2: motion system (skeleton shimmer, spring easing, directional tabs, double-tap heart, bottom sheet, scroll-snap) + in-app image lightbox viewer for screenshots
 - Phase 2.5: UI i18n — Spanish/English toggle, ES default on open; all new features ship with i18n keys
-- Phase 3: `fetchAll` parallelization, API health check, offline read-only, Game Mods Tracker, Steam Reviews breakdown
+- Phase 3: `fetchAll` parallelization, API health check, offline read-only, Game Mods Tracker, Steam Reviews breakdown, Game Update History (Steam patch log), Book Editions browser (Open Library editions by translator)
 - Phase 3.5: wishlist release calendar, annual stats/goals
-- Phase 4+: Supabase migration (the v1→v2 cut), library links, visibility controls, activity feed, bulk import, Capacitor APK
+- Phase 4+: Supabase migration (the v1→v2 cut), library links + per-relationship visibility + `is_private`, lightweight social layer (Phase 5D toques), activity feed, bulk import, "my edition" ownership field, Capacitor APK
 - Phase 7 candidates (⭐ optional, high interest): Coleccionables category (LEGO/board games/figures/puzzles, `manual` provider) and Podcasts (RSS episodic)
 
 ## [1.9.0] — 2026-11-21

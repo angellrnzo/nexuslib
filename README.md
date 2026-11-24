@@ -15,9 +15,9 @@ Cloud-synced via **Google Sheets**, powered by a **Google Apps Script** backend,
 
 ---
 
-[🌐 Live App](https://angellrnzo.github.io/nexuslib/) • [📖 Technical Wiki](WIKI.md) • [📋 Roadmap & Audit](AppScript/road.md) • [Report a Bug](https://github.com/angellrnzo/nexuslib/issues)
+[🌐 Live App](https://angellrnzo.github.io/nexuslib/) • [📖 Technical Wiki](WIKI.md) • [🗺️ Roadmap & Audit](AppScript/road.md) • [🎨 Design System](DESIGN.md) • [Report a Bug](https://github.com/angellrnzo/nexuslib/issues)
 
-> **Status (2026-11-21):** v1.x in production — Phase 1 UX fixes deployed (`v1.9.0`). Next: Phase 2 motion → Phase 3 backend/mods/reviews → Phase 4 is the **v1→v2 cut** to Supabase (see `road.md` for the cut-over rule).
+> **Status (2026-11-23):** v1.x in production — Phase 1 UX fixes deployed (`v1.9.0`). Dev on `beta`; `main` = production (docs sync freely, app code frozen until an explicit deploy). Next: Phase 2 motion → Phase 3 backend/mods/reviews/updates/editions → Phase 4 is the **v1→v2 cut** to Supabase (see `road.md` for the cut-over rule + pre-flight inputs checklist).
 
 </div>
 
@@ -53,6 +53,8 @@ Cloud-synced via **Google Sheets**, powered by a **Google Apps Script** backend,
 - **📊 Comparative Statistics:** Cross metrics, average ratings, completion percentages, and dynamic bar charts per profile.
 - **📖 Reading Progress:** Percentage progress bar and dynamic chapter tracking for manga and books.
 - **🎮 Game Mods Tracker** *(planned)* — per-user mod lists inside each game's detail (Nexus Mods / Steam Workshop / CurseForge / custom URL), grouped by game version. Spec in `AppScript/road.md`.
+- **🎮 Game Update History** *(planned)* — Steam patch log per game (news RSS, lazy fetch on modal open) with links to full patch notes. Spec in `road.md` → Phase 3 item 6.
+- **📚 Book Editions** *(planned)* — per-work editions browser (translator · publisher · year · language · ISBN) via Open Library; "my edition" ownership is a v2 field feeding Phase 5A visibility. Spec in `road.md` → Phase 3 item 7.
 
 ### 📱 High-Performance PWA Experience
 
@@ -136,6 +138,7 @@ NexusLib/
 │   ├── WebAPP.gs                 # Google Apps Script API server
 │   ├── Index.html                # Single Page Application (SPA) run inside Apps Script
 │   ├── road.md                   # Project overview, audit & execution roadmap
+│   ├── BETA.md                   # Daily beta-branch progress log & test checklist
 │   └── GameList.xlsx             # Example relational database template
 ├── .gitignore                    # System file and Excel lock exclusions
 ├── .nojekyll                     # Disables the Jekyll processor on GitHub Pages
@@ -147,7 +150,8 @@ NexusLib/
 ├── manifest.json                 # PWA manifest (adaptive maskable icons, theme #0b0e14)
 ├── service-worker.js             # Service Worker with v2 cache strategy and auto-cleanup
 ├── README.md                     # Main project documentation
-└── WIKI.md                       # Exhaustive technical specification & dev handbook
+├── WIKI.md                       # Exhaustive technical specification & dev handbook
+└── DESIGN.md                     # Design system reference (tokens, components, motion)
 ```
 
 ---
