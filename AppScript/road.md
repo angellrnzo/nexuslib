@@ -451,7 +451,7 @@ See [AppScript/BETA.md](BETA.md) — one entry per working session: what was don
 - [ ] **Supabase project created** — **user action**: sign up, create project (pick region closest to users), copy **URL + anon key + service_role key** into Apps Script Properties / Edge secrets.
 - [ ] **`database/schema.sql` written in full** — WIKI §7.3 is a summary; Phase 4 needs the actual DDL (tables, enums, RLS policies, RPCs, triggers, views). Draftable by agent, reviewed before applying.
 - [ ] **ETL field mapping doc** — sheet columns → `media_items`/`user_media_tracking` mapping table (decide `content_rating`, `steam_recommendations`, `average_rating`, `mal_id`, `format` promotions vs JSONB).
-- [ ] **Auth method decided** — email+password vs Google OAuth (or both); redirect URLs configured in Supabase dashboard (**user action** in dashboard).
+- [x] **Auth method decided** (2026-11-23) — **email-only**: password + magic link, OAuth disabled (see 5E). Remaining user action: configure email provider/SMTP in Supabase dashboard + redirect URLs.
 - [ ] **Bulk import inputs (user exports)** — Trakt.tv data export, Steam profile URL, GoodReads CSV export. Get them before writing `import_external`.
 - [ ] **Metadata refresh scheduler** — pg_cron (Supabase supports) vs scheduled Edge Function; TTLs already decided (7d games / 30d rest).
 - [ ] ⚠️ **Known inconsistency to resolve before coding:** Phase 4 item 5 says reviews via "free `appreviews` endpoint" — audit verified that endpoint is **DEAD** (302 → store). Refresh must use the store-page scrape path (same as Phase 3 reviews) or Steam news — fix the spec line when implementing.
@@ -461,6 +461,7 @@ See [AppScript/BETA.md](BETA.md) — one entry per working session: what was don
 
 - [ ] Phase 4 done first (hard dependency).
 - [ ] Phase 5A spec approved: `link_type` values, `visibility jsonb` matrix defaults per relationship.
+- [ ] 5E spec approved (2026-11-23): email-only auth (password + magic link), `profiles` privacy columns, per-user visibility settings screen, per-`link_type` visibility defaults.
 - [ ] **Open question to resolve:** 2-user model vs multi-user — affects invite flow and link cardinality. Decide before DDL finalizes.
 - [ ] Invite-code UX decision (how Talmai enters Angel's code).
 
@@ -564,10 +565,10 @@ See [AppScript/BETA.md](BETA.md) — one entry per working session: what was don
 
 **Scope — what will be built:**
 
-1. `database/schema.sql` on Supabase: `profiles`, `libraries`, `library_members`, `library_links`, `media_items`, `library_items`, `user_media_tracking`, `mods` (see WIKI §7.3 for full DDL summary).
+1. `database/schema.sql` on Supabase: `profiles` (incl. privacy columns — see 5E), `libraries`, `library_members`, `library_links`, `media_items`, `library_items`, `user_media_tracking`, `mods` (see WIKI §7.3 for full DDL summary).
 2. Edge Functions / Workers replacing `WebAPP.gs` resolvers (Steam Store+fallback chain, TMDB, OpenLibrary, AniList) — same fallback order as v1.
 3. ETL `GameList.xlsx` → PostgreSQL: map sheets rows to `media_items` via `(category, provider, external_id)`; `mods` sheet → `mods` table per spec above.
-4. Auth: Supabase Auth JWT; Angel/Talmai get `profiles` + auto `libraries` via `bootstrap_user_default_library()` trigger.
+4. Auth: **decided (2026-11-23)** — Supabase Auth **email-only**: password sign-up/sign-in + magic link (OTP) as alternative; all OAuth providers disabled. Angel/Talmai get `profiles` + auto `libraries` via `bootstrap_user_default_library()` trigger. Details in [5E](#5e--profiles-auth--per-user-privacy-settings-user-decisions-2026-11-23).
 5. **Scheduled metadata refresh** — `metadata_updated_at timestamptz` column on `media_items`; weekly cron (pg_cron or scheduled Edge Function) refreshes only stale rows by TTL: **Juegos 7 days** (reviews/prices move fast), **movies/series/books/manga 30 days** (static metadata). Reuses the same resolver fallback chain; review data via free `appreviews` endpoint (no key). Never touches user fields (`user_media_tracking`, notes).
 6. **Provider extras → `metadata jsonb`** — per the [Data Source Audit](#-data-source-audit-verified-live-2026-11-21): Steam `recommendations.total`/`achievements`/`supported_languages`/`ratings`/`dlc`/`website`, OL `ratings.json` avg+count (fixes `puntuacion` always N/A), AniList `externalLinks`/`format`. Promote hot fields to real columns (`content_rating`, `steam_recommendations`, `average_rating`, `mal_id`, `format`); keep the rest in `metadata`.
 7. **Bulk import pipeline** — Trakt.tv / Steam profile / GoodReads CSV+API → Edge Function `import_external`: map foreign IDs → `(provider, external_id)` dedup key, resolve misses via existing resolvers, write `library_items` + `user_media_tracking` in batches. One-time per user, idempotent (re-run = upsert, no dupes).
@@ -694,6 +695,46 @@ These couple touches are the identity layer: they exist **only** because `link_t
 **Implementation:** `touch_type` enum stays global; a per-`link_type` allowlist (or per-link override for `custom`) filters which touches render in the UI and which the Edge Function accepts. The DB write is identical — only the label set and enabled subset differ. Reactions (`react_*`) write a touch row with no `user_media_tracking` side-effect.
 
 > **Open question:** with only Angel & Talmai as users, does "linking" mean *linking their two personal libraries* (simpler — `v_library_matches` may already suffice) or *multi-user library sharing* (full `library_links` needed)? Resolve before building the invite-code UI. **Note:** the link_type/visibility design above assumes full `library_links` — with only 2 users a single link row still works (one relationship = one row).
+
+#### 5E — Profiles, Auth & Per-User Privacy Settings (user decisions 2026-11-23)
+
+> **User decisions:** account creation is **email-only** — no social/OAuth login. Each user configures **from their own settings** what is visible and **to which relationship type** — visibility is per-owner: your settings control what *you* share, never what others share with you.
+
+**Auth (decided — implemented in Phase 4):**
+
+- Supabase Auth with the **email provider only**: password sign-up/sign-in **and** magic link (OTP) as alternative access. All OAuth providers disabled.
+- Email verification on sign-up; password reset via Supabase flow; expired magic links re-requestable.
+- No public username/handle — identity is `profiles.display_name`.
+
+**`profiles` columns (Phase 4 schema delta):**
+
+- `display_name text not null`, `avatar_url text`, `locale text not null default 'es'`.
+- `show_activity boolean not null default false` + `last_seen_at timestamptz` — opt-in "estado" (online / last active) visible to accepted links.
+- `show_stats boolean not null default false` — opt-in public counters per category (feeds match views + 5B activity feed).
+- Email is **never** exposed to linked users — auth-only field.
+
+**Profile & Privacy settings screen (Phase 5 UI):**
+
+- **Perfil**: display name, avatar, email (read-only), locale selector.
+- **Privacidad**: toggles `show_activity`, `show_stats`; account actions (change password if password auth used, resend magic link, delete account → cascade wipes their library per RLS).
+- **Visibilidad por relación**: dedicated settings section listing each link (`pareja` / `amigo` / `familia` / each `custom` label) with its own **visibility matrix editor** — the 5A editor promoted from link-creation time to an always-editable screen. Editing updates `library_links.visibility` on the **owner's row only**; the other side's row is theirs to configure.
+- Per-item override unchanged: `is_private` lock in the tracking modal (5A) — absolute veto over every link.
+
+**Linking flow (confirmed — matches Phase 5 items 1–2):**
+
+- Invite code with **mutual approval**: A generates code → B enters it → `request_library_link()` → `pending` → A approves → `accepted`.
+- Unlink/`match_enabled=false`: sync stops; the UI states plainly that already-seen content cannot be "unseen".
+
+**Visibility defaults per `link_type`** (refines the single 5A default into per-relationship presets):
+
+| `link_type` | Visible by default | Private by default |
+| :--- | :--- | :--- |
+| `pareja` | status, rating, wishlist, progress | notes, mods |
+| `amigo` | status | rating, wishlist, progress, notes, mods |
+| `familia` | status | rating, wishlist, progress, notes, mods |
+| `custom` | inherits `amigo`, owner adjusts | same |
+
+`is_private` remains the absolute veto on top of any matrix.
 
 ### 📍 Phase 6: Android APK & Release CI/CD (v2.0)
 
