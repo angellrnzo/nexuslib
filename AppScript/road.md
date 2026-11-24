@@ -711,13 +711,21 @@ These couple touches are the identity layer: they exist **only** because `link_t
 **`profiles` columns (Phase 4 schema delta):**
 
 - `display_name text not null`, `avatar_url text`, `locale text not null default 'es'`.
+- `avatar_url` stores a **preset id** (`preset:<n>`) in v2 — see avatar spec below; the `upload:<path>` form is reserved for the optional later upload.
 - `show_activity boolean not null default false` + `last_seen_at timestamptz` — opt-in "estado" (online / last active) visible to accepted links.
 - `show_stats boolean not null default false` — opt-in public counters per category (feeds match views + 5B activity feed).
 - Email is **never** exposed to linked users — auth-only field.
 
+**Avatars — preset-first, upload optional (user decision 2026-11-23):**
+
+- **v2 launch: curated preset set only** — ~24-32 illustrated avatars in a consistent style, shipped as WebP (~5-15 KB each) in the repo or a public bucket; cached after first load. `avatar_url` stores the preset id — zero storage, zero upload UI, zero moderation.
+- **Picker UI**: avatar grid in the profile settings screen — one tap, no crop flow.
+- **Fallback**: deterministic identicon generated client-side from `profiles.id` (GitHub-style) when no avatar chosen — everyone always has one.
+- **Later (maybe Phase 7+ if the user base grows)**: optional custom upload via Supabase Storage with client-side resize to ~256 px WebP (~10-20 KB). `avatar_url` already supports it via the `upload:<path>` form — the front-end just learns to render it. No schema change needed.
+
 **Profile & Privacy settings screen (Phase 5 UI):**
 
-- **Perfil**: display name, avatar, email (read-only), locale selector.
+- **Perfil**: display name, avatar picker (preset grid), email (read-only), locale selector.
 - **Privacidad**: toggles `show_activity`, `show_stats`; account actions (change password if password auth used, resend magic link, delete account → cascade wipes their library per RLS).
 - **Visibilidad por relación**: dedicated settings section listing each link (`pareja` / `amigo` / `familia` / each `custom` label) with its own **visibility matrix editor** — the 5A editor promoted from link-creation time to an always-editable screen. Editing updates `library_links.visibility` on the **owner's row only**; the other side's row is theirs to configure.
 - Per-item override unchanged: `is_private` lock in the tracking modal (5A) — absolute veto over every link.
