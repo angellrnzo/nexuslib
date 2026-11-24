@@ -460,8 +460,9 @@ See [AppScript/BETA.md](BETA.md) — one entry per working session: what was don
 - [x] **Auth method decided** (2026-11-23) — **email-only**: password + magic link, OAuth disabled (see 5E). Remaining user action: configure email provider/SMTP in Supabase dashboard + redirect URLs.
 - [ ] **Optional: TOTP 2FA** — Supabase MFA built-in, no extra infra; testable via API script before UI (see 5E). Per-user opt-in, off by default.
 - [ ] **Bulk import inputs (user exports)** — Trakt.tv data export, Steam profile URL, GoodReads CSV export. Get them before writing `import_external`.
-- [ ] **Metadata refresh scheduler** — pg_cron (Supabase supports) vs scheduled Edge Function; TTLs already decided (7d games / 30d rest).
-- [ ] ⚠️ **Known inconsistency to resolve before coding:** Phase 4 item 5 says reviews via "free `appreviews` endpoint" — audit verified that endpoint is **DEAD** (302 → store). Refresh must use the store-page scrape path (same as Phase 3 reviews) or Steam news — fix the spec line when implementing.
+- [x] **Metadata refresh TTLs decided** (2026-11-24) — **Juegos + Mangas: 7 días**; **Peliculas/Series/Libros: 30 días**. Además: al **añadir un item próximo a salir** (edición de cartas, set LEGO, etc.) se fuerza fetch inmediato para verificar fecha/salida real — no esperar al TTL. Mecanismo (pg_cron vs Edge Function) se decide al escribir el DDL.
+- [x] **`appreviews` inconsistency corrected** (2026-11-24) — Phase 4 item 5 below updated: reviews via store-page scrape, not the dead endpoint.
+- [x] **Frontend cut strategy decided** (2026-11-24) — **por categorías, Juegos primero** (95% de los datos): cada categoría migra su capa de datos de `google.script.run` a Edge Functions de forma independiente; el Sheet queda read-only de respaldo hasta completar la última.
 - [ ] Google Apps Script → Edge Function parity checklist (every `doGet` action mapped to a function or dropped).
 - [ ] **Web launch checklist Phase 4 items** — security headers/rate limiting, auth E2E flows, error monitoring, DB backups, cookies review → see "Web Launch Checklist" section.
 
@@ -471,7 +472,7 @@ See [AppScript/BETA.md](BETA.md) — one entry per working session: what was don
 - [ ] Phase 5A spec approved: `link_type` values, `visibility jsonb` matrix defaults per relationship.
 - [ ] 5E spec approved (2026-11-23): email-only auth (password + magic link), `profiles` privacy columns, per-user visibility settings screen, per-`link_type` visibility defaults.
 - [ ] 5F spec approved (2026-11-23): linking model = two personal libraries + shared zone (`libraries`/`library_members` reuse, per-member tracking inside zone).
-- [ ] **Open question to resolve:** 2-user model vs multi-user — affects invite flow and link cardinality. Decide before DDL finalizes.
+- [x] **Multi-user scope decided** (2026-11-24) — build the linking section **complete**: `pareja`/`familia`/`amigo`/`custom` link types with per-relationship visibility matrices as documented in 5A/5E/5F — no simplified 2-user version. Implementation will ship with a step-by-step guide of user actions (Supabase dashboard, invite codes, etc.) so Angel/Talmai can apply it themselves.
 - [ ] Invite-code UX decision (how Talmai enters Angel's code).
 
 ### Phase 5D — Social layer (v2.x)
@@ -619,7 +620,7 @@ Auditoría de los 25 puntos "pre-launch" contra el repo. El shell PWA (GitHub Pa
 2. Edge Functions / Workers replacing `WebAPP.gs` resolvers (Steam Store+fallback chain, TMDB, OpenLibrary, AniList) — same fallback order as v1.
 3. ETL `GameList.xlsx` → PostgreSQL: map sheets rows to `media_items` via `(category, provider, external_id)`; `mods` sheet → `mods` table per spec above.
 4. Auth: **decided (2026-11-23)** — Supabase Auth **email-only**: password sign-up/sign-in + magic link (OTP) as alternative; all OAuth providers disabled. Angel/Talmai get `profiles` + auto `libraries` via `bootstrap_user_default_library()` trigger. Details in [5E](#5e--profiles-auth--per-user-privacy-settings-user-decisions-2026-11-23).
-5. **Scheduled metadata refresh** — `metadata_updated_at timestamptz` column on `media_items`; weekly cron (pg_cron or scheduled Edge Function) refreshes only stale rows by TTL: **Juegos 7 days** (reviews/prices move fast), **movies/series/books/manga 30 days** (static metadata). Reuses the same resolver fallback chain; review data via free `appreviews` endpoint (no key). Never touches user fields (`user_media_tracking`, notes).
+5. **Scheduled metadata refresh** — `metadata_updated_at timestamptz` column on `media_items`; weekly cron (pg_cron or scheduled Edge Function) refreshes only stale rows by TTL: **Juegos 7 days** (reviews/prices move fast), **movies/series/books/manga 30 days** (static metadata). Reuses the same resolver fallback chain; review data via **store-page scrape** (`user_reviews_summary_row` tooltips — `appreviews` JSON endpoint is DEAD, corrected 2026-11-24). Never touches user fields (`user_media_tracking`, notes).
 6. **Provider extras → `metadata jsonb`** — per the [Data Source Audit](#-data-source-audit-verified-live-2026-11-21): Steam `recommendations.total`/`achievements`/`supported_languages`/`ratings`/`dlc`/`website`, OL `ratings.json` avg+count (fixes `puntuacion` always N/A), AniList `externalLinks`/`format`. Promote hot fields to real columns (`content_rating`, `steam_recommendations`, `average_rating`, `mal_id`, `format`); keep the rest in `metadata`.
 7. **Bulk import pipeline** — Trakt.tv / Steam profile / GoodReads CSV+API → Edge Function `import_external`: map foreign IDs → `(provider, external_id)` dedup key, resolve misses via existing resolvers, write `library_items` + `user_media_tracking` in batches. One-time per user, idempotent (re-run = upsert, no dupes).
 
