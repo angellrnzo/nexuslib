@@ -457,6 +457,7 @@ See [AppScript/BETA.md](BETA.md) — one entry per working session: what was don
 - [ ] **Metadata refresh scheduler** — pg_cron (Supabase supports) vs scheduled Edge Function; TTLs already decided (7d games / 30d rest).
 - [ ] ⚠️ **Known inconsistency to resolve before coding:** Phase 4 item 5 says reviews via "free `appreviews` endpoint" — audit verified that endpoint is **DEAD** (302 → store). Refresh must use the store-page scrape path (same as Phase 3 reviews) or Steam news — fix the spec line when implementing.
 - [ ] Google Apps Script → Edge Function parity checklist (every `doGet` action mapped to a function or dropped).
+- [ ] **Web launch checklist Phase 4 items** — security headers/rate limiting, auth E2E flows, error monitoring, DB backups, cookies review → see "Web Launch Checklist" section.
 
 ### Phase 5 — Cross-user linking (v2.0)
 
@@ -487,6 +488,46 @@ See [AppScript/BETA.md](BETA.md) — one entry per working session: what was don
 - [ ] Subtype field list finalized (lego / juego_mesa / figura / funko / rompecabezas / tcg / miniatura / blind_box / vinilo / memorabilia / otro).
 - [ ] Ownership model confirmed: `tengo` / `quiero` / `vendido` + condition + value fields.
 - [ ] Only start after v2 core is stable (user-marked high interest but explicitly optional).
+
+---
+
+## 🌐 Web Launch Checklist — estado y pendientes por fase (audit 2026-11-24)
+
+Auditoría de los 25 puntos "pre-launch" contra el repo. El shell PWA (GitHub Pages) ya está cubierto; lo que queda vive **dentro del iframe de Apps Script** (`Index.html`) o llega con Supabase. No re-auditar el shell — solo lo listado aquí.
+
+### ✅ Ya cubierto (shell — no tocar)
+
+- HTTPS (Pages + Apps Script), favicon + iconos correctos (192 real), meta description + OG/Twitter cards, `robots.txt`, `sitemap.xml`, `404.html`, error logging (`window.onerror`/`unhandledrejection`), SW cache v5, backup semanal Sheet→xlsx (`.github/workflows/backup-excel.yml`).
+- Secretos: API keys solo en Script Properties — verificado, nada hardcodeado.
+
+### 🔶 Phase 3 (v1, `Index.html`) — pendiente de auditoría interna
+
+- [ ] **Formularios**: validar todos los inputs/búsquedas (mensajes de error, estados disabled).
+- [ ] **Botones/elementos interactivos**: test funcional de cada acción (modales, toggles, swipe, export).
+- [ ] **Un solo CTA claro** por vista — revisar jerarquía.
+- [ ] **Contraste de color** — pasar checklist WCAG sobre `DESIGN.md` tokens (especial modo claro si existe).
+- [ ] **Alt text** en imágenes cargadas (posters/backdrops de TMDB/SteamGridDB).
+- [ ] **Compresión de imágenes** remotas — TMDB/SteamGridDB sirven tamaños; pedir el tamaño mínimo necesario.
+- [ ] **Loading speed** del SPA — medir First Contentful Paint; `fetchAll` ya está en Phase 3.
+- [ ] **Responsive** — testear breakpoints reales en móvil (la app es mobile-first, pero verificar tablets).
+
+### 🔶 Phase 4 (THE CUT, Supabase) — nace con la migración
+
+- [ ] **Security headers + rate limiting** — GitHub Pages no permite headers custom; configurar en Supabase (dashboard/API gateway) y Edge Functions. Rate limits en auth y en RPCs sensibles.
+- [ ] **Flujos de auth completos** — test E2E: signup, login, password reset, magic link, verificación de email, TOTP enroll/verify (5E ya lo marca testeable por API antes de UI).
+- [ ] **Error logging/monitoring** — Supabase logs + Edge Function logging; decidir si se añade beacon de errores del cliente.
+- [ ] **Backups DB** — Sheet semanal ya existe; en Supabase configurar backups del proyecto (free tier: daily; evaluar PITR si se paga).
+- [ ] **Cookies/consentimiento** — revisar qué cookies deja Supabase Auth; banner solo si se añade analytics o se abre a más usuarios.
+
+### 🔶 Phase 5/5E — antes de abrir a terceros
+
+- [ ] **Privacy policy + Terms** — decidir si se crea página estática (`privacy.html` en el repo Pages, link desde ajustes). Obligatorio éticamente antes de cualquier usuario externo; para 2 usuarias puede esperar.
+- [ ] **Analytics** — decisión pendiente: si se añade (umami/self-hosted vs nada), dispara cookie consent + privacy policy.
+
+### ⏸️ Descartado / N/A
+
+- Spam protection en formularios públicos — no hay formularios públicos (auth será Supabase).
+- Social sharing preview — ya está (OG/Twitter cards en shell); el contenido real va por iframe, aceptable.
 
 ---
 
