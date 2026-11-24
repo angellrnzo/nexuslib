@@ -1,7 +1,7 @@
 # ETL Mapping — Google Sheet → Supabase (Phase 4 draft)
 
 > Verificado contra el snapshot real `GameList.xlsx` (2026-11-24, 5 tabs) y el código actual (`WebAPP.gs` → `mapearHeaderAKey_`, `Index.html` → escalas/estados).
-> Estado: **borrador para revisión** — las decisiones abiertas están marcadas con ❓.
+> Estado: **decisiones cerradas 2026-11-24** — listo para escribir el ETL en Phase 4.
 
 ## Volumen real del snapshot
 
@@ -51,13 +51,13 @@
 | fechaEstable | `metadata.build_date` | |
 | beta | `metadata.beta_branches` | nombres de rama separados por comas |
 | notaParche | `metadata.last_patch_note` | texto `[YYYY-MM-DD] ...` |
-| Dupli | — | flag dedup: `'✅ OK'` = verificado único; ❓ qué significa vacío (245 filas) — revisar antes del ETL |
+| Dupli | — | flag dedup: `'✅ OK'` = verificado único, vacío = sin verificar; **0 AppIDs repetidos** en el snapshot → ETL confía en UNIQUE + pasada de dedup |
 
 ### Peliculas_Series → `provider='tmdb'`
 
 | Columna | Destino | Nota |
 |---|---|---|
-| ID (`movie-1003596`) | `external_id` | **strip prefijo** `movie-`/`tv-` → `1003596`; el prefijo define `category` (`movie`/`series`) — respeta el caveat de dedup TMDB (mismo id-space, categorías separadas) |
+| ID (`movie-1003596`) | `external_id` | **strip prefijo** `movie-`/`tv-` → `1003596` ✅; el prefijo define `category` (`movie`/`series`) — respeta el caveat de dedup TMDB |
 | Tipo | `category` | `Película`→`movie`, `Serie`→`series` |
 | Titulo | `title` | |
 | Estreno | `metadata.release_date` | |
@@ -71,18 +71,18 @@
 
 | Columna | Destino |
 |---|---|
-| ID (`OL5738148W`) | `external_id` (tal cual o strip `OL`/`W` — ❓ decidir formato canónico) |
+| ID (`OL5738148W`) | `external_id` → `5738148W` ✅ (strip `OL`, conserva sufijo `W`) |
 | Titulo/Autor/Editorial | `title` / `metadata.author` / `metadata.publisher` |
 | Publicacion | `metadata.release_date` |
 | Paginas | `metadata.pages` (hoy `'N/A'` en todas) |
 | ISBN | `metadata.isbn` |
-| Capitulos_Totales | ❓ irrelevante para libros (artefacto de esquema copiado) → ignorar o metadata |
+| Capitulos_Totales | ignorar ✅ (artefacto de esquema — los libros no tienen capítulos) |
 
 ### Mangas → `provider='anilist'`
 
 | Columna | Destino |
 |---|---|
-| ID (`al-30002`) | `external_id` — strip `al-` → `30002` (o mantener prefijo, decidir consistencia con Libros) |
+| ID (`al-30002`) | `external_id` → `30002` ✅ (strip `al-`) |
 | Titulo/Autor/Editorial | `title` / `metadata.author` / `metadata.publisher` |
 | Estado_Emision | `metadata.emission_status` (En emisión…) |
 | Tomos_Caps | `metadata.volumes_chapters` |
@@ -95,7 +95,7 @@ El Sheet es **un solo archivo con columnas por usuario** → en SQL cada par de 
 
 | Columnas Sheet (×2 usuarios) | Destino SQL | Transformación |
 |---|---|---|
-| Estado Angel / Estado Talmai | `status` | `No jugado`→`backlog`, `En proceso`→`in_progress`, `Completado`→`completed`; vacío → **sin fila tracking** (ver decisión abajo) |
+| Estado Angel / Estado Talmai | `status` | enum inglés ✅: `No jugado`→`backlog`, `En proceso`→`in_progress`, `Completado`→`completed`; vacío → **sin fila tracking** |
 | Estrellas Angel / Estrellas Talmai | `rating` | 0–10 directo; `0.0` → NULL |
 | Deseado Angel / Deseado Talmai | `is_wishlisted` | parse `'True'/'False'`/bool; solo `True` genera flag |
 | Nota Angel / Nota Talmai | `personal_notes` | texto libre (vacío hoy) |
@@ -103,21 +103,21 @@ El Sheet es **un solo archivo con columnas por usuario** → en SQL cada par de 
 
 ### `library_items` y `is_private`
 
-- Cada fila de tab = item en la biblioteca compartida v1 → en v2 **cada usuario necesita su `library_items` row** sobre el mismo `media_items.id` (el Sheet fusionaba ambas bibliotecas). ❓ Confirmar: ¿los 497 items van a AMBAS libraries, o solo a la que tenga tracking/deseado? Propuesta: ambas (fiel a v1) — el catálogo ya deduplica.
+- Cada fila de tab = item en la biblioteca compartida v1 → en v2 **cada usuario necesita su `library_items` row** sobre el mismo `media_items.id` ✅ (decidido: fiel a v1, ambos usuarios reciben todos los items del catálogo).
 - `is_private`: default `false` en migración (nada era privado en v1).
 
-### Papelera → soft-delete
+### Papelera → DESCARTADA ✅
 
-`Papelera` tiene `datosJson` completo por item → en SQL equivale a `library_items.deleted_at`. ETL: items borrados **no se recrean** como activos; si se quiere historial, insertarlos con `deleted_at` + `metadata._trash = datosJson`. ❓ Decidir si se migra la papelera o se descarta (8 items).
+`Papelera` (8 items con `datosJson`) **no se migra** — decisión 2026-11-24. La papelera se llenará sola con los borrados futuros; SQL ya tiene `deleted_at` nativo en `library_items` para ese mecanismo.
 
-## Decisiones abiertas para Phase 4
+## Decisiones — RESUELTAS 2026-11-24
 
-1. ❓ `external_id` canónico: ¿strip prefijos (`movie-`, `al-`, `OL`) o conservar el ID tal cual del Sheet? (afecta dedup futura con APIs)
-2. ❓ Filas sin tracking (338 Juegos): ¿`library_items` para ambos usuarios igual, o solo catálogo?
-3. ❓ Significado de `Dupli` vacío vs `'✅ OK'`.
-4. ❓ Papelera: ¿se migra como `deleted_at` o se descarta?
-5. ❓ Enum `status` final en inglés (`backlog`/`in_progress`/`completed`) — la vista `v_library_matches` ya usa `backlog`.
-6. ❓ `Capitulos_Totales` en Libros — ignorar.
+1. ✅ **`external_id` sin prefijo** — `movie-1003596`→`1003596`, `al-30002`→`30002`, `OL5738148W`→`5738148W`. El provider ya diferencia el espacio de IDs.
+2. ✅ **Items sin tracking → ambas libraries** — fiel a v1 (Sheet = bibliotecas fusionadas). `library_items` para ambos usuarios en todo el catálogo; `user_media_tracking` solo donde hay datos reales.
+3. ✅ **Papelera: DESCARTAR** — no se migra (la papelera se llenará sola cuando toque; SQL ya tiene `deleted_at` nativo para futuros borrados).
+4. ✅ **Status enum en inglés** — `backlog`/`in_progress`/`completed` (la web será bilingüe ES/EN — el enum es neutro, la UI traduce).
+5. ✅ **`Dupli`** — resuelto por datos: 0 AppIDs repetidos; `'✅ OK'` = verificado, vacío = sin verificar. ETL confía en `UNIQUE(category,provider,external_id)` + pasada de dedup por si acaso.
+6. ✅ **`Capitulos_Totales` en Libros** — ignorar (artefacto de esquema; los libros no tienen capítulos).
 
 ## Notas del mapeo v1 (header→key, ya verificado 100%)
 
