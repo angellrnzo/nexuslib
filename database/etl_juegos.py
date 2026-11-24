@@ -272,7 +272,7 @@ def main():
             "insert into public.user_media_tracking\n"
             "  (profile_id, media_item_id, status, rating, is_wishlisted, personal_notes)\n"
             "select (select id from auth.users where email = " + s(email) + "), mi.id,\n"
-            "       v.status::public.track_status, v.rating, v.wishlist, nullif(v.notes, '')\n"
+            "       v.status::public.track_status, v.rating::numeric, v.wishlist, nullif(v.notes, '')\n"
             "from (values\n  " + ",\n  ".join(vals) + "\n"
             ") as v(external_id, status, rating, wishlist, notes)\n"
             "join public.media_items mi\n"
