@@ -6,6 +6,15 @@ Deploy versions for the Apps Script web app are noted per entry.
 
 ## [Unreleased]
 
+### Added (shell PWA — pre-launch checklist)
+
+- `robots.txt` + `sitemap.xml` for the GitHub Pages shell.
+- `404.html` custom error page matching the app theme.
+- Meta description + Open Graph/Twitter card tags in `index.html` (social preview uses `icons/icon-512.png`).
+- `window.onerror` / `unhandledrejection` logging in the shell.
+- `icons/icon-192.png` is now a real 192×192 render (was a 512×512 file mislabeled in the manifest; 18.9 KB vs 33.5 KB).
+- Service worker cache bumped to `v5` so clients pick up the new shell.
+
 ### Planned (see `AppScript/road.md`)
 
 - Phase 2: motion system (skeleton shimmer, spring easing, directional tabs, double-tap heart, bottom sheet, scroll-snap) + in-app image lightbox viewer for screenshots

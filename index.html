@@ -4,7 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>NexusLib</title>
-    
+    <meta name="description" content="NexusLib — biblioteca personal de películas, series, libros y juegos.">
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="NexusLib">
+    <meta property="og:description" content="Biblioteca personal de películas, series, libros y juegos.">
+    <meta property="og:url" content="https://angellrnzo.github.io/nexuslib/">
+    <meta property="og:image" content="https://angellrnzo.github.io/nexuslib/icons/icon-512.png">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="NexusLib">
+    <meta name="twitter:description" content="Biblioteca personal de películas, series, libros y juegos.">
+    <meta name="twitter:image" content="https://angellrnzo.github.io/nexuslib/icons/icon-512.png">
+
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icons/icon-192.png">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
@@ -37,6 +48,13 @@
     <iframe src="https://script.google.com/macros/s/AKfycbzVokcNfyCiGDZG83xrnPrv-MmaYT5U90Iod6tiDekjgtxQOTqIEixvh34DwdsKdt8Now/exec" allow="clipboard-write; fullscreen; autoplay" allowfullscreen></iframe>
 
     <script>
+        window.addEventListener('error', (e) => {
+            console.error('[NexusLib] Error:', e.message, e.filename, e.lineno);
+        });
+        window.addEventListener('unhandledrejection', (e) => {
+            console.error('[NexusLib] Promesa rechazada:', e.reason);
+        });
+
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('service-worker.js')

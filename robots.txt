@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://angellrnzo.github.io/nexuslib/sitemap.xml
