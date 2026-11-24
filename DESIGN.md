@@ -137,6 +137,17 @@
   background, accent text
 - Item status pills with semantic colors
 
+### State boxes — empty / error / offline **[Phase 2F — planned]**
+
+- Shared `.state-box` component replacing today's inline-styled fallbacks
+  (`<p style="color:#ff6b6b">Error: …</p>`, plain "Sin resultados.")
+- Layout: centered SVG sprite icon + title + description + optional action
+- Variants: `.state-box.error` (danger tint + **Retry** button re-running
+  the failed fetch), `.state-box.empty` (neutral + suggestion text),
+  `.state-box.offline` (bound to the `.offline` body class — Phase 3)
+- Skeleton coverage per surface: grid (2A), modal content blocks, search
+  dropdown rows, stats accordions — all reuse `.skeleton`
+
 ### Toast (`#toast-container`)
 
 - Corner, stacked; `.show` visible; success/warning/error variants
@@ -161,7 +172,15 @@
 
 - Contrast: `#c7d5e0` text on `#0b0e14` (~10:1) — passes AA
 - Visible focus on all interactives (no bare `outline:none`)
-- `aria-*` on modals and controls (improve gradually — Phase 2)
+- `prefers-reduced-motion`: global kill-switch already exists
+  (`@media` ~L745 in `Index.html`) — every new animation/keyframes MUST
+  degrade through it; never add `animation` overrides outside it
+- **[Phase 2E]** Dialog semantics: modals get `role="dialog"`,
+  `aria-modal="true"`, `aria-labelledby` → `.modal-title`; focus trap
+  (Tab cycles inside modal), focus first element on open, restore focus to
+  the opener on close, `Escape` closes
+- `aria-*` on remaining controls (labels, live regions for toasts) —
+  improve gradually
 - No emojis in UI — sprite SVG only
 - `user-select:none` on stars/touch controls
 

@@ -102,3 +102,13 @@
 - Estado: docs sincronizadas, lint 0 issues en los 6 `.md`
 - Pendiente: convención de idioma — técnico en inglés, log de trabajo en español
 - Necesito de ti: nada
+
+### 2026-11-23 — Specs: a11y dialog semantics + state boxes (audit gaps)
+
+- Rama/commit: `beta`
+- Cambios: `road.md` → Phase 2 items 2E (dialog semantics `role="dialog"`/`aria-modal`/focus trap/focus restore — modales no tienen semántica de diálogo hoy) y 2F (`.state-box` compartido para empty/error/offline con variantes + Retry; reemplaza fallbacks inline-style actuales). Tabla de auditoría §2 con 2 filas nuevas. DESIGN.md → sección state-box + reglas a11y actualizadas (prefers-reduced-motion ya existe global ~L745 — verificado en código; documentado). HANDOFF.md pendiente de gaps actualizado
+- Spec origen: auditoría de diseño del usuario — "anota y documenta a profundidad donde toca"
+- Cómo probar: n/a (solo spec)
+- Estado: pendiente de implementación (Phase 2E/2F junto al motion system)
+- Pendiente: definir copy exacto de state-boxes por superficie al implementar
+- Necesito de ti: nada
