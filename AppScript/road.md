@@ -448,6 +448,11 @@ See [AppScript/BETA.md](BETA.md) — one entry per working session: what was don
 
 ### Phase 4 — THE CUT (v2.0)
 
+- [x] **v1 freeze declared** (2026-11-24) — user confirmed: no more v1 features, only fixes. Everything new lands right of the cut.
+- [ ] **⚠️ Data snapshot BEFORE ETL — backup is BROKEN:** the weekly `backup-excel.yml` has been committing a Google sign-in HTML page, not the xlsx — the Sheet export URL (`/export?format=xlsx`) now requires auth (link sharing likely turned off ~2026-11-22). **Fix first** (user action): re-enable "anyone with link can view" on the Sheet, or switch the export to an Apps Script/Drive path. Then: manual export of ALL tabs + validation script (row counts per category + random spot-checks). Data is the only irreplaceable asset.
+- [ ] **Parallel run, not big-bang:** Supabase starts as read-only replica — Sheet stays source of truth; validate ~1 week; then flip writes. Doubles part of the ETL work, removes the "lost everything" risk.
+- [ ] **Supabase free-tier pause caveat** — projects pause after ~1 week DB inactivity; first request after wake can take ~30 s or fail. Handle gracefully in Edge Functions; if unacceptable, evaluate paid tier or the alternatives below.
+- [ ] **Open question — Supabase alternatives** (decide before DDL): Firebase (best ecosystem fit — Google auth/email, Firestore; Spark tier doesn't pause; but document model ≠ relational schema → rethink `media_items`/joins), Neon (serverless Postgres — keeps SQL, but no built-in Auth/Functions/Storage → assemble pieces), PocketBase (single-binary all-in-one: auth+DB+files+admin UI, self-host), Cloudflare D1+Workers (SQLite edge, cheapest, different paradigm). **Supabase remains the best fit** (Auth+DB+Storage+Edge Functions in one, relational schema as speced) — alternatives only if pause/complexity becomes a real problem.
 - [ ] **Supabase project created** — **user action**: sign up, create project (pick region closest to users), copy **URL + anon key + service_role key** into Apps Script Properties / Edge secrets.
 - [ ] **`database/schema.sql` written in full** — WIKI §7.3 is a summary; Phase 4 needs the actual DDL (tables, enums, RLS policies, RPCs, triggers, views). Draftable by agent, reviewed before applying.
 - [ ] **ETL field mapping doc** — sheet columns → `media_items`/`user_media_tracking` mapping table (decide `content_rating`, `steam_recommendations`, `average_rating`, `mal_id`, `format` promotions vs JSONB).
@@ -499,6 +504,7 @@ Auditoría de los 25 puntos "pre-launch" contra el repo. El shell PWA (GitHub Pa
 
 - HTTPS (Pages + Apps Script), favicon + iconos correctos (192 real), meta description + OG/Twitter cards, `robots.txt`, `sitemap.xml`, `404.html`, error logging (`window.onerror`/`unhandledrejection`), SW cache v5, backup semanal Sheet→xlsx (`.github/workflows/backup-excel.yml`).
 - Secretos: API keys solo en Script Properties — verificado, nada hardcodeado.
+- ⚠️ Backup semanal Sheet→xlsx **roto** (export URL pide login desde ~2026-11-22; el repo lleva commiteando HTML de error) — fix pendiente en Phase 4 inputs.
 
 ### 🔶 Phase 3 (v1, `Index.html`) — pendiente de auditoría interna
 
