@@ -112,3 +112,23 @@
 - Estado: pendiente de implementación (Phase 2E/2F junto al motion system)
 - Pendiente: definir copy exacto de state-boxes por superficie al implementar
 - Necesito de ti: nada
+
+### 2026-11-23 — Re-test de fuentes API + backups secundarios
+
+- Rama/commit: `beta`
+- Cambios: `road.md` → nueva subsección "Backup & secondary sources — live re-test 2026-11-23" con requests reales por categoría. Verificados OK: Steam appdetails+news RSS (spec update history), OL editions.json (1,181 ediciones Gatsby — spec book editions) + ratings.json, AniList, **Kitsu como backup nuevo de manga** (200, sin key). Descartados: Gutendex (timeout), Jikan (timeout confirmado). Posibles con key (testear al implementar): IGDB, RAWG, OMDB, TVDB, Google Books, MAL
+- Spec origen: petición del usuario — "chequea fuentes, anexa secundarias, testea directo"
+- Cómo probar: n/a (docs)
+- Estado: audit actualizado
+- Pendiente: testear fuentes 🔑 cuando se implementen las features que las necesiten
+- Necesito de ti: nada (las keys se gestionan en Apps Script Properties cuando toque)
+
+### 2026-11-23 — Backlog: import/export con fuentes conocidas
+
+- Rama/commit: `beta`
+- Cambios: `road.md` → nueva entrada "Backlog (queued, low priority)": intercambio import/export con fuentes conocidas — export además del import bulk de Phase 4 (Trakt/Steam/GoodReads), más Letterboxd CSV, MAL/AniList list export, OL want-to-read. Marcado como Phase 8+ tras estabilizar v2. "Last consolidated update" del roadmap actualizado
+- Spec origen: petición del usuario — "anota que se puedan importar y exportar bases de datos de fuentes conocidas, en cola por ahora"
+- Cómo probar: n/a (docs)
+- Estado: backlog documentado
+- Pendiente: definir scope (direcciones, formatos, servicios) cuando se retome
+- Necesito de ti: nada

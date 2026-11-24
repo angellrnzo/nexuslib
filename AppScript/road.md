@@ -271,6 +271,45 @@ Earlier 404s were wrong id types (id:2 is ANIME, not MANGA) — the code's `Medi
 | Google Books API | `429` without key | Viable backup **with free API key** |
 | Steam `appreviews?json=1` | `302 → homepage` | DEAD — use store-page scrape (already in spec) |
 
+### Backup & secondary sources — live re-test 2026-11-23
+
+Keyless endpoints verified with real requests; key-required sources listed as **possible — test when needed**.
+
+**Juegos (primary: Steam `appdetails` + store scrape):**
+
+| Source | Test | Verdict |
+|---|---|---|
+| Steam `appdetails` JSON | `200` (~1.2s) | ✅ primary, healthy |
+| Steam news RSS `feeds/news/app/{appid}` | `200` (~0.9s) | ✅ **verified — powers Game Update History spec (Phase 3 item 6)** |
+| IGDB (Twitch) | not tested — needs Twitch client id/secret | 🔑 possible — richer game metadata (genres, platforms, screenshots) |
+| RAWG | not tested — needs free API key | 🔑 possible — game DB w/ ratings, alternative to Steam for non-Steam titles |
+
+**Peliculas_Series (primary: TMDB):**
+
+| Source | Test | Verdict |
+|---|---|---|
+| TMDB | key in ScriptProperties — can't test externally | ✅ primary (assumed healthy) |
+| OMDB | not tested — needs free API key | 🔑 possible — thin metadata, good for quick lookups |
+| TVDB | not tested — needs free API key | 🔑 possible — strong series/episode data, good TMDB complement for episodic tracking |
+
+**Libros (primary: OpenLibrary):**
+
+| Source | Test | Verdict |
+|---|---|---|
+| OL `works/{key}/editions.json` | `200` — Gatsby work returned **1,181 editions** | ✅ **verified — powers Book Editions spec (Phase 3 item 7)**; earlier 404s were invalid work keys, endpoint is healthy |
+| OL `works/{key}/ratings.json` | `200` | ✅ verified (fills `puntuacion` gap) |
+| Google Books API | `429` without key | 🔑 possible **with free key** — ISBN lookup + page count fallback |
+| Gutendex (Project Gutenberg) | timeout (15s, unreachable) | ❌ dead from this network — drop as backup |
+
+**Mangas (primary: AniList):**
+
+| Source | Test | Verdict |
+|---|---|---|
+| AniList GraphQL `Media(id:,type:MANGA)` | `200` (MONSTER id 30001 verified) | ✅ primary, healthy |
+| Kitsu `api/edge/manga` | `200` | ✅ **NEW viable backup** — JSON:API, no key, covers manga+anime; good AniList fallback |
+| Jikan (MAL wrapper) | timeout again (15s) | ❌ confirmed unreliable — do NOT rely on it |
+| MyAnimeList API | not tested — needs client_id | 🔑 possible — official but rate-limited; only if AniList+Kitsu both fail |
+
 ### v2 SQL mapping improvements (`media_items`)
 
 - Add generic `metadata jsonb` column — absorbs provider-specific extras (Steam recommendations, OL ratings, AniList format) without schema churn per source.
@@ -684,6 +723,8 @@ These couple touches are the identity layer: they exist **only** because `link_t
 
 **Explicitly discarded:** music (streaming owns it; Last.fm covers scrobbling), shopping list (out of scope).
 
+**Backlog (queued, low priority — user note 2026-11-23):** **import/export interchange with known sources** — beyond the Phase 4 bulk *import* (Trakt/Steam/GoodReads): also support **export** of the NexusLib library to known formats/services (CSV per category, OPML-like lists, or write-back APIs where available: Trakt sync, Steam wishlist export, GoodReads CSV). Candidate sources to support both directions: Trakt.tv, Steam profile/wishlist, GoodReads, MyAnimeList/AniList list export, Letterboxd CSV, Open Library want-to-read. Decide scope when picked up — likely a Phase 8+ item after v2 stabilizes.
+
 ---
 
-*Last consolidated update: 2026-11-22 — Phase 5D spec added (lightweight social layer: shared notes, "visto también", watching_now, preset touches catalog — "Me interesa"/"Ya la vi"/"¿La vemos?" — scaled per `link_type` with couple-exclusive reactions; free-form chat discarded). Prior: Phase 1 ✅ implemented & verified in production; v1→v2 cut-over rule defined (Phase 4 = the cut); benchmark features placed (calendar+stats → v1 Phase 3.5; import/activity/visibility → v2 Phase 5); Phase 7 candidate = Coleccionables.*
+*Last consolidated update: 2026-11-23 — API sources re-tested (Kitsu new manga backup; key-required sources marked 🔑 possible); Phase 3 items 6-7 specs (game update history via Steam news RSS — verified live; book editions via OL editions.json — verified live); Phase 2E/2F specs (dialog a11y + state boxes); DESIGN.md added; import/export interchange backlog queued. Prior: Phase 5D spec (lightweight social layer — free-form chat discarded); Phase 1 ✅ in production; v1→v2 cut-over rule (Phase 4 = the cut); Phase 7 candidate = Coleccionables.*
