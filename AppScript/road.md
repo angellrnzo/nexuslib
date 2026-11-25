@@ -548,7 +548,7 @@ Arquitectura de respaldo en 3 capas — runbook completo en `database/RESTORE.md
 - [x] GitHub Action `backup-supabase.yml` — `pg_dump` schema public (custom, compress 9) semanal + manual → artifact 90 dias. Secrets: `SUPABASE_DB_URL`, `SUPABASE_DB_PASSWORD`.
 - [x] Standby Supabase — 2do proyecto free mismo org; el workflow hace `pg_restore --data-only` semanal si `SUPABASE_STANDBY_ENABLED=true` + secrets standby. **Switch = cambiar NEXUS_URL/KEY en Index.html**. Caveat: `auth.users` no viaja → recrear usuarios via admin API (magic link resuelve passwords).
 - [x] Backup local cifrado — `database/backup_local.py` (Fernet AES, clave en `_local/backup_key.key` — respaldar aparte). Probado en vivo: 237 KB, 8 tablas.
-- [~] Standby creado por usuario: `vgcnyfrfvkxfuhjnugkb` (misma pass DB). **Pendiente:** proyecto aun provisionando (pooler ENOTFOUND tenant — reintentar luego), luego `python database/apply_schema.py --project-ref vgcnyfrfvkxfuhjnugkb` + secrets GitHub (`SUPABASE_DB_URL`, `SUPABASE_DB_PASSWORD`, `SUPABASE_STANDBY_DB_URL`, `SUPABASE_STANDBY_DB_PASSWORD`, var `SUPABASE_STANDBY_ENABLED=true`).
+- [x] Standby `uxixiwrvobkulkjkicjm` (us-west-2) **REPLICADO 2026-11-25**: schema identico (12t/49f/12p/2v) + datos completos (1093 filas via `restore_backup.py` con remap de profile ids) + 2 auth users (via `sync_auth_users.py`). REST/Auth responden. **Pendiente manual:** Edge Functions deploy + secrets (`STEAMGRIDDB_API_KEY`/`TMDB_API_KEY`) + auth URL config — PAT es project-scoped (403), usar dashboard o PAT account-level. Secrets GitHub: usuario los esta cargando + var `SUPABASE_STANDBY_ENABLED=true`.
 
 ### Phase 4.7 — Auditoría DB para features pendientes (2026-11-25)
 

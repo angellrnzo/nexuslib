@@ -32,16 +32,8 @@ ENV_FILE = os.path.join(LOCAL, "supabase_credentials.env")
 KEY_FILE = os.path.join(LOCAL, "backup_key.key")
 BACKUP_DIR = os.path.join(LOCAL, "backups")
 
-# Tablas de datos (public). El schema se regenera desde database/*.sql.
-TABLES = [
-    "profiles",
-    "library_links",
-    "media_items",
-    "library_items",
-    "user_media_tracking",
-    "item_share_requests",
-    "item_touches",  # si existe (Phase 5D)
-]
+# Tablas de datos (public). Se descubren dinamicamente — el schema se
+# regenera desde database/*.sql, el backup solo salva DATOS.
 
 
 def load_env():
@@ -84,8 +76,13 @@ def connect(env):
 
 def dump_all(conn):
     cur = conn.cursor()
+    cur.execute(
+        "select table_name from information_schema.tables "
+        "where table_schema='public' and table_type='BASE TABLE' order by table_name"
+    )
+    tables = [r[0] for r in cur.fetchall()]
     data = {"_meta": {"date": datetime.datetime.now().isoformat(), "tables": {}}}
-    for t in TABLES:
+    for t in tables:
         try:
             cur.execute(f'SELECT * FROM public."{t}"')
             cols = [d[0] for d in cur.description]
