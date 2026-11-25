@@ -24,7 +24,7 @@ from pathlib import Path
 
 import openpyxl
 
-REPO = Path(__file__).resolve().parent.parent
+REPO = Path(__file__).resolve().parents[2]
 XLSX_DEFAULT = REPO / "AppScript" / "GameList.xlsx"
 OUT_DEFAULT = Path(__file__).resolve().parent / "etl_juegos.sql"
 
