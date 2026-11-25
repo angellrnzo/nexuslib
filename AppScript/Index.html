@@ -578,13 +578,20 @@
     #modal-share[style*="opacity: 1"] .modal-content {
       transform: translateY(0) scale(1);
     }
+    /* boton cerrar: fijo arriba-derecha sobre el modal, con zona reservada
+       (padding-top del contenido) para que nunca pise titulo/nota/metadata */
     .modal-close {
-      float: right; z-index: 50;
-      width: 36px; height: 36px; margin-left: 10px; margin-bottom: -36px;
-      border-radius: 50%; background: rgba(13, 19, 27, 0.88);
-      border: 1px solid rgba(255, 255, 255, 0.25); color: #fff; font-size: 18px;
+      position: absolute; top: 12px; right: 12px; z-index: 50;
+      width: 34px; height: 34px; padding: 0;
+      border-radius: 50%; background: rgba(13, 19, 27, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.28); color: #fff;
       cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background var(--t-fast) var(--ease-out), border-color var(--t-fast) var(--ease-out), transform var(--t-fast) var(--ease-out);
     }
+    .modal-close:hover { background: rgba(201, 59, 59, 0.9); border-color: rgba(255, 107, 107, 0.7); }
+    .modal-close:active { transform: scale(0.9); }
+    #modal .modal-content { padding-top: 56px; }
+    .modal-content .modal-title { padding-right: 48px; }
 
     .modal-header-grid { display: flex; gap: 16px; margin-bottom: 14px; align-items: flex-start; width: 100%; }
     .modal-header-grid.landscape { flex-direction: column; }
@@ -826,6 +833,7 @@
 
     @media (max-width: 600px) {
       .modal-content { padding: 14px; border-radius: 14px; }
+      #modal .modal-content { padding-top: 50px; }
       .modal-title { font-size: 17px; padding-right: 36px; }
       .stats-cards-grid { grid-template-columns: minmax(0, 1fr); gap: 10px; }
       .tracking-container { grid-template-columns: 1fr; }
