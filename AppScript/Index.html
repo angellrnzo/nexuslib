@@ -1179,7 +1179,7 @@
         _nexusUser = u.data.user;
       }
       if (!_nexusProfile && _nexusUser) {
-        var p = await sb.from('profiles').select('id,display_name').eq('id', _nexusUser.id).single();
+        var p = await sb.from('profiles').select('id,display_name,username').eq('id', _nexusUser.id).single();
         _nexusProfile = p.data;
         var lm = await sb.from('library_members').select('library_id').eq('profile_id', _nexusUser.id).limit(1);
         _nexusLibId = (lm.data && lm.data[0]) ? lm.data[0].library_id : null;
@@ -1188,6 +1188,8 @@
     }
 
     function nexusPersona() {
+      // el handle visible es username; fallback al primer nombre del display_name
+      if (_nexusProfile && _nexusProfile.username) return _nexusProfile.username;
       return (_nexusProfile && _nexusProfile.display_name ? _nexusProfile.display_name : 'Yo').split(' ')[0];
     }
 
@@ -1433,6 +1435,11 @@
       return out;
     }
 
+    // nombre visible de un vínculo: username (handle) > display_name > 'Usuario'
+    function vinculosNombre(other) {
+      return (other && (other.username || other.display_name)) || 'Usuario';
+    }
+
     function vinculosEsc(s) {
       return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) {
         return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
@@ -1507,7 +1514,7 @@
       links.forEach(function(x) {
         if (x.status !== 'accepted' || !x.other || !x.other.profile_id) return;
         var pid = x.other.profile_id;
-        if (!porPid[pid]) porPid[pid] = { name: x.other.display_name || 'Usuario', type: x.link_type, rows: {} };
+        if (!porPid[pid]) porPid[pid] = { name: vinculosNombre(x.other), type: x.link_type, rows: {} };
         porPid[pid].rows[x.direction] = x;
       });
       window._vincPorPid = porPid;
@@ -1516,7 +1523,7 @@
       if (pendientesIn.length) {
         h += '<div style="margin-bottom:14px;"><div style="font-size:11px;color:#ffd479;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Solicitudes recibidas</div>';
         pendientesIn.forEach(function(x) {
-          var nombre = x.other ? x.other.display_name : 'Usuario';
+          var nombre = vinculosNombre(x.other);
           h += '<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(255,212,121,.06);border:1px solid rgba(255,212,121,.25);border-radius:8px;margin-bottom:6px;">' +
                '<span style="flex:1;font-size:13px;">' + vinculosEsc(nombre) +
                ' <span style="color:#8f98a0;font-size:11px;">(' + vinculosEsc(vinculosTypeLabel(x)) + ')</span></span>' +
@@ -1530,7 +1537,7 @@
       if (pendientesOut.length) {
         h += '<div style="margin-bottom:14px;"><div style="font-size:11px;color:#8f98a0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Enviadas (esperando respuesta)</div>';
         pendientesOut.forEach(function(x) {
-          var nombre = x.other ? x.other.display_name : 'Usuario';
+          var nombre = vinculosNombre(x.other);
           h += '<div style="padding:8px 10px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;margin-bottom:6px;font-size:13px;">' +
                vinculosEsc(nombre) + ' <span style="color:#8f98a0;font-size:11px;">(' + vinculosEsc(vinculosTypeLabel(x)) + ')</span></div>';
         });
@@ -1543,7 +1550,7 @@
         h += '<div style="font-size:12px;color:#8f98a0;">Sin vínculos aceptados todavía.</div>';
       }
       aceptados.forEach(function(x) {
-        var nombre = x.other ? x.other.display_name : 'Usuario';
+        var nombre = vinculosNombre(x.other);
         var pid = x.other ? x.other.profile_id : '';
         h += '<div style="padding:8px 10px;background:rgba(126,224,163,.05);border:1px solid rgba(126,224,163,.2);border-radius:8px;margin-bottom:6px;">' +
              '<div style="display:flex;align-items:center;gap:8px;">' +
@@ -1900,8 +1907,8 @@
         var sel = sw.indexOf(pid) !== -1;
         var col = VINCULOS_BADGE_COLORS[x.link_type] ? VINCULOS_BADGE_COLORS[x.link_type].bg : '#66c0f4';
         h += '<label class="sp-row" style="padding:8px 10px;"><input type="checkbox" class="sp-check share-person-' + k + '" value="' + pid + '"' + (sel ? ' checked' : '') + '> ' +
-             nexusAvatar(x.other.display_name, col) +
-             '<span class="sp-name" style="font-size:12px;">' + vinculosEsc(x.other.display_name || 'Usuario') + '</span>' +
+             nexusAvatar(vinculosNombre(x.other), col) +
+             '<span class="sp-name" style="font-size:12px;">' + vinculosEsc(vinculosNombre(x.other)) + '</span>' +
              nexusLinkBadge(x.link_type, x.link_label) + '</label>';
       });
       if (!personas.length) {
@@ -1990,7 +1997,7 @@
         });
         window._sendPersonas = window._sendPersonas || {};
         window._sendPersonas[k] = {};
-        personas.forEach(function(x) { window._sendPersonas[k][x.other.profile_id] = x.other.display_name || 'Usuario'; });
+        personas.forEach(function(x) { window._sendPersonas[k][x.other.profile_id] = vinculosNombre(x.other); });
         var h = '<div class="sp-label">' + svgIcon('i-send', 'ico-sm') + ' Enviar este elemento a</div>';
         if (!personas.length) {
           h += '<div class="sp-empty">No tienes vínculos aceptados.</div>';
@@ -1998,8 +2005,8 @@
         personas.forEach(function(x) {
           var col = VINCULOS_BADGE_COLORS[x.link_type] ? VINCULOS_BADGE_COLORS[x.link_type].bg : '#66c0f4';
           h += '<button class="sp-row" onclick="nexusSendItem(\'' + k + '\',\'' + x.other.profile_id + '\')">' +
-               nexusAvatar(x.other.display_name, col) +
-               '<span class="sp-name">' + vinculosEsc(x.other.display_name || 'Usuario') + '</span>' +
+               nexusAvatar(vinculosNombre(x.other), col) +
+               '<span class="sp-name">' + vinculosEsc(vinculosNombre(x.other)) + '</span>' +
                nexusLinkBadge(x.link_type, x.link_label) +
                svgIcon('i-chevron-down', 'ico-sm') + '</button>';
         });
@@ -2064,28 +2071,44 @@
 
     // ---- personas dinámicas (Phase 5: multi-vínculo) ----
     // get_items_merged emite campos sufijados por persona: estado{Sufijo},
-    // visible{Sufijo}, etc. Sufijo = initcap(primer nombre del display_name).
+    // visible{Sufijo}, etc. Sufijo = initcap(username) — ver phase5h_username.sql.
     // 'estadoEmision'/'notaParche' son campos de catálogo — se excluyen.
     var PERSONA_PALETTE = ['#66c0f4', '#ff4d6d', '#7ee0a3', '#ffd479', '#b48cff', '#ff9f43', '#54e0c7', '#f368e0'];
     var _personas = []; // registro global [{suffix,key,color}] ordenado alfabético
 
     function nexusScanItemPersonas(it, set) {
       Object.keys(it || {}).forEach(function(k) {
-        var m = k.match(/^(?:estado|visible)([A-Z][A-Za-zÀ-ÿ]*)$/);
+        var m = k.match(/^(?:estado|visible|username)([A-Z][A-Za-zÀ-ÿ0-9_]*)$/);
         if (m && m[1] !== 'Emision') set[m[1]] = true;
       });
     }
 
     function nexusRebuildPersonas() {
-      var set = {};
+      var set = {}, labels = {};
       Object.keys(itemsByCategory).forEach(function(c) {
         var arr = itemsByCategory[c] || [];
-        for (var i = 0; i < Math.min(arr.length, 3); i++) nexusScanItemPersonas(arr[i], set);
+        for (var i = 0; i < Math.min(arr.length, 3); i++) {
+          var it = arr[i];
+          nexusScanItemPersonas(it, set);
+          Object.keys(it || {}).forEach(function(k) {
+            var m = k.match(/^username([A-Z][A-Za-zÀ-ÿ0-9_]*)$/);
+            if (m && it[k] && !labels[m[1]]) labels[m[1]] = String(it[k]);
+          });
+        }
       });
       var sufs = Object.keys(set).sort(function(a, b) { return a.localeCompare(b); });
       _personas = sufs.map(function(suf, i) {
-        return { suffix: suf, key: suf.toLowerCase(), color: PERSONA_PALETTE[i % PERSONA_PALETTE.length] };
+        return { suffix: suf, key: suf.toLowerCase(), color: PERSONA_PALETTE[i % PERSONA_PALETTE.length],
+                 label: labels[suf] || suf };
       });
+    }
+
+    // nombre visible de una persona: username{Suf} del item > label global > sufijo
+    function nexusPersonaLabel(it, suf) {
+      var v = it && it['username' + suf];
+      if (v) return String(v);
+      var g = (_personas || []).filter(function(p) { return p.suffix === suf; })[0];
+      return g ? g.label : suf;
     }
 
     // personas de UN item concreto (modal): mi persona primero, resto alfabético
@@ -2099,10 +2122,12 @@
         return a.localeCompare(b);
       });
       var cmap = {};
-      (_personas || []).forEach(function(p) { cmap[p.suffix] = p.color; });
+      (_personas || []).forEach(function(p) { cmap[p.suffix] = p; });
       return sufs.map(function(suf) {
+        var g = cmap[suf];
         return { suffix: suf, key: suf.toLowerCase(), mine: suf.toLowerCase() === yo,
-                 color: cmap[suf] || PERSONA_PALETTE[0] };
+                 color: (g && g.color) || PERSONA_PALETTE[0],
+                 label: nexusPersonaLabel(it, suf) };
       });
     }
 
@@ -2132,11 +2157,11 @@
 
       var h = '';
       (_personas || []).forEach(function(p) {
-        h += '<div class="filter-group"><label>' + nexusPersonaDot(p, 12) + ' ' + vinculosEsc(p.suffix) + ' (Estado)</label>' +
+        h += '<div class="filter-group"><label>' + nexusPersonaDot(p, 12) + ' ' + vinculosEsc(p.label || p.suffix) + ' (Estado)</label>' +
              '<select id="filter-est-' + p.key + '" onchange="filtrarItems()">' +
              '<option value="todos">Todos</option><option value="No jugado">Pendiente</option>' +
              '<option value="En proceso">En proceso</option><option value="Completado">Completado</option></select></div>';
-        h += '<div class="filter-group"><label><svg class="ico ico-sm ico-gold"><use href="#i-star"/></svg> Nota Mínima ' + vinculosEsc(p.suffix) + '</label>' +
+        h += '<div class="filter-group"><label><svg class="ico ico-sm ico-gold"><use href="#i-star"/></svg> Nota Mínima ' + vinculosEsc(p.label || p.suffix) + '</label>' +
              '<select id="filter-nota-' + p.key + '" onchange="filtrarItems()">' +
              '<option value="0">Todas las notas</option><option value="5">5+ (5/10 o superior)</option>' +
              '<option value="7">7+ (7/10 o superior)</option><option value="9">9+ (9/10 o superior)</option></select></div>';
@@ -2154,7 +2179,7 @@
         var dh = '<option value="todos">Todos</option><option value="cualquiera">Cualquiera</option>' +
                  '<option value="ninguno">Ninguno</option>';
         (_personas || []).forEach(function(p) {
-          dh += '<option value="solo:' + p.key + '">Solo ' + vinculosEsc(p.suffix) + '</option>';
+          dh += '<option value="solo:' + p.key + '">Solo ' + vinculosEsc(p.label || p.suffix) + '</option>';
         });
         if ((_personas || []).length > 1) dh += '<option value="all">Todos por igual</option>';
         selDeseado.innerHTML = dh;
@@ -2167,7 +2192,7 @@
         var oh = '<option value="az">Alfabético (A - Z)</option><option value="za">Alfabético (Z - A)</option>' +
                 '<option value="recientes">Últimos añadidos</option>';
         (_personas || []).forEach(function(p) {
-          oh += '<option value="nota:' + p.key + '">Nota de ' + vinculosEsc(p.suffix) + '</option>';
+          oh += '<option value="nota:' + p.key + '">Nota de ' + vinculosEsc(p.label || p.suffix) + '</option>';
         });
         oh += '<option value="puntuacion">Puntuación</option>';
         selOrden.innerHTML = oh;
@@ -2180,7 +2205,7 @@
     var busquedaFiltroActiva = false;
     var hlsInstance = null;
     var MAX_CACHE_AGE = 12 * 60 * 60 * 1000;
-    const CACHE_VERSION = 'v21';
+    const CACHE_VERSION = 'v22';
     var currentStatsProfile = 'ambos';
     var currentStatsCategory = 'todas';
 
@@ -2876,15 +2901,15 @@
 
     // HTML de una sección de persona en el modal (dinámico multi-vínculo)
     function nexusPersonaAccordionHTML(p, esLectura, showProg) {
-      var k = p.key, n = p.suffix;
+      var k = p.key, n = p.suffix, lbl = p.label || n;
       var jsN = String(n).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
       var progDisp = showProg ? 'block' : 'none';
       var chapDisp = esLectura ? 'block' : 'none';
       return '<div class="player-accordion' + (NEXUS_MODE && !p.mine ? ' is-remote' : '') + '" id="acc-' + k + '">' +
         '<div class="player-summary" onclick="togglePlayerAccordion(\'' + k + '\')">' +
           '<div class="ps-row ps-row-top">' +
-            '<span class="pa-avatar" style="background:' + p.color + ';">' + vinculosEsc(n.charAt(0)) + '</span>' +
-            '<span class="pa-name">' + vinculosEsc(n) + '</span>' +
+            '<span class="pa-avatar" style="background:' + p.color + ';">' + vinculosEsc(lbl.charAt(0)) + '</span>' +
+            '<span class="pa-name">' + vinculosEsc(lbl) + '</span>' +
             '<span id="sum-wish-' + k + '" style="display:none;"><svg class="ico ico-sm ico-wish"><use href="#i-heart-fill"/></svg></span>' +
             '<span id="sum-note-' + k + '" style="display:none;"><svg class="ico ico-sm" style="color:var(--accent);"><use href="#i-note"/></svg></span>' +
           '</div>' +
@@ -2912,7 +2937,7 @@
             '<div class="reading-progress-track"><div id="chap-bar-' + k + '" class="reading-progress-fill"></div></div>' +
           '</div>' +
           '<div class="stars" id="stars-' + k + '"></div>' +
-          '<textarea id="note-' + k + '" class="player-note" placeholder="Apunte rápido de ' + vinculosEsc(n) + '..." onchange="guardarNotaJugador(\'' + jsN + '\', this.value)"></textarea>' +
+          '<textarea id="note-' + k + '" class="player-note" placeholder="Apunte rápido de ' + vinculosEsc(lbl) + '..." onchange="guardarNotaJugador(\'' + jsN + '\', this.value)"></textarea>' +
           '<div id="share-box-' + k + '" style="display:none;margin-top:10px;">' +
             '<div style="display:flex;gap:8px;">' +
               '<button type="button" id="btn-share-' + k + '" class="btn-text" style="flex:1;background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--border);" onclick="toggleSharePanel(\'' + k + '\')"></button>' +
@@ -3386,7 +3411,7 @@
       (_personas || []).forEach(function(p) {
         h += '<button class="stats-prof-btn' + (currentStatsProfile === p.key ? ' active' : '') +
           '" data-prof="' + p.key + '" onclick="cambiarPerfilStats(\'' + p.key + '\')">' +
-          nexusPersonaDot(p, 14) + ' <span class="stat-prof-name">' + vinculosEsc(p.suffix) + '</span></button>';
+          nexusPersonaDot(p, 14) + ' <span class="stat-prof-name">' + vinculosEsc(p.label || p.suffix) + '</span></button>';
       });
       wrap.innerHTML = h;
     }
@@ -3451,7 +3476,7 @@
         var pct = totalElementos > 0 ? Math.round((st[field] / totalElementos) * 100) : 0;
         return '<div class="stat-bar-row">' +
           '<div class="stat-bar-labels"><span style="color:' + p.color + ';">' + nexusPersonaDot(p, 14) + ' ' +
-          vinculosEsc(p.suffix) + ': ' + st[field] + '</span><span>' + pct + '%</span></div>' +
+          vinculosEsc(p.label || p.suffix) + ': ' + st[field] + '</span><span>' + pct + '%</span></div>' +
           '<div class="stat-bar-track"><div class="stat-bar-fill" style="width:' + pct + '%;background:' + p.color + ';"></div></div>' +
         '</div>';
       }
@@ -3463,7 +3488,7 @@
           var st = stats[p.suffix];
           var media = st.cuenta > 0 ? (st.suma / st.cuenta).toFixed(1) : '0.0';
           return '<div class="stat-detail-line">' + nexusPersonaDot(p, 14) + ' Nota media ' +
-            vinculosEsc(p.suffix) + ': <strong>' + media + ' / 10</strong> (' + st.cuenta + ' valoraciones)</div>';
+            vinculosEsc(p.label || p.suffix) + ': <strong>' + media + ' / 10</strong> (' + st.cuenta + ' valoraciones)</div>';
         }).join('');
       }
 
