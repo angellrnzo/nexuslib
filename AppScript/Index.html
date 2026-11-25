@@ -721,14 +721,16 @@
     /* vinculado de solo lectura (Phase 5): su tracking no se edita desde aquí */
     .player-accordion.is-remote .player-details { pointer-events: none; opacity: 0.72; }
     .player-accordion.is-remote .player-summary { opacity: 0.85; }
-    /* el resumen puede ocupar 2 líneas: nombre+chip arriba, estrellas+chevron abajo */
-    .player-summary { display: flex; justify-content: space-between; align-items: center; gap: 6px 10px; padding: 12px 14px; cursor: pointer; flex-wrap: wrap; }
-    .player-info-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 0; flex: 1 1 auto; }
-    .player-info-left h4 { margin: 0; color: #fff; font-size: 14px; font-weight: 800; display: inline-flex; align-items: center; gap: 8px; min-width: 0; max-width: 100%; }
-    .pa-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
-    .player-info-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; margin-left: auto; flex-wrap: wrap; justify-content: flex-end; }
-    .preview-stars { font-size: 12px; color: var(--gold); font-weight: 800; display: inline-flex; align-items: center; gap: 3px; }
+    /* resumen en 2 líneas fijas: fila1 avatar+nombre, fila2 estado+nota+chevron */
+    .player-summary { display: flex; flex-direction: column; gap: 7px; padding: 12px 14px; cursor: pointer; }
+    .ps-row { display: flex; align-items: center; gap: 8px; min-width: 0; }
+    .ps-row-top { min-height: 30px; }
+    .ps-row-bottom { justify-content: space-between; }
+    .ps-row-bottom .status-chip { flex-shrink: 0; }
+    .pa-name { color: #fff; font-size: 14px; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+    .preview-stars { font-size: 12px; color: var(--gold); font-weight: 800; display: inline-flex; align-items: center; gap: 3px; margin-left: auto; }
     .preview-stars.no-stars { color: #8f98a0; font-weight: 500; }
+    .ps-row-bottom .pa-chev { flex-shrink: 0; }
 
     .player-details { max-height: 0; overflow: hidden; opacity: 0; padding: 0 12px; transition: max-height var(--t-slow) var(--ease-inout), opacity var(--t-slow) var(--ease-inout), padding var(--t-slow) var(--ease-inout); }
     .player-accordion.active .player-details { max-height: 760px; opacity: 1; padding: 12px; border-top: 1px solid rgba(255,255,255,0.06); }
@@ -2879,13 +2881,17 @@
       var chapDisp = esLectura ? 'block' : 'none';
       return '<div class="player-accordion' + (NEXUS_MODE && !p.mine ? ' is-remote' : '') + '" id="acc-' + k + '">' +
         '<div class="player-summary" onclick="togglePlayerAccordion(\'' + k + '\')">' +
-          '<div class="player-info-left"><h4>' +
-            '<span class="pa-avatar" style="background:' + p.color + ';">' + vinculosEsc(n.charAt(0)) + '</span><span class="pa-name">' + vinculosEsc(n) + '</span>' +
+          '<div class="ps-row ps-row-top">' +
+            '<span class="pa-avatar" style="background:' + p.color + ';">' + vinculosEsc(n.charAt(0)) + '</span>' +
+            '<span class="pa-name">' + vinculosEsc(n) + '</span>' +
             '<span id="sum-wish-' + k + '" style="display:none;"><svg class="ico ico-sm ico-wish"><use href="#i-heart-fill"/></svg></span>' +
             '<span id="sum-note-' + k + '" style="display:none;"><svg class="ico ico-sm" style="color:var(--accent);"><use href="#i-note"/></svg></span>' +
-          '</h4><div class="status-chip status-none" id="sum-status-' + k + '">Pendiente</div></div>' +
-          '<div class="player-info-right"><span class="preview-stars no-stars" id="sum-stars-' + k + '">Sin nota</span>' +
-            '<svg class="ico ico-sm pa-chev"><use href="#i-chevron-down"/></svg></div>' +
+          '</div>' +
+          '<div class="ps-row ps-row-bottom">' +
+            '<div class="status-chip status-none" id="sum-status-' + k + '">Pendiente</div>' +
+            '<span class="preview-stars no-stars" id="sum-stars-' + k + '">Sin nota</span>' +
+            '<svg class="ico ico-sm pa-chev"><use href="#i-chevron-down"/></svg>' +
+          '</div>' +
         '</div>' +
         '<div class="player-details">' +
           '<button type="button" id="btn-wish-' + k + '" class="wish-toggle" onclick="toggleDeseado(\'' + jsN + '\')"><svg class="ico ico-sm"><use href="#i-heart"/></svg> Marcar como deseado</button>' +
