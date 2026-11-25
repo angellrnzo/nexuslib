@@ -2353,6 +2353,9 @@
 
         var cA = it.estadoAngel === 'Completado' ? 'status-done' : (it.estadoAngel === 'En proceso' ? 'status-playing' : 'status-none');
         var cT = it.estadoTalmai === 'Completado' ? 'status-done' : (it.estadoTalmai === 'En proceso' ? 'status-playing' : 'status-none');
+        // Phase 5: secciones ocultas si el vinculado marco el item privado para mi
+        var visA = it.visibleAngel !== false;
+        var visT = it.visibleTalmai !== false;
 
         var topBadgeHTML = '';
         if (currentCategory === 'Juegos') {
@@ -2366,8 +2369,8 @@
           topBadgeHTML = `<div class="top-badge">${svgIcon('i-manga', 'ico-sm')} ${escaparHTML(it.demografia)}</div>`;
         }
 
-        var wishBadgeHTML = (it.deseadoAngel || it.deseadoTalmai) ?
-          `<div class="wishlist-badge">${svgIcon('i-heart-fill', 'ico-sm ico-wish')}${it.deseadoAngel ? svgIcon('i-user', 'ico-sm ico-angel') : ''}${it.deseadoTalmai ? svgIcon('i-user', 'ico-sm ico-talmai') : ''}</div>` : '';
+        var wishBadgeHTML = ((visA && it.deseadoAngel) || (visT && it.deseadoTalmai)) ?
+          `<div class="wishlist-badge">${svgIcon('i-heart-fill', 'ico-sm ico-wish')}${(visA && it.deseadoAngel) ? svgIcon('i-user', 'ico-sm ico-angel') : ''}${(visT && it.deseadoTalmai) ? svgIcon('i-user', 'ico-sm ico-talmai') : ''}</div>` : '';
         var estLabelA = (!it.estadoAngel || it.estadoAngel === 'No jugado') ? 'Pendiente' : it.estadoAngel;
         var estLabelT = (!it.estadoTalmai || it.estadoTalmai === 'No jugado') ? 'Pendiente' : it.estadoTalmai;
 
@@ -2380,8 +2383,8 @@
             <div class="card-title">${escaparHTML(it.titulo)}</div>
             <div class="card-dev">${escaparHTML((it.creador && String(it.creador).toLowerCase() !== 'undefined') ? it.creador : ((it.autor && String(it.autor).toLowerCase() !== 'undefined') ? it.autor : 'Autor por definir'))}</div>
             <div class="status-container">
-              <div class="status-chip ${cA}">${svgIcon('i-user', 'ico-sm ico-angel')} ${escaparHTML(estLabelA)}</div>
-              <div class="status-chip ${cT}">${svgIcon('i-user', 'ico-sm ico-talmai')} ${escaparHTML(estLabelT)}</div>
+              ${visA ? `<div class="status-chip ${cA}">${svgIcon('i-user', 'ico-sm ico-angel')} ${escaparHTML(estLabelA)}</div>` : ''}
+              ${visT ? `<div class="status-chip ${cT}">${svgIcon('i-user', 'ico-sm ico-talmai')} ${escaparHTML(estLabelT)}</div>` : ''}
             </div>
             ${generarBarraLecturaCard(it)}
           </div>`;
@@ -2766,16 +2769,18 @@
       const total = obtenerTotalCapitulosItem(it);
       const actA = extraerNumeroCapitulo(it.progresoAngel);
       const actT = extraerNumeroCapitulo(it.progresoTalmai);
-      if (!total && !actA && !actT) return '';
+      const visA = it.visibleAngel !== false;
+      const visT = it.visibleTalmai !== false;
+      if (!total && !((visA && actA) || (visT && actT))) return '';
 
       let html = '<div class="card-reading-bar">';
-      if (actA > 0 || it.estadoAngel === 'En proceso') {
+      if (visA && (actA > 0 || it.estadoAngel === 'En proceso')) {
         const pctA = calcularPorcentajeLectura(actA, total);
         const txtA = total > 0 ? `${svgIcon('i-user', 'ico-sm ico-angel')} Cap. ${actA}/${total} (${pctA}%)` : `${svgIcon('i-user', 'ico-sm ico-angel')} Cap. ${actA}`;
         html += `<div class="card-reading-labels"><span>${txtA}</span></div>` +
                 (total > 0 ? `<div class="reading-progress-track"><div class="reading-progress-fill" style="width:${pctA}%"></div></div>` : '');
       }
-      if (actT > 0 || it.estadoTalmai === 'En proceso') {
+      if (visT && (actT > 0 || it.estadoTalmai === 'En proceso')) {
         const pctT = calcularPorcentajeLectura(actT, total);
         const txtT = total > 0 ? `${svgIcon('i-user', 'ico-sm ico-talmai')} Cap. ${actT}/${total} (${pctT}%)` : `${svgIcon('i-user', 'ico-sm ico-talmai')} Cap. ${actT}`;
         html += `<div class="card-reading-labels"><span>${txtT}</span></div>` +
