@@ -718,8 +718,13 @@
     .pa-chev { transition: transform var(--t-base) var(--ease-out); }
     .player-accordion.active .pa-chev { transform: rotate(180deg); }
     /* vinculado de solo lectura (Phase 5): su tracking no se edita desde aquí */
-    .player-accordion.is-remote .player-details { pointer-events: none; }
+    .player-accordion.is-remote .player-details { pointer-events: none; opacity: 0.72; }
     .player-accordion.is-remote .player-summary { opacity: 0.85; }
+    .player-accordion.is-remote .player-info-left h4::after {
+      content: 'Solo lectura'; font-size: 9px; font-weight: 700; letter-spacing: 0.5px;
+      text-transform: uppercase; color: #8f98a0; border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 99px; padding: 2px 7px; margin-left: 4px;
+    }
     .player-summary { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 13px 14px; cursor: pointer; }
     .player-info-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 0; }
     .player-info-left h4 { margin: 0; color: #fff; font-size: 14px; font-weight: 800; display: inline-flex; align-items: center; gap: 8px; }
@@ -728,7 +733,7 @@
     .preview-stars.no-stars { color: #8f98a0; font-weight: 500; }
 
     .player-details { max-height: 0; overflow: hidden; opacity: 0; padding: 0 12px; transition: max-height var(--t-slow) var(--ease-inout), opacity var(--t-slow) var(--ease-inout), padding var(--t-slow) var(--ease-inout); }
-    .player-accordion.active .player-details { max-height: 560px; opacity: 1; padding: 12px; border-top: 1px solid rgba(255,255,255,0.06); }
+    .player-accordion.active .player-details { max-height: 760px; opacity: 1; padding: 12px; border-top: 1px solid rgba(255,255,255,0.06); }
 
     .wish-toggle {
       width: 100%; padding: 8px; margin-bottom: 8px; border-radius: 8px;
@@ -1914,6 +1919,22 @@
       });
     }
 
+    // muestra/oculta acordeones por persona segun visible{Persona} y
+    // colapsa el grid a 1 columna cuando solo queda una seccion
+    function nexusSetAccordionVisibility(it) {
+      var visibles = 0;
+      ['Angel', 'Talmai'].forEach(function(p) {
+        var k = p.toLowerCase();
+        var acc = document.getElementById('acc-' + k);
+        if (!acc) return;
+        var oculto = it['visible' + p] === false;
+        acc.style.display = oculto ? 'none' : '';
+        if (!oculto) visibles++;
+      });
+      var wrap = document.querySelector('.tracking-container');
+      if (wrap) wrap.style.gridTemplateColumns = visibles > 1 ? '' : '1fr';
+    }
+
     // refresca campos de personas/privacidad del item desde la DB al abrir el
     // modal — el cache local puede tener visible{Persona} viejo (TTL 12h)
     async function nexusRefreshItemPrivacy(it) {
@@ -1932,11 +1953,7 @@
           }
         });
         if (changed) {
-          ['Angel', 'Talmai'].forEach(function(p) {
-            var k = p.toLowerCase();
-            var acc = document.getElementById('acc-' + k);
-            if (acc) acc.style.display = (it['visible' + p] === false) ? 'none' : '';
-          });
+          nexusSetAccordionVisibility(it);
           try {
             localStorage.setItem('media_lib_' + CACHE_VERSION + '_' + currentCategory,
               JSON.stringify(itemsByCategory[currentCategory]));
@@ -2862,8 +2879,8 @@
         var nota = it['nota' + p] || '';
 
         // Phase 5: si el tracking del vinculado es privado para mi, ocultar su sección
+        nexusSetAccordionVisibility(it);
         var accEl = document.getElementById('acc-' + k);
-        if (accEl) accEl.style.display = (it['visible' + p] === false) ? 'none' : '';
         accEl && accEl.classList.remove('active');
         document.getElementById('select-estado-' + k).value = est;
         document.getElementById('prog-' + k).value = prog;
