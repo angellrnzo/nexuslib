@@ -539,6 +539,15 @@ See [AppScript/BETA.md](BETA.md) — one entry per working session: what was don
 
 **Notas:** Apps Script dejará de ser necesario del todo — los ETLs ya corren local (`database/etl/*.py`) y las Edge Functions viven en Supabase.
 
+### Phase 4.6 — Backups Supabase (2026-11-25)
+
+Arquitectura de respaldo en 3 capas — runbook completo en `database/RESTORE.md`:
+
+- [x] GitHub Action `backup-supabase.yml` — `pg_dump` schema public (custom, compress 9) semanal + manual → artifact 90 dias. Secrets: `SUPABASE_DB_URL`, `SUPABASE_DB_PASSWORD`.
+- [x] Standby Supabase — 2do proyecto free mismo org; el workflow hace `pg_restore --data-only` semanal si `SUPABASE_STANDBY_ENABLED=true` + secrets standby. **Switch = cambiar NEXUS_URL/KEY en Index.html**. Caveat: `auth.users` no viaja → recrear usuarios via admin API (magic link resuelve passwords).
+- [x] Backup local cifrado — `database/backup_local.py` (Fernet AES, clave en `_local/backup_key.key` — respaldar aparte). Probado en vivo: 237 KB, 8 tablas.
+- [ ] Pendiente usuario: crear proyecto standby en dashboard (API devolvio 403 — PAT sin scope de creacion), agregar GitHub Secrets, activar variable.
+
 ### Phase 5D — Social layer (v2.x)
 
 - [ ] Phase 5 done first.
