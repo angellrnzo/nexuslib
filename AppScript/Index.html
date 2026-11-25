@@ -1551,7 +1551,16 @@
       var links = d.links || [];
       var pendientesIn = links.filter(function(x) { return x.direction === 'incoming' && x.status === 'pending'; });
       var pendientesOut = links.filter(function(x) { return x.direction === 'outgoing' && x.status === 'pending'; });
-      var aceptados = links.filter(function(x) { return x.status === 'accepted'; });
+      // dedupe por persona: la fila inversa del link (respond_library_link)
+      // comparte el mismo other.profile_id -> mostrar una sola entrada
+      var vistos = {};
+      var aceptados = links.filter(function(x) {
+        if (x.status !== 'accepted') return false;
+        var pid = x.other && x.other.profile_id;
+        if (pid && vistos[pid]) return false;
+        if (pid) vistos[pid] = true;
+        return true;
+      });
 
       // --- pendientes entrantes ---
       if (pendientesIn.length) {
