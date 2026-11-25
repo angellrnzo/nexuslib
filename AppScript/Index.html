@@ -627,6 +627,52 @@
     .share-person-row { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 6px; cursor: pointer; }
     .share-person-row:hover { background: rgba(255,255,255,.04); }
     .share-person-row input { accent-color: var(--accent); width: 16px; height: 16px; }
+
+    /* Paneles compartir/enviar (Phase 5) — mismo lenguaje que el resto de la app */
+    .sp-panel {
+      background: rgba(27, 40, 56, 0.55); border: 1px solid rgba(102, 192, 244, 0.16);
+      border-radius: 12px; padding: 12px;
+    }
+    .sp-label {
+      font-size: 10px; color: #8f98a0; text-transform: uppercase;
+      letter-spacing: 0.6px; font-weight: 700; margin: 0 0 8px;
+    }
+    .sp-row {
+      display: flex; align-items: center; gap: 10px; width: 100%;
+      padding: 9px 10px; border-radius: 9px; border: 1px solid transparent;
+      background: transparent; color: var(--text); font-size: 13px;
+      cursor: pointer; text-align: left; font-family: inherit;
+      transition: background var(--t-fast) var(--ease-out), border-color var(--t-fast) var(--ease-out);
+    }
+    .sp-row:hover { background: rgba(102, 192, 244, 0.08); border-color: rgba(102, 192, 244, 0.22); }
+    .sp-row:active { transform: scale(0.99); }
+    label.sp-row { cursor: pointer; }
+    .sp-avatar {
+      width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 800; color: #0b0e14;
+    }
+    .sp-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .sp-badge {
+      font-size: 9px; font-weight: 800; padding: 2px 8px; border-radius: 99px;
+      letter-spacing: 0.4px; text-transform: uppercase; flex-shrink: 0;
+    }
+    .sp-check { accent-color: var(--accent); width: 15px; height: 15px; flex-shrink: 0; }
+    .sp-hint { font-size: 11px; color: #8f98a0; line-height: 1.5; margin: 8px 0 0; }
+    .sp-empty { font-size: 12px; color: #8f98a0; padding: 4px 2px; }
+    .sp-row-danger { border-color: rgba(255, 107, 107, 0.3); background: rgba(255, 107, 107, 0.05); }
+    .sp-row-danger:hover { background: rgba(255, 107, 107, 0.1); border-color: rgba(255, 107, 107, 0.45); }
+    .sp-actions { display: flex; gap: 8px; margin-top: 12px; }
+    .sp-btn {
+      flex: 1; padding: 9px; border-radius: 9px; font-size: 12px; font-weight: 700;
+      border: 1px solid var(--border); background: rgba(255, 255, 255, 0.05);
+      color: var(--text); cursor: pointer; font-family: inherit;
+      transition: background var(--t-fast) var(--ease-out), filter var(--t-fast) var(--ease-out);
+    }
+    .sp-btn:hover { background: rgba(255, 255, 255, 0.09); }
+    .sp-btn-primary { background: var(--accent); color: #0b0e14; border-color: transparent; }
+    .sp-btn-primary:hover { filter: brightness(1.08); background: var(--accent); }
+    .sp-msg { font-size: 11px; margin-top: 8px; min-height: 14px; }
     .modal-title {
       color: #fff; margin: 0 0 4px 0; font-size: 20px; font-weight: 900; padding-right: 40px;
       overflow-wrap: break-word; word-break: break-word; display: flex; align-items: center; gap: 8px;
@@ -853,6 +899,7 @@
     <symbol id="i-users" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
     <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
     <symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></symbol>
     <symbol id="i-star" viewBox="0 0 24 24"><polygon fill="currentColor" stroke="none" points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></symbol>
     <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></symbol>
     <symbol id="i-folder" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></symbol>
@@ -1126,10 +1173,10 @@
             <div id="share-box-angel" style="display:none;margin-top:10px;">
               <div style="display:flex;gap:8px;">
                 <button type="button" id="btn-share-angel" class="btn-text" style="flex:1;background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--border);" onclick="toggleSharePanel('angel')"></button>
-                <button type="button" id="btn-send-angel" class="btn-text" style="flex:1;background:rgba(126,224,163,.08);color:#7ee0a3;border:1px solid rgba(126,224,163,.3);" onclick="toggleSendPanel('angel')">Enviar</button>
+                <button type="button" id="btn-send-angel" class="btn-text" style="flex:1;background:rgba(102,192,244,.1);color:var(--accent);border:1px solid rgba(102,192,244,.3);" onclick="toggleSendPanel('angel')"><svg class="ico ico-sm"><use href="#i-send"/></svg> Enviar</button>
               </div>
-              <div id="share-panel-angel" style="display:none;margin-top:8px;background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:10px;padding:10px;"></div>
-              <div id="send-panel-angel" style="display:none;margin-top:8px;background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:10px;padding:10px;"></div>
+              <div class="sp-panel" id="share-panel-angel" style="display:none;margin-top:8px;"></div>
+              <div class="sp-panel" id="send-panel-angel" style="display:none;margin-top:8px;"></div>
             </div>
           </div>
         </div>
@@ -1179,10 +1226,10 @@
             <div id="share-box-talmai" style="display:none;margin-top:10px;">
               <div style="display:flex;gap:8px;">
                 <button type="button" id="btn-share-talmai" class="btn-text" style="flex:1;background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--border);" onclick="toggleSharePanel('talmai')"></button>
-                <button type="button" id="btn-send-talmai" class="btn-text" style="flex:1;background:rgba(126,224,163,.08);color:#7ee0a3;border:1px solid rgba(126,224,163,.3);" onclick="toggleSendPanel('talmai')">Enviar</button>
+                <button type="button" id="btn-send-talmai" class="btn-text" style="flex:1;background:rgba(102,192,244,.1);color:var(--accent);border:1px solid rgba(102,192,244,.3);" onclick="toggleSendPanel('talmai')"><svg class="ico ico-sm"><use href="#i-send"/></svg> Enviar</button>
               </div>
-              <div id="share-panel-talmai" style="display:none;margin-top:8px;background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:10px;padding:10px;"></div>
-              <div id="send-panel-talmai" style="display:none;margin-top:8px;background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:10px;padding:10px;"></div>
+              <div class="sp-panel" id="share-panel-talmai" style="display:none;margin-top:8px;"></div>
+              <div class="sp-panel" id="send-panel-talmai" style="display:none;margin-top:8px;"></div>
             </div>
           </div>
         </div>
@@ -1625,10 +1672,9 @@
       }
       aceptados.forEach(function(x) {
         var nombre = x.other ? x.other.display_name : 'Usuario';
-        var badge = x.link_type === 'pareja' ? '#ff8fa3' : (x.link_type === 'familia' ? '#ffd479' : '#66c0f4');
         h += '<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(126,224,163,.05);border:1px solid rgba(126,224,163,.2);border-radius:8px;margin-bottom:6px;">' +
              '<span style="flex:1;font-size:13px;">' + vinculosEsc(nombre) + '</span>' +
-             '<span style="font-size:10px;padding:2px 8px;border-radius:99px;background:' + badge + '22;color:' + badge + ';border:1px solid ' + badge + '55;">' + vinculosEsc(VINCULOS_LINK_TYPES[x.link_type] || x.link_type) + '</span></div>';
+             nexusLinkBadge(x.link_type) + '</div>';
       });
       h += '</div>';
 
@@ -1767,7 +1813,7 @@
         return;
       }
       panel.style.display = 'block';
-      panel.innerHTML = '<p style="color:#8f98a0;font-size:12px;">Cargando…</p>';
+      panel.innerHTML = '<div class="sp-empty">Cargando…</div>';
       _shareCtx = { cat: currentCategory, id: currentItemId, k: k };
       try {
         var d = await nexusMisVinculos();
@@ -1775,8 +1821,24 @@
         var st = await nexusFetchMyPrivacy(_shareCtx.cat, _shareCtx.id);
         renderSharePanel(st, d.links || []);
       } catch (e) {
-        panel.innerHTML = '<p style="color:#ff8585;font-size:12px;">Error: ' + vinculosEsc(e.message) + '</p>';
+        panel.innerHTML = '<div class="sp-empty" style="color:#ff8585;">Error: ' + vinculosEsc(e.message) + '</div>';
       }
+    }
+
+    var VINCULOS_BADGE_COLORS = {
+      pareja:  { bg: '#ff8fa3', fg: '#2a0f16' },
+      familia: { bg: '#ffd479', fg: '#2a1f08' },
+      amigo:   { bg: '#66c0f4', fg: '#0b2436' },
+      custom:  { bg: '#b39ddb', fg: '#1c1430' }
+    };
+    function nexusLinkBadge(linkType) {
+      var c = VINCULOS_BADGE_COLORS[linkType] || VINCULOS_BADGE_COLORS.custom;
+      var label = VINCULOS_LINK_TYPES[linkType] || linkType || '';
+      return '<span class="sp-badge" style="background:' + c.bg + '22;color:' + c.bg + ';border:1px solid ' + c.bg + '55;">' + vinculosEsc(label) + '</span>';
+    }
+    function nexusAvatar(name, color) {
+      var ini = (name || '?').trim().charAt(0).toUpperCase();
+      return '<span class="sp-avatar" style="background:' + color + ';">' + vinculosEsc(ini) + '</span>';
     }
 
     function renderSharePanel(st, links) {
@@ -1792,37 +1854,43 @@
       });
 
       var sw = Array.isArray(st.shared_with) ? st.shared_with : [];
-      var p = k === 'angel' ? 'Angel' : 'Talmai';
       var h = '';
 
+      h += '<div class="sp-label" style="color:#ff8585;">' + svgIcon('i-lock', 'ico-sm') + ' Privacidad de tu tracking</div>';
+
       // toggle privado
-      h += '<label class="share-person-row" style="border-color:rgba(255,133,133,.35);">' +
-           '<input type="checkbox" id="share-privado-' + k + '"' + (st.is_private ? ' checked' : '') + '> ' +
-           svgIcon('i-lock', 'ico-sm') + ' <span style="flex:1;">Privado — nadie ve mi tracking</span></label>';
+      h += '<label class="sp-row' + (st.is_private ? ' sp-row-danger' : '') + '">' +
+           '<input type="checkbox" class="sp-check" id="share-privado-' + k + '"' + (st.is_private ? ' checked' : '') + '> ' +
+           svgIcon('i-lock', 'ico-sm') + ' <span class="sp-name" style="font-size:12px;">Privado — nadie ve esto</span></label>';
 
       // audiencia (solo si no está privado)
-      h += '<div id="share-aud-' + k + '" style="' + (st.is_private ? 'display:none;' : '') + 'margin-top:8px;">';
-      h += '<div style="font-size:10px;color:#8f98a0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;">Visible para</div>';
-      h += '<label class="share-person-row" style="padding:6px 8px;"><input type="radio" name="share-mode-' + k + '" class="share-mode-' + k + '"' + (sw.length === 0 ? ' checked' : '') + '> ' +
-           '<span style="flex:1;font-size:12px;">Todos mis vínculos</span></label>';
+      h += '<div id="share-aud-' + k + '" style="' + (st.is_private ? 'display:none;' : '') + 'margin-top:10px;">';
+      h += '<div class="sp-label">Visible para</div>';
+      h += '<label class="sp-row" style="padding:8px 10px;"><input type="radio" class="sp-check" name="share-mode-' + k + '"' + (sw.length === 0 ? ' checked' : '') + '> ' +
+           '<span class="sp-name" style="font-size:12px;">Todos mis vínculos</span></label>';
       personas.forEach(function(x) {
         var pid = x.other.profile_id;
         var sel = sw.indexOf(pid) !== -1;
-        h += '<label class="share-person-row" style="padding:6px 8px;"><input type="checkbox" class="share-person-' + k + '" value="' + pid + '"' + (sel ? ' checked' : '') + '> ' +
-             '<span style="flex:1;font-size:12px;">' + vinculosEsc(x.other.display_name || 'Usuario') +
-             ' <span style="color:#8f98a0;font-size:10px;">(' + vinculosEsc(VINCULOS_LINK_TYPES[x.link_type] || x.link_type) + ')</span></span></label>';
+        var col = VINCULOS_BADGE_COLORS[x.link_type] ? VINCULOS_BADGE_COLORS[x.link_type].bg : '#66c0f4';
+        h += '<label class="sp-row" style="padding:8px 10px;"><input type="checkbox" class="sp-check share-person-' + k + '" value="' + pid + '"' + (sel ? ' checked' : '') + '> ' +
+             nexusAvatar(x.other.display_name, col) +
+             '<span class="sp-name" style="font-size:12px;">' + vinculosEsc(x.other.display_name || 'Usuario') + '</span>' +
+             nexusLinkBadge(x.link_type) + '</label>';
       });
       if (!personas.length) {
-        h += '<div style="font-size:11px;color:#8f98a0;margin-top:4px;">Sin vínculos aceptados — solo tú verás esto.</div>';
+        h += '<div class="sp-empty">Sin vínculos aceptados — solo tú verás esto.</div>';
       }
       h += '</div>';
-      h += '<div style="display:flex;gap:8px;margin-top:10px;">' +
-           '<button class="btn btn-text" style="flex:1;padding:8px;" onclick="guardarSharePanel(\'' + k + '\',\'' + p + '\')">Guardar</button>' +
-           '<button class="btn btn-circle" style="flex-shrink:0;" onclick="nexusSharePanel(\'' + k + '\').style.display=\'none\'" title="Cerrar"><svg class="ico"><use href="#i-x"/></svg></button></div>';
+      h += '<div class="sp-hint">El candado es solo para ti — los demás nunca ven que existe.</div>';
+      h += '<div class="sp-actions">' +
+           '<button class="sp-btn sp-btn-primary" onclick="guardarSharePanel(\'' + k + '\')">Guardar</button>' +
+           '<button class="sp-btn" onclick="nexusSharePanel(\'' + k + '\').style.display=\'none\'">Cerrar</button></div>';
 
       panel.innerHTML = h;
       var priv = document.getElementById('share-privado-' + k);
       priv.addEventListener('change', function() {
+        var row = priv.closest('.sp-row');
+        if (row) row.classList.toggle('sp-row-danger', priv.checked);
         document.getElementById('share-aud-' + k).style.display = priv.checked ? 'none' : 'block';
       });
     }
@@ -1871,7 +1939,7 @@
         return;
       }
       panel.style.display = 'block';
-      panel.innerHTML = '<p style="color:#8f98a0;font-size:12px;">Cargando…</p>';
+      panel.innerHTML = '<div class="sp-empty">Cargando…</div>';
       try {
         var d = await nexusMisVinculos();
         if (!nexusSendPanel(k) || nexusSendPanel(k).style.display === 'none') return;
@@ -1884,20 +1952,23 @@
         window._sendPersonas = window._sendPersonas || {};
         window._sendPersonas[k] = {};
         personas.forEach(function(x) { window._sendPersonas[k][x.other.profile_id] = x.other.display_name || 'Usuario'; });
-        var h = '<div style="font-size:10px;color:#8f98a0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Enviar este elemento a</div>';
+        var h = '<div class="sp-label">' + svgIcon('i-send', 'ico-sm') + ' Enviar este elemento a</div>';
         if (!personas.length) {
-          h += '<div style="font-size:12px;color:#8f98a0;">No tienes vínculos aceptados.</div>';
+          h += '<div class="sp-empty">No tienes vínculos aceptados.</div>';
         }
         personas.forEach(function(x) {
-          h += '<button class="share-person-row" style="width:100%;text-align:left;background:transparent;" onclick="nexusSendItem(\'' + k + '\',\'' + x.other.profile_id + '\')">' +
-               '<span style="flex:1;font-size:13px;">' + vinculosEsc(x.other.display_name || 'Usuario') +
-               ' <span style="color:#8f98a0;font-size:10px;">(' + vinculosEsc(VINCULOS_LINK_TYPES[x.link_type] || x.link_type) + ')</span></span>' +
+          var col = VINCULOS_BADGE_COLORS[x.link_type] ? VINCULOS_BADGE_COLORS[x.link_type].bg : '#66c0f4';
+          h += '<button class="sp-row" onclick="nexusSendItem(\'' + k + '\',\'' + x.other.profile_id + '\')">' +
+               nexusAvatar(x.other.display_name, col) +
+               '<span class="sp-name">' + vinculosEsc(x.other.display_name || 'Usuario') + '</span>' +
+               nexusLinkBadge(x.link_type) +
                svgIcon('i-chevron-down', 'ico-sm') + '</button>';
         });
-        h += '<div id="send-msg-' + k + '" style="font-size:11px;margin-top:6px;min-height:13px;"></div>';
+        h += '<div class="sp-hint">Te llega una solicitud — al aceptarla, el elemento aparece en su biblioteca.</div>';
+        h += '<div id="send-msg-' + k + '" class="sp-msg"></div>';
         panel.innerHTML = h;
       } catch (e) {
-        panel.innerHTML = '<p style="color:#ff8585;font-size:12px;">Error: ' + vinculosEsc(e.message) + '</p>';
+        panel.innerHTML = '<div class="sp-empty" style="color:#ff8585;">Error: ' + vinculosEsc(e.message) + '</div>';
       }
     }
 
