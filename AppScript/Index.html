@@ -590,8 +590,9 @@
     }
     .modal-close:hover { background: rgba(201, 59, 59, 0.9); border-color: rgba(255, 107, 107, 0.7); }
     .modal-close:active { transform: scale(0.9); }
-    #modal .modal-content { padding-top: 56px; }
+    /* reserva lateral solo donde el boton puede pisar texto del header */
     .modal-content .modal-title { padding-right: 48px; }
+    .modal-header-grid.poster .modal-header-info { padding-right: 44px; }
 
     .modal-header-grid { display: flex; gap: 16px; margin-bottom: 14px; align-items: flex-start; width: 100%; }
     .modal-header-grid.landscape { flex-direction: column; }
@@ -833,7 +834,6 @@
 
     @media (max-width: 600px) {
       .modal-content { padding: 14px; border-radius: 14px; }
-      #modal .modal-content { padding-top: 50px; }
       .modal-title { font-size: 17px; padding-right: 36px; }
       .stats-cards-grid { grid-template-columns: minmax(0, 1fr); gap: 10px; }
       .tracking-container { grid-template-columns: 1fr; }
@@ -881,6 +881,7 @@
       }
       .modal-header-grid.poster .modal-header-info {
         grid-area: body;
+        padding-right: 44px;
       }
       .modal-header-grid.poster .modal-title { padding-right: 36px; justify-content: flex-start; font-size: 17px; }
       .modal-header-grid.poster .version-badges { justify-content: flex-start; }
