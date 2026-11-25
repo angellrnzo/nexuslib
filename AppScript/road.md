@@ -476,7 +476,12 @@ See [AppScript/BETA.md](BETA.md) — one entry per working session: what was don
 - [ ] 5F spec approved (2026-11-23): linking model = two personal libraries + shared zone (`libraries`/`library_members` reuse, per-member tracking inside zone).
 - [x] **Multi-user scope decided** (2026-11-24) — build the linking section **complete**: `pareja`/`familia`/`amigo`/`custom` link types with per-relationship visibility matrices as documented in 5A/5E/5F — no simplified 2-user version. Implementation will ship with a step-by-step guide of user actions (Supabase dashboard, invite codes, etc.) so Angel/Talmai can apply it themselves.
 - [ ] Invite-code UX decision (how Talmai enters Angel's code).
-- [ ] **UI personas por link_type (decidido 2026-11-24, usuario):** el modal/filtros de doble columna (`estadoAngel`/`estadoTalmai`…) solo tiene sentido cuando el vínculo comparte tracking mutuamente. Regla: **`pareja` → ambas personas visibles** (como hoy en el test); **`amigo`/`familia`/`custom` → una sola sección** (la propia) — no renderizar columnas del otro aunque exista link, porque su visibilidad es parcial por diseño. Implementar en Phase 5: la vista merged ya emite defaults neutros para campos no visibles; la UI debe decidir cuántas secciones de tracking pintar según link_type efectivo.
+- [ ] **UI personas por vínculo — decidido 2026-11-24 (usuario):**
+  - **`pareja` → sección dual completa**, pero el campo de la pareja es **solo lectura** (es tracking personal suyo — ver/desplegar sí, editar NO). En v1 ambas columnas eran editables; en v2 solo la propia es escribible (RLS ya lo garantiza — la UI debe deshabilitar inputs ajenos).
+  - **Items compartidos según link** aparecen con los campos que la matriz permita, mismos campos de pareja read-only.
+  - **Multi-vínculo → configurable por el usuario**: en ajustes se elige qué vínculos aparecen como columnas extra en el modal (preferencia en `profiles.preferences` o tabla dedicada — decidir en implementación).
+  - **`is_private` → badge "privado" (candado) solo para mí**: yo lo veo normal con indicador; para los demás el tracking simplemente no existe. Sin pista visual del item en vistas ajenas.
+- [ ] **Pendiente:** definir dónde vive la preferencia "qué vínculos se muestran" (`profiles.preferences` jsonb alcanza para v2).
 
 ### Phase 5D — Social layer (v2.x)
 
