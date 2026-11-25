@@ -104,6 +104,7 @@ declare
   vp       record;
   vis      jsonb;
   suf      text;
+  my_suf   text;
   genres_txt text;
   can_see  boolean;
   sec_vis  boolean;
@@ -122,7 +123,7 @@ begin
   select coalesce(nullif(p.username, ''), p.display_name, 'Yo')
     into my_pname
   from public.profiles p where p.id = my_uid;
-  suf := initcap(split_part(coalesce(my_pname, 'Yo'), ' ', 1));
+  my_suf := initcap(split_part(coalesce(my_pname, 'Yo'), ' ', 1));
 
   for rec in
     select mi.*, li.id as li_id
@@ -184,14 +185,14 @@ begin
     where umt.profile_id = my_uid and umt.media_item_id = rec.id;
 
     obj := obj || jsonb_build_object(
-      'username' || suf, coalesce(my_pname, 'Yo'),
-      'estado'   || suf, case t.status when 'completed' then 'Completado'
+      'username' || my_suf, coalesce(my_pname, 'Yo'),
+      'estado'   || my_suf, case t.status when 'completed' then 'Completado'
                                    when 'in_progress' then 'En proceso' else 'No jugado' end,
-      'estrellas'|| suf, coalesce(t.rating, 0),
-      'deseado'  || suf, coalesce(t.is_wishlisted, false),
-      'progreso' || suf, coalesce(t.progress, ''),
-      'nota'     || suf, coalesce(t.personal_notes, ''),
-      'privado'  || suf, coalesce(t.is_private, false)
+      'estrellas'|| my_suf, coalesce(t.rating, 0),
+      'deseado'  || my_suf, coalesce(t.is_wishlisted, false),
+      'progreso' || my_suf, coalesce(t.progress, ''),
+      'nota'     || my_suf, coalesce(t.personal_notes, ''),
+      'privado'  || my_suf, coalesce(t.is_private, false)
     );
 
     -- tracking de perfiles vinculados: gated por visibility del link
