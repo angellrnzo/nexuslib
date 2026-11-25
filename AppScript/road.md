@@ -530,7 +530,7 @@ See [AppScript/BETA.md](BETA.md) — one entry per working session: what was don
 - [ ] Verificar CORS de Edge Functions (`catalog-search`, `catalog-add`, `item-refresh`) desde origen Pages — supabase-js usa anon key, debería bastar; probar E2E.
 - [x] `WebAPP.gs` → renombrado **`WebAPP.legacy.gs`** con header LEGACY/RESPALDO — congelado como referencia histórica del backend Sheets, no desplegar ni editar (2026-11-26).
 - [ ] Limpiar código muerto en `Index.html`: rama `google.script.run` en `RUN` (siempre `nexusRun` con `NEXUS_MODE=true`).
-- [ ] Sheet queda solo como **archivo/backup** — `backup-excel.yml` sigue exportando xlsx semanal (no es fuente de datos).
+- [x] Sheet queda **congelado** — nada escribe en él desde la migración (flujo fue Sheet→Supabase, una vía). `backup-excel.yml` exporta el mismo xlsx stale y el diff lo descarta sin commit — inofensivo. **Descartar al cierre**: borrar workflow + `AppScript/GameList.xlsx` cuando se confirme que no hace falta rescate (junto con WebAPP.legacy.gs).
 - [ ] PWA: `manifest.json` + service worker (si existe) revisar scope/paths para el nuevo dominio; iconos ya están en `icons/`.
 - [ ] OG/Twitter cards del shell se conservan (ya apuntan a Pages).
 - [ ] Deploy formal: merge `beta` → `main` requiere `Confirmar deploy` (regla vigente).
