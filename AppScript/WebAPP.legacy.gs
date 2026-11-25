@@ -1,3 +1,13 @@
+// ============================================================
+// LEGACY / RESPALDO — NO USAR EN PRODUCCION
+// ============================================================
+// Web app de Apps Script + Google Sheets (v1). Reemplazado por
+// Supabase + GitHub Pages (Phase 4.5, 2026-11-26). Este archivo se
+// conserva congelado solo como referencia historica del backend
+// Sheets. NO desplegar ni editar salvo migracion de datos.
+// Fuente de verdad actual: supabase/functions/ + database/*.sql
+// ============================================================
+
 var SCRIPT_PROPS = PropertiesService.getScriptProperties();
 
 var META_LAST_ROW = Number(SCRIPT_PROPS.getProperty('META_LAST_ROW')) || 0;

@@ -528,11 +528,14 @@ See [AppScript/BETA.md](BETA.md) — one entry per working session: what was don
 - [ ] Sustituir `index.html` por el contenido de `AppScript/Index.html` (o moverlo a `app.html`/`index.html` directo) — **quitar `<base target="_top">`** (solo aplica a Apps Script).
 - [ ] Supabase Dashboard → Auth → URL Configuration: Site URL = `https://angellrnzo.github.io/nexuslib/` + redirect URLs del dominio Pages (magic link/password reset).
 - [ ] Verificar CORS de Edge Functions (`catalog-search`, `catalog-add`, `item-refresh`) desde origen Pages — supabase-js usa anon key, debería bastar; probar E2E.
-- [ ] Limpiar código muerto: rama `google.script.run` en `RUN`, `WebAPP.gs` read/write paths (mantener el archivo como referencia histórica o borrar tras el corte).
+- [x] `WebAPP.gs` → renombrado **`WebAPP.legacy.gs`** con header LEGACY/RESPALDO — congelado como referencia histórica del backend Sheets, no desplegar ni editar (2026-11-26).
+- [ ] Limpiar código muerto en `Index.html`: rama `google.script.run` en `RUN` (siempre `nexusRun` con `NEXUS_MODE=true`).
 - [ ] Sheet queda solo como **archivo/backup** — `backup-excel.yml` sigue exportando xlsx semanal (no es fuente de datos).
 - [ ] PWA: `manifest.json` + service worker (si existe) revisar scope/paths para el nuevo dominio; iconos ya están en `icons/`.
 - [ ] OG/Twitter cards del shell se conservan (ya apuntan a Pages).
 - [ ] Deploy formal: merge `beta` → `main` requiere `Confirmar deploy` (regla vigente).
+
+**Regla (2026-11-26):** NO mergear/pushear `beta` → `main` hasta terminar el roadmap completo — producción queda congelada en el shell/iframe actual.
 
 **Notas:** Apps Script dejará de ser necesario del todo — los ETLs ya corren local (`database/etl/*.py`) y las Edge Functions viven en Supabase.
 
