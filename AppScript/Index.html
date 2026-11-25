@@ -1124,7 +1124,8 @@
             <div class="stars" id="stars-angel"></div>
             <textarea id="note-angel" class="player-note" placeholder="Apunte rápido de Angel..." onchange="guardarNotaJugador('Angel', this.value)"></textarea>
             <div id="share-box-angel" style="display:none;margin-top:10px;">
-              <button type="button" id="btn-share-angel" class="btn-text" style="width:100%;background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--border);" onclick="abrirShareItem('Angel')"></button>
+              <button type="button" id="btn-share-angel" class="btn-text" style="width:100%;background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--border);" onclick="toggleSharePanel('angel')"></button>
+              <div id="share-panel-angel" style="display:none;margin-top:8px;background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:10px;padding:10px;"></div>
             </div>
           </div>
         </div>
@@ -1172,7 +1173,8 @@
             <div class="stars" id="stars-talmai"></div>
             <textarea id="note-talmai" class="player-note" placeholder="Apunte rápido de Talmai..." onchange="guardarNotaJugador('Talmai', this.value)"></textarea>
             <div id="share-box-talmai" style="display:none;margin-top:10px;">
-              <button type="button" id="btn-share-talmai" class="btn-text" style="width:100%;background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--border);" onclick="abrirShareItem('Talmai')"></button>
+              <button type="button" id="btn-share-talmai" class="btn-text" style="width:100%;background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--border);" onclick="toggleSharePanel('talmai')"></button>
+              <div id="share-panel-talmai" style="display:none;margin-top:8px;background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:10px;padding:10px;"></div>
             </div>
           </div>
         </div>
@@ -1223,15 +1225,6 @@
         </div>
         <div id="match-grid" class="match-grid"></div>
       </div>
-    </div>
-  </div>
-
-  <!-- MODAL COMPARTIR ITEM (Phase 5, privacidad por item) -->
-  <div id="modal-share" onclick="cerrarShareModal()">
-    <div class="modal-content" onclick="event.stopPropagation()" style="max-width:400px;">
-      <button class="modal-close" onclick="cerrarShareModal()"><svg class="ico"><use href="#i-x"/></svg></button>
-      <h2 class="modal-title"><svg class="ico ico-lg"><use href="#i-users"/></svg> Compartir</h2>
-      <div id="share-modal-body" style="margin-top:8px;"></div>
     </div>
   </div>
 
@@ -1674,7 +1667,7 @@
     }
 
     // ---- compartir tracking por item (Phase 5: is_private + shared_with) ----
-    var _shareCtx = null;
+    var _shareCtx = null; // {cat, id, k} k = 'angel'|'talmai' (mi sección)
 
     async function nexusFetchMyPrivacy(category, externalId) {
       var sb = await nexusSb();
@@ -1717,37 +1710,35 @@
       });
     }
 
-    async function abrirShareItem(persona) {
+    function nexusSharePanel(k) { return document.getElementById('share-panel-' + k); }
+
+    async function toggleSharePanel(k) {
       if (!NEXUS_MODE || !currentItemId) return;
-      var ov = document.getElementById('modal-share');
-      var body = document.getElementById('share-modal-body');
-      if (!ov || !body) return;
-      _shareCtx = { cat: currentCategory, id: currentItemId, persona: persona };
-      body.innerHTML = '<p style="color:#8f98a0;font-size:13px;">Cargando…</p>';
-      ov.style.display = 'flex';
-      requestAnimationFrame(() => requestAnimationFrame(() => ov.style.opacity = '1'));
+      var panel = nexusSharePanel(k);
+      if (!panel) return;
+      if (panel.style.display !== 'none' && panel.innerHTML) {
+        panel.style.display = 'none';
+        return;
+      }
+      panel.style.display = 'block';
+      panel.innerHTML = '<p style="color:#8f98a0;font-size:12px;">Cargando…</p>';
+      _shareCtx = { cat: currentCategory, id: currentItemId, k: k };
       try {
         var d = await nexusMisVinculos();
+        if (!_shareCtx || _shareCtx.k !== k) return; // usuario cambió de sección
         var st = await nexusFetchMyPrivacy(_shareCtx.cat, _shareCtx.id);
-        var titulo = (document.getElementById('m-titulo') || {}).innerText || '';
-        renderShareModal(st, d.links || [], titulo);
+        renderSharePanel(st, d.links || []);
       } catch (e) {
-        body.innerHTML = '<p style="color:#ff8585;font-size:13px;">Error: ' + vinculosEsc(e.message) + '</p>';
+        panel.innerHTML = '<p style="color:#ff8585;font-size:12px;">Error: ' + vinculosEsc(e.message) + '</p>';
       }
     }
 
-    function cerrarShareModal() {
-      var ov = document.getElementById('modal-share');
-      if (ov) { ov.style.opacity = '0'; ov.style.display = 'none'; }
-      _shareCtx = null;
-    }
-
-    function renderShareModal(st, links, tituloItem) {
-      var body = document.getElementById('share-modal-body');
+    function renderSharePanel(st, links) {
+      var k = _shareCtx.k;
+      var panel = nexusSharePanel(k);
       var aceptados = (links || []).filter(function(x) {
         return x.status === 'accepted' && x.other && x.other.profile_id;
       });
-      // dedupe por persona (fila inversa del link)
       var vistos = {}, personas = [];
       aceptados.forEach(function(x) {
         var pid = x.other.profile_id;
@@ -1755,62 +1746,60 @@
       });
 
       var sw = Array.isArray(st.shared_with) ? st.shared_with : [];
-      var h = '<div style="font-size:12px;color:#8f98a0;margin-bottom:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + vinculosEsc(tituloItem) + '</div>';
+      var p = k === 'angel' ? 'Angel' : 'Talmai';
+      var h = '';
 
       // toggle privado
       h += '<label class="share-person-row" style="border-color:rgba(255,133,133,.35);">' +
-           '<input type="checkbox" id="share-privado"' + (st.is_private ? ' checked' : '') + '> ' +
+           '<input type="checkbox" id="share-privado-' + k + '"' + (st.is_private ? ' checked' : '') + '> ' +
            svgIcon('i-lock', 'ico-sm') + ' <span style="flex:1;">Privado — nadie ve mi tracking</span></label>';
 
       // audiencia (solo si no está privado)
-      h += '<div id="share-audiencia" style="' + (st.is_private ? 'display:none;' : '') + 'margin-top:10px;">';
-      h += '<div style="font-size:11px;color:#8f98a0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Visible para</div>';
-      h += '<label class="share-person-row"><input type="radio" name="share-mode" id="share-mode-all" value="all"' + (sw.length === 0 ? ' checked' : '') + '> ' +
-           '<span style="flex:1;">Todos mis vínculos <span style="color:#8f98a0;font-size:11px;">(según permisos de cada uno)</span></span></label>';
+      h += '<div id="share-aud-' + k + '" style="' + (st.is_private ? 'display:none;' : '') + 'margin-top:8px;">';
+      h += '<div style="font-size:10px;color:#8f98a0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;">Visible para</div>';
+      h += '<label class="share-person-row" style="padding:6px 8px;"><input type="radio" name="share-mode-' + k + '" class="share-mode-' + k + '"' + (sw.length === 0 ? ' checked' : '') + '> ' +
+           '<span style="flex:1;font-size:12px;">Todos mis vínculos</span></label>';
       personas.forEach(function(x) {
         var pid = x.other.profile_id;
         var sel = sw.indexOf(pid) !== -1;
-        h += '<label class="share-person-row"><input type="checkbox" class="share-person" value="' + pid + '"' + (sel ? ' checked' : '') + '> ' +
-             '<span style="flex:1;">' + vinculosEsc(x.other.display_name || 'Usuario') +
-             ' <span style="color:#8f98a0;font-size:11px;">(' + vinculosEsc(VINCULOS_LINK_TYPES[x.link_type] || x.link_type) + ')</span></span></label>';
+        h += '<label class="share-person-row" style="padding:6px 8px;"><input type="checkbox" class="share-person-' + k + '" value="' + pid + '"' + (sel ? ' checked' : '') + '> ' +
+             '<span style="flex:1;font-size:12px;">' + vinculosEsc(x.other.display_name || 'Usuario') +
+             ' <span style="color:#8f98a0;font-size:10px;">(' + vinculosEsc(VINCULOS_LINK_TYPES[x.link_type] || x.link_type) + ')</span></span></label>';
       });
       if (!personas.length) {
-        h += '<div style="font-size:12px;color:#8f98a0;margin-top:6px;">No tienes vínculos aceptados — solo tú verás este tracking.</div>';
+        h += '<div style="font-size:11px;color:#8f98a0;margin-top:4px;">Sin vínculos aceptados — solo tú verás esto.</div>';
       }
       h += '</div>';
-      h += '<div style="font-size:11px;color:#8f98a0;margin-top:10px;">El candado es solo para ti — los demás nunca ven que existe.</div>';
-      h += '<button class="btn btn-text" style="width:100%;margin-top:12px;" onclick="guardarShareItem()">Guardar</button>';
+      h += '<div style="display:flex;gap:8px;margin-top:10px;">' +
+           '<button class="btn btn-text" style="flex:1;padding:8px;" onclick="guardarSharePanel(\'' + k + '\',\'' + p + '\')">Guardar</button>' +
+           '<button class="btn btn-circle" style="flex-shrink:0;" onclick="nexusSharePanel(\'' + k + '\').style.display=\'none\'" title="Cerrar"><svg class="ico"><use href="#i-x"/></svg></button></div>';
 
-      body.innerHTML = h;
-      var priv = document.getElementById('share-privado');
+      panel.innerHTML = h;
+      var priv = document.getElementById('share-privado-' + k);
       priv.addEventListener('change', function() {
-        document.getElementById('share-audiencia').style.display = priv.checked ? 'none' : 'block';
+        document.getElementById('share-aud-' + k).style.display = priv.checked ? 'none' : 'block';
       });
     }
 
-    async function guardarShareItem() {
-      if (!_shareCtx) return;
-      var priv = document.getElementById('share-privado');
+    async function guardarSharePanel(k, persona) {
+      if (!_shareCtx || _shareCtx.k !== k || !currentItemId) return;
+      var priv = document.getElementById('share-privado-' + k);
       var isPrivate = priv && priv.checked;
       var sw = [];
       if (!isPrivate) {
-        document.querySelectorAll('.share-person:checked').forEach(function(c) { sw.push(c.value); });
-        // si hay personas marcadas -> audienca especifica; ninguna -> todos (null)
+        document.querySelectorAll('.share-person-' + k + ':checked').forEach(function(c) { sw.push(c.value); });
       }
-      var body = document.getElementById('share-modal-body');
-      body.insertAdjacentHTML('beforeend', '<div id="share-saving" style="font-size:12px;color:#8f98a0;margin-top:8px;">Guardando…</div>');
       try {
         await nexusTrackingUpsert(_shareCtx.cat, _shareCtx.id, {
           is_private: isPrivate,
           shared_with: (isPrivate || sw.length === 0) ? null : sw
         });
         var ctx = _shareCtx;
-        cerrarShareModal();
+        nexusSharePanel(k).style.display = 'none';
         nexusSyncShareUI({ id: ctx.id });
         showToast && showToast('Privacidad actualizada.', 'success');
       } catch (e) {
-        var s = document.getElementById('share-saving');
-        if (s) s.textContent = 'Error: ' + (e.message || '');
+        showToast && showToast('Error: ' + (e.message || ''), 'error');
       }
     }
   </script>
