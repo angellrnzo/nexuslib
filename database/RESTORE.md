@@ -7,14 +7,14 @@ Como reconstruir la base de datos completa desde cero o desde un respaldo.
 | Capa | Que | Frecuencia | Donde |
 |---|---|---|---|
 | GitHub Action | `pg_dump` schema `public` (custom format) | Semanal (lunes 5AM UTC) + manual | Artifacts del repo (90 dias) |
-| Standby Supabase | Restore automatico del dump | Semanal (mismo workflow) | 2do proyecto free, mismo org |
+| Standby Supabase | Restore automatico del dump | Semanal (mismo workflow) | `uxixiwrvobkulkjkicjm` (us-west-2, schema ya aplicado 2026-11-25, verificado identico: 12 tablas/49 funcs/12 policies/2 views) |
 | Local cifrado | JSON.gz + Fernet de todas las tablas | Manual (`backup_local.py`) | `_local/backups/` (NO commitear) |
 
 ## Secrets de GitHub Actions (Settings -> Secrets and variables -> Actions)
 
 - `SUPABASE_DB_URL` — `postgres://postgres.<ref>:<pass>@aws-0-us-east-2.pooler.supabase.com:5432/postgres`
 - `SUPABASE_DB_PASSWORD` — password del proyecto principal
-- `SUPABASE_STANDBY_DB_URL` + `SUPABASE_STANDBY_DB_PASSWORD` — idem proyecto standby
+- `SUPABASE_STANDBY_DB_URL` + `SUPABASE_STANDBY_DB_PASSWORD` — `postgres://postgres.uxixiwrvobkulkjkicjm:<pass>@aws-0-us-west-2.pooler.supabase.com:5432/postgres` (misma pass que el principal)
 - Variable `SUPABASE_STANDBY_ENABLED` = `true` para activar el restore al standby
 
 ## Restauracion completa (desastre total)

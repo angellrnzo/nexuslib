@@ -42,6 +42,8 @@ jobs:
       # Para activar: crear 2do proyecto Supabase free, aplicar schema.sql
       # + phase*.sql, y definir estos secrets:
       #   SUPABASE_STANDBY_DB_URL  -> postgres://...pooler.../postgres del proyecto B
+#   (standby real: ref uxixiwrvobkulkjkicjm, region us-west-2 ->
+#    host aws-0-us-west-2.pooler.supabase.com, MISMA DB password)
       # El dump se restaura completo en el standby (reemplaza datos public).
       # auth.users NO viaja en el dump -> recrear usuarios via admin API
       # (ver database/RESTORE.md). Switch = cambiar SUPABASE_URL + anon key.
