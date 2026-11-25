@@ -840,6 +840,7 @@
     <symbol id="i-trash" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></symbol>
     <symbol id="i-user" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
     <symbol id="i-users" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
     <symbol id="i-star" viewBox="0 0 24 24"><polygon fill="currentColor" stroke="none" points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></symbol>
     <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></symbol>
     <symbol id="i-folder" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></symbol>
@@ -909,6 +910,9 @@
             </button>
             <button class="btn btn-circle" onclick="abrirPapelera()" title="Papelera" style="color:#ff6b6b;">
               <svg class="ico"><use href="#i-trash"/></svg>
+            </button>
+            <button class="btn btn-circle" id="btn-vinculos" onclick="abrirVinculosModal()" title="Vínculos" style="display:none;color:#7ee0a3;">
+              <svg class="ico"><use href="#i-users"/></svg>
             </button>
           </div>
         </div>
@@ -1204,6 +1208,15 @@
     </div>
   </div>
 
+  <!-- MODAL VÍNCULOS (Phase 5, solo Nexus mode) -->
+  <div id="modal-vinculos" onclick="cerrarVinculosModal()">
+    <div class="modal-content" onclick="event.stopPropagation()" style="max-width:520px;">
+      <button class="modal-close" onclick="cerrarVinculosModal()"><svg class="ico"><use href="#i-x"/></svg></button>
+      <h2 class="modal-title"><svg class="ico ico-lg"><use href="#i-users"/></svg> Vínculos</h2>
+      <div id="vinculos-body" style="margin-top:10px;"></div>
+    </div>
+  </div>
+
   <div id="toast-container"></div>
 
   <!-- ==================== NEXUS PHASE 4 — adaptador Supabase ==================== -->
@@ -1463,6 +1476,165 @@
         nexusShowLogin(onReady);
       }
     }
+
+    // ---- vínculos (Phase 5, solo Nexus mode) ----
+    var VINCULOS_LINK_TYPES = {
+      pareja: 'Pareja', familia: 'Familia', amigo: 'Amigo', custom: 'Personalizado'
+    };
+
+    async function nexusMisVinculos() {
+      var sb = await nexusSb();
+      await nexusEnsureProfile();
+      var out = { invite_code: null, links: [], rpcError: null };
+      if (_nexusLibId) {
+        var l = await sb.from('libraries').select('invite_code').eq('id', _nexusLibId).single();
+        if (l.data) out.invite_code = l.data.invite_code;
+      }
+      var r = await sb.rpc('get_my_library_links');
+      if (r.error) out.rpcError = r.error.message;
+      else out.links = r.data || [];
+      return out;
+    }
+
+    function vinculosEsc(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+
+    function abrirVinculosModal() {
+      var ov = document.getElementById('modal-vinculos');
+      if (!ov) return;
+      ov.style.display = 'flex';
+      var body = document.getElementById('vinculos-body');
+      body.innerHTML = '<p style="color:#8f98a0;font-size:13px;">Cargando…</p>';
+      nexusMisVinculos().then(function(d) { renderVinculos(d); }).catch(function(e) {
+        body.innerHTML = '<p style="color:#ff8585;font-size:13px;">Error: ' + vinculosEsc(e.message) + '</p>';
+      });
+    }
+
+    function cerrarVinculosModal() {
+      var ov = document.getElementById('modal-vinculos');
+      if (ov) ov.style.display = 'none';
+    }
+
+    function renderVinculos(d) {
+      var body = document.getElementById('vinculos-body');
+      var h = '';
+
+      // --- mi código ---
+      h += '<div style="background:rgba(255,255,255,.04);border:1px solid var(--border,rgba(255,255,255,.1));border-radius:10px;padding:12px 14px;margin-bottom:14px;">';
+      h += '<div style="font-size:11px;color:#8f98a0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Mi código de invitación</div>';
+      if (d.invite_code) {
+        h += '<div style="display:flex;align-items:center;gap:10px;">' +
+             '<code style="font-size:18px;font-weight:700;color:#7ee0a3;letter-spacing:2px;">' + vinculosEsc(d.invite_code) + '</code>' +
+             '<button class="btn btn-circle" onclick="vinculosCopiar()" title="Copiar"><svg class="ico"><use href="#i-copy"/></svg></button></div>';
+        h += '<div style="font-size:11px;color:#8f98a0;margin-top:6px;">Comparte este código — la otra persona lo introduce en su perfil.</div>';
+      } else {
+        h += '<div style="font-size:12px;color:#8f98a0;">No disponible.</div>';
+      }
+      h += '</div>';
+
+      // --- solicitar vínculo ---
+      h += '<div style="margin-bottom:14px;">';
+      h += '<div style="font-size:11px;color:#8f98a0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Añadir vínculo</div>';
+      h += '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+           '<input id="vinc-codigo" type="text" placeholder="Código" style="flex:1;min-width:110px;padding:10px;border-radius:8px;border:1px solid var(--border);background:#0b0e14;color:var(--text);font-size:14px;text-transform:uppercase;">' +
+           '<select id="vinc-tipo" style="padding:10px;border-radius:8px;border:1px solid var(--border);background:#0b0e14;color:var(--text);font-size:13px;">';
+      Object.keys(VINCULOS_LINK_TYPES).forEach(function(k) {
+        h += '<option value="' + k + '">' + VINCULOS_LINK_TYPES[k] + '</option>';
+      });
+      h += '</select>' +
+           '<button class="btn btn-primary" onclick="vinculosSolicitar()" style="padding:10px 14px;">Enviar</button></div>';
+      h += '<div id="vinc-msg" style="font-size:12px;margin-top:6px;min-height:14px;"></div></div>';
+
+      var links = d.links || [];
+      var pendientesIn = links.filter(function(x) { return x.direction === 'incoming' && x.status === 'pending'; });
+      var pendientesOut = links.filter(function(x) { return x.direction === 'outgoing' && x.status === 'pending'; });
+      var aceptados = links.filter(function(x) { return x.status === 'accepted'; });
+
+      // --- pendientes entrantes ---
+      if (pendientesIn.length) {
+        h += '<div style="margin-bottom:14px;"><div style="font-size:11px;color:#ffd479;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Solicitudes recibidas</div>';
+        pendientesIn.forEach(function(x) {
+          var nombre = x.other ? x.other.display_name : 'Usuario';
+          h += '<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(255,212,121,.06);border:1px solid rgba(255,212,121,.25);border-radius:8px;margin-bottom:6px;">' +
+               '<span style="flex:1;font-size:13px;">' + vinculosEsc(nombre) +
+               ' <span style="color:#8f98a0;font-size:11px;">(' + vinculosEsc(VINCULOS_LINK_TYPES[x.link_type] || x.link_type) + ')</span></span>' +
+               '<button class="btn btn-primary" style="padding:6px 12px;font-size:12px;" onclick="vinculosResponder(\'' + x.link_id + '\',true)">Aceptar</button>' +
+               '<button class="btn btn-circle" style="color:#ff8585;" onclick="vinculosResponder(\'' + x.link_id + '\',false)" title="Rechazar"><svg class="ico"><use href="#i-x"/></svg></button></div>';
+        });
+        h += '</div>';
+      }
+
+      // --- pendientes salientes ---
+      if (pendientesOut.length) {
+        h += '<div style="margin-bottom:14px;"><div style="font-size:11px;color:#8f98a0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Enviadas (esperando respuesta)</div>';
+        pendientesOut.forEach(function(x) {
+          var nombre = x.other ? x.other.display_name : 'Usuario';
+          h += '<div style="padding:8px 10px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;margin-bottom:6px;font-size:13px;">' +
+               vinculosEsc(nombre) + ' <span style="color:#8f98a0;font-size:11px;">(' + vinculosEsc(VINCULOS_LINK_TYPES[x.link_type] || x.link_type) + ')</span></div>';
+        });
+        h += '</div>';
+      }
+
+      // --- aceptados ---
+      h += '<div><div style="font-size:11px;color:#7ee0a3;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Vinculados</div>';
+      if (!aceptados.length) {
+        h += '<div style="font-size:12px;color:#8f98a0;">Sin vínculos aceptados todavía.</div>';
+      }
+      aceptados.forEach(function(x) {
+        var nombre = x.other ? x.other.display_name : 'Usuario';
+        var badge = x.link_type === 'pareja' ? '#ff8fa3' : (x.link_type === 'familia' ? '#ffd479' : '#66c0f4');
+        h += '<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(126,224,163,.05);border:1px solid rgba(126,224,163,.2);border-radius:8px;margin-bottom:6px;">' +
+             '<span style="flex:1;font-size:13px;">' + vinculosEsc(nombre) + '</span>' +
+             '<span style="font-size:10px;padding:2px 8px;border-radius:99px;background:' + badge + '22;color:' + badge + ';border:1px solid ' + badge + '55;">' + vinculosEsc(VINCULOS_LINK_TYPES[x.link_type] || x.link_type) + '</span></div>';
+      });
+      h += '</div>';
+
+      if (d.rpcError) {
+        h += '<div style="font-size:11px;color:#ff8585;margin-top:10px;">RPC no disponible: ' + vinculosEsc(d.rpcError) + ' — corre phase4_5.sql sec.3 / phase5b_links_rpc.sql</div>';
+      }
+
+      body.innerHTML = h;
+    }
+
+    function vinculosCopiar() {
+      var code = document.querySelector('#vinculos-body code');
+      if (code && navigator.clipboard) navigator.clipboard.writeText(code.textContent.trim());
+      showToast && showToast('Código copiado.', 'success');
+    }
+
+    async function vinculosSolicitar() {
+      var inp = document.getElementById('vinc-codigo');
+      var sel = document.getElementById('vinc-tipo');
+      var msg = document.getElementById('vinc-msg');
+      var code = (inp.value || '').trim();
+      if (!code) { msg.textContent = 'Escribe un código.'; msg.style.color = '#ff8585'; return; }
+      msg.textContent = 'Enviando…'; msg.style.color = '#8f98a0';
+      try {
+        var sb = await nexusSb();
+        var r = await sb.rpc('request_library_link', { p_invite_code: code, p_link_type: sel.value });
+        if (r.error) throw new Error(r.error.message);
+        msg.textContent = 'Solicitud enviada.'; msg.style.color = '#7bd88f';
+        inp.value = '';
+        setTimeout(function() { abrirVinculosModal(); }, 800);
+      } catch (e) {
+        msg.textContent = e.message || 'Error'; msg.style.color = '#ff8585';
+      }
+    }
+
+    async function vinculosResponder(linkId, accept) {
+      try {
+        var sb = await nexusSb();
+        var r = await sb.rpc('respond_library_link', { p_link_id: linkId, p_accept: accept });
+        if (r.error) throw new Error(r.error.message);
+        showToast && showToast(accept ? 'Vínculo aceptado.' : 'Solicitud rechazada.', accept ? 'success' : 'warning');
+        abrirVinculosModal();
+      } catch (e) {
+        showToast && showToast('Error: ' + (e.message || ''), 'error');
+      }
+    }
   </script>
 
   <script>
@@ -1560,6 +1732,8 @@
     };
 
     function nexusInitApp() {
+      var btnVinc = document.getElementById('btn-vinculos');
+      if (btnVinc && NEXUS_MODE) btnVinc.style.display = '';
       configurarFiltrosCategoria('Juegos');
       cargarCategoria('Juegos', false);
       ['Peliculas_Series', 'Libros', 'Mangas'].forEach(c => precargarCategoriaSilenciosa(c));
