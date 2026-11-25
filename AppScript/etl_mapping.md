@@ -57,7 +57,7 @@
 
 | Columna | Destino | Nota |
 |---|---|---|
-| ID (`movie-1003596`) | `external_id` | **strip prefijo** `movie-`/`tv-` → `1003596` ✅; el prefijo define `category` (`movie`/`series`) — respeta el caveat de dedup TMDB |
+| ID (`movie-1003596`) | `external_id` | ⚠️ **corregido 2026-11-24**: el prefijo `movie-`/`tv-` SE CONSERVA — es el desambiguador TMDB (movie-123 ≠ tv-123); sin él, `UNIQUE(category,provider,external_id)` fusionaría obras distintas. `external_id='movie-1003596'` |
 | Tipo | `category` | `Película`→`movie`, `Serie`→`series` |
 | Titulo | `title` | |
 | Estreno | `metadata.release_date` | |
@@ -112,7 +112,7 @@ El Sheet es **un solo archivo con columnas por usuario** → en SQL cada par de 
 
 ## Decisiones — RESUELTAS 2026-11-24
 
-1. ✅ **`external_id` sin prefijo** — `movie-1003596`→`1003596`, `al-30002`→`30002`, `OL5738148W`→`5738148W`. El provider ya diferencia el espacio de IDs.
+1. ✅ **`external_id` sin prefijo** — `al-30002`→`30002`, `OL5738148W`→`5738148W`. **Excepción TMDB (corregido mismo día):** `movie-`/`tv-` se conserva porque es el desambiguador real (mismo número puede existir como movie y tv).
 2. ✅ **Items sin tracking → ambas libraries** — fiel a v1 (Sheet = bibliotecas fusionadas). `library_items` para ambos usuarios en todo el catálogo; `user_media_tracking` solo donde hay datos reales.
 3. ✅ **Papelera: DESCARTAR** — no se migra (la papelera se llenará sola cuando toque; SQL ya tiene `deleted_at` nativo para futuros borrados).
 4. ✅ **Status enum en inglés** — `backlog`/`in_progress`/`completed` (la web será bilingüe ES/EN — el enum es neutro, la UI traduce).

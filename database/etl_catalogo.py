@@ -155,9 +155,11 @@ def items_peliculas(rows):
     items = []
     for r in rows:
         raw_id = clean_text(r.get("id"))
-        if not raw_id or "-" not in raw_id:
+        # TMDB: el prefijo movie-/tv- ES el desambiguador (movie-123 != tv-123)
+        # -> se conserva en external_id; va en minusculas como en v1
+        if not raw_id or not re.match(r"^(movie|tv)-\d+$", raw_id, re.IGNORECASE):
             continue
-        ext = raw_id.split("-", 1)[1]
+        ext = raw_id.lower()
         title = clean_text(r.get("titulo"))
         if not ext or not title:
             continue
@@ -282,7 +284,7 @@ def main():
                 if not raw_id:
                     continue
                 if tab == "Peliculas_Series":
-                    ext = raw_id.split("-", 1)[1] if "-" in raw_id else None
+                    ext = raw_id.lower() if re.match(r"^(movie|tv)-\d+$", raw_id, re.IGNORECASE) else None
                 elif tab == "Libros":
                     ext = re.sub(r"^OL", "", raw_id, flags=re.IGNORECASE)
                 else:
