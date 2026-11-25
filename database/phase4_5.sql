@@ -506,7 +506,8 @@ begin
     -- (owner=ellos -> linked=yo); lo no visible se emite como "sin datos".
     -- shared_with: NULL/{} = legacy (matriz); [ids] = solo esos perfiles.
     for vp in
-      select p.id as pid, p.display_name as pname, ll.visibility as vis
+      select p.id as pid, p.display_name as pname, ll.visibility as vis,
+             ll.owner_library_id as owner_lib
       from public.library_links ll
       join public.libraries ol on ol.id = ll.owner_library_id and ol.kind = 'personal'
       join public.library_members olm on olm.library_id = ol.id
@@ -524,12 +525,18 @@ begin
         and umt.media_item_id = rec.id;
 
       -- privacidad del dueño: is_private = veto; shared_with [ids] = solo esos viewers.
+      -- Además el item debe seguir ACTIVO en SU biblioteca — si lo borró
+      -- (papelera/borrado), su tracking viejo no se filtra al viewer.
       -- Sin fila de tracking -> can_see=false pero la seccion se muestra vacia (legacy).
       can_see := found
         and t.is_private is not true
         and (t.shared_with is null
              or cardinality(t.shared_with) = 0
-             or my_uid = any(t.shared_with));
+             or my_uid = any(t.shared_with))
+        and exists (select 1 from public.library_items li2
+                    where li2.library_id = vp.owner_lib
+                      and li2.media_item_id = rec.id
+                      and li2.deleted_at is null);
       sec_vis := (not found) or can_see;
 
       suf := initcap(split_part(coalesce(vp.pname, 'X'), ' ', 1));
