@@ -1788,8 +1788,14 @@
     }
 
     // muestra el botón "Compartir" solo en la sección del usuario logueado
-    function nexusSyncShareUI(it) {
+    var _shareUiSeq = 0;
+    async function nexusSyncShareUI(it) {
       if (!NEXUS_MODE || !it) return;
+      var seq = ++_shareUiSeq;
+      // sin perfil cargado nexusPersona() devuelve 'Yo' -> ambas secciones
+      // quedarian como solo-lectura; esperar a que cargue primero
+      try { await nexusEnsureProfile(); } catch (e) {}
+      if (seq !== _shareUiSeq) return; // se abrio otro item mientras cargaba
       var yo = String(nexusPersona() || '').toLowerCase();
       ['Angel', 'Talmai'].forEach(function(p) {
         var k = p.toLowerCase();
