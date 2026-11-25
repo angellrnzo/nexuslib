@@ -1318,11 +1318,10 @@
       guardarTotalCapitulos: function(cat, id, total) {
         this._exec((async function() {
           var sb = await nexusSb();
-          var r = await sb.from('media_items').select('id,metadata')
+          var r = await sb.from('media_items').select('id')
             .eq('category', cat).eq('external_id', String(id)).single();
           if (r.error || !r.data) return { success: false, msg: 'Item no encontrado.' };
-          var meta = Object.assign({}, r.data.metadata || {}, { total_chapters: Number(total) || 0 });
-          var u = await sb.from('media_items').update({ metadata: meta }).eq('id', r.data.id);
+          var u = await sb.rpc('set_media_total_chapters', { p_media_id: r.data.id, p_total: Number(total) || 0 });
           if (u.error) throw new Error(u.error.message);
           return { success: true };
         })());
@@ -1366,16 +1365,39 @@
         })());
       },
       buscarCatalogoExterno: function(cat, query) {
-        this._exec((async function() { return []; })());
+        this._exec((async function() {
+          var sb = await nexusSb(); await nexusEnsureProfile();
+          var r = await sb.functions.invoke('catalog-search', { body: { category: cat, query: query } });
+          if (r.error) throw new Error(r.error.message);
+          return r.data || [];
+        })());
       },
       agregarItem: function(cat, idOUrlOrName) {
         this._exec((async function() {
-          return { success: false, msg: 'Añadir items llega con las Edge Functions (Phase 4).' };
+          var sb = await nexusSb(); await nexusEnsureProfile();
+          var r = await sb.functions.invoke('catalog-add', { body: { category: cat, idOrUrlOrName: idOUrlOrName } });
+          if (r.error) {
+            var ctx = r.error.context;
+            if (ctx && typeof ctx.json === 'function') {
+              try { var j = await ctx.json(); if (j && j.msg) return { success: false, msg: j.msg }; } catch (_) {}
+            }
+            throw new Error(r.error.message);
+          }
+          return r.data;
         })());
       },
       repararItemIndividual: function(cat, id) {
         this._exec((async function() {
-          return { success: false, msg: 'Actualización de metadata llega con las Edge Functions.' };
+          var sb = await nexusSb(); await nexusEnsureProfile();
+          var r = await sb.functions.invoke('item-refresh', { body: { category: cat, id: id } });
+          if (r.error) {
+            var ctx = r.error.context;
+            if (ctx && typeof ctx.json === 'function') {
+              try { var j = await ctx.json(); if (j && j.msg) return { success: false, msg: j.msg }; } catch (_) {}
+            }
+            throw new Error(r.error.message);
+          }
+          return r.data;
         })());
       }
     };
