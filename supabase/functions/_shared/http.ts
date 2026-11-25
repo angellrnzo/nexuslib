@@ -25,6 +25,8 @@ export interface AuthCtx {
   userId: string;
   // cliente con service role: escribe saltándose RLS tras verificar el JWT
   admin: SupabaseClient;
+  // cliente con el JWT del usuario: para RPCs que usan auth.uid() (p.ej. get_item_merged)
+  user: SupabaseClient;
 }
 
 // Verifica el JWT del usuario (Authorization: Bearer <token> lo inyecta
@@ -40,5 +42,5 @@ export async function requireUser(req: Request): Promise<AuthCtx | Response> {
   if (error || !user) return json({ error: 'invalid or expired token' }, 401);
 
   const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-  return { userId: user.id, admin };
+  return { userId: user.id, admin, user: userClient };
 }

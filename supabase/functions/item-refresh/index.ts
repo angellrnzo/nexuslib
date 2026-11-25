@@ -18,7 +18,7 @@ Deno.serve(async (req: Request) => {
 
   const ctx = await requireUser(req);
   if (ctx instanceof Response) return ctx;
-  const { admin } = ctx;
+  const { admin, user } = ctx;
 
   try {
     const body = await req.json();
@@ -50,7 +50,17 @@ Deno.serve(async (req: Request) => {
     const u = await admin.from('media_items').update(update).eq('id', item.id);
     if (u.error) throw new Error(u.error.message);
 
-    return json({ success: true, msg: 'Metadata actualizada: ' + update.title, data: update });
+    // devolver la fila con la MISMA shape plana v1 que getItems
+    // (repararItemActual reemplaza el item de la lista con res.data)
+    const { data: merged } = await user.rpc('get_item_merged', {
+      p_category: category, p_external_id: item.external_id,
+    });
+
+    return json({
+      success: true,
+      msg: 'Metadata actualizada: ' + update.title,
+      data: merged || { id: item.external_id, titulo: update.title },
+    });
   } catch (e) {
     return json({ success: false, msg: (e as Error).message || 'Error al reparar elemento.' }, 500);
   }
