@@ -277,6 +277,21 @@ returns jsonb language sql immutable as $$
   end;
 $$;
 
+-- Helper RLS: membresía sin auto-recursión (las policies NO pueden hacer
+-- EXISTS sobre la misma tabla — ver database/phase4_rls_fix.sql)
+create or replace function public.is_library_member(p_library_id uuid)
+returns boolean
+language sql stable security definer set search_path = public
+as $$
+  select exists (
+    select 1 from public.library_members
+    where library_id = p_library_id and profile_id = auth.uid()
+  );
+$$;
+
+revoke all on function public.is_library_member(uuid) from public, anon;
+grant execute on function public.is_library_member(uuid) to authenticated;
+
 -- Vinculación con aprobación mutua (Phase 5 items 1-2)
 create or replace function public.request_library_link(p_invite_code text)
 returns uuid
@@ -447,11 +462,11 @@ create policy "libraries_member_write" on public.libraries
               and lm.role in ('owner','editor')));
 
 -- library_members: miembros ven su library; nadie se añade solo (RPCs lo hacen)
+-- OJO: no usar EXISTS sobre library_members aquí — recursión infinita (42P17).
+-- Usar is_library_member() (security definer) — ver phase4_rls_fix.sql
 create policy "members_read" on public.library_members
   for select using (
-    exists (select 1 from library_members me
-            where me.library_id = library_members.library_id and me.profile_id = auth.uid())
-    or profile_id = auth.uid());
+    public.is_library_member(library_id) or profile_id = auth.uid());
 
 -- library_links: owner gestiona sus links; el invitado ve los pendientes dirigidos a él
 create policy "links_owner" on public.library_links
