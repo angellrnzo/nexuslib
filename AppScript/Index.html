@@ -987,8 +987,9 @@
             <button class="btn btn-circle" onclick="abrirPapelera()" title="Papelera" style="color:#ff6b6b;">
               <svg class="ico"><use href="#i-trash"/></svg>
             </button>
-            <button class="btn btn-circle" id="btn-vinculos" onclick="abrirVinculosModal()" title="Vínculos" style="display:none;color:#7ee0a3;">
+            <button class="btn btn-circle" id="btn-vinculos" onclick="abrirVinculosModal()" title="Vínculos" style="display:none;color:#7ee0a3;position:relative;">
               <svg class="ico"><use href="#i-users"/></svg>
+              <span id="vinc-badge" style="display:none;position:absolute;top:-5px;right:-5px;min-width:16px;height:16px;padding:0 4px;border-radius:99px;background:#ff4d6d;color:#fff;font-size:10px;font-weight:800;line-height:16px;text-align:center;pointer-events:none;">0</span>
             </button>
           </div>
         </div>
@@ -1635,12 +1636,14 @@
       h += '<div style="font-size:11px;color:#8f98a0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Añadir vínculo</div>';
       h += '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
            '<input id="vinc-codigo" type="text" placeholder="Código" style="flex:1;min-width:110px;padding:10px;border-radius:8px;border:1px solid var(--border);background:#0b0e14;color:var(--text);font-size:14px;text-transform:uppercase;">' +
-           '<select id="vinc-tipo" style="padding:10px;border-radius:8px;border:1px solid var(--border);background:#0b0e14;color:var(--text);font-size:13px;">';
+           '<select id="vinc-tipo" onchange="vinculosToggleLabel()" style="padding:10px;border-radius:8px;border:1px solid var(--border);background:#0b0e14;color:var(--text);font-size:13px;">';
       Object.keys(VINCULOS_LINK_TYPES).forEach(function(k) {
         h += '<option value="' + k + '">' + VINCULOS_LINK_TYPES[k] + '</option>';
       });
       h += '</select>' +
-           '<button class="btn btn-text" onclick="vinculosSolicitar()">Enviar</button></div>';
+           '<button class="btn btn-text" onclick="vinculosSolicitar()">Enviar</button></div>' +
+           '<input id="vinc-label" type="text" placeholder="Nombre del vínculo (ej. Vecino, Compañero de trabajo…)" ' +
+           'style="display:none;width:100%;margin-top:8px;padding:10px;border-radius:8px;border:1px solid var(--border);background:#0b0e14;color:var(--text);font-size:13px;">';
       h += '<div id="vinc-msg" style="font-size:12px;margin-top:6px;min-height:14px;"></div></div>';
 
       var links = d.links || [];
@@ -1674,7 +1677,7 @@
           var nombre = x.other ? x.other.display_name : 'Usuario';
           h += '<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(255,212,121,.06);border:1px solid rgba(255,212,121,.25);border-radius:8px;margin-bottom:6px;">' +
                '<span style="flex:1;font-size:13px;">' + vinculosEsc(nombre) +
-               ' <span style="color:#8f98a0;font-size:11px;">(' + vinculosEsc(VINCULOS_LINK_TYPES[x.link_type] || x.link_type) + ')</span></span>' +
+               ' <span style="color:#8f98a0;font-size:11px;">(' + vinculosEsc(vinculosTypeLabel(x)) + ')</span></span>' +
                '<button class="btn btn-text" style="padding:6px 12px;font-size:12px;" onclick="vinculosResponder(\'' + x.link_id + '\',true)">Aceptar</button>' +
                '<button class="btn btn-circle" style="color:#ff8585;" onclick="vinculosResponder(\'' + x.link_id + '\',false)" title="Rechazar"><svg class="ico"><use href="#i-x"/></svg></button></div>';
         });
@@ -1687,7 +1690,7 @@
         pendientesOut.forEach(function(x) {
           var nombre = x.other ? x.other.display_name : 'Usuario';
           h += '<div style="padding:8px 10px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;margin-bottom:6px;font-size:13px;">' +
-               vinculosEsc(nombre) + ' <span style="color:#8f98a0;font-size:11px;">(' + vinculosEsc(VINCULOS_LINK_TYPES[x.link_type] || x.link_type) + ')</span></div>';
+               vinculosEsc(nombre) + ' <span style="color:#8f98a0;font-size:11px;">(' + vinculosEsc(vinculosTypeLabel(x)) + ')</span></div>';
         });
         h += '</div>';
       }
@@ -1703,7 +1706,7 @@
         h += '<div style="padding:8px 10px;background:rgba(126,224,163,.05);border:1px solid rgba(126,224,163,.2);border-radius:8px;margin-bottom:6px;">' +
              '<div style="display:flex;align-items:center;gap:8px;">' +
              '<span style="flex:1;font-size:13px;">' + vinculosEsc(nombre) + '</span>' +
-             nexusLinkBadge(x.link_type) +
+             nexusLinkBadge(x.link_type, x.link_label) +
              (pid ? '<button class="btn btn-circle" style="width:26px;height:26px;" onclick="toggleVisPanel(\'' + pid + '\')" title="Visibilidad"><svg class="ico ico-sm"><use href="#i-settings"/></svg></button>' : '') +
              '</div>' +
              (pid ? '<div id="vis-panel-' + pid + '" style="display:none;margin-top:8px;"></div>' : '') +
@@ -1738,6 +1741,25 @@
       }
 
       body.innerHTML = h;
+      nexusRefreshVinculosBadge();
+    }
+
+    // badge de notificaciones en el botón Vínculos: solicitudes de vínculo
+    // entrantes + items compartidos pendientes de aceptar
+    async function nexusRefreshVinculosBadge() {
+      var badge = document.getElementById('vinc-badge');
+      if (!badge || !NEXUS_MODE) return;
+      try {
+        var d = await nexusMisVinculos();
+        var n = (d.links || []).filter(function(x) {
+          return x.direction === 'incoming' && x.status === 'pending';
+        }).length;
+        n += (d.shares || []).filter(function(x) {
+          return x.direction === 'incoming' && x.status === 'pending';
+        }).length;
+        badge.style.display = n > 0 ? 'block' : 'none';
+        badge.textContent = n > 9 ? '9+' : String(n);
+      } catch (e) {}
     }
 
     function vinculosCopiar() {
@@ -1746,16 +1768,27 @@
       showToast && showToast('Código copiado.', 'success');
     }
 
+    function vinculosToggleLabel() {
+      var sel = document.getElementById('vinc-tipo');
+      var inp = document.getElementById('vinc-label');
+      if (sel && inp) inp.style.display = (sel.value === 'custom') ? 'block' : 'none';
+    }
+
     async function vinculosSolicitar() {
       var inp = document.getElementById('vinc-codigo');
       var sel = document.getElementById('vinc-tipo');
+      var lbl = document.getElementById('vinc-label');
       var msg = document.getElementById('vinc-msg');
       var code = (inp.value || '').trim();
       if (!code) { msg.textContent = 'Escribe un código.'; msg.style.color = '#ff8585'; return; }
       msg.textContent = 'Enviando…'; msg.style.color = '#8f98a0';
       try {
         var sb = await nexusSb();
-        var r = await sb.rpc('request_library_link', { p_invite_code: code, p_link_type: sel.value });
+        var r = await sb.rpc('request_library_link', {
+          p_invite_code: code,
+          p_link_type: sel.value,
+          p_link_label: (lbl && sel.value === 'custom') ? (lbl.value || '').trim() : null
+        });
         if (r.error) throw new Error(r.error.message);
         msg.textContent = 'Solicitud enviada.'; msg.style.color = '#7bd88f';
         inp.value = '';
@@ -1978,9 +2011,15 @@
       amigo:   { bg: '#66c0f4', fg: '#0b2436' },
       custom:  { bg: '#b39ddb', fg: '#1c1430' }
     };
-    function nexusLinkBadge(linkType) {
+    function vinculosTypeLabel(x) {
+      if (x && x.link_type === 'custom' && x.link_label) return x.link_label;
+      return VINCULOS_LINK_TYPES[x && x.link_type] || (x && x.link_type) || '';
+    }
+
+    function nexusLinkBadge(linkType, linkLabel) {
       var c = VINCULOS_BADGE_COLORS[linkType] || VINCULOS_BADGE_COLORS.custom;
-      var label = VINCULOS_LINK_TYPES[linkType] || linkType || '';
+      var label = (linkType === 'custom' && linkLabel) ? linkLabel
+                : (VINCULOS_LINK_TYPES[linkType] || linkType || '');
       return '<span class="sp-badge" style="background:' + c.bg + '22;color:' + c.bg + ';border:1px solid ' + c.bg + '55;">' + vinculosEsc(label) + '</span>';
     }
     function nexusAvatar(name, color) {
@@ -2022,7 +2061,7 @@
         h += '<label class="sp-row" style="padding:8px 10px;"><input type="checkbox" class="sp-check share-person-' + k + '" value="' + pid + '"' + (sel ? ' checked' : '') + '> ' +
              nexusAvatar(x.other.display_name, col) +
              '<span class="sp-name" style="font-size:12px;">' + vinculosEsc(x.other.display_name || 'Usuario') + '</span>' +
-             nexusLinkBadge(x.link_type) + '</label>';
+             nexusLinkBadge(x.link_type, x.link_label) + '</label>';
       });
       if (!personas.length) {
         h += '<div class="sp-empty">Sin vínculos aceptados — solo tú verás esto.</div>';
@@ -2120,7 +2159,7 @@
           h += '<button class="sp-row" onclick="nexusSendItem(\'' + k + '\',\'' + x.other.profile_id + '\')">' +
                nexusAvatar(x.other.display_name, col) +
                '<span class="sp-name">' + vinculosEsc(x.other.display_name || 'Usuario') + '</span>' +
-               nexusLinkBadge(x.link_type) +
+               nexusLinkBadge(x.link_type, x.link_label) +
                svgIcon('i-chevron-down', 'ico-sm') + '</button>';
         });
         h += '<div class="sp-hint">Te llega una solicitud — al aceptarla, el elemento aparece en su biblioteca.</div>';
@@ -2269,7 +2308,11 @@
 
     function nexusInitApp() {
       var btnVinc = document.getElementById('btn-vinculos');
-      if (btnVinc && NEXUS_MODE) btnVinc.style.display = '';
+      if (btnVinc && NEXUS_MODE) {
+        btnVinc.style.display = '';
+        nexusRefreshVinculosBadge();
+        setInterval(nexusRefreshVinculosBadge, 60000);
+      }
       configurarFiltrosCategoria('Juegos');
       cargarCategoria('Juegos', false);
       ['Peliculas_Series', 'Libros', 'Mangas'].forEach(c => precargarCategoriaSilenciosa(c));

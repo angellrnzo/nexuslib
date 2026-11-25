@@ -322,13 +322,18 @@ comment on column public.user_media_tracking.shared_with is
   'Audiencia opt-in por item: NULL/{} = legacy (visibilidad por matriz del link); [profile_ids] = solo esos perfiles. is_private=true sigue siendo veto absoluto.';
 
 -- ---------------------------------------------------------------------------
--- 2) request_library_link con link_type
+-- 2) is_private default true (opt-in, Phase 5e) + request_library_link con link_type
 -- ---------------------------------------------------------------------------
+alter table public.user_media_tracking
+  alter column is_private set default true;
+
 drop function if exists public.request_library_link(text);
+drop function if exists public.request_library_link(text, public.link_type);
 
 create or replace function public.request_library_link(
   p_invite_code text,
-  p_link_type   public.link_type default 'amigo'
+  p_link_type   public.link_type default 'amigo',
+  p_link_label  text default null
 )
 returns uuid
 language plpgsql security definer set search_path = public
@@ -352,8 +357,10 @@ begin
   if target_lib is null then raise exception 'código inválido'; end if;
   if target_lib = my_lib then raise exception 'no puedes vincularte contigo mismo'; end if;
 
-  insert into library_links (owner_library_id, linked_library_id, link_type, visibility)
-  values (my_lib, target_lib, p_link_type, default_visibility(p_link_type))
+  insert into library_links (owner_library_id, linked_library_id, link_type, link_label, visibility)
+  values (my_lib, target_lib, p_link_type,
+          case when p_link_type = 'custom' then nullif(trim(p_link_label), '') else null end,
+          default_visibility(p_link_type))
   on conflict (owner_library_id, linked_library_id) do nothing
   returning id into new_link;
 
@@ -361,8 +368,8 @@ begin
 end;
 $$;
 
-revoke all on function public.request_library_link(text, public.link_type) from public, anon;
-grant execute on function public.request_library_link(text, public.link_type) to authenticated;
+revoke all on function public.request_library_link(text, public.link_type, text) from public, anon;
+grant execute on function public.request_library_link(text, public.link_type, text) to authenticated;
 
 -- ---------------------------------------------------------------------------
 -- 3) respond_library_link — inversa con link_type real
@@ -388,8 +395,9 @@ begin
   if p_accept then
     -- fila inversa: el que acepta comparte SU biblioteca con los defaults
     -- de SU link_type (mismo tipo de relación, ajustable luego en settings)
-    insert into library_links (owner_library_id, linked_library_id, link_type, visibility)
-    select ll.linked_library_id, ll.owner_library_id, ll.link_type, default_visibility(ll.link_type)
+    insert into library_links (owner_library_id, linked_library_id, link_type, link_label, visibility)
+    select ll.linked_library_id, ll.owner_library_id, ll.link_type, ll.link_label,
+           default_visibility(ll.link_type)
     from library_links ll where ll.id = p_link_id
     on conflict (owner_library_id, linked_library_id) do nothing;
   end if;

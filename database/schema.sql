@@ -160,10 +160,10 @@ create table public.user_media_tracking (
   progress      text,
   is_wishlisted boolean not null default false,
   personal_notes text,
-  is_private    boolean not null default false,
+  is_private    boolean not null default true,
   -- audiencia opt-in por item (Phase 5): NULL/{} = legacy (matriz del link);
   -- [profile_ids] = solo esos perfiles. is_private=true = veto absoluto.
-  -- DEFAULT de is_private se flipará a true cuando exista la UI "compartir con…"
+  -- DEFAULT true desde Phase 5e: compartir es opt-in via UI (probado E2E).
   shared_with   uuid[],
   edition       text,                           -- "mi edición" (libros, right of cut)
   created_at    timestamptz not null default now(),
@@ -299,7 +299,8 @@ grant execute on function public.is_library_member(uuid) to authenticated;
 -- Vinculación con aprobación mutua (Phase 5 items 1-2)
 create or replace function public.request_library_link(
   p_invite_code text,
-  p_link_type   public.link_type default 'amigo'
+  p_link_type   public.link_type default 'amigo',
+  p_link_label  text default null
 )
 returns uuid
 language plpgsql security definer set search_path = public
@@ -323,8 +324,10 @@ begin
   if target_lib is null then raise exception 'código inválido'; end if;
   if target_lib = my_lib then raise exception 'no puedes vincularte contigo mismo'; end if;
 
-  insert into library_links (owner_library_id, linked_library_id, link_type, visibility)
-  values (my_lib, target_lib, p_link_type, default_visibility(p_link_type))
+  insert into library_links (owner_library_id, linked_library_id, link_type, link_label, visibility)
+  values (my_lib, target_lib, p_link_type,
+          case when p_link_type = 'custom' then nullif(trim(p_link_label), '') else null end,
+          default_visibility(p_link_type))
   on conflict (owner_library_id, linked_library_id) do nothing
   returning id into new_link;
 
@@ -353,8 +356,9 @@ begin
   if p_accept then
     -- fila inversa: el que acepta comparte SU biblioteca con los defaults
     -- de su link_type (ajustable luego en settings); hace el match bidireccional
-    insert into library_links (owner_library_id, linked_library_id, link_type, visibility)
-    select ll.linked_library_id, ll.owner_library_id, ll.link_type, default_visibility(ll.link_type)
+    insert into library_links (owner_library_id, linked_library_id, link_type, link_label, visibility)
+    select ll.linked_library_id, ll.owner_library_id, ll.link_type, ll.link_label,
+           default_visibility(ll.link_type)
     from library_links ll where ll.id = p_link_id
     on conflict (owner_library_id, linked_library_id) do nothing;
   end if;

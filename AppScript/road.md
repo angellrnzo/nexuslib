@@ -505,7 +505,10 @@ See [AppScript/BETA.md](BETA.md) — one entry per working session: what was don
   - **Evaluación vista cruzada (decidido NO por ahora):** items de bibliotecas vinculadas visibles sin estar en la mía — NO implementada. El flujo Enviar+aceptar ya produce el mismo resultado con una sola fuente de verdad. **Opcional a futuro (Phase 5D):** "preview" de items ajenos read-only si se pide.
   - **Editor matriz `visibility` ✅ implementado 2026-11-26:** engranaje ⚙ por persona en Vinculados → panel con **dirección** ("Yo → nombre" = lo que YO expongo / "nombre → yo" = lo que me expone, filas `out`/`in` del RPC), **categoría** (4 pills) y **5 campos** (Estado/Valoración/Deseado/Progreso/Notas). Guarda con PATCH directo a `library_links.visibility` (RLS `links_owner` permite a miembros de cualquier lado; preserva clave `mods`). Sin RPC nuevo.
   - **Badge 🔒 en cards ✅ implementado 2026-11-26:** `get_items_merged` emite `privado{Persona}` = `is_private` del tracking propio → el chip de estado de MI persona en la card muestra icono candado. **Requiere re-correr `phase5c_item_privacy.sql`** (regenerado con el flag).
-  - **Restante Phase 5:** secciones dinámicas por persona (hoy hardcodeado Angel/Talmai — multi-vínculo lo requiere), flip `is_private` default `true`, notificación de items compartidos entrantes fuera del modal vínculos, link `custom` label.
+  - **Flip `is_private` default ✅ aplicado 2026-11-26 (`phase5e_optin_label.sql` — correr en SQL Editor):** default `true` — el tracking nuevo nace privado, compartir es opt-in vía panel Compartir. Filas existentes intactas. **OJO:** items nuevos que añadas ya NO serán visibles para la pareja hasta que compartas — es el modelo opt-in decidido.
+  - **`link_label` custom ✅ (`phase5e`):** `request_library_link` gana `p_link_label`; al elegir "Personalizado" aparece input de nombre; la fila inversa hereda la etiqueta; `get_my_library_links` la expone y la UI la muestra en badges/textos.
+  - **Badge notificaciones ✅ (Index.html):** punto con contador sobre el botón Vínculos del header — cuenta solicitudes de vínculo entrantes + items compartidos pendientes; refresh al abrir/cerrar modal y cada 60s.
+  - **Restante Phase 5:** secciones dinámicas por persona (hoy hardcodeado Angel/Talmai — multi-vínculo lo requiere).
 
 ### Phase 5D — Social layer (v2.x)
 
