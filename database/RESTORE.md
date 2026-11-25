@@ -20,18 +20,15 @@ Como reconstruir la base de datos completa desde cero o desde un respaldo.
 ## Restauracion completa (desastre total)
 
 1. **Proyecto nuevo** en Supabase (mismo org, region `us-east-2`, PG17, plan free).
-2. **Schema** — en SQL Editor, en orden:
+2. **Schema** — automatizado o manual:
 
-   ```text
-   database/schema.sql
-   database/phase4_5.sql
-   database/phase5c_item_privacy.sql
-   database/phase5d_item_shares.sql
-   database/phase5e_optin_label.sql
-   database/phase5h_username.sql
+   ```bash
+   python database/apply_schema.py --project-ref <ref>
    ```
 
-   (`phase5f`/`phase5g` quedan subsumidos por `phase5h` — NO correrlos si corres 5h.)
+   Aplica en orden `schema.sql`, `phase4_5`, `phase5c/d/e/h` por pooler.
+   Manual (SQL Editor): mismo orden — `phase5f`/`phase5g` quedan subsumidos
+   por `phase5h`, NO correrlos.
 
 3. **Datos** — dos caminos:
 
