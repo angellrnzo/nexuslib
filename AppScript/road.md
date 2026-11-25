@@ -517,6 +517,25 @@ See [AppScript/BETA.md](BETA.md) — one entry per working session: what was don
   - **Resumen persona = 2 filas fijas ✅:** fila1 avatar+username+iconos deseado/nota, fila2 chip estado+estrellas+chevron. Nombres con ellipsis 12ch (`.pa-name`, `.stat-prof-name`). Badge "Solo lectura" eliminado (atenuado basta).
   - **Phase 5 completa** salvo pruebas visuales con un 3er vínculo real.
 
+### Phase 4.5 — Web hosting: GitHub Pages + Supabase (decidido 2026-11-26)
+
+**Decisión:** se descarta el web app de Apps Script (`/exec` + `WebAPP.gs`). La web se aloja en **GitHub Pages** (`angellrnzo.github.io/nexuslib`) hablando directo con Supabase — `NEXUS_MODE=true` ya está hardcodeado en `Index.html`, el camino `google.script.run`/Sheets es código muerto.
+
+**Estado actual:** `index.html` raíz es un shell con `<iframe>` al `/exec` + manifest PWA + iconos + OG cards. `AppScript/Index.html` es la app real (Supabase-only).
+
+**Adaptaciones necesarias:**
+
+- [ ] Sustituir `index.html` por el contenido de `AppScript/Index.html` (o moverlo a `app.html`/`index.html` directo) — **quitar `<base target="_top">`** (solo aplica a Apps Script).
+- [ ] Supabase Dashboard → Auth → URL Configuration: Site URL = `https://angellrnzo.github.io/nexuslib/` + redirect URLs del dominio Pages (magic link/password reset).
+- [ ] Verificar CORS de Edge Functions (`catalog-search`, `catalog-add`, `item-refresh`) desde origen Pages — supabase-js usa anon key, debería bastar; probar E2E.
+- [ ] Limpiar código muerto: rama `google.script.run` en `RUN`, `WebAPP.gs` read/write paths (mantener el archivo como referencia histórica o borrar tras el corte).
+- [ ] Sheet queda solo como **archivo/backup** — `backup-excel.yml` sigue exportando xlsx semanal (no es fuente de datos).
+- [ ] PWA: `manifest.json` + service worker (si existe) revisar scope/paths para el nuevo dominio; iconos ya están en `icons/`.
+- [ ] OG/Twitter cards del shell se conservan (ya apuntan a Pages).
+- [ ] Deploy formal: merge `beta` → `main` requiere `Confirmar deploy` (regla vigente).
+
+**Notas:** Apps Script dejará de ser necesario del todo — los ETLs ya corren local (`database/etl/*.py`) y las Edge Functions viven en Supabase.
+
 ### Phase 5D — Social layer (v2.x)
 
 - [ ] Phase 5 done first.
