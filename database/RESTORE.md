@@ -7,7 +7,7 @@ Como reconstruir la base de datos completa desde cero o desde un respaldo.
 | Capa | Que | Frecuencia | Donde |
 |---|---|---|---|
 | GitHub Action | `pg_dump` schema `public` (custom format) | Semanal (lunes 5AM UTC) + manual | Artifacts del repo (90 dias) |
-| Standby Supabase | Restore automatico del dump | Semanal (mismo workflow) | `uxixiwrvobkulkjkicjm` (us-west-2) — **schema + datos + auth users YA replicados 2026-11-25** (1093 filas, paridad verificada). Falta: Edge Functions + secrets + auth URL config (manual, PAT sin scope) |
+| Standby Supabase | Restore automatico del dump | Semanal (mismo workflow) | `uxixiwrvobkulkjkicjm` (us-west-2) — **REPLICA 100% FUNCIONAL 2026-11-25**: schema + 1093 filas + 2 auth users + 3 Edge Functions + secrets + auth URLs. E2E verificado. Switch = cambiar NEXUS_URL/KEY en Index.html |
 | Local cifrado | JSON.gz + Fernet de todas las tablas | Manual (`backup_local.py`) | `_local/backups/` (NO commitear) |
 
 ## Secrets de GitHub Actions (Settings -> Secrets and variables -> Actions)
@@ -41,13 +41,19 @@ Como reconstruir la base de datos completa desde cero o desde un respaldo.
    los recrea via Admin API (password aleatoria + email_confirm -> entran por
    magic link). **Ya corrido en standby: 2 usuarios creados.**
 
-5. **Edge Functions** — redesplegar `supabase/functions/*` (catalog-search,
-   catalog-add, item-refresh) y secrets (`STEAMGRIDDB_API_KEY`, `TMDB_API_KEY`).
-   NOTA: el PAT actual es project-scoped (403 en standby) — usar Dashboard ->
-   Edge Functions -> pegar codigo, o un PAT account-level nuevo.
+5. **Edge Functions** — `npx supabase functions deploy <fn> --project-ref <ref>`
+   con PAT account-level (guardado en `_local` como `SUPABASE_ADMIN_TOKEN`,
+   scope: org angellrnzo, 2 proyectos, Never expiry). Secrets de functions:
+   `POST /v1/projects/{ref}/secrets` con `STEAMGRIDDB_API_KEY`/`TMDB_API_KEY`
+   (valores en `_local/external_apis.env`). **Standby ya tiene las 3
+   deployadas + secrets + auth URLs — E2E verificado 2026-11-25**
+   (catalog-search devuelve resultados reales, get_items_merged 251 items).
 
-6. **Frontend** — `Index.html`: actualizar `NEXUS_URL`, `NEXUS_KEY`
-   (publishable) si el proyecto es nuevo. `CACHE_VERSION` bump si cambia data.
+6. **Frontend** — `Index.html`: actualizar `NEXUS_URL` =
+   `https://uxixiwrvobkulkjkicjm.supabase.co`, `NEXUS_KEY` = publishable del
+   standby (esta en `_local/supabase_credentials.env` ->
+   `SUPABASE_STANDBY_PUBLISHABLE_KEY`). Auth del standby ya tiene
+   site_url=Pages + redirects configurados.
 
 ## Switch al standby
 
