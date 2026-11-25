@@ -481,6 +481,7 @@ See [AppScript/BETA.md](BETA.md) — one entry per working session: what was don
   - **Items compartidos según link** aparecen con los campos que la matriz permita, mismos campos de pareja read-only.
   - **Multi-vínculo → configurable por el usuario**: en ajustes se elige qué vínculos aparecen como columnas extra en el modal (preferencia en `profiles.preferences` o tabla dedicada — decidir en implementación).
   - **`is_private` → badge "privado" (candado) solo para mí**: yo lo veo normal con indicador; para los demás el tracking simplemente no existe. Sin pista visual del item en vistas ajenas.
+  - **`is_private` es el ESTADO BASE (decidido 2026-11-24, usuario):** por defecto nada se comparte; el tracking de un item es privado salvo que el usuario indique **a qué vínculo(s)/persona(s) aparece**. Es opt-in por item, no opt-out. → **Implicación schema Phase 5:** `is_private boolean` no basta para "a quién le aparece" — evaluar `shared_with uuid[]` (link_ids) en `user_media_tracking` u override por vínculo; la matriz `visibility` del link seguiría filtrando campos, pero la puerta de entrada por item es explícita.
 - [ ] **Pendiente:** definir dónde vive la preferencia "qué vínculos se muestran" (`profiles.preferences` jsonb alcanza para v2).
 
 ### Phase 5D — Social layer (v2.x)
