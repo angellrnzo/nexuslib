@@ -1781,6 +1781,37 @@
       });
     }
 
+    // refresca campos de personas/privacidad del item desde la DB al abrir el
+    // modal — el cache local puede tener visible{Persona} viejo (TTL 12h)
+    async function nexusRefreshItemPrivacy(it) {
+      if (!NEXUS_MODE || !it) return;
+      try {
+        var sb = await nexusSb();
+        var r = await sb.rpc('get_item_merged', {
+          p_category: currentCategory, p_external_id: String(it.id)
+        });
+        if (r.error || !r.data || typeof r.data !== 'object') return;
+        var fresh = r.data;
+        var changed = false;
+        Object.keys(fresh).forEach(function(k) {
+          if (/^(visible|estado|estrellas|deseado|progreso|nota)/.test(k) && fresh[k] !== it[k]) {
+            it[k] = fresh[k]; changed = true;
+          }
+        });
+        if (changed) {
+          ['Angel', 'Talmai'].forEach(function(p) {
+            var k = p.toLowerCase();
+            var acc = document.getElementById('acc-' + k);
+            if (acc) acc.style.display = (it['visible' + p] === false) ? 'none' : '';
+          });
+          try {
+            localStorage.setItem('media_lib_' + CACHE_VERSION + '_' + currentCategory,
+              JSON.stringify(itemsByCategory[currentCategory]));
+          } catch (e) {}
+        }
+      } catch (e) {}
+    }
+
     async function guardarSharePanel(k, persona) {
       if (!_shareCtx || _shareCtx.k !== k || !currentItemId) return;
       var priv = document.getElementById('share-privado-' + k);
@@ -1817,7 +1848,7 @@
     var busquedaFiltroActiva = false;
     var hlsInstance = null;
     var MAX_CACHE_AGE = 12 * 60 * 60 * 1000;
-    const CACHE_VERSION = 'v19';
+    const CACHE_VERSION = 'v20';
     var currentStatsProfile = 'ambos';
     var currentStatsCategory = 'todas';
 
@@ -2641,6 +2672,7 @@
         actualizarResumenJugador(k, est, pts, wish, nota);
       });
       nexusSyncShareUI(it);
+      nexusRefreshItemPrivacy(it);
 
       resetearDesplegablesModal();
 
