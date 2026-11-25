@@ -175,6 +175,8 @@ Plus RLS policies mirroring the existing per-user tracking rules, and the same m
 
 ---
 
+> **Nota 2026-11-25:** los SQL de `database/` fueron renumerados por orden de ejecución: `00_schema.sql`, `01_phase4_5.sql`, `02_phase5c`, `03_phase5d`, `04_phase5e`, `05_phase5h`. Los aplicados históricamente como `phase5b/5f/5g` viven en `database/legacy/` (subsumidos por 05 — no re-correr). Referencias a nombres viejos en este documento son registro histórico.
+
 ## 🔧 Planned Feature: Game Update History — Steam patch log (v1.x — spec only, not implemented)
 
 > **Status:** 📋 **SPEC** — documented 2026-11-23, pending implementation decision.
@@ -547,6 +549,16 @@ Arquitectura de respaldo en 3 capas — runbook completo en `database/RESTORE.md
 - [x] Standby Supabase — 2do proyecto free mismo org; el workflow hace `pg_restore --data-only` semanal si `SUPABASE_STANDBY_ENABLED=true` + secrets standby. **Switch = cambiar NEXUS_URL/KEY en Index.html**. Caveat: `auth.users` no viaja → recrear usuarios via admin API (magic link resuelve passwords).
 - [x] Backup local cifrado — `database/backup_local.py` (Fernet AES, clave en `_local/backup_key.key` — respaldar aparte). Probado en vivo: 237 KB, 8 tablas.
 - [~] Standby creado por usuario: `vgcnyfrfvkxfuhjnugkb` (misma pass DB). **Pendiente:** proyecto aun provisionando (pooler ENOTFOUND tenant — reintentar luego), luego `python database/apply_schema.py --project-ref vgcnyfrfvkxfuhjnugkb` + secrets GitHub (`SUPABASE_DB_URL`, `SUPABASE_DB_PASSWORD`, `SUPABASE_STANDBY_DB_URL`, `SUPABASE_STANDBY_DB_PASSWORD`, var `SUPABASE_STANDBY_ENABLED=true`).
+
+### Phase 4.7 — Auditoría DB para features pendientes (2026-11-25)
+
+Schema ya cubre casi todo lo que Phase 3+ necesita — **no hay SQL nuevo urgente**:
+
+- `mods` tabla + RLS + `mod_source` enum: listos para Mods Tracker (solo Edge Function + UI).
+- `user_media_tracking.edition text`: existe ("mi edición" libros). **Pendiente menor:** cuando se implemente Book Editions Half B, `get_items_merged` debe emitir `edicion{Persona}` para mostrarla/compartirla — delta SQL chico en `05_phase5h` o archivo `06_` nuevo.
+- `item_touches`: lista para Phase 5D social layer.
+- Game Update History / Steam Reviews / Book Editions Half A: lazy-fetch, cero storage.
+- Visibilidad: la matriz `visibility` ya incluye campo `mods` por defecto en todas las categorías.
 
 ### Phase 5D — Social layer (v2.x)
 

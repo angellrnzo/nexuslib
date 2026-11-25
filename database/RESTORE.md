@@ -26,9 +26,9 @@ Como reconstruir la base de datos completa desde cero o desde un respaldo.
    python database/apply_schema.py --project-ref <ref>
    ```
 
-   Aplica en orden `schema.sql`, `phase4_5`, `phase5c/d/e/h` por pooler.
-   Manual (SQL Editor): mismo orden — `phase5f`/`phase5g` quedan subsumidos
-   por `phase5h`, NO correrlos.
+   Aplica en orden numerico `00` a `05` por pooler.
+   Manual (SQL Editor): mismo orden — `database/legacy/` (phase5b/5f/5g)
+   queda subsumido por `05_phase5h_username.sql`, NO correrlo.
 
 3. **Datos** — dos caminos:
 

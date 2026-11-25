@@ -364,7 +364,7 @@ Rules for all frontend work (v1 and v2):
 
 ### 7.3. PostgreSQL Schema Summary (Supabase)
 
-> Full DDL will live in `database/schema.sql` when Phase 4 starts.
+> Full DDL lives in `database/00_schema.sql` (+ `01_`–`05_` phase deltas; `database/legacy/` is historical).
 
 **How cross-user linking works:** each user owns a personal `libraries` workspace. Exchanging a 10-char `invite_code` creates a `library_links` row (`pending` → `accepted`). Since both libraries reference the same canonical `media_items.id`, the views detect titles both linked users marked `is_wishlisted` or `status = 'backlog'` — without exposing private `personal_notes`.
 

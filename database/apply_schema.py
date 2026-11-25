@@ -11,7 +11,7 @@ Si no se pasa --password, lo lee de _local/supabase_credentials.env
 SUPABASE_STANDBY_DB_PASSWORD o pasalo con --password).
 
 Orden aplicado (fuente de verdad: database/RESTORE.md):
-    schema.sql, phase4_5.sql, phase5c, phase5d, phase5e, phase5h
+    00_schema.sql, 01_phase4_5.sql, 02_phase5c, 03_phase5d, 04_phase5e, 05_phase5h
 """
 
 import argparse
@@ -25,12 +25,12 @@ ENV_FILE = os.path.join(ROOT, "..", "_local", "supabase_credentials.env")
 DB_DIR = os.path.join(ROOT, "database")
 
 FILES = [
-    "schema.sql",
-    "phase4_5.sql",
-    "phase5c_item_privacy.sql",
-    "phase5d_item_shares.sql",
-    "phase5e_optin_label.sql",
-    "phase5h_username.sql",
+    "00_schema.sql",
+    "01_phase4_5.sql",
+    "02_phase5c_item_privacy.sql",
+    "03_phase5d_item_shares.sql",
+    "04_phase5e_optin_label.sql",
+    "05_phase5h_username.sql",
 ]
 
 
