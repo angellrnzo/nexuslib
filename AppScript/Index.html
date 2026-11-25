@@ -2629,7 +2629,10 @@
         var prog = it['progreso' + p] || '';
         var nota = it['nota' + p] || '';
 
-        document.getElementById('acc-' + k).classList.remove('active');
+        // Phase 5: si el tracking del vinculado es privado para mi, ocultar su sección
+        var accEl = document.getElementById('acc-' + k);
+        if (accEl) accEl.style.display = (it['visible' + p] === false) ? 'none' : '';
+        accEl && accEl.classList.remove('active');
         document.getElementById('select-estado-' + k).value = est;
         document.getElementById('prog-' + k).value = prog;
         document.getElementById('note-' + k).value = nota;

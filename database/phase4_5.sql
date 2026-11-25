@@ -401,7 +401,7 @@ grant execute on function public.respond_library_link(uuid, boolean) to authenti
 
 -- ---------------------------------------------------------------------------
 -- 4a) get_items_merged — gate shared_with en tracking de vinculados
---     (idéntica a phase4_merged_view.sql + condición shared_with)
+--     (idéntica a phase4_merged_view.sql + condición shared_with + flag visible{Persona})
 -- ---------------------------------------------------------------------------
 create or replace function public.get_items_merged(p_category text)
 returns setof jsonb
@@ -418,6 +418,8 @@ declare
   vis      jsonb;
   suf      text;
   genres_txt text;
+  can_see  boolean;
+  sec_vis  boolean;
 begin
   if my_uid is null then
     raise exception 'not authenticated';
@@ -514,30 +516,37 @@ begin
       where ll.status = 'accepted' and p.id <> my_uid
     loop
       vis := vp.vis -> p_category;
-      select umt.status, umt.rating, umt.is_wishlisted, umt.progress, umt.personal_notes
+      select umt.status, umt.rating, umt.is_wishlisted, umt.progress, umt.personal_notes,
+             umt.is_private, umt.shared_with
       into t
       from public.user_media_tracking umt
       where umt.profile_id = vp.pid
-        and umt.media_item_id = rec.id
-        and umt.is_private = false
-        and (umt.shared_with is null
-             or cardinality(umt.shared_with) = 0
-             or my_uid = any(umt.shared_with));
+        and umt.media_item_id = rec.id;
+
+      -- privacidad del dueño: is_private = veto; shared_with [ids] = solo esos viewers.
+      -- Sin fila de tracking -> can_see=false pero la seccion se muestra vacia (legacy).
+      can_see := found
+        and t.is_private is not true
+        and (t.shared_with is null
+             or cardinality(t.shared_with) = 0
+             or my_uid = any(t.shared_with));
+      sec_vis := (not found) or can_see;
 
       suf := initcap(split_part(coalesce(vp.pname, 'X'), ' ', 1));
       obj := obj || jsonb_build_object(
-        'estado'   || suf, case when coalesce((vis ->> 'status')::boolean, false)
+        'visible'  || suf, sec_vis,
+        'estado'   || suf, case when can_see and coalesce((vis ->> 'status')::boolean, false)
                                 then case t.status when 'completed' then 'Completado'
                                                     when 'in_progress' then 'En proceso'
                                                     else 'No jugado' end
                                 else 'No jugado' end,
-        'estrellas'|| suf, case when coalesce((vis ->> 'rating')::boolean, false)
+        'estrellas'|| suf, case when can_see and coalesce((vis ->> 'rating')::boolean, false)
                                 then coalesce(t.rating, 0) else 0 end,
-        'deseado'  || suf, case when coalesce((vis ->> 'wishlist')::boolean, false)
+        'deseado'  || suf, case when can_see and coalesce((vis ->> 'wishlist')::boolean, false)
                                 then coalesce(t.is_wishlisted, false) else false end,
-        'progreso' || suf, case when coalesce((vis ->> 'progress')::boolean, false)
+        'progreso' || suf, case when can_see and coalesce((vis ->> 'progress')::boolean, false)
                                 then coalesce(t.progress, '') else '' end,
-        'nota'     || suf, case when coalesce((vis ->> 'notes')::boolean, false)
+        'nota'     || suf, case when can_see and coalesce((vis ->> 'notes')::boolean, false)
                                 then coalesce(t.personal_notes, '') else '' end
       );
     end loop;
