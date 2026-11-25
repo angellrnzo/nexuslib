@@ -522,7 +522,7 @@ begin
         and umt.is_private = false
         and (umt.shared_with is null
              or cardinality(umt.shared_with) = 0
-             or vp.pid = any(umt.shared_with));
+             or my_uid = any(umt.shared_with));
 
       suf := initcap(split_part(coalesce(vp.pname, 'X'), ' ', 1));
       obj := obj || jsonb_build_object(

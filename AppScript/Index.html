@@ -555,7 +555,7 @@
     .stat-bar-fill-talmai { height: 100%; background: var(--talmai-color); transition: width var(--t-slow) var(--ease-out); }
 
     /* MODALES GENERALES */
-    #modal, #modal-papelera, #modal-match, #modal-vinculos {
+    #modal, #modal-papelera, #modal-match, #modal-vinculos, #modal-share {
       display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(6, 9, 14, 0.88); z-index: 10000;
       justify-content: center; align-items: center; opacity: 0;
@@ -572,7 +572,8 @@
     #modal[style*="opacity: 1"] .modal-content,
     #modal-papelera[style*="opacity: 1"] .modal-content,
     #modal-match[style*="opacity: 1"] .modal-content,
-    #modal-vinculos[style*="opacity: 1"] .modal-content {
+    #modal-vinculos[style*="opacity: 1"] .modal-content,
+    #modal-share[style*="opacity: 1"] .modal-content {
       transform: translateY(0) scale(1);
     }
     .modal-close {
@@ -623,6 +624,9 @@
     .trailer-box iframe, .trailer-box video { width: 100%; aspect-ratio: 16 / 9; display: block; border: 0; max-height: 320px; }
 
     #modal-vinculos .modal-title { min-height: 38px; }
+    .share-person-row { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 6px; cursor: pointer; }
+    .share-person-row:hover { background: rgba(255,255,255,.04); }
+    .share-person-row input { accent-color: var(--accent); width: 16px; height: 16px; }
     .modal-title {
       color: #fff; margin: 0 0 4px 0; font-size: 20px; font-weight: 900; padding-right: 40px;
       overflow-wrap: break-word; word-break: break-word; display: flex; align-items: center; gap: 8px;
@@ -848,6 +852,7 @@
     <symbol id="i-user" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
     <symbol id="i-users" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
     <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
     <symbol id="i-star" viewBox="0 0 24 24"><polygon fill="currentColor" stroke="none" points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></symbol>
     <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></symbol>
     <symbol id="i-folder" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></symbol>
@@ -1118,6 +1123,9 @@
             </div>
             <div class="stars" id="stars-angel"></div>
             <textarea id="note-angel" class="player-note" placeholder="Apunte rápido de Angel..." onchange="guardarNotaJugador('Angel', this.value)"></textarea>
+            <div id="share-box-angel" style="display:none;margin-top:10px;">
+              <button type="button" id="btn-share-angel" class="btn-text" style="width:100%;background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--border);" onclick="abrirShareItem('Angel')"></button>
+            </div>
           </div>
         </div>
 
@@ -1163,6 +1171,9 @@
             </div>
             <div class="stars" id="stars-talmai"></div>
             <textarea id="note-talmai" class="player-note" placeholder="Apunte rápido de Talmai..." onchange="guardarNotaJugador('Talmai', this.value)"></textarea>
+            <div id="share-box-talmai" style="display:none;margin-top:10px;">
+              <button type="button" id="btn-share-talmai" class="btn-text" style="width:100%;background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--border);" onclick="abrirShareItem('Talmai')"></button>
+            </div>
           </div>
         </div>
       </div>
@@ -1212,6 +1223,15 @@
         </div>
         <div id="match-grid" class="match-grid"></div>
       </div>
+    </div>
+  </div>
+
+  <!-- MODAL COMPARTIR ITEM (Phase 5, privacidad por item) -->
+  <div id="modal-share" onclick="cerrarShareModal()">
+    <div class="modal-content" onclick="event.stopPropagation()" style="max-width:400px;">
+      <button class="modal-close" onclick="cerrarShareModal()"><svg class="ico"><use href="#i-x"/></svg></button>
+      <h2 class="modal-title"><svg class="ico ico-lg"><use href="#i-users"/></svg> Compartir</h2>
+      <div id="share-modal-body" style="margin-top:8px;"></div>
     </div>
   </div>
 
@@ -1650,6 +1670,147 @@
         abrirVinculosModal();
       } catch (e) {
         showToast && showToast('Error: ' + (e.message || ''), 'error');
+      }
+    }
+
+    // ---- compartir tracking por item (Phase 5: is_private + shared_with) ----
+    var _shareCtx = null;
+
+    async function nexusFetchMyPrivacy(category, externalId) {
+      var sb = await nexusSb();
+      await nexusEnsureProfile();
+      var mediaId = await nexusMediaId(category, externalId);
+      if (!mediaId) return { is_private: false, shared_with: null };
+      var r = await sb.from('user_media_tracking')
+        .select('is_private,shared_with')
+        .eq('profile_id', _nexusUser.id).eq('media_item_id', mediaId).maybeSingle();
+      if (r.error) throw new Error(r.error.message);
+      return r.data || { is_private: false, shared_with: null };
+    }
+
+    // muestra el botón "Compartir" solo en la sección del usuario logueado
+    function nexusSyncShareUI(it) {
+      if (!NEXUS_MODE || !it) return;
+      var yo = String(nexusPersona() || '').toLowerCase();
+      ['Angel', 'Talmai'].forEach(function(p) {
+        var k = p.toLowerCase();
+        var box = document.getElementById('share-box-' + k);
+        var btn = document.getElementById('btn-share-' + k);
+        if (!box || !btn) return;
+        if (p.toLowerCase() !== yo) { box.style.display = 'none'; return; }
+        box.style.display = 'block';
+        btn.innerHTML = svgIcon('i-users', 'ico-sm') + ' Compartir…';
+        nexusFetchMyPrivacy(currentCategory, it.id).then(function(st) {
+          var sw = st.shared_with;
+          var n = Array.isArray(sw) ? sw.length : 0;
+          if (st.is_private) {
+            btn.innerHTML = svgIcon('i-lock', 'ico-sm') + ' Privado';
+            btn.style.color = '#ff8585'; btn.style.borderColor = 'rgba(255,133,133,.4)';
+          } else if (n > 0) {
+            btn.innerHTML = svgIcon('i-users', 'ico-sm') + ' Con ' + n + (n === 1 ? ' persona' : ' personas');
+            btn.style.color = '#7ee0a3'; btn.style.borderColor = 'rgba(126,224,163,.4)';
+          } else {
+            btn.innerHTML = svgIcon('i-users', 'ico-sm') + ' Todos los vínculos';
+            btn.style.color = ''; btn.style.borderColor = '';
+          }
+        }).catch(function() {});
+      });
+    }
+
+    async function abrirShareItem(persona) {
+      if (!NEXUS_MODE || !currentItemId) return;
+      var ov = document.getElementById('modal-share');
+      var body = document.getElementById('share-modal-body');
+      if (!ov || !body) return;
+      _shareCtx = { cat: currentCategory, id: currentItemId, persona: persona };
+      body.innerHTML = '<p style="color:#8f98a0;font-size:13px;">Cargando…</p>';
+      ov.style.display = 'flex';
+      requestAnimationFrame(() => requestAnimationFrame(() => ov.style.opacity = '1'));
+      try {
+        var d = await nexusMisVinculos();
+        var st = await nexusFetchMyPrivacy(_shareCtx.cat, _shareCtx.id);
+        var titulo = (document.getElementById('m-titulo') || {}).innerText || '';
+        renderShareModal(st, d.links || [], titulo);
+      } catch (e) {
+        body.innerHTML = '<p style="color:#ff8585;font-size:13px;">Error: ' + vinculosEsc(e.message) + '</p>';
+      }
+    }
+
+    function cerrarShareModal() {
+      var ov = document.getElementById('modal-share');
+      if (ov) { ov.style.opacity = '0'; ov.style.display = 'none'; }
+      _shareCtx = null;
+    }
+
+    function renderShareModal(st, links, tituloItem) {
+      var body = document.getElementById('share-modal-body');
+      var aceptados = (links || []).filter(function(x) {
+        return x.status === 'accepted' && x.other && x.other.profile_id;
+      });
+      // dedupe por persona (fila inversa del link)
+      var vistos = {}, personas = [];
+      aceptados.forEach(function(x) {
+        var pid = x.other.profile_id;
+        if (!vistos[pid]) { vistos[pid] = true; personas.push(x); }
+      });
+
+      var sw = Array.isArray(st.shared_with) ? st.shared_with : [];
+      var h = '<div style="font-size:12px;color:#8f98a0;margin-bottom:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + vinculosEsc(tituloItem) + '</div>';
+
+      // toggle privado
+      h += '<label class="share-person-row" style="border-color:rgba(255,133,133,.35);">' +
+           '<input type="checkbox" id="share-privado"' + (st.is_private ? ' checked' : '') + '> ' +
+           svgIcon('i-lock', 'ico-sm') + ' <span style="flex:1;">Privado — nadie ve mi tracking</span></label>';
+
+      // audiencia (solo si no está privado)
+      h += '<div id="share-audiencia" style="' + (st.is_private ? 'display:none;' : '') + 'margin-top:10px;">';
+      h += '<div style="font-size:11px;color:#8f98a0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Visible para</div>';
+      h += '<label class="share-person-row"><input type="radio" name="share-mode" id="share-mode-all" value="all"' + (sw.length === 0 ? ' checked' : '') + '> ' +
+           '<span style="flex:1;">Todos mis vínculos <span style="color:#8f98a0;font-size:11px;">(según permisos de cada uno)</span></span></label>';
+      personas.forEach(function(x) {
+        var pid = x.other.profile_id;
+        var sel = sw.indexOf(pid) !== -1;
+        h += '<label class="share-person-row"><input type="checkbox" class="share-person" value="' + pid + '"' + (sel ? ' checked' : '') + '> ' +
+             '<span style="flex:1;">' + vinculosEsc(x.other.display_name || 'Usuario') +
+             ' <span style="color:#8f98a0;font-size:11px;">(' + vinculosEsc(VINCULOS_LINK_TYPES[x.link_type] || x.link_type) + ')</span></span></label>';
+      });
+      if (!personas.length) {
+        h += '<div style="font-size:12px;color:#8f98a0;margin-top:6px;">No tienes vínculos aceptados — solo tú verás este tracking.</div>';
+      }
+      h += '</div>';
+      h += '<div style="font-size:11px;color:#8f98a0;margin-top:10px;">El candado es solo para ti — los demás nunca ven que existe.</div>';
+      h += '<button class="btn btn-text" style="width:100%;margin-top:12px;" onclick="guardarShareItem()">Guardar</button>';
+
+      body.innerHTML = h;
+      var priv = document.getElementById('share-privado');
+      priv.addEventListener('change', function() {
+        document.getElementById('share-audiencia').style.display = priv.checked ? 'none' : 'block';
+      });
+    }
+
+    async function guardarShareItem() {
+      if (!_shareCtx) return;
+      var priv = document.getElementById('share-privado');
+      var isPrivate = priv && priv.checked;
+      var sw = [];
+      if (!isPrivate) {
+        document.querySelectorAll('.share-person:checked').forEach(function(c) { sw.push(c.value); });
+        // si hay personas marcadas -> audienca especifica; ninguna -> todos (null)
+      }
+      var body = document.getElementById('share-modal-body');
+      body.insertAdjacentHTML('beforeend', '<div id="share-saving" style="font-size:12px;color:#8f98a0;margin-top:8px;">Guardando…</div>');
+      try {
+        await nexusTrackingUpsert(_shareCtx.cat, _shareCtx.id, {
+          is_private: isPrivate,
+          shared_with: (isPrivate || sw.length === 0) ? null : sw
+        });
+        var ctx = _shareCtx;
+        cerrarShareModal();
+        nexusSyncShareUI({ id: ctx.id });
+        showToast && showToast('Privacidad actualizada.', 'success');
+      } catch (e) {
+        var s = document.getElementById('share-saving');
+        if (s) s.textContent = 'Error: ' + (e.message || '');
       }
     }
   </script>
@@ -2487,6 +2648,7 @@
         renderEstrellas('stars-' + k, pts, p);
         actualizarResumenJugador(k, est, pts, wish, nota);
       });
+      nexusSyncShareUI(it);
 
       resetearDesplegablesModal();
 
