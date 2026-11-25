@@ -925,6 +925,7 @@
     <symbol id="i-camera" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></symbol>
     <symbol id="i-note" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></symbol>
     <symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
     <symbol id="i-chevron-down" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></symbol>
     <symbol id="i-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></symbol>
   </svg>
@@ -1655,6 +1656,16 @@
         if (pid) vistos[pid] = true;
         return true;
       });
+      // agrupar TODAS las filas accepted por persona: out = lo que YO expongo,
+      // in = lo que EL/ELLA me expone (filas inversas de respond_library_link)
+      var porPid = {};
+      links.forEach(function(x) {
+        if (x.status !== 'accepted' || !x.other || !x.other.profile_id) return;
+        var pid = x.other.profile_id;
+        if (!porPid[pid]) porPid[pid] = { name: x.other.display_name || 'Usuario', type: x.link_type, rows: {} };
+        porPid[pid].rows[x.direction] = x;
+      });
+      window._vincPorPid = porPid;
 
       // --- pendientes entrantes ---
       if (pendientesIn.length) {
@@ -1688,9 +1699,15 @@
       }
       aceptados.forEach(function(x) {
         var nombre = x.other ? x.other.display_name : 'Usuario';
-        h += '<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(126,224,163,.05);border:1px solid rgba(126,224,163,.2);border-radius:8px;margin-bottom:6px;">' +
+        var pid = x.other ? x.other.profile_id : '';
+        h += '<div style="padding:8px 10px;background:rgba(126,224,163,.05);border:1px solid rgba(126,224,163,.2);border-radius:8px;margin-bottom:6px;">' +
+             '<div style="display:flex;align-items:center;gap:8px;">' +
              '<span style="flex:1;font-size:13px;">' + vinculosEsc(nombre) + '</span>' +
-             nexusLinkBadge(x.link_type) + '</div>';
+             nexusLinkBadge(x.link_type) +
+             (pid ? '<button class="btn btn-circle" style="width:26px;height:26px;" onclick="toggleVisPanel(\'' + pid + '\')" title="Visibilidad"><svg class="ico ico-sm"><use href="#i-settings"/></svg></button>' : '') +
+             '</div>' +
+             (pid ? '<div id="vis-panel-' + pid + '" style="display:none;margin-top:8px;"></div>' : '') +
+             '</div>';
       });
       h += '</div>';
 
@@ -1767,6 +1784,106 @@
         if (r.error) throw new Error(r.error.message);
         showToast && showToast(accept ? 'Vínculo aceptado.' : 'Solicitud rechazada.', accept ? 'success' : 'warning');
         abrirVinculosModal();
+      } catch (e) {
+        showToast && showToast('Error: ' + (e.message || ''), 'error');
+      }
+    }
+
+    // ---- editor matriz visibility por vínculo (Phase 5A) ----
+    var VINCULOS_CATS = [
+      ['Juegos', 'Juegos'], ['Peliculas_Series', 'Películas/Series'],
+      ['Libros', 'Libros'], ['Mangas', 'Mangas']
+    ];
+    var VINCULOS_FIELDS = [
+      ['status', 'Estado'], ['rating', 'Valoración'], ['wishlist', 'Deseado'],
+      ['progress', 'Progreso'], ['notes', 'Notas']
+    ];
+
+    function visSel(pid) {
+      window._visSel = window._visSel || {};
+      if (!window._visSel[pid]) window._visSel[pid] = { dir: 'out', cat: 'Juegos' };
+      return window._visSel[pid];
+    }
+
+    function toggleVisPanel(pid) {
+      var p = document.getElementById('vis-panel-' + pid);
+      if (!p) return;
+      if (p.style.display === 'none' || !p.innerHTML) {
+        p.style.display = 'block';
+        renderVisPanel(pid);
+      } else {
+        p.style.display = 'none';
+      }
+    }
+
+    function visSetDir(pid, dir) { visSel(pid).dir = dir; renderVisPanel(pid); }
+    function visSetCat(pid, cat) { visSel(pid).cat = cat; renderVisPanel(pid); }
+
+    function renderVisPanel(pid) {
+      var p = document.getElementById('vis-panel-' + pid);
+      var info = (window._vincPorPid || {})[pid];
+      if (!p || !info) return;
+      var sel = visSel(pid);
+      var dirs = [];
+      if (info.rows.out) dirs.push({ k: 'out', label: 'Yo → ' + info.name });
+      if (info.rows.in)  dirs.push({ k: 'in',  label: info.name + ' → yo' });
+      if (!dirs.length) { p.innerHTML = '<div class="sp-empty">Sin vínculo activo.</div>'; return; }
+      if (!info.rows[sel.dir]) sel.dir = dirs[0].k;
+      var row = info.rows[sel.dir];
+      var catVis = (row.visibility && row.visibility[sel.cat]) || {};
+
+      var h = '<div class="sp-panel" style="padding:10px;">';
+      h += '<div class="sp-label" style="margin-bottom:6px;">Dirección</div>' +
+           '<div style="display:flex;gap:6px;margin-bottom:10px;">';
+      dirs.forEach(function(dd) {
+        var on = dd.k === sel.dir;
+        h += '<button class="sp-btn" style="flex:1;padding:6px;font-size:11px;' +
+             (on ? 'background:var(--accent);color:#0b0e14;border-color:transparent;' : '') +
+             '" onclick="visSetDir(\'' + pid + '\',\'' + dd.k + '\')">' + vinculosEsc(dd.label) + '</button>';
+      });
+      h += '</div>';
+      h += '<div class="sp-label" style="margin-bottom:6px;">Categoría</div>' +
+           '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">';
+      VINCULOS_CATS.forEach(function(cc) {
+        var on = cc[0] === sel.cat;
+        h += '<button class="sp-btn" style="padding:5px 9px;font-size:11px;' +
+             (on ? 'background:rgba(102,192,244,.18);border-color:rgba(102,192,244,.4);color:var(--accent);' : '') +
+             '" onclick="visSetCat(\'' + pid + '\',\'' + cc[0] + '\')">' + cc[1] + '</button>';
+      });
+      h += '</div>';
+      h += '<div class="sp-label" style="margin-bottom:6px;">Campos visibles — ' +
+           vinculosEsc(sel.dir === 'out' ? 'lo que tú compartes' : 'lo que te comparte') + '</div>';
+      VINCULOS_FIELDS.forEach(function(f) {
+        var on = catVis[f[0]] === true;
+        h += '<label class="sp-row" style="padding:6px 10px;">' +
+             '<input type="checkbox" class="sp-check" id="vis-f-' + pid + '-' + f[0] + '"' + (on ? ' checked' : '') + '> ' +
+             '<span class="sp-name" style="font-size:12px;">' + f[1] + '</span></label>';
+      });
+      h += '<div class="sp-hint">Aplica a todas las personas de ese tipo de vínculo según su propia matriz — esto edita solo esta relación.</div>';
+      h += '<div class="sp-actions" style="margin-top:10px;">' +
+           '<button class="sp-btn sp-btn-primary" onclick="vinculosGuardarVisibilidad(\'' + pid + '\')">Guardar</button></div>';
+      h += '</div>';
+      p.innerHTML = h;
+    }
+
+    async function vinculosGuardarVisibilidad(pid) {
+      var info = (window._vincPorPid || {})[pid];
+      var sel = visSel(pid);
+      if (!info || !info.rows[sel.dir]) return;
+      var row = info.rows[sel.dir];
+      var vis = JSON.parse(JSON.stringify(row.visibility || {}));
+      if (!vis[sel.cat]) vis[sel.cat] = {};
+      VINCULOS_FIELDS.forEach(function(f) {
+        var el = document.getElementById('vis-f-' + pid + '-' + f[0]);
+        if (el) vis[sel.cat][f[0]] = el.checked;
+      });
+      try {
+        var sb = await nexusSb();
+        var r = await sb.from('library_links').update({ visibility: vis }).eq('id', row.link_id);
+        if (r.error) throw new Error(r.error.message);
+        row.visibility = vis;
+        showToast && showToast('Visibilidad actualizada.', 'success');
+        renderVisPanel(pid);
       } catch (e) {
         showToast && showToast('Error: ' + (e.message || ''), 'error');
       }
@@ -2594,6 +2711,11 @@
           `<div class="wishlist-badge">${svgIcon('i-heart-fill', 'ico-sm ico-wish')}${(visA && it.deseadoAngel) ? svgIcon('i-user', 'ico-sm ico-angel') : ''}${(visT && it.deseadoTalmai) ? svgIcon('i-user', 'ico-sm ico-talmai') : ''}</div>` : '';
         var estLabelA = (!it.estadoAngel || it.estadoAngel === 'No jugado') ? 'Pendiente' : it.estadoAngel;
         var estLabelT = (!it.estadoTalmai || it.estadoTalmai === 'No jugado') ? 'Pendiente' : it.estadoTalmai;
+        // Phase 5: candado en MI chip si mi tracking de este item es privado
+        var yoName = (NEXUS_MODE && typeof nexusPersona === 'function') ? nexusPersona() : '';
+        yoName = yoName ? yoName.charAt(0).toUpperCase() + yoName.slice(1).toLowerCase() : '';
+        var lockA = yoName === 'Angel' && it.privadoAngel === true ? svgIcon('i-lock', 'ico-sm') + ' ' : '';
+        var lockT = yoName === 'Talmai' && it.privadoTalmai === true ? svgIcon('i-lock', 'ico-sm') + ' ' : '';
 
         card.innerHTML = `
           <div class="img-container">
@@ -2604,8 +2726,8 @@
             <div class="card-title">${escaparHTML(it.titulo)}</div>
             <div class="card-dev">${escaparHTML((it.creador && String(it.creador).toLowerCase() !== 'undefined') ? it.creador : ((it.autor && String(it.autor).toLowerCase() !== 'undefined') ? it.autor : 'Autor por definir'))}</div>
             <div class="status-container">
-              ${visA ? `<div class="status-chip ${cA}">${svgIcon('i-user', 'ico-sm ico-angel')} ${escaparHTML(estLabelA)}</div>` : ''}
-              ${visT ? `<div class="status-chip ${cT}">${svgIcon('i-user', 'ico-sm ico-talmai')} ${escaparHTML(estLabelT)}</div>` : ''}
+              ${visA ? `<div class="status-chip ${cA}">${svgIcon('i-user', 'ico-sm ico-angel')} ${lockA}${escaparHTML(estLabelA)}</div>` : ''}
+              ${visT ? `<div class="status-chip ${cT}">${svgIcon('i-user', 'ico-sm ico-talmai')} ${lockT}${escaparHTML(estLabelT)}</div>` : ''}
             </div>
             ${generarBarraLecturaCard(it)}
           </div>`;

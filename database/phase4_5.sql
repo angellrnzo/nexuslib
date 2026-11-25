@@ -488,7 +488,8 @@ begin
     );
 
     -- tracking propio: siempre completo
-    select umt.status, umt.rating, umt.is_wishlisted, umt.progress, umt.personal_notes
+    select umt.status, umt.rating, umt.is_wishlisted, umt.progress, umt.personal_notes,
+           umt.is_private
     into t
     from public.user_media_tracking umt
     where umt.profile_id = my_uid and umt.media_item_id = rec.id;
@@ -499,7 +500,8 @@ begin
       'estrellas'|| suf, coalesce(t.rating, 0),
       'deseado'  || suf, coalesce(t.is_wishlisted, false),
       'progreso' || suf, coalesce(t.progress, ''),
-      'nota'     || suf, coalesce(t.personal_notes, '')
+      'nota'     || suf, coalesce(t.personal_notes, ''),
+      'privado'  || suf, coalesce(t.is_private, false)
     );
 
     -- tracking de perfiles vinculados: gated por visibility del link
