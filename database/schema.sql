@@ -161,6 +161,10 @@ create table public.user_media_tracking (
   is_wishlisted boolean not null default false,
   personal_notes text,
   is_private    boolean not null default false,
+  -- audiencia opt-in por item (Phase 5): NULL/{} = legacy (matriz del link);
+  -- [profile_ids] = solo esos perfiles. is_private=true = veto absoluto.
+  -- DEFAULT de is_private se flipará a true cuando exista la UI "compartir con…"
+  shared_with   uuid[],
   edition       text,                           -- "mi edición" (libros, right of cut)
   created_at    timestamptz not null default now(),
   updated_at    timestamptz not null default now(),
@@ -293,7 +297,10 @@ revoke all on function public.is_library_member(uuid) from public, anon;
 grant execute on function public.is_library_member(uuid) to authenticated;
 
 -- Vinculación con aprobación mutua (Phase 5 items 1-2)
-create or replace function public.request_library_link(p_invite_code text)
+create or replace function public.request_library_link(
+  p_invite_code text,
+  p_link_type   public.link_type default 'amigo'
+)
 returns uuid
 language plpgsql security definer set search_path = public
 as $$
@@ -317,7 +324,7 @@ begin
   if target_lib = my_lib then raise exception 'no puedes vincularte contigo mismo'; end if;
 
   insert into library_links (owner_library_id, linked_library_id, link_type, visibility)
-  values (my_lib, target_lib, 'amigo', default_visibility('amigo'))
+  values (my_lib, target_lib, p_link_type, default_visibility(p_link_type))
   on conflict (owner_library_id, linked_library_id) do nothing
   returning id into new_link;
 
@@ -347,7 +354,7 @@ begin
     -- fila inversa: el que acepta comparte SU biblioteca con los defaults
     -- de su link_type (ajustable luego en settings); hace el match bidireccional
     insert into library_links (owner_library_id, linked_library_id, link_type, visibility)
-    select ll.linked_library_id, ll.owner_library_id, 'amigo', default_visibility('amigo')
+    select ll.linked_library_id, ll.owner_library_id, ll.link_type, default_visibility(ll.link_type)
     from library_links ll where ll.id = p_link_id
     on conflict (owner_library_id, linked_library_id) do nothing;
   end if;
@@ -423,6 +430,10 @@ join user_media_tracking lt on lt.media_item_id = mi.id
 where ll.status = 'accepted'
   and ll.match_enabled
   and not ot.is_private
+  -- shared_with: NULL/{} = legacy; [ids] = solo esos perfiles ven al owner
+  and (ot.shared_with is null
+       or cardinality(ot.shared_with) = 0
+       or auth.uid() = any(ot.shared_with))
   and not lt.is_private
   -- el viewer debe ser miembro de la library vinculada (lado que recibe)
   and exists (select 1 from library_members vm
