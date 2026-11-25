@@ -1124,8 +1124,12 @@
             <div class="stars" id="stars-angel"></div>
             <textarea id="note-angel" class="player-note" placeholder="Apunte rápido de Angel..." onchange="guardarNotaJugador('Angel', this.value)"></textarea>
             <div id="share-box-angel" style="display:none;margin-top:10px;">
-              <button type="button" id="btn-share-angel" class="btn-text" style="width:100%;background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--border);" onclick="toggleSharePanel('angel')"></button>
+              <div style="display:flex;gap:8px;">
+                <button type="button" id="btn-share-angel" class="btn-text" style="flex:1;background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--border);" onclick="toggleSharePanel('angel')"></button>
+                <button type="button" id="btn-send-angel" class="btn-text" style="flex:1;background:rgba(126,224,163,.08);color:#7ee0a3;border:1px solid rgba(126,224,163,.3);" onclick="toggleSendPanel('angel')">Enviar</button>
+              </div>
               <div id="share-panel-angel" style="display:none;margin-top:8px;background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:10px;padding:10px;"></div>
+              <div id="send-panel-angel" style="display:none;margin-top:8px;background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:10px;padding:10px;"></div>
             </div>
           </div>
         </div>
@@ -1173,8 +1177,12 @@
             <div class="stars" id="stars-talmai"></div>
             <textarea id="note-talmai" class="player-note" placeholder="Apunte rápido de Talmai..." onchange="guardarNotaJugador('Talmai', this.value)"></textarea>
             <div id="share-box-talmai" style="display:none;margin-top:10px;">
-              <button type="button" id="btn-share-talmai" class="btn-text" style="width:100%;background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--border);" onclick="toggleSharePanel('talmai')"></button>
+              <div style="display:flex;gap:8px;">
+                <button type="button" id="btn-share-talmai" class="btn-text" style="flex:1;background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--border);" onclick="toggleSharePanel('talmai')"></button>
+                <button type="button" id="btn-send-talmai" class="btn-text" style="flex:1;background:rgba(126,224,163,.08);color:#7ee0a3;border:1px solid rgba(126,224,163,.3);" onclick="toggleSendPanel('talmai')">Enviar</button>
+              </div>
               <div id="share-panel-talmai" style="display:none;margin-top:8px;background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:10px;padding:10px;"></div>
+              <div id="send-panel-talmai" style="display:none;margin-top:8px;background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:10px;padding:10px;"></div>
             </div>
           </div>
         </div>
@@ -1513,6 +1521,8 @@
       var r = await sb.rpc('get_my_library_links');
       if (r.error) out.rpcError = r.error.message;
       else out.links = r.data || [];
+      var rs = await sb.rpc('get_my_item_shares');
+      if (!rs.error) out.shares = rs.data || [];
       return out;
     }
 
@@ -1622,6 +1632,28 @@
       });
       h += '</div>';
 
+      // --- items compartidos (Phase 5d) ---
+      var shares = d.shares || [];
+      var sharesIn = shares.filter(function(x) { return x.direction === 'incoming' && x.status === 'pending'; });
+      var sharesOut = shares.filter(function(x) { return x.direction === 'outgoing' && x.status === 'pending'; });
+      if (sharesIn.length || sharesOut.length) {
+        h += '<div style="margin-top:14px;"><div style="font-size:11px;color:#7ee0a3;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Elementos compartidos</div>';
+        sharesIn.forEach(function(x) {
+          var it = x.item || {};
+          h += '<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(126,224,163,.06);border:1px solid rgba(126,224,163,.25);border-radius:8px;margin-bottom:6px;">' +
+               '<span style="flex:1;font-size:13px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + vinculosEsc(it.titulo || 'Item') +
+               ' <span style="color:#8f98a0;font-size:11px;">de ' + vinculosEsc(x.other_name || 'alguien') + '</span></span>' +
+               '<button class="btn btn-text" style="padding:6px 12px;font-size:12px;" onclick="vinculosItemResponder(\'' + x.request_id + '\',true)">Aceptar</button>' +
+               '<button class="btn btn-circle" style="color:#ff8585;" onclick="vinculosItemResponder(\'' + x.request_id + '\',false)" title="Rechazar"><svg class="ico"><use href="#i-x"/></svg></button></div>';
+        });
+        sharesOut.forEach(function(x) {
+          var it = x.item || {};
+          h += '<div style="padding:8px 10px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;margin-bottom:6px;font-size:13px;">' +
+               vinculosEsc(it.titulo || 'Item') + ' <span style="color:#8f98a0;font-size:11px;">→ ' + vinculosEsc(x.other_name || '') + ' (esperando)</span></div>';
+        });
+        h += '</div>';
+      }
+
       if (d.rpcError) {
         h += '<div style="font-size:11px;color:#ff8585;margin-top:10px;">RPC no disponible: ' + vinculosEsc(d.rpcError) + ' — corre phase4_5.sql sec.3 / phase5b_links_rpc.sql</div>';
       }
@@ -1651,6 +1683,18 @@
         setTimeout(function() { abrirVinculosModal(); }, 800);
       } catch (e) {
         msg.textContent = e.message || 'Error'; msg.style.color = '#ff8585';
+      }
+    }
+
+    async function vinculosItemResponder(requestId, accept) {
+      try {
+        var sb = await nexusSb();
+        var r = await sb.rpc('respond_item_share', { p_request_id: requestId, p_accept: accept });
+        if (r.error) throw new Error(r.error.message);
+        showToast && showToast(accept ? 'Elemento añadido a tu biblioteca.' : 'Solicitud rechazada.', accept ? 'success' : 'warning');
+        abrirVinculosModal();
+      } catch (e) {
+        showToast && showToast('Error: ' + (e.message || ''), 'error');
       }
     }
 
@@ -1716,6 +1760,8 @@
       if (!NEXUS_MODE || !currentItemId) return;
       var panel = nexusSharePanel(k);
       if (!panel) return;
+      var sendPanel = nexusSendPanel(k);
+      if (sendPanel) sendPanel.style.display = 'none';
       if (panel.style.display !== 'none' && panel.innerHTML) {
         panel.style.display = 'none';
         return;
@@ -1810,6 +1856,68 @@
           } catch (e) {}
         }
       } catch (e) {}
+    }
+
+    // ---- enviar item a un vínculo (Phase 5d: item_share_requests) ----
+    function nexusSendPanel(k) { return document.getElementById('send-panel-' + k); }
+
+    async function toggleSendPanel(k) {
+      if (!NEXUS_MODE || !currentItemId) return;
+      var panel = nexusSendPanel(k);
+      var sharePanel = nexusSharePanel(k);
+      if (sharePanel) sharePanel.style.display = 'none';
+      if (panel.style.display !== 'none' && panel.innerHTML) {
+        panel.style.display = 'none';
+        return;
+      }
+      panel.style.display = 'block';
+      panel.innerHTML = '<p style="color:#8f98a0;font-size:12px;">Cargando…</p>';
+      try {
+        var d = await nexusMisVinculos();
+        if (!nexusSendPanel(k) || nexusSendPanel(k).style.display === 'none') return;
+        var vistos = {}, personas = [];
+        (d.links || []).forEach(function(x) {
+          if (x.status !== 'accepted' || !x.other || !x.other.profile_id) return;
+          var pid = x.other.profile_id;
+          if (!vistos[pid]) { vistos[pid] = true; personas.push(x); }
+        });
+        window._sendPersonas = window._sendPersonas || {};
+        window._sendPersonas[k] = {};
+        personas.forEach(function(x) { window._sendPersonas[k][x.other.profile_id] = x.other.display_name || 'Usuario'; });
+        var h = '<div style="font-size:10px;color:#8f98a0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Enviar este elemento a</div>';
+        if (!personas.length) {
+          h += '<div style="font-size:12px;color:#8f98a0;">No tienes vínculos aceptados.</div>';
+        }
+        personas.forEach(function(x) {
+          h += '<button class="share-person-row" style="width:100%;text-align:left;background:transparent;" onclick="nexusSendItem(\'' + k + '\',\'' + x.other.profile_id + '\')">' +
+               '<span style="flex:1;font-size:13px;">' + vinculosEsc(x.other.display_name || 'Usuario') +
+               ' <span style="color:#8f98a0;font-size:10px;">(' + vinculosEsc(VINCULOS_LINK_TYPES[x.link_type] || x.link_type) + ')</span></span>' +
+               svgIcon('i-chevron-down', 'ico-sm') + '</button>';
+        });
+        h += '<div id="send-msg-' + k + '" style="font-size:11px;margin-top:6px;min-height:13px;"></div>';
+        panel.innerHTML = h;
+      } catch (e) {
+        panel.innerHTML = '<p style="color:#ff8585;font-size:12px;">Error: ' + vinculosEsc(e.message) + '</p>';
+      }
+    }
+
+    async function nexusSendItem(k, profileId) {
+      var nombre = (window._sendPersonas && window._sendPersonas[k] && window._sendPersonas[k][profileId]) || 'la persona';
+      var msg = document.getElementById('send-msg-' + k);
+      if (msg) { msg.textContent = 'Enviando…'; msg.style.color = '#8f98a0'; }
+      try {
+        var sb = await nexusSb();
+        var r = await sb.rpc('send_item_share', {
+          p_category: currentCategory,
+          p_external_id: String(currentItemId),
+          p_to_profile_id: profileId
+        });
+        if (r.error) throw new Error(r.error.message);
+        if (msg) { msg.textContent = 'Enviado a ' + nombre + ' — esperando confirmación.'; msg.style.color = '#7ee0a3'; }
+        showToast && showToast('Elemento enviado a ' + nombre, 'success');
+      } catch (e) {
+        if (msg) { msg.textContent = e.message || 'Error'; msg.style.color = '#ff8585'; }
+      }
     }
 
     async function guardarSharePanel(k, persona) {
