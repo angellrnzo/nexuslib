@@ -282,6 +282,11 @@
       background: var(--btn-primary); color: #0b0e14; border-radius: 50%;
       width: 26px; height: 26px; padding: 0; font-size: 15px; font-weight: 900; flex-shrink: 0;
     }
+    .btn-text {
+      background: var(--btn-primary); color: #0b0e14; border-radius: 8px;
+      padding: 10px 16px; font-size: 13px; width: auto; height: auto;
+    }
+    .btn-text:hover { filter: brightness(1.1); }
 
     #progress-container {
       width: 100%; display: none; margin-top: 2px;
@@ -1547,7 +1552,7 @@
         h += '<option value="' + k + '">' + VINCULOS_LINK_TYPES[k] + '</option>';
       });
       h += '</select>' +
-           '<button class="btn btn-primary" onclick="vinculosSolicitar()" style="padding:10px 14px;">Enviar</button></div>';
+           '<button class="btn btn-text" onclick="vinculosSolicitar()">Enviar</button></div>';
       h += '<div id="vinc-msg" style="font-size:12px;margin-top:6px;min-height:14px;"></div></div>';
 
       var links = d.links || [];
@@ -1572,7 +1577,7 @@
           h += '<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(255,212,121,.06);border:1px solid rgba(255,212,121,.25);border-radius:8px;margin-bottom:6px;">' +
                '<span style="flex:1;font-size:13px;">' + vinculosEsc(nombre) +
                ' <span style="color:#8f98a0;font-size:11px;">(' + vinculosEsc(VINCULOS_LINK_TYPES[x.link_type] || x.link_type) + ')</span></span>' +
-               '<button class="btn btn-primary" style="padding:6px 12px;font-size:12px;" onclick="vinculosResponder(\'' + x.link_id + '\',true)">Aceptar</button>' +
+               '<button class="btn btn-text" style="padding:6px 12px;font-size:12px;" onclick="vinculosResponder(\'' + x.link_id + '\',true)">Aceptar</button>' +
                '<button class="btn btn-circle" style="color:#ff8585;" onclick="vinculosResponder(\'' + x.link_id + '\',false)" title="Rechazar"><svg class="ico"><use href="#i-x"/></svg></button></div>';
         });
         h += '</div>';
