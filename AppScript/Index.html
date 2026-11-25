@@ -721,11 +721,6 @@
     /* vinculado de solo lectura (Phase 5): su tracking no se edita desde aquí */
     .player-accordion.is-remote .player-details { pointer-events: none; opacity: 0.72; }
     .player-accordion.is-remote .player-summary { opacity: 0.85; }
-    .player-accordion.is-remote .player-info-left h4::after {
-      content: 'Solo lectura'; font-size: 9px; font-weight: 700; letter-spacing: 0.5px;
-      text-transform: uppercase; color: #8f98a0; border: 1px solid rgba(255,255,255,0.14);
-      border-radius: 99px; padding: 2px 7px; margin-left: 4px;
-    }
     /* el resumen puede ocupar 2 líneas: nombre+chip arriba, estrellas+chevron abajo */
     .player-summary { display: flex; justify-content: space-between; align-items: center; gap: 6px 10px; padding: 12px 14px; cursor: pointer; flex-wrap: wrap; }
     .player-info-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 0; flex: 1 1 auto; }
