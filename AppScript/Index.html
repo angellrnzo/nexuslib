@@ -1206,6 +1206,243 @@
 
   <div id="toast-container"></div>
 
+  <!-- ==================== NEXUS PHASE 4 — adaptador Supabase ==================== -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const NEXUS_MODE = true; // false = Apps Script/Sheets (v1)
+    const NEXUS_URL = 'https://kbzgwtffdvyiymxgdaxx.supabase.co';
+    const NEXUS_KEY = 'sb_publishable_LGWU_E4-giTCj4Lyf30VJw_oAkky-M4';
+
+    var _nexusSb = null, _nexusUser = null, _nexusProfile = null, _nexusLibId = null;
+
+    async function nexusSb() {
+      if (!_nexusSb) {
+        _nexusSb = window.supabase.createClient(NEXUS_URL, NEXUS_KEY);
+        var s = await _nexusSb.auth.getSession();
+        _nexusUser = (s.data && s.data.session) ? s.data.session.user : null;
+      }
+      return _nexusSb;
+    }
+
+    async function nexusEnsureProfile() {
+      var sb = await nexusSb();
+      if (!_nexusUser) {
+        var u = await sb.auth.getUser();
+        _nexusUser = u.data.user;
+      }
+      if (!_nexusProfile && _nexusUser) {
+        var p = await sb.from('profiles').select('id,display_name').eq('id', _nexusUser.id).single();
+        _nexusProfile = p.data;
+        var lm = await sb.from('library_members').select('library_id').eq('profile_id', _nexusUser.id).limit(1);
+        _nexusLibId = (lm.data && lm.data[0]) ? lm.data[0].library_id : null;
+      }
+      return _nexusProfile;
+    }
+
+    function nexusPersona() {
+      return (_nexusProfile && _nexusProfile.display_name ? _nexusProfile.display_name : 'Yo').split(' ')[0];
+    }
+
+    function nexusPersonaOk(persona) {
+      return nexusPersona().toLowerCase() === String(persona || '').toLowerCase();
+    }
+
+    async function nexusMediaId(category, externalId) {
+      var sb = await nexusSb();
+      var r = await sb.from('media_items').select('id')
+        .eq('category', category).eq('external_id', String(externalId)).maybeSingle();
+      if (r.error) throw new Error(r.error.message);
+      return r.data ? r.data.id : null;
+    }
+
+    async function nexusTrackingUpsert(category, externalId, fields) {
+      var sb = await nexusSb();
+      await nexusEnsureProfile();
+      var mediaId = await nexusMediaId(category, externalId);
+      if (!mediaId) return { success: false, msg: 'Item no encontrado en el catálogo.' };
+      var payload = { profile_id: _nexusUser.id, media_item_id: mediaId };
+      Object.keys(fields).forEach(function(k) { payload[k] = fields[k]; });
+      var r = await sb.from('user_media_tracking')
+        .upsert(payload, { onConflict: 'profile_id,media_item_id' });
+      if (r.error) throw new Error(r.error.message);
+      return { success: true };
+    }
+
+    var NEXUS_STATUS_MAP = { 'No jugado': 'backlog', 'En proceso': 'in_progress', 'Completado': 'completed' };
+
+    var nexusRun = {
+      _ok: null, _fail: null,
+      withSuccessHandler: function(f) { this._ok = f; return this; },
+      withFailureHandler: function(f) { this._fail = f; return this; },
+      _exec: function(p) {
+        Promise.resolve(p).then(function(r) {
+          try { if (nexusRun._ok) nexusRun._ok(r); } catch (e) { console.error(e); }
+        }).catch(function(e) {
+          try { if (nexusRun._fail) nexusRun._fail(e); else console.error(e); } catch (_) {}
+        });
+      },
+      getItems: function(cat) {
+        this._exec((async function() {
+          var sb = await nexusSb();
+          await nexusEnsureProfile();
+          var r = await sb.rpc('get_items_merged', { p_category: cat });
+          if (r.error) throw new Error(r.error.message);
+          return r.data || [];
+        })());
+      },
+      guardarProgresoItem: function(cat, id, persona, estado, estrellas, progreso) {
+        this._exec((async function() {
+          await nexusSb(); await nexusEnsureProfile();
+          if (!nexusPersonaOk(persona)) return { success: false, msg: 'Solo puedes editar tu propio tracking.' };
+          return nexusTrackingUpsert(cat, id, {
+            status: NEXUS_STATUS_MAP[estado] || null,
+            rating: (Number(estrellas) > 0) ? Number(estrellas) : null,
+            progress: progreso || null
+          });
+        })());
+      },
+      guardarDeseadoItem: function(cat, id, persona, deseado) {
+        this._exec((async function() {
+          await nexusSb(); await nexusEnsureProfile();
+          if (!nexusPersonaOk(persona)) return { success: false, msg: 'Solo puedes editar tu propio tracking.' };
+          return nexusTrackingUpsert(cat, id, { is_wishlisted: Boolean(deseado) });
+        })());
+      },
+      guardarNotaItem: function(cat, id, persona, nota) {
+        this._exec((async function() {
+          await nexusSb(); await nexusEnsureProfile();
+          if (!nexusPersonaOk(persona)) return { success: false, msg: 'Solo puedes editar tu propio tracking.' };
+          return nexusTrackingUpsert(cat, id, { personal_notes: nota || null });
+        })());
+      },
+      guardarTotalCapitulos: function(cat, id, total) {
+        this._exec((async function() {
+          var sb = await nexusSb();
+          var r = await sb.from('media_items').select('id,metadata')
+            .eq('category', cat).eq('external_id', String(id)).single();
+          if (r.error || !r.data) return { success: false, msg: 'Item no encontrado.' };
+          var meta = Object.assign({}, r.data.metadata || {}, { total_chapters: Number(total) || 0 });
+          var u = await sb.from('media_items').update({ metadata: meta }).eq('id', r.data.id);
+          if (u.error) throw new Error(u.error.message);
+          return { success: true };
+        })());
+      },
+      eliminarItem: function(cat, id) {
+        this._exec((async function() {
+          var sb = await nexusSb(); await nexusEnsureProfile();
+          var mediaId = await nexusMediaId(cat, id);
+          if (!mediaId || !_nexusLibId) return { success: false, msg: 'No se encontró el elemento.' };
+          var r = await sb.from('library_items')
+            .update({ deleted_at: new Date().toISOString() })
+            .eq('library_id', _nexusLibId).eq('media_item_id', mediaId).is('deleted_at', null);
+          if (r.error) throw new Error(r.error.message);
+          return { success: true };
+        })());
+      },
+      restaurarItem: function(cat, id) {
+        this._exec((async function() {
+          var sb = await nexusSb(); await nexusEnsureProfile();
+          var mediaId = await nexusMediaId(cat, id);
+          if (!mediaId || !_nexusLibId) return { success: false };
+          var r = await sb.from('library_items')
+            .update({ deleted_at: null })
+            .eq('library_id', _nexusLibId).eq('media_item_id', mediaId).not('deleted_at', 'is', null);
+          if (r.error) throw new Error(r.error.message);
+          return { success: true };
+        })());
+      },
+      getItemsEliminados: function() {
+        this._exec((async function() {
+          var sb = await nexusSb(); await nexusEnsureProfile();
+          if (!_nexusLibId) return [];
+          var r = await sb.from('library_items')
+            .select('media_items(category,title,external_id)')
+            .eq('library_id', _nexusLibId).not('deleted_at', 'is', null);
+          if (r.error) throw new Error(r.error.message);
+          return (r.data || []).map(function(x) {
+            var mi = x.media_items || {};
+            return { categoria: mi.category || '', id: String(mi.external_id || ''), titulo: mi.title || 'Elemento sin título' };
+          });
+        })());
+      },
+      buscarCatalogoExterno: function(cat, query) {
+        this._exec((async function() { return []; })());
+      },
+      agregarItem: function(cat, idOUrlOrName) {
+        this._exec((async function() {
+          return { success: false, msg: 'Añadir items llega con las Edge Functions (Phase 4).' };
+        })());
+      },
+      repararItemIndividual: function(cat, id) {
+        this._exec((async function() {
+          return { success: false, msg: 'Actualización de metadata llega con las Edge Functions.' };
+        })());
+      }
+    };
+
+    var RUN = NEXUS_MODE ? nexusRun : google.script.run;
+
+    // ---- auth gate ----
+    function nexusShowLogin(onReady) {
+      if (document.getElementById('nexus-login')) return;
+      var ov = document.createElement('div');
+      ov.id = 'nexus-login';
+      ov.style.cssText = 'position:fixed;inset:0;z-index:99999;background:var(--bg,#0b0e14);display:flex;align-items:center;justify-content:center;padding:20px;';
+      ov.innerHTML =
+        '<div style="width:100%;max-width:340px;background:var(--panel,#1b2838);border:1px solid var(--border,rgba(255,255,255,.1));border-radius:14px;padding:28px 24px;">' +
+        '<div style="text-align:center;margin-bottom:20px;"><div style="font-size:28px;font-weight:900;color:var(--accent,#66c0f4);">NexusLib</div>' +
+        '<div style="color:var(--text,#c7d5e0);font-size:13px;margin-top:4px;">Inicia sesión para continuar</div></div>' +
+        '<input id="nexus-email" type="email" placeholder="Email" autocomplete="username" style="width:100%;padding:12px;border-radius:8px;border:1px solid var(--border);background:#0b0e14;color:var(--text);margin-bottom:10px;font-size:14px;box-sizing:border-box;">' +
+        '<input id="nexus-pass" type="password" placeholder="Contraseña" autocomplete="current-password" style="width:100%;padding:12px;border-radius:8px;border:1px solid var(--border);background:#0b0e14;color:var(--text);margin-bottom:14px;font-size:14px;box-sizing:border-box;">' +
+        '<button id="nexus-btn-login" style="width:100%;padding:12px;border:none;border-radius:8px;background:var(--accent,#66c0f4);color:#0b0e14;font-weight:700;font-size:14px;cursor:pointer;">Entrar</button>' +
+        '<button id="nexus-btn-magic" style="width:100%;padding:10px;margin-top:8px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--text);font-size:13px;cursor:pointer;">Enviar enlace mágico</button>' +
+        '<div id="nexus-login-msg" style="margin-top:12px;font-size:12px;text-align:center;color:#ff8585;min-height:16px;"></div>' +
+        '</div>';
+      document.body.appendChild(ov);
+      var msg = ov.querySelector('#nexus-login-msg');
+      async function doLogin() {
+        var email = ov.querySelector('#nexus-email').value.trim();
+        var pass = ov.querySelector('#nexus-pass').value;
+        msg.textContent = '';
+        if (!email) { msg.textContent = 'Escribe tu email.'; return; }
+        var sb = await nexusSb();
+        var r = await sb.auth.signInWithPassword({ email: email, password: pass });
+        if (r.error) { msg.textContent = r.error.message; return; }
+        _nexusUser = r.data.user;
+        ov.remove();
+        if (onReady) onReady();
+      }
+      async function doMagic() {
+        var email = ov.querySelector('#nexus-email').value.trim();
+        msg.textContent = '';
+        if (!email) { msg.textContent = 'Escribe tu email.'; return; }
+        var sb = await nexusSb();
+        var r = await sb.auth.signInWithOtp({ email: email });
+        msg.textContent = r.error ? r.error.message : 'Revisa tu email — enlace enviado.';
+        msg.style.color = r.error ? '#ff8585' : '#7bd88f';
+      }
+      ov.querySelector('#nexus-btn-login').onclick = doLogin;
+      ov.querySelector('#nexus-btn-magic').onclick = doMagic;
+      ov.querySelector('#nexus-pass').addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
+    }
+
+    async function nexusBoot(onReady) {
+      try {
+        var sb = await nexusSb();
+        var s = await sb.auth.getSession();
+        if (s.data && s.data.session) {
+          _nexusUser = s.data.session.user;
+          onReady();
+        } else {
+          nexusShowLogin(onReady);
+        }
+      } catch (e) {
+        console.error('nexusBoot', e);
+        nexusShowLogin(onReady);
+      }
+    }
+  </script>
+
   <script>
     const CATEGORY_ORDER = ['Juegos', 'Peliculas_Series', 'Libros', 'Mangas', 'Estadisticas'];
     var currentCategory = 'Juegos';
@@ -1296,6 +1533,11 @@
     }
 
     window.onload = function() {
+      if (NEXUS_MODE) { nexusBoot(nexusInitApp); return; }
+      nexusInitApp();
+    };
+
+    function nexusInitApp() {
       configurarFiltrosCategoria('Juegos');
       cargarCategoria('Juegos', false);
       ['Peliculas_Series', 'Libros', 'Mangas'].forEach(c => precargarCategoriaSilenciosa(c));
@@ -1392,7 +1634,7 @@
         }
       } catch (e) {}
 
-      google.script.run
+      RUN
         .withSuccessHandler(function(lista) {
           itemsByCategory[cat] = Array.isArray(lista) ? lista : [];
           try {
@@ -1514,7 +1756,7 @@
         grid.innerHTML = '<div class="spinner-container"><div class="spinner"></div><div style="color:var(--accent);font-weight:700;">Cargando ' + CAT_CONFIG[cat].label + '...</div></div>';
       }
 
-      google.script.run
+      RUN
         .withSuccessHandler(function(lista) {
           itemsByCategory[cat] = Array.isArray(lista) ? lista : [];
           try {
@@ -1801,7 +2043,7 @@
         dd.innerHTML = '<div style="padding:12px;text-align:center;color:#ff8585;font-size:12px;">Tiempo agotado. Intenta de nuevo.</div>';
       }, 12000);
 
-      google.script.run
+      RUN
         .withSuccessHandler(function(resultados) {
           if (finalizado) return;
           finalizado = true; clearTimeout(timer);
@@ -1836,7 +2078,7 @@
       document.getElementById('search-dropdown').classList.remove('open');
       btn.innerHTML = '...'; btn.disabled = true;
 
-      google.script.run
+      RUN
         .withSuccessHandler(function(res) {
           btn.innerHTML = svgIcon('i-plus', 'ico-sm'); btn.disabled = false;
           if (res.success) {
@@ -2203,7 +2445,7 @@
         try { localStorage.setItem(`media_lib_${CACHE_VERSION}_${currentCategory}`, JSON.stringify(itemsByCategory[currentCategory])); } catch (e) {}
         filtrarItems();
       }
-      google.script.run.guardarTotalCapitulos(currentCategory, currentItemId, total);
+      RUN.guardarTotalCapitulos(currentCategory, currentItemId, total);
     }
 
     function guardarTracking(persona, estrellasOverride) {
@@ -2222,7 +2464,7 @@
       try { localStorage.setItem(`media_lib_${CACHE_VERSION}_${currentCategory}`, JSON.stringify(itemsByCategory[currentCategory])); } catch (e) {}
       filtrarItems();
 
-      google.script.run.guardarProgresoItem(currentCategory, currentItemId, persona, est, pts, prog);
+      RUN.guardarProgresoItem(currentCategory, currentItemId, persona, est, pts, prog);
     }
 
     function toggleDeseado(persona) {
@@ -2236,7 +2478,7 @@
       try { localStorage.setItem(`media_lib_${CACHE_VERSION}_${currentCategory}`, JSON.stringify(itemsByCategory[currentCategory])); } catch (e) {}
       filtrarItems();
 
-      google.script.run.guardarDeseadoItem(currentCategory, currentItemId, persona, nuevo);
+      RUN.guardarDeseadoItem(currentCategory, currentItemId, persona, nuevo);
     }
 
     function guardarNotaJugador(persona, valor) {
@@ -2246,13 +2488,13 @@
       it['nota' + persona] = valor;
       actualizarResumenJugador(k, it['estado' + persona] || 'No jugado', it['estrellas' + persona] || 0, Boolean(it['deseado' + persona]), valor);
       try { localStorage.setItem(`media_lib_${CACHE_VERSION}_${currentCategory}`, JSON.stringify(itemsByCategory[currentCategory])); } catch (e) {}
-      google.script.run.guardarNotaItem(currentCategory, currentItemId, persona, valor);
+      RUN.guardarNotaItem(currentCategory, currentItemId, persona, valor);
     }
 
     function repararItemActual() {
       var btn = document.getElementById('btn-repair');
       btn.disabled = true; btn.innerText = 'Actualizando...';
-      google.script.run
+      RUN
         .withSuccessHandler(function(res) {
           btn.disabled = false; btn.innerHTML = `${svgIcon('i-wrench', 'ico-sm')} Reparar / Actualizar Metadata`;
           if (res.success && res.data) {
@@ -2274,7 +2516,7 @@
 
     function eliminarItemActual() {
       if (!confirm('¿Mover a la Papelera?')) return;
-      google.script.run
+      RUN
         .withSuccessHandler(function(res) {
           if (res.success) {
             showToast('Movido a la papelera.', 'warning');
@@ -2529,7 +2771,7 @@
       requestAnimationFrame(() => requestAnimationFrame(() => m.style.opacity = '1'));
       history.pushState(null, '', window.location.href);
 
-      google.script.run
+      RUN
         .withSuccessHandler(function(items) {
           if (!items || items.length === 0) {
             l.innerHTML = '<p style="text-align:center;color:#8f98a0;">La papelera está vacía.</p>';
@@ -2558,7 +2800,7 @@
     }
 
     function restaurarDesdePapelera(cat, id) {
-      google.script.run
+      RUN
         .withSuccessHandler(function(res) {
           if (res.success) {
             showToast('Restaurado en ' + cat, 'success');
