@@ -726,10 +726,12 @@
       text-transform: uppercase; color: #8f98a0; border: 1px solid rgba(255,255,255,0.14);
       border-radius: 99px; padding: 2px 7px; margin-left: 4px;
     }
-    .player-summary { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 13px 14px; cursor: pointer; }
-    .player-info-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 0; }
-    .player-info-left h4 { margin: 0; color: #fff; font-size: 14px; font-weight: 800; display: inline-flex; align-items: center; gap: 8px; }
-    .player-info-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    /* el resumen puede ocupar 2 líneas: nombre+chip arriba, estrellas+chevron abajo */
+    .player-summary { display: flex; justify-content: space-between; align-items: center; gap: 6px 10px; padding: 12px 14px; cursor: pointer; flex-wrap: wrap; }
+    .player-info-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 0; flex: 1 1 auto; }
+    .player-info-left h4 { margin: 0; color: #fff; font-size: 14px; font-weight: 800; display: inline-flex; align-items: center; gap: 8px; min-width: 0; max-width: 100%; }
+    .pa-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+    .player-info-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; margin-left: auto; flex-wrap: wrap; justify-content: flex-end; }
     .preview-stars { font-size: 12px; color: var(--gold); font-weight: 800; display: inline-flex; align-items: center; gap: 3px; }
     .preview-stars.no-stars { color: #8f98a0; font-weight: 500; }
 
@@ -2883,7 +2885,7 @@
       return '<div class="player-accordion' + (NEXUS_MODE && !p.mine ? ' is-remote' : '') + '" id="acc-' + k + '">' +
         '<div class="player-summary" onclick="togglePlayerAccordion(\'' + k + '\')">' +
           '<div class="player-info-left"><h4>' +
-            '<span class="pa-avatar" style="background:' + p.color + ';">' + vinculosEsc(n.charAt(0)) + '</span> ' + vinculosEsc(n) +
+            '<span class="pa-avatar" style="background:' + p.color + ';">' + vinculosEsc(n.charAt(0)) + '</span><span class="pa-name">' + vinculosEsc(n) + '</span>' +
             '<span id="sum-wish-' + k + '" style="display:none;"><svg class="ico ico-sm ico-wish"><use href="#i-heart-fill"/></svg></span>' +
             '<span id="sum-note-' + k + '" style="display:none;"><svg class="ico ico-sm" style="color:var(--accent);"><use href="#i-note"/></svg></span>' +
           '</h4><div class="status-chip status-none" id="sum-status-' + k + '">Pendiente</div></div>' +
