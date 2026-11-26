@@ -523,18 +523,18 @@ See [AppScript/BETA.md](BETA.md) — one entry per working session: what was don
 
 **Decisión:** se descarta el web app de Apps Script (`/exec` + `WebAPP.gs`). La web se aloja en **GitHub Pages** (`angellrnzo.github.io/nexuslib`) hablando directo con Supabase — `NEXUS_MODE=true` ya está hardcodeado en `Index.html`, el camino `google.script.run`/Sheets es código muerto.
 
-**Estado actual:** `index.html` raíz es un shell con `<iframe>` al `/exec` + manifest PWA + iconos + OG cards. `AppScript/Index.html` es la app real (Supabase-only).
+**Estado actual (2026-11-26):** `index.html` raíz ES la app real (Supabase-only, ex-`AppScript/Index.html` adaptada). `AppScript/Index.html` quedó LEGACY. Producción sigue en el shell viejo hasta el merge `beta`→`main` del cierre del roadmap.
 
 **Adaptaciones necesarias:**
 
-- [ ] Sustituir `index.html` por el contenido de `AppScript/Index.html` (o moverlo a `app.html`/`index.html` directo) — **quitar `<base target="_top">`** (solo aplica a Apps Script).
-- [ ] Supabase Dashboard → Auth → URL Configuration: Site URL = `https://angellrnzo.github.io/nexuslib/` + redirect URLs del dominio Pages (magic link/password reset).
-- [ ] Verificar CORS de Edge Functions (`catalog-search`, `catalog-add`, `item-refresh`) desde origen Pages — supabase-js usa anon key, debería bastar; probar E2E.
+- [x] Sustituir `index.html` por el contenido de `AppScript/Index.html` (o moverlo a `app.html`/`index.html` directo) — **quitar `<base target="_top">`** (solo aplica a Apps Script). **HECHO 2026-11-26:** `index.html` raíz = la app completa (192KB, `lang="es"`, sin `<base>`); head PWA del shell fusionado (manifest/OG/favicon/apple meta + error handlers + registro SW). `AppScript/Index.html` marcado LEGACY — la copia canónica editable es la raíz. Sintaxis JS verificada (node --check ×3), HTML balanceado, servido local OK.
+- [x] Supabase Dashboard → Auth → URL Configuration: Site URL = `https://angellrnzo.github.io/nexuslib/` + redirect URLs del dominio Pages (magic link/password reset). **Ya configurado 2026-11-25** en principal y standby.
+- [x] Verificar CORS de Edge Functions (`catalog-search`, `catalog-add`, `item-refresh`) desde origen Pages — **verificado 2026-11-26:** preflight OPTIONS devuelve `Access-Control-Allow-Origin: *` + headers authorization/apikey/content-type.
 - [x] `WebAPP.gs` → renombrado **`WebAPP.legacy.gs`** con header LEGACY/RESPALDO — congelado como referencia histórica del backend Sheets, no desplegar ni editar (2026-11-26).
-- [ ] Limpiar código muerto en `Index.html`: rama `google.script.run` en `RUN` (siempre `nexusRun` con `NEXUS_MODE=true`).
+- [~] Limpiar código muerto en `Index.html`: rama `google.script.run` en `RUN` (siempre `nexusRun` con `NEXUS_MODE=true`). **Parcial:** el ternario es lazy (`google.script.run` nunca se evalúa con `NEXUS_MODE=true`) → inofensivo en Pages. El strip completo del path Sheets queda como refactor aparte de bajo valor (código muerto que no corre).
 - [x] Sheet queda **congelado** — nada escribe en él desde la migración (flujo fue Sheet→Supabase, una vía). `backup-excel.yml` exporta el mismo xlsx stale y el diff lo descarta sin commit — inofensivo. **Descartar al cierre**: borrar workflow + `AppScript/GameList.xlsx` cuando se confirme que no hace falta rescate (junto con WebAPP.legacy.gs).
-- [ ] PWA: `manifest.json` + service worker (si existe) revisar scope/paths para el nuevo dominio; iconos ya están en `icons/`.
-- [ ] OG/Twitter cards del shell se conservan (ya apuntan a Pages).
+- [x] PWA: `manifest.json` + service worker (si existe) revisar scope/paths para el nuevo dominio; iconos ya están en `icons/`. **HECHO:** paths `./` relativos correctos para `/nexuslib/`; SW bump `nexuslib-cache-v5`→`v6` (el contenido de index.html cambió por completo).
+- [x] OG/Twitter cards del shell se conservan (ya apuntan a Pages) — fusionadas en el head de la app.
 - [ ] Deploy formal: merge `beta` → `main` requiere `Confirmar deploy` (regla vigente).
 
 **Regla (2026-11-26):** NO mergear/pushear `beta` → `main` hasta terminar el roadmap completo — producción queda congelada en el shell/iframe actual.

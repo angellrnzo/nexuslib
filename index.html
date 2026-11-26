@@ -1,67 +1,3788 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>NexusLib</title>
-    <meta name="description" content="NexusLib — biblioteca personal de películas, series, libros y juegos.">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>NexusLib</title>
+  <link rel="preconnect" href="https://image.tmdb.org" crossorigin>
+  <link rel="preconnect" href="https://cdn.cloudflare.steamstatic.com" crossorigin>
+  <link rel="preconnect" href="https://covers.openlibrary.org" crossorigin>
+  <link rel="preconnect" href="https://s4.anilist.co" crossorigin>
+  <meta name="theme-color" content="#0b0e14">
+  <meta name="description" content="NexusLib — biblioteca personal de películas, series, libros y juegos.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="NexusLib">
+  <meta property="og:description" content="Biblioteca personal de películas, series, libros y juegos.">
+  <meta property="og:url" content="https://angellrnzo.github.io/nexuslib/">
+  <meta property="og:image" content="https://angellrnzo.github.io/nexuslib/icons/icon-512.png">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="NexusLib">
+  <meta name="twitter:description" content="Biblioteca personal de películas, series, libros y juegos.">
+  <meta name="twitter:image" content="https://angellrnzo.github.io/nexuslib/icons/icon-512.png">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="NexusLib">
-    <meta property="og:description" content="Biblioteca personal de películas, series, libros y juegos.">
-    <meta property="og:url" content="https://angellrnzo.github.io/nexuslib/">
-    <meta property="og:image" content="https://angellrnzo.github.io/nexuslib/icons/icon-512.png">
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="NexusLib">
-    <meta name="twitter:description" content="Biblioteca personal de películas, series, libros y juegos.">
-    <meta name="twitter:image" content="https://angellrnzo.github.io/nexuslib/icons/icon-512.png">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" media="print" onload="this.media='all'">
+  <style>
+    :root {
+      --bg: #0b0e14;
+      --panel: #1b2838;
+      --accent: #66c0f4;
+      --text: #c7d5e0;
+      --gold: #ffd700;
+      --border: rgba(255,255,255,0.1);
+      --btn-primary: #66c0f4;
+      --success: #5ba32b;
+      --warning: #d6a918;
+      --danger: #c93b3b;
+      --wish: #ff4d6d;
+      --angel-color: #66c0f4;
+      --talmai-color: #ff4d6d;
+      --t-fast: 150ms;
+      --t-base: 220ms;
+      --t-slow: 320ms;
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-inout: cubic-bezier(0.4, 0, 0.2, 1);
+    }
 
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/png" href="icons/icon-192.png">
-    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    * { box-sizing: border-box; }
+
+    html, body {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      background: radial-gradient(circle at top left, #1b2838, #0b0e14 80%);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: calc(160px + env(safe-area-inset-top, 0px)) 12px calc(30px + env(safe-area-inset-bottom, 0px)) 12px;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      touch-action: pan-y;
+    }
+
+    body.view-stats {
+      padding-top: calc(85px + env(safe-area-inset-top, 0px));
+    }
+
+    /* ICONOS PLANOS VECTORIALES (SVG) */
+    .ico {
+      width: 14px;
+      height: 14px;
+      display: inline-block;
+      vertical-align: -2px;
+      flex-shrink: 0;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .ico-sm { width: 12px; height: 12px; vertical-align: -1.5px; }
+    .ico-lg { width: 16px; height: 16px; }
+    .ico-fill { fill: currentColor; stroke: none; }
+    .ico-angel { color: var(--angel-color); }
+    .ico-talmai { color: var(--talmai-color); }
+    .ico-gold { color: var(--gold); fill: var(--gold); stroke: none; }
+    .ico-wish { color: var(--wish); fill: var(--wish); stroke: none; }
+
+    .card, .btn, .tab-btn, .modal-close, .player-summary, .star, .accordion summary, .status-select, .filter-group select, .filter-reset, .wish-toggle, .btn-trailer {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: #2a475e; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+    #app-screen { max-width: 1400px; margin: 0 auto; width: 100%; }
+
+    .top-header {
+      position: fixed;
+      top: calc(10px + env(safe-area-inset-top, 0px));
+      left: 10px;
+      right: 10px;
+      width: auto;
+      max-width: 1400px;
+      margin: 0 auto;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background: transparent;
+    }
+
+    .category-tabs {
+      display: flex;
+      gap: 4px;
+      background: rgba(16, 24, 36, 0.98);
+      padding: 4px 6px;
+      border-radius: 30px;
+      border: 1px solid rgba(102, 192, 244, 0.22);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .category-tabs::-webkit-scrollbar { display: none; }
+
+    .tab-btn {
+      flex: 1;
+      min-width: max-content;
+      padding: 6px 10px;
+      border: none;
+      border-radius: 20px;
+      background: transparent;
+      color: #8f98a0;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: background-color var(--t-base) var(--ease-inout), color var(--t-base) var(--ease-inout), box-shadow var(--t-base) var(--ease-inout);
+    }
+    .tab-btn.active {
+      background: var(--accent);
+      color: #0b0e14;
+      box-shadow: 0 2px 10px rgba(102, 192, 244, 0.4);
+    }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      background: linear-gradient(180deg, rgba(27, 40, 56, 0.99) 0%, rgba(20, 30, 45, 0.99) 100%);
+      padding: 6px 10px;
+      border-radius: 16px;
+      border: 1px solid rgba(102, 192, 244, 0.25);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+      position: relative;
+    }
+
+    .controls-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .search-wrapper {
+      flex-grow: 1;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.45);
+      border-radius: 20px;
+      padding: 0 12px;
+      height: 34px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .search-wrapper:focus-within { border-color: var(--accent); }
+    .search-wrapper .ico { margin-right: 8px; color: #8f98a0; }
+    #inputBuscar { width: 100%; min-width: 0; border: none; background: transparent; color: white; outline: none; font-family: 'Inter', sans-serif; font-size: 13px; }
+
+    .add-wrapper {
+      display: flex;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.45);
+      border-radius: 20px;
+      padding: 0 4px 0 10px;
+      height: 34px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      position: relative;
+      flex-grow: 1;
+      min-width: 0;
+      transition: flex-grow var(--t-slow) var(--ease-inout), width var(--t-slow) var(--ease-inout), background-color var(--t-slow) var(--ease-inout), border-color var(--t-slow) var(--ease-inout), box-shadow var(--t-slow) var(--ease-inout);
+    }
+    .add-wrapper.expanded {
+      flex-grow: 1;
+      width: 100%;
+      background: rgba(11, 14, 20, 0.98);
+      border-color: var(--accent);
+      box-shadow: 0 0 20px rgba(102, 192, 244, 0.4);
+    }
     
-    <meta name="theme-color" content="#0b0e14">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
-    <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-color: #0b0e14;
-            -webkit-font-smoothing: antialiased;
-        }
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-            background-color: #0b0e14;
-        }
-    </style>
+    .btn-clear-add {
+      background: transparent; border: none; color: #8f98a0; cursor: pointer;
+      width: 24px; height: 24px; border-radius: 50%; display: none;
+      align-items: center; justify-content: center; flex-shrink: 0; padding: 0;
+    }
+    .btn-clear-add:hover { color: #fff; background: rgba(255,255,255,0.1); }
+    .add-wrapper.has-text .btn-clear-add { display: inline-flex; }
+
+    #inputAgregar { width: 100%; min-width: 0; border: none; background: transparent; color: white; outline: none; font-family: 'Inter', sans-serif; font-size: 13px; }
+
+    .right-controls {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-shrink: 0;
+      opacity: 1;
+      transform: translateX(0);
+      max-width: 250px;
+      overflow: hidden;
+      transition: flex-grow var(--t-slow) var(--ease-inout), width var(--t-slow) var(--ease-inout), background-color var(--t-slow) var(--ease-inout), border-color var(--t-slow) var(--ease-inout), box-shadow var(--t-slow) var(--ease-inout);
+    }
+    .right-controls.hidden {
+      opacity: 0;
+      transform: translateX(20px);
+      max-width: 0;
+      gap: 0;
+      pointer-events: none;
+    }
+
+    .search-results-dropdown {
+      display: none;
+      position: absolute;
+      top: 42px;
+      left: 0;
+      width: 100%;
+      max-height: 280px;
+      overflow-y: auto;
+      background: rgba(20, 30, 45, 0.99);
+      border: 1px solid rgba(102, 192, 244, 0.45);
+      border-radius: 12px;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.9);
+      z-index: 10001;
+      padding: 6px;
+    }
+    .search-results-dropdown.open { display: block; }
+    .search-result-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color var(--t-fast) var(--ease-out);
+    }
+    .search-result-item:hover { background: rgba(102, 192, 244, 0.16); }
+    .search-result-item img {
+      width: 34px; height: 48px; object-fit: cover; border-radius: 5px; background: #111; flex-shrink: 0;
+    }
+    .search-result-info { flex: 1; min-width: 0; }
+    .search-result-title { font-size: 12px; font-weight: 800; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .search-result-sub { font-size: 10px; color: #8f98a0; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .search-result-badge { font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 10px; background: rgba(102,192,244,0.18); color: var(--accent); flex-shrink: 0; }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+      border: none; cursor: pointer; font-weight: 700;
+      position: relative; overflow: hidden; font-size: 13px; flex-shrink: 0;
+      transition: transform var(--t-fast) var(--ease-out), background-color var(--t-fast) var(--ease-out), border-color var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out), box-shadow var(--t-fast) var(--ease-out), opacity var(--t-fast) var(--ease-out);
+    }
+    .btn:active { transform: scale(0.95); }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    .btn-circle {
+      width: 32px; height: 32px; border-radius: 50%; padding: 0;
+      background: rgba(42, 71, 94, 0.85); color: #fff; border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .btn-circle.active { background: var(--accent); color: #0b0e14; border-color: var(--accent); }
+    .btn-circle.has-filters { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(102, 192, 244, 0.25); }
+    .btn-circle.has-filters::after {
+      content: ''; position: absolute; top: 3px; right: 3px; width: 6px; height: 6px;
+      border-radius: 50%; background: #a4d007;
+    }
+
+    .btn-primary {
+      background: var(--btn-primary); color: #0b0e14; border-radius: 50%;
+      width: 26px; height: 26px; padding: 0; font-size: 15px; font-weight: 900; flex-shrink: 0;
+    }
+    .btn-text {
+      background: var(--btn-primary); color: #0b0e14; border-radius: 8px;
+      padding: 10px 16px; font-size: 13px; width: auto; height: auto;
+    }
+    .btn-text:hover { filter: brightness(1.1); }
+
+    #progress-container {
+      width: 100%; display: none; margin-top: 2px;
+      background: rgba(0,0,0,0.8); border-radius: 8px; overflow: hidden; height: 10px; position: relative;
+    }
+    #progress-bar { height: 100%; background: linear-gradient(90deg, var(--warning), #ffeb3b); width: 0%; transition: width var(--t-slow) var(--ease-out); }
+    #progress-text {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 9px; font-weight: bold; color: #0b0e14;
+    }
+
+    .stats-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; margin-top: 6px; }
+    .stat-pill {
+      display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px;
+      background: rgba(24, 35, 50, 0.78); border: 1px solid rgba(102, 192, 244, 0.16);
+      font-size: 11px; font-weight: 700; color: #c7d5e0;
+    }
+    .stat-pill strong { color: #fff; }
+
+    /* PANEL DE FILTROS */
+    .filter-panel {
+      position: fixed;
+      top: calc(165px + env(safe-area-inset-top, 0px));
+      left: 12px;
+      right: 12px;
+      max-width: 350px;
+      margin: 0 auto;
+      background: linear-gradient(180deg, rgba(27, 40, 56, 0.99) 0%, rgba(18, 27, 40, 0.99) 100%);
+      border: 1px solid rgba(102, 192, 244, 0.35);
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.85);
+      z-index: 9998;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: calc(100dvh - 185px);
+      overflow-y: auto;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: opacity var(--t-base) var(--ease-out), visibility var(--t-base) var(--ease-out), transform var(--t-base) var(--ease-out);
+    }
+    .filter-panel.open { opacity: 1; visibility: visible; transform: translateY(0); }
+    .filter-group { display: flex; flex-direction: column; gap: 4px; width: 100%; }
+    .filter-group:empty { display: none; }
+    .filter-group label { font-size: 11px; color: #8f98a0; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; }
+    .filter-group select {
+      background: rgba(0,0,0,0.45); color: white; border: 1px solid rgba(255,255,255,0.12);
+      padding: 7px 10px; border-radius: 8px; font-size: 12px; outline: none; cursor: pointer; width: 100%;
+    }
+    .filter-reset {
+      width: 100%; margin-top: 4px; padding: 8px;
+      background: rgba(201, 59, 59, 0.15); color: #ff6b6b;
+      border: 1px solid rgba(201, 59, 59, 0.3); border-radius: 8px;
+      cursor: pointer; font-weight: 700; font-size: 12px;
+    }
+
+    #grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+      transition: opacity var(--t-base) var(--ease-out), transform var(--t-base) var(--ease-out);
+      width: 100%;
+    }
+    @media (min-width: 601px) {
+      #grid.poster-mode {
+        grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+        gap: 16px;
+      }
+      #grid.poster-mode > .card {
+        display: flex;
+        flex-direction: column;
+      }
+      #grid.poster-mode .img-container {
+        width: 100%;
+        min-width: 0;
+        height: auto;
+        aspect-ratio: 2 / 3;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px 12px 0 0;
+      }
+      #grid.poster-mode .card-content {
+        padding: 10px 12px;
+        justify-content: flex-start;
+        flex-grow: 1;
+        min-width: 0;
+      }
+      #grid.poster-mode .top-badge {
+        top: 8px;
+        left: 8px;
+        padding: 3px 8px;
+        font-size: 10px;
+        max-width: calc(60% - 10px);
+      }
+      #grid.poster-mode .wishlist-badge {
+        top: 8px;
+        bottom: auto;
+        right: 8px;
+        padding: 3px 8px;
+        font-size: 10px;
+      }
+    }
+
+    #grid > .card {
+      content-visibility: auto;
+      contain-intrinsic-size: 0 320px;
+      background: #182332; border-radius: 12px; overflow: hidden;
+      border: 1px solid rgba(102, 192, 244, 0.24);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+      cursor: pointer; display: flex; flex-direction: column;
+      min-width: 0;
+      transition: transform var(--t-base) var(--ease-out), border-color var(--t-base) var(--ease-out);
+    }
+
+    .img-container {
+      position: relative; width: 100%; aspect-ratio: 460 / 215;
+      background-color: #131922; overflow: hidden;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    #grid.poster-mode .img-container { aspect-ratio: 2 / 3; }
+    .img-container img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform var(--t-slow) var(--ease-out); }
+
+    .top-badge {
+      position: absolute; top: 8px; left: 8px; z-index: 5;
+      max-width: calc(56% - 10px);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      padding: 3px 8px; border-radius: 20px;
+      background: rgba(11, 14, 20, 0.85); backdrop-filter: blur(6px);
+      border: 1px solid rgba(102, 192, 244, 0.55);
+      font-size: 10px; font-weight: 800; color: var(--accent);
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .wishlist-badge {
+      position: absolute; top: 8px; right: 8px; z-index: 5;
+      padding: 3px 8px; border-radius: 20px;
+      background: rgba(11, 14, 20, 0.85); backdrop-filter: blur(6px);
+      border: 1px solid rgba(255, 77, 109, 0.65);
+      font-size: 10px; font-weight: 800; color: #fff;
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+
+    .card-content { padding: 12px; display: flex; flex-direction: column; flex-grow: 1; min-width: 0; }
+    .card-title {
+      font-size: 14px; font-weight: 800; color: #fff; margin-bottom: 3px;
+      display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical;
+      overflow: hidden; overflow-wrap: break-word; word-break: break-word;
+    }
+    .card-dev {
+      font-size: 11px; color: #8f98a0; margin-bottom: 10px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    .status-container { display: flex; gap: 5px; flex-wrap: wrap; margin-top: auto; }
+    .status-chip {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 8px; border-radius: 20px; font-size: 10px; font-weight: 700;
+      border: 1px solid transparent; max-width: 100%;
+    }
+    .status-none { background: rgba(255,255,255,0.05); color: #8f98a0; border-color: rgba(255,255,255,0.12); }
+    .status-playing { background: rgba(214, 169, 24, 0.15); color: #f4d03f; border-color: rgba(214, 169, 24, 0.4); }
+    .status-done { background: rgba(91, 163, 43, 0.15); color: #8fe35e; border-color: rgba(91, 163, 43, 0.4); }
+
+    /* VISTA DE ESTADÍSTICAS REORGANIZADA Y COMPACTA */
+    #stats-view { display: none; flex-direction: column; gap: 8px; animation: fadeIn var(--t-base) var(--ease-out); width: 100%; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    .stats-selectors-row {
+      display: flex;
+      gap: 6px;
+      background: rgba(16, 24, 36, 0.95);
+      padding: 5px;
+      border-radius: 10px;
+      border: 1px solid rgba(102, 192, 244, 0.22);
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .stats-selectors-row::-webkit-scrollbar { display: none; }
+
+    .stat-prof-name { display: inline-block; max-width: 12ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; }
+    .stats-prof-btn, .stats-cat-btn {
+      flex: 1;
+      min-width: max-content;
+      padding: 6px 8px;
+      border: none;
+      border-radius: 7px;
+      background: transparent;
+      color: #8f98a0;
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: background-color var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out), box-shadow var(--t-fast) var(--ease-out);
+    }
+    .stats-prof-btn.active, .stats-cat-btn.active {
+      background: var(--accent);
+      color: #0b0e14;
+      box-shadow: 0 2px 8px rgba(102, 192, 244, 0.3);
+    }
+    .stats-prof-btn.active .ico-angel,
+    .stats-prof-btn.active .ico-talmai,
+    .tab-btn.active .ico,
+    .match-tab.active .ico {
+      color: #0b0e14;
+    }
+
+    .stats-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
+    }
+    .stat-card {
+      background: linear-gradient(180deg, rgba(27, 40, 56, 0.95) 0%, rgba(18, 27, 40, 0.95) 100%);
+      border: 1px solid rgba(102, 192, 244, 0.22);
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+      cursor: pointer;
+      user-select: none;
+      transition: border-color var(--t-fast) var(--ease-out);
+      min-width: 0;
+    }
+    .stat-card:hover { border-color: var(--accent); }
+    .stat-card-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .stat-card-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #8f98a0; font-weight: 800; }
+    .stat-card-value { font-size: 22px; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 6px; }
+    .stat-card-sub { font-size: 11px; color: #c7d5e0; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+    .stat-toggle-lbl { font-size: 11px; color: var(--accent); display: inline-flex; align-items: center; gap: 4px; font-weight: 700; }
+    .stat-toggle-lbl .ico { transition: transform var(--t-base) var(--ease-out); }
+    .stat-card.open .stat-toggle-lbl .ico { transform: rotate(180deg); }
+
+    /* ACORDEÓN DESPLEGABLE DE GRÁFICOS */
+    .stat-accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: max-height var(--t-slow) var(--ease-inout), opacity var(--t-slow) var(--ease-inout), padding-top var(--t-slow) var(--ease-inout), margin-top var(--t-slow) var(--ease-inout), border-top-width var(--t-slow) var(--ease-inout);
+      border-top: 0px solid rgba(255,255,255,0.08);
+      padding-top: 0px;
+      margin-top: 0px;
+    }
+    .stat-card.open .stat-accordion-content {
+      max-height: 220px;
+      opacity: 1;
+      border-top-width: 1px;
+      padding-top: 8px;
+      margin-top: 4px;
+    }
+    .stat-detail-line { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+    .stat-bar-row { display: flex; flex-direction: column; gap: 3px; font-size: 11px; }
+    .stat-bar-labels { display: flex; justify-content: space-between; align-items: center; font-weight: 700; color: #8f98a0; }
+    .stat-bar-labels span:first-child { display: inline-flex; align-items: center; gap: 5px; }
+    .stat-bar-track { width: 100%; height: 5px; background: rgba(255,255,255,0.06); border-radius: 4px; overflow: hidden; display: flex; }
+    .stat-bar-fill { height: 100%; transition: width var(--t-slow) var(--ease-out); }
+    .stat-bar-fill-angel { height: 100%; background: var(--angel-color); transition: width var(--t-slow) var(--ease-out); }
+    .stat-bar-fill-talmai { height: 100%; background: var(--talmai-color); transition: width var(--t-slow) var(--ease-out); }
+
+    /* MODALES GENERALES */
+    #modal, #modal-papelera, #modal-match, #modal-vinculos, #modal-share {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(6, 9, 14, 0.88); z-index: 10000;
+      justify-content: center; align-items: center; opacity: 0;
+      transition: opacity var(--t-base) var(--ease-out); padding: 10px;
+    }
+    .modal-content {
+      background: #182332; padding: 20px; border-radius: 16px; width: 100%; max-width: 620px; min-width: 0;
+      max-height: 90dvh; overflow-y: auto; overflow-x: hidden; position: relative;
+      border: 1px solid rgba(102, 192, 244, 0.38);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9);
+      transform: translateY(10px) scale(0.985);
+      transition: transform var(--t-base) var(--ease-out);
+    }
+    #modal[style*="opacity: 1"] .modal-content,
+    #modal-papelera[style*="opacity: 1"] .modal-content,
+    #modal-match[style*="opacity: 1"] .modal-content,
+    #modal-vinculos[style*="opacity: 1"] .modal-content,
+    #modal-share[style*="opacity: 1"] .modal-content {
+      transform: translateY(0) scale(1);
+    }
+    /* boton cerrar: fijo arriba-derecha sobre el modal, con zona reservada
+       (padding-top del contenido) para que nunca pise titulo/nota/metadata */
+    .modal-close {
+      position: absolute; top: 12px; right: 12px; z-index: 50;
+      width: 34px; height: 34px; padding: 0;
+      border-radius: 50%; background: rgba(13, 19, 27, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.28); color: #fff;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background var(--t-fast) var(--ease-out), border-color var(--t-fast) var(--ease-out), transform var(--t-fast) var(--ease-out);
+    }
+    .modal-close:hover { background: rgba(201, 59, 59, 0.9); border-color: rgba(255, 107, 107, 0.7); }
+    .modal-close:active { transform: scale(0.9); }
+    /* reserva lateral solo donde el boton puede pisar texto del header */
+    .modal-content .modal-title { padding-right: 48px; }
+    .modal-header-grid.poster .modal-header-info { padding-right: 44px; }
+
+    .modal-header-grid { display: flex; gap: 16px; margin-bottom: 14px; align-items: flex-start; width: 100%; }
+    .modal-header-grid.landscape { flex-direction: column; }
+    .modal-img {
+      width: 100%; display: block; border-radius: 8px;
+      aspect-ratio: 460 / 215; object-fit: cover; border: 1px solid rgba(255, 255, 255, 0.1);
+      background: #131922;
+    }
+    .modal-header-grid.poster {
+      display: grid;
+      grid-template-columns: 144px minmax(0, 1fr);
+      grid-template-areas: "media body";
+      align-items: start;
+      gap: 16px;
+    }
+    .modal-header-grid.poster .modal-img {
+      grid-area: media;
+      width: 100%;
+      max-width: 144px;
+      margin: 0;
+      aspect-ratio: 2 / 3;
+      object-position: center top;
+    }
+    .modal-header-grid.poster .modal-header-info {
+      grid-area: body;
+      min-width: 0;
+    }
+    .modal-header-info { flex: 1; min-width: 0; width: 100%; }
+
+    .trailer-bar { margin-bottom: 14px; }
+    .btn-trailer {
+      width: 100%; padding: 9px 12px; border-radius: 8px;
+      background: rgba(102, 192, 244, 0.12); border: 1px solid rgba(102, 192, 244, 0.35);
+      color: var(--accent); font-size: 12px; font-weight: 800; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .btn-trailer.active { background: rgba(201, 59, 59, 0.14); border-color: rgba(201, 59, 59, 0.4); color: #ff8585; }
+    .trailer-box { display: none; margin-top: 8px; border-radius: 8px; overflow: hidden; background: #000; }
+    .trailer-box iframe, .trailer-box video { width: 100%; aspect-ratio: 16 / 9; display: block; border: 0; max-height: 320px; }
+
+    #modal-vinculos .modal-title { min-height: 38px; }
+    .share-person-row { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 6px; cursor: pointer; }
+    .share-person-row:hover { background: rgba(255,255,255,.04); }
+    .share-person-row input { accent-color: var(--accent); width: 16px; height: 16px; }
+
+    /* Paneles compartir/enviar (Phase 5) — mismo lenguaje que el resto de la app */
+    .sp-panel {
+      background: rgba(27, 40, 56, 0.55); border: 1px solid rgba(102, 192, 244, 0.16);
+      border-radius: 12px; padding: 12px;
+    }
+    .sp-label {
+      font-size: 10px; color: #8f98a0; text-transform: uppercase;
+      letter-spacing: 0.6px; font-weight: 700; margin: 0 0 8px;
+    }
+    .sp-row {
+      display: flex; align-items: center; gap: 10px; width: 100%;
+      padding: 9px 10px; border-radius: 9px; border: 1px solid transparent;
+      background: transparent; color: var(--text); font-size: 13px;
+      cursor: pointer; text-align: left; font-family: inherit;
+      transition: background var(--t-fast) var(--ease-out), border-color var(--t-fast) var(--ease-out);
+    }
+    .sp-row:hover { background: rgba(102, 192, 244, 0.08); border-color: rgba(102, 192, 244, 0.22); }
+    .sp-row:active { transform: scale(0.99); }
+    label.sp-row { cursor: pointer; }
+    .sp-avatar {
+      width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 800; color: #0b0e14;
+    }
+    .sp-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .sp-badge {
+      font-size: 9px; font-weight: 800; padding: 2px 8px; border-radius: 99px;
+      letter-spacing: 0.4px; text-transform: uppercase; flex-shrink: 0;
+    }
+    .sp-check { accent-color: var(--accent); width: 15px; height: 15px; flex-shrink: 0; }
+    .sp-hint { font-size: 11px; color: #8f98a0; line-height: 1.5; margin: 8px 0 0; }
+    .sp-empty { font-size: 12px; color: #8f98a0; padding: 4px 2px; }
+    .sp-row-danger { border-color: rgba(255, 107, 107, 0.3); background: rgba(255, 107, 107, 0.05); }
+    .sp-row-danger:hover { background: rgba(255, 107, 107, 0.1); border-color: rgba(255, 107, 107, 0.45); }
+    .sp-actions { display: flex; gap: 8px; margin-top: 12px; }
+    .sp-btn {
+      flex: 1; padding: 9px; border-radius: 9px; font-size: 12px; font-weight: 700;
+      border: 1px solid var(--border); background: rgba(255, 255, 255, 0.05);
+      color: var(--text); cursor: pointer; font-family: inherit;
+      transition: background var(--t-fast) var(--ease-out), filter var(--t-fast) var(--ease-out);
+    }
+    .sp-btn:hover { background: rgba(255, 255, 255, 0.09); }
+    .sp-btn-primary { background: var(--accent); color: #0b0e14; border-color: transparent; }
+    .sp-btn-primary:hover { filter: brightness(1.08); background: var(--accent); }
+    .sp-msg { font-size: 11px; margin-top: 8px; min-height: 14px; }
+    .modal-title {
+      color: #fff; margin: 0 0 4px 0; font-size: 20px; font-weight: 900; padding-right: 40px;
+      overflow-wrap: break-word; word-break: break-word; display: flex; align-items: center; gap: 8px;
+    }
+    .modal-subtitle {
+      display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 6px 10px;
+      font-size: 12px; color: #8f98a0; margin-bottom: 10px; width: 100%;
+    }
+    .modal-subtitle span:first-child { overflow-wrap: break-word; min-width: 0; }
+    .modal-price { color: #a4d007; font-weight: 800; font-size: 13px; flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px; }
+
+    .version-badges { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+    .badge-ver { padding: 4px 9px; border-radius: 20px; font-size: 10px; font-weight: 800; }
+    .badge-patch { background: rgba(255, 255, 255, 0.1); color: #fff; }
+    .badge-estable { background: rgba(91, 163, 43, 0.15); color: #8fe35e; }
+    .badge-beta { background: rgba(214, 169, 24, 0.15); color: #f4d03f; }
+
+    .modal-genres { font-size: 12px; color: #66c0f4; margin-bottom: 10px; font-weight: 600; overflow-wrap: break-word; display: flex; align-items: center; gap: 5px; }
+    .modal-desc { line-height: 1.5; font-size: 13px; color: #c7d5e0; margin-bottom: 15px; overflow-wrap: break-word; }
+
+    .accordion { margin-bottom: 15px; border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 8px; overflow: hidden; }
+    .accordion summary { padding: 10px 12px; background: rgba(255,255,255,0.05); cursor: pointer; font-weight: 700; color: #fff; font-size: 13px; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+    .accordion summary::-webkit-details-marker { display: none; }
+    .accordion-content { padding: 12px; background: rgba(0,0,0,0.2); display: flex; flex-direction: column; gap: 8px; font-size: 12px; }
+    .detail-row { display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 4px; gap: 10px; }
+    .detail-label { color: #8f98a0; flex-shrink: 0; }
+    .detail-val { color: #fff; text-align: right; overflow-wrap: anywhere; word-break: break-word; }
+
+    .carousel-container { margin-bottom: 16px; }
+    .carousel-title { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+    .carousel { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 6px; }
+    .carousel img { flex: 0 0 75%; height: 140px; object-fit: cover; border-radius: 6px; cursor: pointer; }
+
+    .tracking-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; align-items: start; }
+    .player-accordion { background: rgba(27, 40, 56, 0.5); border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); overflow: hidden; min-width: 0; transition: border-color var(--t-base) var(--ease-out), box-shadow var(--t-base) var(--ease-out); }
+    .player-accordion.active { border-color: rgba(102, 192, 244, 0.45); box-shadow: 0 0 0 1px rgba(102, 192, 244, 0.12), 0 8px 24px rgba(0,0,0,0.35); }
+    .pa-avatar {
+      width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 800; color: #0b0e14;
+      box-shadow: 0 0 0 2px rgba(255,255,255,0.08);
+    }
+    .pa-chev { transition: transform var(--t-base) var(--ease-out); }
+    .player-accordion.active .pa-chev { transform: rotate(180deg); }
+    /* vinculado de solo lectura (Phase 5): su tracking no se edita desde aquí */
+    .player-accordion.is-remote .player-details { pointer-events: none; opacity: 0.72; }
+    .player-accordion.is-remote .player-summary { opacity: 0.85; }
+    /* resumen en 2 líneas fijas: fila1 avatar+nombre, fila2 estado+nota+chevron */
+    .player-summary { display: flex; flex-direction: column; gap: 7px; padding: 12px 14px; cursor: pointer; }
+    .ps-row { display: flex; align-items: center; gap: 8px; min-width: 0; }
+    .ps-row-top { min-height: 30px; }
+    .ps-row-bottom { justify-content: space-between; }
+    .ps-row-bottom .status-chip { flex-shrink: 0; }
+    .pa-name { color: #fff; font-size: 14px; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; max-width: 12ch; }
+    .preview-stars { font-size: 12px; color: var(--gold); font-weight: 800; display: inline-flex; align-items: center; gap: 3px; margin-left: auto; }
+    .preview-stars.no-stars { color: #8f98a0; font-weight: 500; }
+    .ps-row-bottom .pa-chev { flex-shrink: 0; }
+
+    .player-details { max-height: 0; overflow: hidden; opacity: 0; padding: 0 12px; transition: max-height var(--t-slow) var(--ease-inout), opacity var(--t-slow) var(--ease-inout), padding var(--t-slow) var(--ease-inout); }
+    .player-accordion.active .player-details { max-height: 760px; opacity: 1; padding: 12px; border-top: 1px solid rgba(255,255,255,0.06); }
+
+    .wish-toggle {
+      width: 100%; padding: 8px; margin-bottom: 8px; border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.14);
+      color: #c7d5e0; font-size: 12px; font-weight: 700; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .wish-toggle.active { background: rgba(255, 77, 109, 0.16); border-color: rgba(255, 77, 109, 0.55); color: #ff8fa3; }
+
+    .status-select, .progress-input {
+      width: 100%; padding: 8px 10px; border-radius: 8px; background: rgba(0,0,0,0.35);
+      color: white; border: 1px solid var(--border); margin-bottom: 8px; font-size: 12px; outline: none;
+    }
+    .progress-input:focus, .status-select:focus { border-color: var(--accent); }
+
+    .stars { display: flex; gap: 3px; cursor: pointer; justify-content: center; padding-bottom: 8px; }
+    .star { font-size: 20px; color: #333; user-select: none; }
+    .star.active { color: var(--gold); }
+
+    .player-note {
+      width: 100%; max-width: 100%; min-height: 48px; padding: 8px; border-radius: 8px;
+      background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff; font-family: 'Inter', sans-serif; font-size: 11px; outline: none;
+      resize: vertical;
+    }
+
+    .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 15px; }
+    .btn-full { grid-column: span 2; }
+    .action-buttons .btn { padding: 10px; border-radius: 8px; font-size: 12px; text-decoration: none; border: 1px solid transparent; text-align: center; justify-content: center; }
+    .btn-steam { background: rgba(102, 192, 244, 0.1); color: var(--accent); border-color: rgba(102, 192, 244, 0.3); }
+    .btn-db { background: rgba(255, 255, 255, 0.05); color: #fff; border-color: rgba(255, 255, 255, 0.1); }
+    .btn-repair { background: rgba(214, 169, 24, 0.1); color: #f4d03f; border-color: rgba(214, 169, 24, 0.3); }
+    .btn-delete { background: rgba(201, 59, 59, 0.1); color: #ff6b6b; border-color: rgba(201, 59, 59, 0.3); }
+
+    .papelera-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+    .papelera-item { display: flex; justify-content: space-between; align-items: center; gap: 10px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; border: 1px solid var(--border); }
+    .papelera-item-info { min-width: 0; flex: 1; }
+    .papelera-item-title { font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .match-container { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+    .match-tabs { display: flex; gap: 5px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; overflow-x: auto; scrollbar-width: none; }
+    .match-tabs::-webkit-scrollbar { display: none; }
+    .match-tab {
+      background: rgba(255,255,255,0.05); border: none; color: #8f98a0; padding: 6px 10px;
+      border-radius: 12px; font-size: 11px; font-weight: 700; cursor: pointer; flex-shrink: 0;
+      display: inline-flex; align-items: center; gap: 5px;
+    }
+    .match-tab.active { background: var(--accent); color: #0b0e14; }
+    .match-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; max-height: 48dvh; overflow-y: auto; padding-right: 4px; }
+    .match-card {
+      background: rgba(0,0,0,0.3); border: 1px solid rgba(102,192,244,0.2); border-radius: 8px;
+      overflow: hidden; display: flex; flex-direction: column; cursor: pointer; transition: transform var(--t-fast) var(--ease-out), border-color var(--t-fast) var(--ease-out); min-width: 0;
+    }
+    .match-card:hover { transform: translateY(-2px); border-color: var(--accent); }
+    .match-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; background: #000; }
+    .match-card-body { padding: 6px; display: flex; flex-direction: column; flex-grow: 1; min-width: 0; }
+    .match-card-title {
+      font-size: 11px; font-weight: 800; color: #fff; margin-bottom: 3px;
+      display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+
+    #toast-container {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      width: max-content; max-width: calc(100vw - 24px);
+      z-index: 20000; display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none;
+    }
+    .toast {
+      background: rgba(24, 35, 50, 0.96); color: #fff; padding: 8px 16px; border-radius: 25px;
+      border: 1px solid rgba(102, 192, 244, 0.45); font-size: 12px; font-weight: 700;
+      text-align: center; max-width: 100%;
+      opacity: 0; transform: translateY(10px); transition: opacity var(--t-base) var(--ease-out), transform var(--t-base) var(--ease-out);
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.success { border-color: rgba(91, 163, 43, 0.75); color: #b7f592; }
+    .toast.warning { border-color: rgba(214, 169, 24, 0.75); color: #ffe380; }
+    .toast.error { border-color: rgba(201, 59, 59, 0.75); color: #ff9999; }
+
+    .spinner-container { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 45vh; grid-column: 1 / -1; }
+    .spinner { width: 35px; height: 35px; border: 3px solid rgba(102, 192, 244, 0.2); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 10px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .modal-content { padding: 14px; border-radius: 14px; }
+      .modal-title { font-size: 17px; padding-right: 36px; }
+      .stats-cards-grid { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+      .tracking-container { grid-template-columns: 1fr; }
+      #grid.poster-mode {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      #grid.poster-mode > .card {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto auto;
+        grid-template-areas:
+          "media"
+          "body";
+      }
+      #grid.poster-mode .img-container {
+        grid-area: media;
+        width: 100%;
+        min-width: 0;
+        height: auto;
+        aspect-ratio: 2 / 3;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px 12px 0 0;
+      }
+      #grid.poster-mode .card-content {
+        grid-area: body;
+      }
+      .modal-header-grid.poster {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto auto;
+        grid-template-areas:
+          "media"
+          "body";
+        text-align: left;
+        gap: 12px;
+      }
+      .modal-header-grid.poster .modal-img {
+        grid-area: media;
+        width: 100%;
+        max-width: 210px;
+        margin: 0 auto;
+        aspect-ratio: 2 / 3;
+      }
+      .modal-header-grid.poster .modal-header-info {
+        grid-area: body;
+        padding-right: 44px;
+      }
+      .modal-header-grid.poster .modal-title { padding-right: 36px; justify-content: flex-start; font-size: 17px; }
+      .modal-header-grid.poster .version-badges { justify-content: flex-start; }
+      .modal-header-grid.poster .modal-genres { justify-content: flex-start; }
+      .tab-btn { padding: 7px 8px; font-size: 11px; }
+      .tab-btn .ico { width: 16px; height: 16px; }
+      .tab-btn .tab-text { display: none; }
+    }
+
+    .chapter-tracker-box { background: rgba(16, 24, 36, 0.75); border: 1px solid rgba(102, 192, 244, 0.25); border-radius: 8px; padding: 8px; margin-bottom: 8px; }
+    .chapter-inputs-row { display: flex; align-items: center; gap: 5px; margin-bottom: 6px; }
+    .chapter-num-input { width: 100%; min-width: 0; padding: 6px; border-radius: 6px; background: rgba(0, 0, 0, 0.45); border: 1px solid rgba(255, 255, 255, 0.14); color: #fff; font-size: 12px; font-weight: 700; text-align: center; outline: none; }
+    .chapter-num-input:focus { border-color: var(--accent); }
+    .chapter-num-input:disabled { opacity: 0.7; cursor: not-allowed; }
+    .chapter-sep { color: #8f98a0; font-weight: 900; font-size: 13px; flex-shrink: 0; }
+    .chapter-pct-badge { background: rgba(102, 192, 244, 0.18); color: var(--accent); font-size: 10px; font-weight: 900; padding: 3px 6px; border-radius: 6px; min-width: 42px; text-align: center; flex-shrink: 0; }
+    .reading-progress-track { width: 100%; height: 5px; background: rgba(255, 255, 255, 0.08); border-radius: 5px; overflow: hidden; }
+    .reading-progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #5ba32b); width: 0%; transition: width var(--t-slow) var(--ease-out); }
+    .card-reading-bar { margin-top: 6px; display: flex; flex-direction: column; gap: 3px; }
+    .card-reading-labels { display: flex; justify-content: space-between; font-size: 10px; font-weight: 700; color: #8f98a0; }
+  </style>
 </head>
 <body>
-    <iframe src="https://script.google.com/macros/s/AKfycbzVokcNfyCiGDZG83xrnPrv-MmaYT5U90Iod6tiDekjgtxQOTqIEixvh34DwdsKdt8Now/exec" allow="clipboard-write; fullscreen; autoplay" allowfullscreen></iframe>
+  <!-- LIBRERÍA DE ICONOS SVG PLANOS -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none;" aria-hidden="true">
+    <symbol id="i-gamepad" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="4"/><path d="M6 12h4M8 10v4"/><circle cx="15.5" cy="11" r="1" fill="currentColor" stroke="none"/><circle cx="17.5" cy="13" r="1" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-film" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 4v16M17 4v16M2 12h20M2 8h5M2 16h5M17 8h5M17 16h5"/></symbol>
+    <symbol id="i-tv" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="13" rx="2"/><polyline points="17 2 12 7 7 2"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></symbol>
+    <symbol id="i-manga" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></symbol>
+    <symbol id="i-stats" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></symbol>
+    <symbol id="i-heart-fill" viewBox="0 0 24 24"><path fill="currentColor" stroke="none" d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></symbol>
+    <symbol id="i-dice" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="15.5" cy="8.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="8.5" cy="15.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15.5" r="1.2" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-filter" viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></symbol>
+    <symbol id="i-sync" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><polygon fill="currentColor" stroke="none" points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></symbol>
+    <symbol id="i-tag" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><polygon fill="currentColor" stroke="none" points="5 3 19 12 5 21 5 3"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+    <symbol id="i-camera" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></symbol>
+    <symbol id="i-note" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></symbol>
+    <symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
+    <symbol id="i-chevron-down" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></symbol>
+  </svg>
 
-    <script>
-        window.addEventListener('error', (e) => {
-            console.error('[NexusLib] Error:', e.message, e.filename, e.lineno);
-        });
-        window.addEventListener('unhandledrejection', (e) => {
-            console.error('[NexusLib] Promesa rechazada:', e.reason);
-        });
+  <div id="app-screen">
+    <div class="top-header">
+      <div class="category-tabs">
+        <button class="tab-btn active" data-cat="Juegos" title="Juegos" onclick="cambiarCategoria('Juegos')">
+          <svg class="ico"><use href="#i-gamepad"/></svg> <span class="tab-text">Juegos</span>
+        </button>
+        <button class="tab-btn" data-cat="Peliculas_Series" title="Cine y Series" onclick="cambiarCategoria('Peliculas_Series')">
+          <svg class="ico"><use href="#i-film"/></svg> <span class="tab-text">Cine y Series</span>
+        </button>
+        <button class="tab-btn" data-cat="Libros" title="Libros" onclick="cambiarCategoria('Libros')">
+          <svg class="ico"><use href="#i-book"/></svg> <span class="tab-text">Libros</span>
+        </button>
+        <button class="tab-btn" data-cat="Mangas" title="Mangas" onclick="cambiarCategoria('Mangas')">
+          <svg class="ico"><use href="#i-manga"/></svg> <span class="tab-text">Mangas</span>
+        </button>
+        <button class="tab-btn" data-cat="Estadisticas" title="Estadísticas" onclick="cambiarCategoria('Estadisticas')">
+          <svg class="ico"><use href="#i-stats"/></svg> <span class="tab-text">Stats</span>
+        </button>
+      </div>
 
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('service-worker.js')
-                    .then(() => console.log('PWA lista para instalar'))
-                    .catch(err => console.log('Error en Service Worker:', err));
-            });
+      <div class="controls" id="main-controls-box">
+        <div class="controls-row">
+          <div class="search-wrapper">
+            <svg class="ico"><use href="#i-search"/></svg>
+            <input type="text" id="inputBuscar" placeholder="Filtrar juegos por título, dev, género o tag..." oninput="filtrarItemsDebounced()">
+          </div>
+        </div>
+
+        <div class="controls-row">
+          <div class="add-wrapper" id="add-wrapper-box">
+            <svg class="ico ico-sm" style="color:#8f98a0; margin-right:6px;"><use href="#i-plus"/></svg>
+            <input type="text" id="inputAgregar" placeholder="AppID, URL o nombre..." onfocus="activarModoBusquedaAgregar(true)" oninput="syncAddClearBtn(); autocompletarAgregarDebounced()" onkeydown="if(event.key==='Enter') manejarAgregar()">
+            <button type="button" class="btn-clear-add" onclick="cerrarBusquedaAgregar(true)" title="Limpiar">
+              <svg class="ico ico-sm"><use href="#i-x"/></svg>
+            </button>
+            <button id="btn-add" class="btn btn-primary" onclick="manejarAgregar()" title="Buscar o añadir" style="margin-left:3px;">
+              <svg class="ico ico-sm"><use href="#i-plus"/></svg>
+            </button>
+            <div id="search-dropdown" class="search-results-dropdown"></div>
+          </div>
+
+          <div class="right-controls" id="right-ctrls">
+            <button class="btn btn-circle" onclick="abrirMatchModal()" title="Modo Match de Pareja" style="color:#ff8fa3;">
+              <svg class="ico"><use href="#i-heart-fill"/></svg>
+            </button>
+            <button class="btn btn-circle" onclick="elegirAleatorio()" title="Elección aleatoria">
+              <svg class="ico"><use href="#i-dice"/></svg>
+            </button>
+            <button id="btn-toggle-filtros" class="btn btn-circle" onclick="toggleFiltros(event)" title="Filtros y Orden">
+              <svg class="ico"><use href="#i-filter"/></svg>
+            </button>
+            <button id="btn-sync" class="btn btn-circle" onclick="forzarSincronizacion()" title="Sincronizar pestaña actual">
+              <svg class="ico"><use href="#i-sync"/></svg>
+            </button>
+            <button class="btn btn-circle" onclick="abrirPapelera()" title="Papelera" style="color:#ff6b6b;">
+              <svg class="ico"><use href="#i-trash"/></svg>
+            </button>
+            <button class="btn btn-circle" id="btn-vinculos" onclick="abrirVinculosModal()" title="Vínculos" style="display:none;color:#7ee0a3;position:relative;">
+              <svg class="ico"><use href="#i-users"/></svg>
+              <span id="vinc-badge" style="display:none;position:absolute;top:-5px;right:-5px;min-width:16px;height:16px;padding:0 4px;border-radius:99px;background:#ff4d6d;color:#fff;font-size:10px;font-weight:800;line-height:16px;text-align:center;pointer-events:none;">0</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="progress-container">
+          <div id="progress-bar"></div>
+          <div id="progress-text">Iniciando...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL DE FILTROS -->
+    <div id="panel-filtros" class="filter-panel" onclick="event.stopPropagation()">
+      <div id="filter-personas"></div>
+      <div class="filter-group">
+        <label><svg class="ico ico-sm ico-wish"><use href="#i-heart-fill"/></svg> Lista de Deseados</label>
+        <select id="filter-deseado" onchange="filtrarItems()"></select>
+      </div>
+      <div class="filter-group" id="extra-filter-1"></div>
+      <div class="filter-group" id="extra-filter-2"></div>
+      <div class="filter-group" id="extra-filter-3"></div>
+
+      <div class="filter-group">
+        <label>Ordenar por</label>
+        <select id="filter-orden" onchange="filtrarItems()">
+          <option value="az">Alfabético (A - Z)</option>
+          <option value="za">Alfabético (Z - A)</option>
+          <option value="recientes">Últimos añadidos</option>
+          <option value="puntuacion">Puntuación</option>
+        </select>
+      </div>
+      <button class="filter-reset" onclick="resetFiltros()">Limpiar Filtros</button>
+    </div>
+
+    <div id="stats-bar" class="stats-bar" style="display:none;"></div>
+    <div id="grid"></div>
+
+    <!-- VISTA DE ESTADÍSTICAS REORGANIZADA Y COMPACTA -->
+    <div id="stats-view">
+      <div class="stats-selectors-row" id="stats-prof-buttons"></div>
+      <div class="stats-selectors-row">
+        <button class="stats-cat-btn active" data-statcat="todas" onclick="cambiarCategoriaStats('todas')">
+          <svg class="ico ico-sm"><use href="#i-globe"/></svg> Global
+        </button>
+        <button class="stats-cat-btn" data-statcat="Juegos" onclick="cambiarCategoriaStats('Juegos')">
+          <svg class="ico ico-sm"><use href="#i-gamepad"/></svg> Juegos
+        </button>
+        <button class="stats-cat-btn" data-statcat="Peliculas_Series" onclick="cambiarCategoriaStats('Peliculas_Series')">
+          <svg class="ico ico-sm"><use href="#i-film"/></svg> Cine
+        </button>
+        <button class="stats-cat-btn" data-statcat="Libros" onclick="cambiarCategoriaStats('Libros')">
+          <svg class="ico ico-sm"><use href="#i-book"/></svg> Libros
+        </button>
+        <button class="stats-cat-btn" data-statcat="Mangas" onclick="cambiarCategoriaStats('Mangas')">
+          <svg class="ico ico-sm"><use href="#i-manga"/></svg> Mangas
+        </button>
+      </div>
+      <div class="stats-cards-grid" id="stats-cards-container"></div>
+    </div>
+  </div>
+
+  <!-- MODAL DETALLE -->
+  <div id="modal" onclick="cerrarModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="cerrarModal()">
+        <svg class="ico"><use href="#i-x"/></svg>
+      </button>
+      <div id="m-header-grid" class="modal-header-grid landscape">
+        <img id="m-img" class="modal-img" src="" loading="lazy" decoding="async" referrerpolicy="no-referrer">
+        <div class="modal-header-info">
+          <h2 id="m-titulo" class="modal-title"></h2>
+          <div class="modal-subtitle">
+            <span id="m-dev"></span>
+            <span id="m-price" class="modal-price"></span>
+          </div>
+          <div id="m-badges" class="version-badges"></div>
+          <div id="m-genres" class="modal-genres"></div>
+        </div>
+      </div>
+
+      <div id="m-trailer-bar" class="trailer-bar" style="display:none;">
+        <button type="button" id="btn-toggle-trailer" class="btn-trailer" onclick="toggleTrailer()">
+          <svg class="ico ico-sm"><use href="#i-play"/></svg> Ver Tráiler
+        </button>
+        <div id="m-trailer-box" class="trailer-box"></div>
+      </div>
+
+      <p id="m-desc" class="modal-desc"></p>
+
+      <details id="m-details-accordion" class="accordion">
+        <summary>
+          <span>Ver ficha técnica completa</span>
+          <svg class="ico ico-sm"><use href="#i-chevron-down"/></svg>
+        </summary>
+        <div class="accordion-content" id="m-details-list"></div>
+      </details>
+
+      <div class="carousel-container" id="m-screenshots-container" style="display:none;">
+        <div class="carousel-title"><svg class="ico"><use href="#i-camera"/></svg> Capturas</div>
+        <div class="carousel" id="m-screenshots"></div>
+      </div>
+
+      <div class="tracking-container" id="tracking-personas"></div>
+
+      <div class="action-buttons">
+        <a href="#" id="btn-ext-1" target="_blank" rel="noopener noreferrer" class="btn btn-steam">Ver ficha</a>
+        <a href="#" id="btn-ext-2" target="_blank" rel="noopener noreferrer" class="btn btn-db">Más info</a>
+        <button id="btn-repair" class="btn btn-repair btn-full" onclick="repararItemActual()">
+          <svg class="ico ico-sm"><use href="#i-wrench"/></svg> Reparar / Actualizar Metadata
+        </button>
+        <button id="btn-delete" class="btn btn-delete btn-full" onclick="eliminarItemActual()">
+          <svg class="ico ico-sm"><use href="#i-trash"/></svg> Mover a Papelera
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL PAPELERA -->
+  <div id="modal-papelera" onclick="cerrarPapelera()">
+    <div class="modal-content" onclick="event.stopPropagation()" style="max-width:500px;">
+      <button class="modal-close" onclick="cerrarPapelera()"><svg class="ico"><use href="#i-x"/></svg></button>
+      <h2 class="modal-title"><svg class="ico ico-lg" style="color:var(--accent);"><use href="#i-trash"/></svg> Papelera de Reciclaje</h2>
+      <div id="lista-papelera" class="papelera-list"></div>
+    </div>
+  </div>
+
+  <!-- MODAL MATCH DE PAREJA -->
+  <div id="modal-match" onclick="cerrarMatchModal()">
+    <div class="modal-content" onclick="event.stopPropagation()" style="max-width:650px;">
+      <button class="modal-close" onclick="cerrarMatchModal()"><svg class="ico"><use href="#i-x"/></svg></button>
+      <h2 class="modal-title"><svg class="ico ico-lg ico-wish"><use href="#i-heart-fill"/></svg> Match de Pareja</h2>
+      <p style="font-size:12px;color:#8f98a0;margin-top:0;">Elementos que ambos tienen en estado Pendiente o en su Lista de Deseados:</p>
+      <div class="match-container">
+        <div class="match-tabs">
+          <button class="match-tab active" data-matchcat="Juegos" onclick="cambiarMatchCat('Juegos')">
+            <svg class="ico ico-sm"><use href="#i-gamepad"/></svg> Juegos
+          </button>
+          <button class="match-tab" data-matchcat="Peliculas_Series" onclick="cambiarMatchCat('Peliculas_Series')">
+            <svg class="ico ico-sm"><use href="#i-film"/></svg> Cine y Series
+          </button>
+          <button class="match-tab" data-matchcat="Libros" onclick="cambiarMatchCat('Libros')">
+            <svg class="ico ico-sm"><use href="#i-book"/></svg> Libros
+          </button>
+          <button class="match-tab" data-matchcat="Mangas" onclick="cambiarMatchCat('Mangas')">
+            <svg class="ico ico-sm"><use href="#i-manga"/></svg> Mangas
+          </button>
+        </div>
+        <div id="match-grid" class="match-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL VÍNCULOS (Phase 5, solo Nexus mode) -->
+  <div id="modal-vinculos" onclick="cerrarVinculosModal()">
+    <div class="modal-content" onclick="event.stopPropagation()" style="max-width:520px;">
+      <button class="modal-close" onclick="cerrarVinculosModal()"><svg class="ico"><use href="#i-x"/></svg></button>
+      <h2 class="modal-title"><svg class="ico ico-lg"><use href="#i-users"/></svg> Vínculos</h2>
+      <div id="vinculos-body" style="margin-top:10px;"></div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <!-- ==================== NEXUS PHASE 4 — adaptador Supabase ==================== -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const NEXUS_MODE = true; // false = Apps Script/Sheets (v1)
+    const NEXUS_URL = 'https://vkmgnwnlceycauleluwl.supabase.co';
+    const NEXUS_KEY = 'sb_publishable_nLhtLiQ7uZ0I2noqeZMNcg_c0sKq9nO';
+
+    var _nexusSb = null, _nexusUser = null, _nexusProfile = null, _nexusLibId = null;
+
+    async function nexusSb() {
+      if (!_nexusSb) {
+        _nexusSb = window.supabase.createClient(NEXUS_URL, NEXUS_KEY);
+        var s = await _nexusSb.auth.getSession();
+        _nexusUser = (s.data && s.data.session) ? s.data.session.user : null;
+      }
+      return _nexusSb;
+    }
+
+    async function nexusEnsureProfile() {
+      var sb = await nexusSb();
+      if (!_nexusUser) {
+        var u = await sb.auth.getUser();
+        _nexusUser = u.data.user;
+      }
+      if (!_nexusProfile && _nexusUser) {
+        var p = await sb.from('profiles').select('id,display_name,username').eq('id', _nexusUser.id).single();
+        _nexusProfile = p.data;
+        var lm = await sb.from('library_members').select('library_id').eq('profile_id', _nexusUser.id).limit(1);
+        _nexusLibId = (lm.data && lm.data[0]) ? lm.data[0].library_id : null;
+      }
+      return _nexusProfile;
+    }
+
+    function nexusPersona() {
+      // el handle visible es username; fallback al primer nombre del display_name
+      if (_nexusProfile && _nexusProfile.username) return _nexusProfile.username;
+      return (_nexusProfile && _nexusProfile.display_name ? _nexusProfile.display_name : 'Yo').split(' ')[0];
+    }
+
+    function nexusPersonaOk(persona) {
+      return nexusPersona().toLowerCase() === String(persona || '').toLowerCase();
+    }
+
+    async function nexusMediaId(category, externalId) {
+      var sb = await nexusSb();
+      var r = await sb.from('media_items').select('id')
+        .eq('category', category).eq('external_id', String(externalId)).maybeSingle();
+      if (r.error) throw new Error(r.error.message);
+      return r.data ? r.data.id : null;
+    }
+
+    async function nexusTrackingUpsert(category, externalId, fields) {
+      var sb = await nexusSb();
+      await nexusEnsureProfile();
+      var mediaId = await nexusMediaId(category, externalId);
+      if (!mediaId) return { success: false, msg: 'Item no encontrado en el catálogo.' };
+      var payload = { profile_id: _nexusUser.id, media_item_id: mediaId };
+      Object.keys(fields).forEach(function(k) { payload[k] = fields[k]; });
+      var r = await sb.from('user_media_tracking')
+        .upsert(payload, { onConflict: 'profile_id,media_item_id' });
+      if (r.error) throw new Error(r.error.message);
+      return { success: true };
+    }
+
+    var NEXUS_STATUS_MAP = { 'No jugado': 'backlog', 'En proceso': 'in_progress', 'Completado': 'completed' };
+
+    var nexusRun = {
+      _ok: null, _fail: null,
+      withSuccessHandler: function(f) { this._ok = f; return this; },
+      withFailureHandler: function(f) { this._fail = f; return this; },
+      _exec: function(p) {
+        Promise.resolve(p).then(function(r) {
+          try { if (nexusRun._ok) nexusRun._ok(r); } catch (e) { console.error(e); }
+        }).catch(function(e) {
+          try { if (nexusRun._fail) nexusRun._fail(e); else console.error(e); } catch (_) {}
+        });
+      },
+      getItems: function(cat) {
+        this._exec((async function() {
+          var sb = await nexusSb();
+          await nexusEnsureProfile();
+          var r = await sb.rpc('get_items_merged', { p_category: cat });
+          if (r.error) throw new Error(r.error.message);
+          return r.data || [];
+        })());
+      },
+      guardarProgresoItem: function(cat, id, persona, estado, estrellas, progreso) {
+        this._exec((async function() {
+          await nexusSb(); await nexusEnsureProfile();
+          if (!nexusPersonaOk(persona)) return { success: false, msg: 'Solo puedes editar tu propio tracking.' };
+          return nexusTrackingUpsert(cat, id, {
+            status: NEXUS_STATUS_MAP[estado] || null,
+            rating: (Number(estrellas) > 0) ? Number(estrellas) : null,
+            progress: progreso || null
+          });
+        })());
+      },
+      guardarDeseadoItem: function(cat, id, persona, deseado) {
+        this._exec((async function() {
+          await nexusSb(); await nexusEnsureProfile();
+          if (!nexusPersonaOk(persona)) return { success: false, msg: 'Solo puedes editar tu propio tracking.' };
+          return nexusTrackingUpsert(cat, id, { is_wishlisted: Boolean(deseado) });
+        })());
+      },
+      guardarNotaItem: function(cat, id, persona, nota) {
+        this._exec((async function() {
+          await nexusSb(); await nexusEnsureProfile();
+          if (!nexusPersonaOk(persona)) return { success: false, msg: 'Solo puedes editar tu propio tracking.' };
+          return nexusTrackingUpsert(cat, id, { personal_notes: nota || null });
+        })());
+      },
+      guardarTotalCapitulos: function(cat, id, total) {
+        this._exec((async function() {
+          var sb = await nexusSb();
+          var r = await sb.from('media_items').select('id')
+            .eq('category', cat).eq('external_id', String(id)).single();
+          if (r.error || !r.data) return { success: false, msg: 'Item no encontrado.' };
+          var u = await sb.rpc('set_media_total_chapters', { p_media_id: r.data.id, p_total: Number(total) || 0 });
+          if (u.error) throw new Error(u.error.message);
+          return { success: true };
+        })());
+      },
+      eliminarItem: function(cat, id) {
+        this._exec((async function() {
+          var sb = await nexusSb(); await nexusEnsureProfile();
+          var mediaId = await nexusMediaId(cat, id);
+          if (!mediaId || !_nexusLibId) return { success: false, msg: 'No se encontró el elemento.' };
+          var r = await sb.from('library_items')
+            .update({ deleted_at: new Date().toISOString() })
+            .eq('library_id', _nexusLibId).eq('media_item_id', mediaId).is('deleted_at', null);
+          if (r.error) throw new Error(r.error.message);
+          return { success: true };
+        })());
+      },
+      restaurarItem: function(cat, id) {
+        this._exec((async function() {
+          var sb = await nexusSb(); await nexusEnsureProfile();
+          var mediaId = await nexusMediaId(cat, id);
+          if (!mediaId || !_nexusLibId) return { success: false };
+          var r = await sb.from('library_items')
+            .update({ deleted_at: null })
+            .eq('library_id', _nexusLibId).eq('media_item_id', mediaId).not('deleted_at', 'is', null);
+          if (r.error) throw new Error(r.error.message);
+          return { success: true };
+        })());
+      },
+      getItemsEliminados: function() {
+        this._exec((async function() {
+          var sb = await nexusSb(); await nexusEnsureProfile();
+          if (!_nexusLibId) return [];
+          var r = await sb.from('library_items')
+            .select('media_items(category,title,external_id)')
+            .eq('library_id', _nexusLibId).not('deleted_at', 'is', null);
+          if (r.error) throw new Error(r.error.message);
+          return (r.data || []).map(function(x) {
+            var mi = x.media_items || {};
+            return { categoria: mi.category || '', id: String(mi.external_id || ''), titulo: mi.title || 'Elemento sin título' };
+          });
+        })());
+      },
+      buscarCatalogoExterno: function(cat, query) {
+        this._exec((async function() {
+          var sb = await nexusSb(); await nexusEnsureProfile();
+          var r = await sb.functions.invoke('catalog-search', { body: { category: cat, query: query } });
+          if (r.error) throw new Error(r.error.message);
+          return r.data || [];
+        })());
+      },
+      agregarItem: function(cat, idOUrlOrName) {
+        this._exec((async function() {
+          var sb = await nexusSb(); await nexusEnsureProfile();
+          var r = await sb.functions.invoke('catalog-add', { body: { category: cat, idOrUrlOrName: idOUrlOrName } });
+          if (r.error) {
+            var ctx = r.error.context;
+            if (ctx && typeof ctx.json === 'function') {
+              try { var j = await ctx.json(); if (j && j.msg) return { success: false, msg: j.msg }; } catch (_) {}
+            }
+            throw new Error(r.error.message);
+          }
+          return r.data;
+        })());
+      },
+      repararItemIndividual: function(cat, id) {
+        this._exec((async function() {
+          var sb = await nexusSb(); await nexusEnsureProfile();
+          var r = await sb.functions.invoke('item-refresh', { body: { category: cat, id: id } });
+          if (r.error) {
+            var ctx = r.error.context;
+            if (ctx && typeof ctx.json === 'function') {
+              try { var j = await ctx.json(); if (j && j.msg) return { success: false, msg: j.msg }; } catch (_) {}
+            }
+            throw new Error(r.error.message);
+          }
+          return r.data;
+        })());
+      }
+    };
+
+    var RUN = NEXUS_MODE ? nexusRun : google.script.run;
+
+    // ---- auth gate ----
+    function nexusShowLogin(onReady) {
+      if (document.getElementById('nexus-login')) return;
+      var ov = document.createElement('div');
+      ov.id = 'nexus-login';
+      ov.style.cssText = 'position:fixed;inset:0;z-index:99999;background:var(--bg,#0b0e14);display:flex;align-items:center;justify-content:center;padding:20px;';
+      ov.innerHTML =
+        '<div style="width:100%;max-width:340px;background:var(--panel,#1b2838);border:1px solid var(--border,rgba(255,255,255,.1));border-radius:14px;padding:28px 24px;">' +
+        '<div style="text-align:center;margin-bottom:20px;"><div style="font-size:28px;font-weight:900;color:var(--accent,#66c0f4);">NexusLib</div>' +
+        '<div style="color:var(--text,#c7d5e0);font-size:13px;margin-top:4px;">Inicia sesión para continuar</div></div>' +
+        '<input id="nexus-email" type="email" placeholder="Email" autocomplete="username" style="width:100%;padding:12px;border-radius:8px;border:1px solid var(--border);background:#0b0e14;color:var(--text);margin-bottom:10px;font-size:14px;box-sizing:border-box;">' +
+        '<input id="nexus-pass" type="password" placeholder="Contraseña" autocomplete="current-password" style="width:100%;padding:12px;border-radius:8px;border:1px solid var(--border);background:#0b0e14;color:var(--text);margin-bottom:14px;font-size:14px;box-sizing:border-box;">' +
+        '<button id="nexus-btn-login" style="width:100%;padding:12px;border:none;border-radius:8px;background:var(--accent,#66c0f4);color:#0b0e14;font-weight:700;font-size:14px;cursor:pointer;">Entrar</button>' +
+        '<button id="nexus-btn-magic" style="width:100%;padding:10px;margin-top:8px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--text);font-size:13px;cursor:pointer;">Enviar enlace mágico</button>' +
+        '<div id="nexus-login-msg" style="margin-top:12px;font-size:12px;text-align:center;color:#ff8585;min-height:16px;"></div>' +
+        '</div>';
+      document.body.appendChild(ov);
+      var msg = ov.querySelector('#nexus-login-msg');
+      async function doLogin() {
+        var email = ov.querySelector('#nexus-email').value.trim();
+        var pass = ov.querySelector('#nexus-pass').value;
+        msg.textContent = '';
+        if (!email) { msg.textContent = 'Escribe tu email.'; return; }
+        var sb = await nexusSb();
+        var r = await sb.auth.signInWithPassword({ email: email, password: pass });
+        if (r.error) { msg.textContent = r.error.message; return; }
+        _nexusUser = r.data.user;
+        ov.remove();
+        if (onReady) onReady();
+      }
+      async function doMagic() {
+        var email = ov.querySelector('#nexus-email').value.trim();
+        msg.textContent = '';
+        if (!email) { msg.textContent = 'Escribe tu email.'; return; }
+        var sb = await nexusSb();
+        var r = await sb.auth.signInWithOtp({ email: email });
+        msg.textContent = r.error ? r.error.message : 'Revisa tu email — enlace enviado.';
+        msg.style.color = r.error ? '#ff8585' : '#7bd88f';
+      }
+      ov.querySelector('#nexus-btn-login').onclick = doLogin;
+      ov.querySelector('#nexus-btn-magic').onclick = doMagic;
+      ov.querySelector('#nexus-pass').addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
+    }
+
+    async function nexusBoot(onReady) {
+      try {
+        var sb = await nexusSb();
+        var s = await sb.auth.getSession();
+        if (s.data && s.data.session) {
+          _nexusUser = s.data.session.user;
+          onReady();
+        } else {
+          nexusShowLogin(onReady);
         }
-    </script>
+      } catch (e) {
+        console.error('nexusBoot', e);
+        nexusShowLogin(onReady);
+      }
+    }
+
+    // ---- vínculos (Phase 5, solo Nexus mode) ----
+    var VINCULOS_LINK_TYPES = {
+      pareja: 'Pareja', familia: 'Familia', amigo: 'Amigo', custom: 'Personalizado'
+    };
+
+    async function nexusMisVinculos() {
+      var sb = await nexusSb();
+      await nexusEnsureProfile();
+      var out = { invite_code: null, links: [], rpcError: null };
+      if (_nexusLibId) {
+        var l = await sb.from('libraries').select('invite_code').eq('id', _nexusLibId).single();
+        if (l.data) out.invite_code = l.data.invite_code;
+      }
+      var r = await sb.rpc('get_my_library_links');
+      if (r.error) out.rpcError = r.error.message;
+      else out.links = r.data || [];
+      var rs = await sb.rpc('get_my_item_shares');
+      if (!rs.error) out.shares = rs.data || [];
+      return out;
+    }
+
+    // nombre visible de un vínculo: username (handle) > display_name > 'Usuario'
+    function vinculosNombre(other) {
+      return (other && (other.username || other.display_name)) || 'Usuario';
+    }
+
+    function vinculosEsc(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+
+    function abrirVinculosModal() {
+      var ov = document.getElementById('modal-vinculos');
+      if (!ov) return;
+      var body = document.getElementById('vinculos-body');
+      body.innerHTML = '<p style="color:#8f98a0;font-size:13px;">Cargando…</p>';
+      ov.style.display = 'flex';
+      requestAnimationFrame(() => requestAnimationFrame(() => ov.style.opacity = '1'));
+      nexusMisVinculos().then(function(d) { renderVinculos(d); }).catch(function(e) {
+        body.innerHTML = '<p style="color:#ff8585;font-size:13px;">Error: ' + vinculosEsc(e.message) + '</p>';
+      });
+    }
+
+    function cerrarVinculosModal() {
+      var ov = document.getElementById('modal-vinculos');
+      if (ov) { ov.style.opacity = '0'; ov.style.display = 'none'; }
+    }
+
+    function renderVinculos(d) {
+      var body = document.getElementById('vinculos-body');
+      var h = '';
+
+      // --- mi código ---
+      h += '<div style="background:rgba(255,255,255,.04);border:1px solid var(--border,rgba(255,255,255,.1));border-radius:10px;padding:12px 14px;margin-bottom:14px;">';
+      h += '<div style="font-size:11px;color:#8f98a0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Mi código de invitación</div>';
+      if (d.invite_code) {
+        h += '<div style="display:flex;align-items:center;gap:10px;">' +
+             '<code style="font-size:18px;font-weight:700;color:#7ee0a3;letter-spacing:2px;">' + vinculosEsc(d.invite_code) + '</code>' +
+             '<button class="btn btn-circle" onclick="vinculosCopiar()" title="Copiar"><svg class="ico"><use href="#i-copy"/></svg></button></div>';
+        h += '<div style="font-size:11px;color:#8f98a0;margin-top:6px;">Comparte este código — la otra persona lo introduce en su perfil.</div>';
+      } else {
+        h += '<div style="font-size:12px;color:#8f98a0;">No disponible.</div>';
+      }
+      h += '</div>';
+
+      // --- solicitar vínculo ---
+      h += '<div style="margin-bottom:14px;">';
+      h += '<div style="font-size:11px;color:#8f98a0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Añadir vínculo</div>';
+      h += '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+           '<input id="vinc-codigo" type="text" placeholder="Código" style="flex:1;min-width:110px;padding:10px;border-radius:8px;border:1px solid var(--border);background:#0b0e14;color:var(--text);font-size:14px;text-transform:uppercase;">' +
+           '<select id="vinc-tipo" onchange="vinculosToggleLabel()" style="padding:10px;border-radius:8px;border:1px solid var(--border);background:#0b0e14;color:var(--text);font-size:13px;">';
+      Object.keys(VINCULOS_LINK_TYPES).forEach(function(k) {
+        h += '<option value="' + k + '">' + VINCULOS_LINK_TYPES[k] + '</option>';
+      });
+      h += '</select>' +
+           '<button class="btn btn-text" onclick="vinculosSolicitar()">Enviar</button></div>' +
+           '<input id="vinc-label" type="text" placeholder="Nombre del vínculo (ej. Vecino, Compañero de trabajo…)" ' +
+           'style="display:none;width:100%;margin-top:8px;padding:10px;border-radius:8px;border:1px solid var(--border);background:#0b0e14;color:var(--text);font-size:13px;">';
+      h += '<div id="vinc-msg" style="font-size:12px;margin-top:6px;min-height:14px;"></div></div>';
+
+      var links = d.links || [];
+      var pendientesIn = links.filter(function(x) { return x.direction === 'incoming' && x.status === 'pending'; });
+      var pendientesOut = links.filter(function(x) { return x.direction === 'outgoing' && x.status === 'pending'; });
+      // dedupe por persona: la fila inversa del link (respond_library_link)
+      // comparte el mismo other.profile_id -> mostrar una sola entrada
+      var vistos = {};
+      var aceptados = links.filter(function(x) {
+        if (x.status !== 'accepted') return false;
+        var pid = x.other && x.other.profile_id;
+        if (pid && vistos[pid]) return false;
+        if (pid) vistos[pid] = true;
+        return true;
+      });
+      // agrupar TODAS las filas accepted por persona: out = lo que YO expongo,
+      // in = lo que EL/ELLA me expone (filas inversas de respond_library_link)
+      var porPid = {};
+      links.forEach(function(x) {
+        if (x.status !== 'accepted' || !x.other || !x.other.profile_id) return;
+        var pid = x.other.profile_id;
+        if (!porPid[pid]) porPid[pid] = { name: vinculosNombre(x.other), type: x.link_type, rows: {} };
+        porPid[pid].rows[x.direction] = x;
+      });
+      window._vincPorPid = porPid;
+
+      // --- pendientes entrantes ---
+      if (pendientesIn.length) {
+        h += '<div style="margin-bottom:14px;"><div style="font-size:11px;color:#ffd479;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Solicitudes recibidas</div>';
+        pendientesIn.forEach(function(x) {
+          var nombre = vinculosNombre(x.other);
+          h += '<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(255,212,121,.06);border:1px solid rgba(255,212,121,.25);border-radius:8px;margin-bottom:6px;">' +
+               '<span style="flex:1;font-size:13px;">' + vinculosEsc(nombre) +
+               ' <span style="color:#8f98a0;font-size:11px;">(' + vinculosEsc(vinculosTypeLabel(x)) + ')</span></span>' +
+               '<button class="btn btn-text" style="padding:6px 12px;font-size:12px;" onclick="vinculosResponder(\'' + x.link_id + '\',true)">Aceptar</button>' +
+               '<button class="btn btn-circle" style="color:#ff8585;" onclick="vinculosResponder(\'' + x.link_id + '\',false)" title="Rechazar"><svg class="ico"><use href="#i-x"/></svg></button></div>';
+        });
+        h += '</div>';
+      }
+
+      // --- pendientes salientes ---
+      if (pendientesOut.length) {
+        h += '<div style="margin-bottom:14px;"><div style="font-size:11px;color:#8f98a0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Enviadas (esperando respuesta)</div>';
+        pendientesOut.forEach(function(x) {
+          var nombre = vinculosNombre(x.other);
+          h += '<div style="padding:8px 10px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;margin-bottom:6px;font-size:13px;">' +
+               vinculosEsc(nombre) + ' <span style="color:#8f98a0;font-size:11px;">(' + vinculosEsc(vinculosTypeLabel(x)) + ')</span></div>';
+        });
+        h += '</div>';
+      }
+
+      // --- aceptados ---
+      h += '<div><div style="font-size:11px;color:#7ee0a3;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Vinculados</div>';
+      if (!aceptados.length) {
+        h += '<div style="font-size:12px;color:#8f98a0;">Sin vínculos aceptados todavía.</div>';
+      }
+      aceptados.forEach(function(x) {
+        var nombre = vinculosNombre(x.other);
+        var pid = x.other ? x.other.profile_id : '';
+        h += '<div style="padding:8px 10px;background:rgba(126,224,163,.05);border:1px solid rgba(126,224,163,.2);border-radius:8px;margin-bottom:6px;">' +
+             '<div style="display:flex;align-items:center;gap:8px;">' +
+             '<span style="flex:1;font-size:13px;">' + vinculosEsc(nombre) + '</span>' +
+             nexusLinkBadge(x.link_type, x.link_label) +
+             (pid ? '<button class="btn btn-circle" style="width:26px;height:26px;" onclick="toggleVisPanel(\'' + pid + '\')" title="Visibilidad"><svg class="ico ico-sm"><use href="#i-settings"/></svg></button>' : '') +
+             '</div>' +
+             (pid ? '<div id="vis-panel-' + pid + '" style="display:none;margin-top:8px;"></div>' : '') +
+             '</div>';
+      });
+      h += '</div>';
+
+      // --- items compartidos (Phase 5d) ---
+      var shares = d.shares || [];
+      var sharesIn = shares.filter(function(x) { return x.direction === 'incoming' && x.status === 'pending'; });
+      var sharesOut = shares.filter(function(x) { return x.direction === 'outgoing' && x.status === 'pending'; });
+      if (sharesIn.length || sharesOut.length) {
+        h += '<div style="margin-top:14px;"><div style="font-size:11px;color:#7ee0a3;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Elementos compartidos</div>';
+        sharesIn.forEach(function(x) {
+          var it = x.item || {};
+          h += '<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(126,224,163,.06);border:1px solid rgba(126,224,163,.25);border-radius:8px;margin-bottom:6px;">' +
+               '<span style="flex:1;font-size:13px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + vinculosEsc(it.titulo || 'Item') +
+               ' <span style="color:#8f98a0;font-size:11px;">de ' + vinculosEsc(x.other_name || 'alguien') + '</span></span>' +
+               '<button class="btn btn-text" style="padding:6px 12px;font-size:12px;" onclick="vinculosItemResponder(\'' + x.request_id + '\',true)">Aceptar</button>' +
+               '<button class="btn btn-circle" style="color:#ff8585;" onclick="vinculosItemResponder(\'' + x.request_id + '\',false)" title="Rechazar"><svg class="ico"><use href="#i-x"/></svg></button></div>';
+        });
+        sharesOut.forEach(function(x) {
+          var it = x.item || {};
+          h += '<div style="padding:8px 10px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;margin-bottom:6px;font-size:13px;">' +
+               vinculosEsc(it.titulo || 'Item') + ' <span style="color:#8f98a0;font-size:11px;">→ ' + vinculosEsc(x.other_name || '') + ' (esperando)</span></div>';
+        });
+        h += '</div>';
+      }
+
+      if (d.rpcError) {
+        h += '<div style="font-size:11px;color:#ff8585;margin-top:10px;">RPC no disponible: ' + vinculosEsc(d.rpcError) + ' — corre phase4_5.sql sec.3 / phase5b_links_rpc.sql</div>';
+      }
+
+      body.innerHTML = h;
+      nexusRefreshVinculosBadge();
+    }
+
+    // badge de notificaciones en el botón Vínculos: solicitudes de vínculo
+    // entrantes + items compartidos pendientes de aceptar
+    async function nexusRefreshVinculosBadge() {
+      var badge = document.getElementById('vinc-badge');
+      if (!badge || !NEXUS_MODE) return;
+      try {
+        var d = await nexusMisVinculos();
+        var n = (d.links || []).filter(function(x) {
+          return x.direction === 'incoming' && x.status === 'pending';
+        }).length;
+        n += (d.shares || []).filter(function(x) {
+          return x.direction === 'incoming' && x.status === 'pending';
+        }).length;
+        badge.style.display = n > 0 ? 'block' : 'none';
+        badge.textContent = n > 9 ? '9+' : String(n);
+      } catch (e) {}
+    }
+
+    function vinculosCopiar() {
+      var code = document.querySelector('#vinculos-body code');
+      if (code && navigator.clipboard) navigator.clipboard.writeText(code.textContent.trim());
+      showToast && showToast('Código copiado.', 'success');
+    }
+
+    function vinculosToggleLabel() {
+      var sel = document.getElementById('vinc-tipo');
+      var inp = document.getElementById('vinc-label');
+      if (sel && inp) inp.style.display = (sel.value === 'custom') ? 'block' : 'none';
+    }
+
+    async function vinculosSolicitar() {
+      var inp = document.getElementById('vinc-codigo');
+      var sel = document.getElementById('vinc-tipo');
+      var lbl = document.getElementById('vinc-label');
+      var msg = document.getElementById('vinc-msg');
+      var code = (inp.value || '').trim();
+      if (!code) { msg.textContent = 'Escribe un código.'; msg.style.color = '#ff8585'; return; }
+      msg.textContent = 'Enviando…'; msg.style.color = '#8f98a0';
+      try {
+        var sb = await nexusSb();
+        var r = await sb.rpc('request_library_link', {
+          p_invite_code: code,
+          p_link_type: sel.value,
+          p_link_label: (lbl && sel.value === 'custom') ? (lbl.value || '').trim() : null
+        });
+        if (r.error) throw new Error(r.error.message);
+        msg.textContent = 'Solicitud enviada.'; msg.style.color = '#7bd88f';
+        inp.value = '';
+        setTimeout(function() { abrirVinculosModal(); }, 800);
+      } catch (e) {
+        msg.textContent = e.message || 'Error'; msg.style.color = '#ff8585';
+      }
+    }
+
+    async function vinculosItemResponder(requestId, accept) {
+      try {
+        var sb = await nexusSb();
+        var r = await sb.rpc('respond_item_share', { p_request_id: requestId, p_accept: accept });
+        if (r.error) throw new Error(r.error.message);
+        showToast && showToast(accept ? 'Elemento añadido a tu biblioteca.' : 'Solicitud rechazada.', accept ? 'success' : 'warning');
+        abrirVinculosModal();
+      } catch (e) {
+        showToast && showToast('Error: ' + (e.message || ''), 'error');
+      }
+    }
+
+    async function vinculosResponder(linkId, accept) {
+      try {
+        var sb = await nexusSb();
+        var r = await sb.rpc('respond_library_link', { p_link_id: linkId, p_accept: accept });
+        if (r.error) throw new Error(r.error.message);
+        showToast && showToast(accept ? 'Vínculo aceptado.' : 'Solicitud rechazada.', accept ? 'success' : 'warning');
+        abrirVinculosModal();
+      } catch (e) {
+        showToast && showToast('Error: ' + (e.message || ''), 'error');
+      }
+    }
+
+    // ---- editor matriz visibility por vínculo (Phase 5A) ----
+    var VINCULOS_CATS = [
+      ['Juegos', 'Juegos'], ['Peliculas_Series', 'Películas/Series'],
+      ['Libros', 'Libros'], ['Mangas', 'Mangas']
+    ];
+    var VINCULOS_FIELDS = [
+      ['status', 'Estado'], ['rating', 'Valoración'], ['wishlist', 'Deseado'],
+      ['progress', 'Progreso'], ['notes', 'Notas']
+    ];
+
+    function visSel(pid) {
+      window._visSel = window._visSel || {};
+      if (!window._visSel[pid]) window._visSel[pid] = { dir: 'out', cat: 'Juegos' };
+      return window._visSel[pid];
+    }
+
+    function toggleVisPanel(pid) {
+      var p = document.getElementById('vis-panel-' + pid);
+      if (!p) return;
+      if (p.style.display === 'none' || !p.innerHTML) {
+        p.style.display = 'block';
+        renderVisPanel(pid);
+      } else {
+        p.style.display = 'none';
+      }
+    }
+
+    function visSetDir(pid, dir) { visSel(pid).dir = dir; renderVisPanel(pid); }
+    function visSetCat(pid, cat) { visSel(pid).cat = cat; renderVisPanel(pid); }
+
+    function renderVisPanel(pid) {
+      var p = document.getElementById('vis-panel-' + pid);
+      var info = (window._vincPorPid || {})[pid];
+      if (!p || !info) return;
+      var sel = visSel(pid);
+      var dirs = [];
+      if (info.rows.out) dirs.push({ k: 'out', label: 'Yo → ' + info.name });
+      if (info.rows.in)  dirs.push({ k: 'in',  label: info.name + ' → yo' });
+      if (!dirs.length) { p.innerHTML = '<div class="sp-empty">Sin vínculo activo.</div>'; return; }
+      if (!info.rows[sel.dir]) sel.dir = dirs[0].k;
+      var row = info.rows[sel.dir];
+      var catVis = (row.visibility && row.visibility[sel.cat]) || {};
+
+      var h = '<div class="sp-panel" style="padding:10px;">';
+      h += '<div class="sp-label" style="margin-bottom:6px;">Dirección</div>' +
+           '<div style="display:flex;gap:6px;margin-bottom:10px;">';
+      dirs.forEach(function(dd) {
+        var on = dd.k === sel.dir;
+        h += '<button class="sp-btn" style="flex:1;padding:6px;font-size:11px;' +
+             (on ? 'background:var(--accent);color:#0b0e14;border-color:transparent;' : '') +
+             '" onclick="visSetDir(\'' + pid + '\',\'' + dd.k + '\')">' + vinculosEsc(dd.label) + '</button>';
+      });
+      h += '</div>';
+      h += '<div class="sp-label" style="margin-bottom:6px;">Categoría</div>' +
+           '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">';
+      VINCULOS_CATS.forEach(function(cc) {
+        var on = cc[0] === sel.cat;
+        h += '<button class="sp-btn" style="padding:5px 9px;font-size:11px;' +
+             (on ? 'background:rgba(102,192,244,.18);border-color:rgba(102,192,244,.4);color:var(--accent);' : '') +
+             '" onclick="visSetCat(\'' + pid + '\',\'' + cc[0] + '\')">' + cc[1] + '</button>';
+      });
+      h += '</div>';
+      h += '<div class="sp-label" style="margin-bottom:6px;">Campos visibles — ' +
+           vinculosEsc(sel.dir === 'out' ? 'lo que tú compartes' : 'lo que te comparte') + '</div>';
+      VINCULOS_FIELDS.forEach(function(f) {
+        var on = catVis[f[0]] === true;
+        h += '<label class="sp-row" style="padding:6px 10px;">' +
+             '<input type="checkbox" class="sp-check" id="vis-f-' + pid + '-' + f[0] + '"' + (on ? ' checked' : '') + '> ' +
+             '<span class="sp-name" style="font-size:12px;">' + f[1] + '</span></label>';
+      });
+      h += '<div class="sp-hint">Aplica a todas las personas de ese tipo de vínculo según su propia matriz — esto edita solo esta relación.</div>';
+      h += '<div class="sp-actions" style="margin-top:10px;">' +
+           '<button class="sp-btn sp-btn-primary" onclick="vinculosGuardarVisibilidad(\'' + pid + '\')">Guardar</button></div>';
+      h += '</div>';
+      p.innerHTML = h;
+    }
+
+    async function vinculosGuardarVisibilidad(pid) {
+      var info = (window._vincPorPid || {})[pid];
+      var sel = visSel(pid);
+      if (!info || !info.rows[sel.dir]) return;
+      var row = info.rows[sel.dir];
+      var vis = JSON.parse(JSON.stringify(row.visibility || {}));
+      if (!vis[sel.cat]) vis[sel.cat] = {};
+      VINCULOS_FIELDS.forEach(function(f) {
+        var el = document.getElementById('vis-f-' + pid + '-' + f[0]);
+        if (el) vis[sel.cat][f[0]] = el.checked;
+      });
+      try {
+        var sb = await nexusSb();
+        var r = await sb.from('library_links').update({ visibility: vis }).eq('id', row.link_id);
+        if (r.error) throw new Error(r.error.message);
+        row.visibility = vis;
+        showToast && showToast('Visibilidad actualizada.', 'success');
+        renderVisPanel(pid);
+      } catch (e) {
+        showToast && showToast('Error: ' + (e.message || ''), 'error');
+      }
+    }
+
+    // ---- compartir tracking por item (Phase 5: is_private + shared_with) ----
+    var _shareCtx = null; // {cat, id, k} k = 'angel'|'talmai' (mi sección)
+
+    async function nexusFetchMyPrivacy(category, externalId) {
+      var sb = await nexusSb();
+      await nexusEnsureProfile();
+      var mediaId = await nexusMediaId(category, externalId);
+      if (!mediaId) return { is_private: false, shared_with: null };
+      var r = await sb.from('user_media_tracking')
+        .select('is_private,shared_with')
+        .eq('profile_id', _nexusUser.id).eq('media_item_id', mediaId).maybeSingle();
+      if (r.error) throw new Error(r.error.message);
+      return r.data || { is_private: false, shared_with: null };
+    }
+
+    // muestra el botón "Compartir" solo en la sección del usuario logueado
+    var _shareUiSeq = 0;
+    async function nexusSyncShareUI(it) {
+      if (!NEXUS_MODE || !it) return;
+      var seq = ++_shareUiSeq;
+      // sin perfil cargado nexusPersona() devuelve 'Yo' -> todas las secciones
+      // quedarian como solo-lectura; esperar a que cargue primero
+      try { await nexusEnsureProfile(); } catch (e) {}
+      if (seq !== _shareUiSeq) return; // se abrio otro item mientras cargaba
+      nexusItemPersonas(it).forEach(function(p) {
+        var k = p.key;
+        var box = document.getElementById('share-box-' + k);
+        var btn = document.getElementById('btn-share-' + k);
+        if (!box || !btn) return;
+        if (!p.mine) {
+          box.style.display = 'none';
+          // Phase 5: la sección del vinculado es solo lectura
+          var accR = document.getElementById('acc-' + k);
+          if (accR) accR.classList.add('is-remote');
+          return;
+        }
+        box.style.display = 'block';
+        var accS = document.getElementById('acc-' + k);
+        if (accS) accS.classList.remove('is-remote');
+        btn.innerHTML = svgIcon('i-users', 'ico-sm') + ' Compartir…';
+        nexusFetchMyPrivacy(currentCategory, it.id).then(function(st) {
+          var sw = st.shared_with;
+          var n = Array.isArray(sw) ? sw.length : 0;
+          if (st.is_private) {
+            btn.innerHTML = svgIcon('i-lock', 'ico-sm') + ' Privado';
+            btn.style.color = '#ff8585'; btn.style.borderColor = 'rgba(255,133,133,.4)';
+          } else if (n > 0) {
+            btn.innerHTML = svgIcon('i-users', 'ico-sm') + ' Con ' + n + (n === 1 ? ' persona' : ' personas');
+            btn.style.color = '#7ee0a3'; btn.style.borderColor = 'rgba(126,224,163,.4)';
+          } else {
+            btn.innerHTML = svgIcon('i-users', 'ico-sm') + ' Todos los vínculos';
+            btn.style.color = ''; btn.style.borderColor = '';
+          }
+        }).catch(function() {});
+      });
+    }
+
+    function nexusSharePanel(k) { return document.getElementById('share-panel-' + k); }
+
+    async function toggleSharePanel(k) {
+      if (!NEXUS_MODE || !currentItemId) return;
+      var panel = nexusSharePanel(k);
+      if (!panel) return;
+      var sendPanel = nexusSendPanel(k);
+      if (sendPanel) sendPanel.style.display = 'none';
+      if (panel.style.display !== 'none' && panel.innerHTML) {
+        panel.style.display = 'none';
+        return;
+      }
+      panel.style.display = 'block';
+      panel.innerHTML = '<div class="sp-empty">Cargando…</div>';
+      _shareCtx = { cat: currentCategory, id: currentItemId, k: k };
+      try {
+        var d = await nexusMisVinculos();
+        if (!_shareCtx || _shareCtx.k !== k) return; // usuario cambió de sección
+        var st = await nexusFetchMyPrivacy(_shareCtx.cat, _shareCtx.id);
+        renderSharePanel(st, d.links || []);
+      } catch (e) {
+        panel.innerHTML = '<div class="sp-empty" style="color:#ff8585;">Error: ' + vinculosEsc(e.message) + '</div>';
+      }
+    }
+
+    var VINCULOS_BADGE_COLORS = {
+      pareja:  { bg: '#ff8fa3', fg: '#2a0f16' },
+      familia: { bg: '#ffd479', fg: '#2a1f08' },
+      amigo:   { bg: '#66c0f4', fg: '#0b2436' },
+      custom:  { bg: '#b39ddb', fg: '#1c1430' }
+    };
+    function vinculosTypeLabel(x) {
+      if (x && x.link_type === 'custom' && x.link_label) return x.link_label;
+      return VINCULOS_LINK_TYPES[x && x.link_type] || (x && x.link_type) || '';
+    }
+
+    function nexusLinkBadge(linkType, linkLabel) {
+      var c = VINCULOS_BADGE_COLORS[linkType] || VINCULOS_BADGE_COLORS.custom;
+      var label = (linkType === 'custom' && linkLabel) ? linkLabel
+                : (VINCULOS_LINK_TYPES[linkType] || linkType || '');
+      return '<span class="sp-badge" style="background:' + c.bg + '22;color:' + c.bg + ';border:1px solid ' + c.bg + '55;">' + vinculosEsc(label) + '</span>';
+    }
+    function nexusAvatar(name, color) {
+      var ini = (name || '?').trim().charAt(0).toUpperCase();
+      return '<span class="sp-avatar" style="background:' + color + ';">' + vinculosEsc(ini) + '</span>';
+    }
+
+    function renderSharePanel(st, links) {
+      var k = _shareCtx.k;
+      var panel = nexusSharePanel(k);
+      var aceptados = (links || []).filter(function(x) {
+        return x.status === 'accepted' && x.other && x.other.profile_id;
+      });
+      var vistos = {}, personas = [];
+      aceptados.forEach(function(x) {
+        var pid = x.other.profile_id;
+        if (!vistos[pid]) { vistos[pid] = true; personas.push(x); }
+      });
+
+      var sw = Array.isArray(st.shared_with) ? st.shared_with : [];
+      var h = '';
+
+      h += '<div class="sp-label" style="color:#ff8585;">' + svgIcon('i-lock', 'ico-sm') + ' Privacidad de tu tracking</div>';
+
+      // toggle privado
+      h += '<label class="sp-row' + (st.is_private ? ' sp-row-danger' : '') + '">' +
+           '<input type="checkbox" class="sp-check" id="share-privado-' + k + '"' + (st.is_private ? ' checked' : '') + '> ' +
+           svgIcon('i-lock', 'ico-sm') + ' <span class="sp-name" style="font-size:12px;">Privado — nadie ve esto</span></label>';
+
+      // audiencia (solo si no está privado)
+      h += '<div id="share-aud-' + k + '" style="' + (st.is_private ? 'display:none;' : '') + 'margin-top:10px;">';
+      h += '<div class="sp-label">Visible para</div>';
+      h += '<label class="sp-row" style="padding:8px 10px;"><input type="radio" class="sp-check" name="share-mode-' + k + '"' + (sw.length === 0 ? ' checked' : '') + '> ' +
+           '<span class="sp-name" style="font-size:12px;">Todos mis vínculos</span></label>';
+      personas.forEach(function(x) {
+        var pid = x.other.profile_id;
+        var sel = sw.indexOf(pid) !== -1;
+        var col = VINCULOS_BADGE_COLORS[x.link_type] ? VINCULOS_BADGE_COLORS[x.link_type].bg : '#66c0f4';
+        h += '<label class="sp-row" style="padding:8px 10px;"><input type="checkbox" class="sp-check share-person-' + k + '" value="' + pid + '"' + (sel ? ' checked' : '') + '> ' +
+             nexusAvatar(vinculosNombre(x.other), col) +
+             '<span class="sp-name" style="font-size:12px;">' + vinculosEsc(vinculosNombre(x.other)) + '</span>' +
+             nexusLinkBadge(x.link_type, x.link_label) + '</label>';
+      });
+      if (!personas.length) {
+        h += '<div class="sp-empty">Sin vínculos aceptados — solo tú verás esto.</div>';
+      }
+      h += '</div>';
+      h += '<div class="sp-hint">El candado es solo para ti — los demás nunca ven que existe.</div>';
+      h += '<div class="sp-actions">' +
+           '<button class="sp-btn sp-btn-primary" onclick="guardarSharePanel(\'' + k + '\')">Guardar</button>' +
+           '<button class="sp-btn" onclick="nexusSharePanel(\'' + k + '\').style.display=\'none\'">Cerrar</button></div>';
+
+      panel.innerHTML = h;
+      var priv = document.getElementById('share-privado-' + k);
+      priv.addEventListener('change', function() {
+        var row = priv.closest('.sp-row');
+        if (row) row.classList.toggle('sp-row-danger', priv.checked);
+        document.getElementById('share-aud-' + k).style.display = priv.checked ? 'none' : 'block';
+      });
+    }
+
+    // muestra/oculta acordeones por persona segun visible{Persona} y
+    // colapsa el grid a 1 columna cuando solo queda una seccion
+    function nexusSetAccordionVisibility(it) {
+      var wrap = document.getElementById('tracking-personas');
+      if (!wrap) return;
+      var visibles = 0;
+      nexusItemPersonas(it).forEach(function(p) {
+        var acc = document.getElementById('acc-' + p.key);
+        if (!acc) return;
+        var oculto = it['visible' + p.suffix] === false;
+        acc.style.display = oculto ? 'none' : '';
+        if (!oculto) visibles++;
+      });
+      wrap.style.gridTemplateColumns = visibles > 1 ? '' : '1fr';
+    }
+
+    // refresca campos de personas/privacidad del item desde la DB al abrir el
+    // modal — el cache local puede tener visible{Persona} viejo (TTL 12h)
+    async function nexusRefreshItemPrivacy(it) {
+      if (!NEXUS_MODE || !it) return;
+      try {
+        var sb = await nexusSb();
+        var r = await sb.rpc('get_item_merged', {
+          p_category: currentCategory, p_external_id: String(it.id)
+        });
+        if (r.error || !r.data || typeof r.data !== 'object') return;
+        var fresh = r.data;
+        var changed = false;
+        Object.keys(fresh).forEach(function(k) {
+          if (/^(visible|estado|estrellas|deseado|progreso|nota)/.test(k) && fresh[k] !== it[k]) {
+            it[k] = fresh[k]; changed = true;
+          }
+        });
+        if (changed) {
+          nexusSetAccordionVisibility(it);
+          try {
+            localStorage.setItem('media_lib_' + CACHE_VERSION + '_' + currentCategory,
+              JSON.stringify(itemsByCategory[currentCategory]));
+          } catch (e) {}
+        }
+      } catch (e) {}
+    }
+
+    // ---- enviar item a un vínculo (Phase 5d: item_share_requests) ----
+    function nexusSendPanel(k) { return document.getElementById('send-panel-' + k); }
+
+    async function toggleSendPanel(k) {
+      if (!NEXUS_MODE || !currentItemId) return;
+      var panel = nexusSendPanel(k);
+      var sharePanel = nexusSharePanel(k);
+      if (sharePanel) sharePanel.style.display = 'none';
+      if (panel.style.display !== 'none' && panel.innerHTML) {
+        panel.style.display = 'none';
+        return;
+      }
+      panel.style.display = 'block';
+      panel.innerHTML = '<div class="sp-empty">Cargando…</div>';
+      try {
+        var d = await nexusMisVinculos();
+        if (!nexusSendPanel(k) || nexusSendPanel(k).style.display === 'none') return;
+        var vistos = {}, personas = [];
+        (d.links || []).forEach(function(x) {
+          if (x.status !== 'accepted' || !x.other || !x.other.profile_id) return;
+          var pid = x.other.profile_id;
+          if (!vistos[pid]) { vistos[pid] = true; personas.push(x); }
+        });
+        window._sendPersonas = window._sendPersonas || {};
+        window._sendPersonas[k] = {};
+        personas.forEach(function(x) { window._sendPersonas[k][x.other.profile_id] = vinculosNombre(x.other); });
+        var h = '<div class="sp-label">' + svgIcon('i-send', 'ico-sm') + ' Enviar este elemento a</div>';
+        if (!personas.length) {
+          h += '<div class="sp-empty">No tienes vínculos aceptados.</div>';
+        }
+        personas.forEach(function(x) {
+          var col = VINCULOS_BADGE_COLORS[x.link_type] ? VINCULOS_BADGE_COLORS[x.link_type].bg : '#66c0f4';
+          h += '<button class="sp-row" onclick="nexusSendItem(\'' + k + '\',\'' + x.other.profile_id + '\')">' +
+               nexusAvatar(vinculosNombre(x.other), col) +
+               '<span class="sp-name">' + vinculosEsc(vinculosNombre(x.other)) + '</span>' +
+               nexusLinkBadge(x.link_type, x.link_label) +
+               svgIcon('i-chevron-down', 'ico-sm') + '</button>';
+        });
+        h += '<div class="sp-hint">Te llega una solicitud — al aceptarla, el elemento aparece en su biblioteca.</div>';
+        h += '<div id="send-msg-' + k + '" class="sp-msg"></div>';
+        panel.innerHTML = h;
+      } catch (e) {
+        panel.innerHTML = '<div class="sp-empty" style="color:#ff8585;">Error: ' + vinculosEsc(e.message) + '</div>';
+      }
+    }
+
+    async function nexusSendItem(k, profileId) {
+      var nombre = (window._sendPersonas && window._sendPersonas[k] && window._sendPersonas[k][profileId]) || 'la persona';
+      var msg = document.getElementById('send-msg-' + k);
+      if (msg) { msg.textContent = 'Enviando…'; msg.style.color = '#8f98a0'; }
+      try {
+        var sb = await nexusSb();
+        var r = await sb.rpc('send_item_share', {
+          p_category: currentCategory,
+          p_external_id: String(currentItemId),
+          p_to_profile_id: profileId
+        });
+        if (r.error) throw new Error(r.error.message);
+        if (msg) { msg.textContent = 'Enviado a ' + nombre + ' — esperando confirmación.'; msg.style.color = '#7ee0a3'; }
+        showToast && showToast('Elemento enviado a ' + nombre, 'success');
+      } catch (e) {
+        if (msg) { msg.textContent = e.message || 'Error'; msg.style.color = '#ff8585'; }
+      }
+    }
+
+    async function guardarSharePanel(k, persona) {
+      if (!_shareCtx || _shareCtx.k !== k || !currentItemId) return;
+      var priv = document.getElementById('share-privado-' + k);
+      var isPrivate = priv && priv.checked;
+      var sw = [];
+      if (!isPrivate) {
+        document.querySelectorAll('.share-person-' + k + ':checked').forEach(function(c) { sw.push(c.value); });
+      }
+      try {
+        await nexusTrackingUpsert(_shareCtx.cat, _shareCtx.id, {
+          is_private: isPrivate,
+          shared_with: (isPrivate || sw.length === 0) ? null : sw
+        });
+        var ctx = _shareCtx;
+        nexusSharePanel(k).style.display = 'none';
+        nexusSyncShareUI({ id: ctx.id });
+        showToast && showToast('Privacidad actualizada.', 'success');
+      } catch (e) {
+        showToast && showToast('Error: ' + (e.message || ''), 'error');
+      }
+    }
+  </script>
+
+  <script>
+    const CATEGORY_ORDER = ['Juegos', 'Peliculas_Series', 'Libros', 'Mangas', 'Estadisticas'];
+    var currentCategory = 'Juegos';
+    var elementosPorPagina = 36;
+    var paginaActual = 1;
+    var observer = null;
+    var itemsByCategory = { Juegos: [], Peliculas_Series: [], Libros: [], Mangas: [] };
+    var filteredItems = [];
+
+    // ---- personas dinámicas (Phase 5: multi-vínculo) ----
+    // get_items_merged emite campos sufijados por persona: estado{Sufijo},
+    // visible{Sufijo}, etc. Sufijo = initcap(username) — ver phase5h_username.sql.
+    // 'estadoEmision'/'notaParche' son campos de catálogo — se excluyen.
+    var PERSONA_PALETTE = ['#66c0f4', '#ff4d6d', '#7ee0a3', '#ffd479', '#b48cff', '#ff9f43', '#54e0c7', '#f368e0'];
+    var _personas = []; // registro global [{suffix,key,color}] ordenado alfabético
+
+    function nexusScanItemPersonas(it, set) {
+      Object.keys(it || {}).forEach(function(k) {
+        var m = k.match(/^(?:estado|visible|username)([A-Z][A-Za-zÀ-ÿ0-9_]*)$/);
+        if (m && m[1] !== 'Emision') set[m[1]] = true;
+      });
+    }
+
+    function nexusRebuildPersonas() {
+      var set = {}, labels = {};
+      Object.keys(itemsByCategory).forEach(function(c) {
+        var arr = itemsByCategory[c] || [];
+        for (var i = 0; i < Math.min(arr.length, 3); i++) {
+          var it = arr[i];
+          nexusScanItemPersonas(it, set);
+          Object.keys(it || {}).forEach(function(k) {
+            var m = k.match(/^username([A-Z][A-Za-zÀ-ÿ0-9_]*)$/);
+            if (m && it[k] && !labels[m[1]]) labels[m[1]] = String(it[k]);
+          });
+        }
+      });
+      var sufs = Object.keys(set).sort(function(a, b) { return a.localeCompare(b); });
+      _personas = sufs.map(function(suf, i) {
+        return { suffix: suf, key: suf.toLowerCase(), color: PERSONA_PALETTE[i % PERSONA_PALETTE.length],
+                 label: labels[suf] || suf };
+      });
+    }
+
+    // nombre visible de una persona: username{Suf} del item > label global > sufijo
+    function nexusPersonaLabel(it, suf) {
+      var v = it && it['username' + suf];
+      if (v) return String(v);
+      var g = (_personas || []).filter(function(p) { return p.suffix === suf; })[0];
+      return g ? g.label : suf;
+    }
+
+    // personas de UN item concreto (modal): mi persona primero, resto alfabético
+    function nexusItemPersonas(it) {
+      var set = {};
+      nexusScanItemPersonas(it, set);
+      var yo = String(nexusPersona() || '').toLowerCase();
+      var sufs = Object.keys(set).sort(function(a, b) {
+        var am = a.toLowerCase() === yo, bm = b.toLowerCase() === yo;
+        if (am !== bm) return am ? -1 : 1;
+        return a.localeCompare(b);
+      });
+      var cmap = {};
+      (_personas || []).forEach(function(p) { cmap[p.suffix] = p; });
+      return sufs.map(function(suf) {
+        var g = cmap[suf];
+        return { suffix: suf, key: suf.toLowerCase(), mine: suf.toLowerCase() === yo,
+                 color: (g && g.color) || PERSONA_PALETTE[0],
+                 label: nexusPersonaLabel(it, suf) };
+      });
+    }
+
+    // dot de color de persona para chips/badges
+    function nexusPersonaDot(p, size) {
+      var s = size || 14;
+      return '<span style="display:inline-flex;align-items:center;justify-content:center;width:' + s + 'px;height:' + s +
+        'px;border-radius:50%;background:' + p.color + ';color:#0b0e14;font-size:' + Math.round(s * 0.55) +
+        'px;font-weight:800;flex-shrink:0;">' + vinculosEsc(p.suffix.charAt(0)) + '</span>';
+    }
+
+    // reconstruye los controles de filtro por persona (estado, nota mín.,
+    // deseados, orden) — preserva selecciones actuales
+    function nexusRenderFilterPersonas() {
+      var wrap = document.getElementById('filter-personas');
+      var selDeseado = document.getElementById('filter-deseado');
+      var selOrden = document.getElementById('filter-orden');
+      var prevDeseado = selDeseado ? selDeseado.value : 'todos';
+      var prevOrden = selOrden ? selOrden.value : 'az';
+      var prevEst = {}, prevNota = {};
+      (_personas || []).forEach(function(p) {
+        var e = document.getElementById('filter-est-' + p.key);
+        var n = document.getElementById('filter-nota-' + p.key);
+        if (e) prevEst[p.key] = e.value;
+        if (n) prevNota[p.key] = n.value;
+      });
+
+      var h = '';
+      (_personas || []).forEach(function(p) {
+        h += '<div class="filter-group"><label>' + nexusPersonaDot(p, 12) + ' ' + vinculosEsc(p.label || p.suffix) + ' (Estado)</label>' +
+             '<select id="filter-est-' + p.key + '" onchange="filtrarItems()">' +
+             '<option value="todos">Todos</option><option value="No jugado">Pendiente</option>' +
+             '<option value="En proceso">En proceso</option><option value="Completado">Completado</option></select></div>';
+        h += '<div class="filter-group"><label><svg class="ico ico-sm ico-gold"><use href="#i-star"/></svg> Nota Mínima ' + vinculosEsc(p.label || p.suffix) + '</label>' +
+             '<select id="filter-nota-' + p.key + '" onchange="filtrarItems()">' +
+             '<option value="0">Todas las notas</option><option value="5">5+ (5/10 o superior)</option>' +
+             '<option value="7">7+ (7/10 o superior)</option><option value="9">9+ (9/10 o superior)</option></select></div>';
+      });
+      if (wrap) wrap.innerHTML = h;
+      (_personas || []).forEach(function(p) {
+        var e = document.getElementById('filter-est-' + p.key);
+        var n = document.getElementById('filter-nota-' + p.key);
+        if (e) e.value = prevEst[p.key] || 'todos';
+        if (n) n.value = prevNota[p.key] || '0';
+      });
+
+      // deseados: todos / cualquiera / ninguno / solo:{key} / all
+      if (selDeseado) {
+        var dh = '<option value="todos">Todos</option><option value="cualquiera">Cualquiera</option>' +
+                 '<option value="ninguno">Ninguno</option>';
+        (_personas || []).forEach(function(p) {
+          dh += '<option value="solo:' + p.key + '">Solo ' + vinculosEsc(p.label || p.suffix) + '</option>';
+        });
+        if ((_personas || []).length > 1) dh += '<option value="all">Todos por igual</option>';
+        selDeseado.innerHTML = dh;
+        selDeseado.value = prevDeseado;
+        if (selDeseado.value !== prevDeseado) selDeseado.value = 'todos';
+      }
+
+      // orden por nota de cada persona
+      if (selOrden) {
+        var oh = '<option value="az">Alfabético (A - Z)</option><option value="za">Alfabético (Z - A)</option>' +
+                '<option value="recientes">Últimos añadidos</option>';
+        (_personas || []).forEach(function(p) {
+          oh += '<option value="nota:' + p.key + '">Nota de ' + vinculosEsc(p.label || p.suffix) + '</option>';
+        });
+        oh += '<option value="puntuacion">Puntuación</option>';
+        selOrden.innerHTML = oh;
+        selOrden.value = prevOrden;
+        if (selOrden.value !== prevOrden) selOrden.value = 'az';
+      }
+    }
+    var currentItemId = '';
+    var currentTrailerUrl = '';
+    var busquedaFiltroActiva = false;
+    var hlsInstance = null;
+    var MAX_CACHE_AGE = 12 * 60 * 60 * 1000;
+    const CACHE_VERSION = 'v22';
+    var currentStatsProfile = 'ambos';
+    var currentStatsCategory = 'todas';
+
+    const CAT_CONFIG = {
+      Juegos: { label: 'Juegos', icon: 'i-gamepad', searchPlaceholder: 'Filtrar juegos por título, dev, género o tag...', addPlaceholder: 'AppID, URL o nombre...', poster: false },
+      Peliculas_Series: { label: 'Cine y Series', icon: 'i-film', searchPlaceholder: 'Filtrar películas, series y animes...', addPlaceholder: 'Buscar película, serie o URL...', poster: true },
+      Libros: { label: 'Libros', icon: 'i-book', searchPlaceholder: 'Filtrar libros por título, autor o género...', addPlaceholder: 'Buscar libro, autor o ISBN...', poster: true },
+      Mangas: { label: 'Mangas', icon: 'i-manga', searchPlaceholder: 'Filtrar mangas por título, mangaka o género...', addPlaceholder: 'Buscar manga o URL...', poster: true },
+      Estadisticas: { label: 'Estadísticas', icon: 'i-stats', searchPlaceholder: '', addPlaceholder: '', poster: false }
+    };
+
+    function svgIcon(id, cls) {
+      return `<svg class="ico${cls ? ' ' + cls : ''}"><use href="#${id}"/></svg>`;
+    }
+
+    function debounce(fn, ms) {
+      let t;
+      return function(...args) { clearTimeout(t); t = setTimeout(() => fn.apply(this, args), ms); };
+    }
+    const filtrarItemsDebounced = debounce(() => filtrarItems(), 220);
+
+    function showToast(msg, type) {
+      var c = document.getElementById('toast-container');
+      var t = document.createElement('div');
+      t.className = 'toast' + (type ? ' ' + type : '');
+      t.innerText = msg;
+      c.appendChild(t);
+      requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add('show')));
+      setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 220); }, 3000);
+    }
+
+    /* NAVEGACIÓN POR DESLIZAMIENTO HORIZONTAL (SWIPE) ENTRE PESTAÑAS */
+    function inicializarGestosSwipe() {
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let touchStartTime = 0;
+      let swipeIgnorado = false;
+
+      document.addEventListener('touchstart', function(e) {
+        if (e.touches.length !== 1) { swipeIgnorado = true; return; }
+        const t = e.target;
+        const hayModal =
+          document.getElementById('modal').style.display === 'flex' ||
+          document.getElementById('modal-papelera').style.display === 'flex' ||
+          document.getElementById('modal-match').style.display === 'flex' ||
+          document.getElementById('panel-filtros').classList.contains('open');
+
+        if (hayModal || t.closest('.carousel, .category-tabs, .stats-selectors-row, input, textarea, select')) {
+          swipeIgnorado = true;
+          return;
+        }
+        swipeIgnorado = false;
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        touchStartTime = Date.now();
+      }, { passive: true });
+
+      document.addEventListener('touchend', function(e) {
+        if (swipeIgnorado || e.changedTouches.length !== 1) return;
+        const dx = e.changedTouches[0].clientX - touchStartX;
+        const dy = e.changedTouches[0].clientY - touchStartY;
+        const dt = Date.now() - touchStartTime;
+
+        if (dt < 550 && Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.8) {
+          const idx = CATEGORY_ORDER.indexOf(currentCategory);
+          if (idx === -1) return;
+          if (dx < 0 && idx < CATEGORY_ORDER.length - 1) {
+            cambiarCategoria(CATEGORY_ORDER[idx + 1]);
+          } else if (dx > 0 && idx > 0) {
+            cambiarCategoria(CATEGORY_ORDER[idx - 1]);
+          }
+        }
+      }, { passive: true });
+    }
+
+    window.onload = function() {
+      if (NEXUS_MODE) { nexusBoot(nexusInitApp); return; }
+      nexusInitApp();
+    };
+
+    function nexusInitApp() {
+      var btnVinc = document.getElementById('btn-vinculos');
+      if (btnVinc && NEXUS_MODE) {
+        btnVinc.style.display = '';
+        nexusRefreshVinculosBadge();
+        setInterval(nexusRefreshVinculosBadge, 60000);
+      }
+      configurarFiltrosCategoria('Juegos');
+      cargarCategoria('Juegos', false);
+      ['Peliculas_Series', 'Libros', 'Mangas'].forEach(c => precargarCategoriaSilenciosa(c));
+      inicializarGestosSwipe();
+      var inputBuscarEl = document.getElementById('inputBuscar');
+      if (inputBuscarEl) {
+        inputBuscarEl.addEventListener('focus', function() {
+          cerrarBusquedaAgregar();
+          if (!busquedaFiltroActiva) {
+            busquedaFiltroActiva = true;
+            history.pushState({ sf: true }, '', window.location.href);
+          }
+        });
+        inputBuscarEl.addEventListener('click', function() { cerrarBusquedaAgregar(); });
+      }
+      var lastScrollY = window.scrollY || window.pageYOffset || 0;
+      window.addEventListener('scroll', function() {
+        var curY = window.scrollY || window.pageYOffset || 0;
+        if (Math.abs(curY - lastScrollY) > 6 && document.getElementById('add-wrapper-box').classList.contains('expanded')) {
+          cerrarBusquedaAgregar();
+        }
+        lastScrollY = curY;
+      }, { passive: true });
+      var swipeStartX = 0, swipeStartY = 0;
+      document.addEventListener('touchstart', function(e) {
+        if (e.touches.length === 1) {
+          swipeStartX = e.touches[0].clientX;
+          swipeStartY = e.touches[0].clientY;
+        }
+      }, { passive: true });
+      document.addEventListener('touchmove', function(e) {
+        if (e.touches.length !== 1) return;
+        if (!document.getElementById('add-wrapper-box').classList.contains('expanded')) return;
+        
+        // No cerrar si el toque se origina dentro del dropdown de resultados
+        if (e.target.closest('#search-dropdown')) return;
+
+        var dx = Math.abs(e.touches[0].clientX - swipeStartX);
+        var dy = Math.abs(e.touches[0].clientY - swipeStartY);
+        if (dx > 18 || dy > 18) {
+          cerrarBusquedaAgregar();
+        }
+      }, { passive: true });
+
+      window.addEventListener('popstate', function(event) {
+        var dropdown = document.getElementById('search-dropdown');
+        var panelFiltros = document.getElementById('panel-filtros');
+        var modalDetalle = document.getElementById('modal');
+        var modalPapelera = document.getElementById('modal-papelera');
+        var modalMatch = document.getElementById('modal-match');
+
+        if (modalDetalle.style.display === 'flex') { cerrarModal(); history.pushState(null, '', window.location.href); }
+        else if (modalPapelera.style.display === 'flex') { cerrarPapelera(); history.pushState(null, '', window.location.href); }
+        else if (modalMatch.style.display === 'flex') { cerrarMatchModal(); history.pushState(null, '', window.location.href); }
+        else if (panelFiltros.classList.contains('open')) {
+          panelFiltros.classList.remove('open');
+          document.getElementById('btn-toggle-filtros').classList.remove('active');
+          history.pushState(null, '', window.location.href);
+        }
+        else if (busquedaFiltroActiva || document.activeElement === document.getElementById('inputBuscar')) {
+          busquedaFiltroActiva = false;
+          document.getElementById('inputBuscar').blur();
+          history.pushState(null, '', window.location.href);
+        }
+        else if (dropdown.classList.contains('open') || document.activeElement === document.getElementById('inputAgregar') || document.getElementById('add-wrapper-box').classList.contains('expanded')) {
+          cerrarBusquedaAgregar();
+          history.pushState(null, '', window.location.href);
+        }
+      });
+      history.pushState(null, '', window.location.href);
+
+      document.addEventListener('click', function(e) {
+        var panel = document.getElementById('panel-filtros');
+        var btn = document.getElementById('btn-toggle-filtros');
+        if (panel.classList.contains('open') && !panel.contains(e.target) && !btn.contains(e.target)) {
+          panel.classList.remove('open');
+          btn.classList.remove('active');
+        }
+        var dd = document.getElementById('search-dropdown');
+        var addWrap = document.querySelector('.add-wrapper');
+        if (dd && dd.classList.contains('open') && !addWrap.contains(e.target)) {
+          cerrarBusquedaAgregar();
+        }
+      });
+    };
+
+    function precargarCategoriaSilenciosa(cat) {
+      try {
+        var raw = localStorage.getItem(`media_lib_${CACHE_VERSION}_${cat}`);
+        var ts = localStorage.getItem(`media_lib_time_${CACHE_VERSION}_${cat}`);
+        if (raw && ts && (Date.now() - Number(ts) < MAX_CACHE_AGE)) {
+          itemsByCategory[cat] = JSON.parse(raw);
+          return;
+        }
+      } catch (e) {}
+
+      RUN
+        .withSuccessHandler(function(lista) {
+          itemsByCategory[cat] = Array.isArray(lista) ? lista : [];
+          try {
+            localStorage.setItem(`media_lib_${CACHE_VERSION}_${cat}`, JSON.stringify(itemsByCategory[cat]));
+            localStorage.setItem(`media_lib_time_${CACHE_VERSION}_${cat}`, String(Date.now()));
+          } catch (e) {}
+          if (currentCategory === 'Estadisticas') renderizarEstadisticas();
+        })
+        .getItems(cat);
+    }
+
+    function activarModoBusquedaAgregar(activar) {
+      var box = document.getElementById('add-wrapper-box');
+      var rightCtrls = document.getElementById('right-ctrls');
+      if (activar && !box.classList.contains('expanded')) {
+        box.classList.add('expanded');
+        rightCtrls.classList.add('hidden');
+        history.pushState(null, '', window.location.href);
+      }
+    }
+
+    function syncAddClearBtn() {
+      var box = document.getElementById('add-wrapper-box');
+      var inp = document.getElementById('inputAgregar');
+      if (box && inp) box.classList.toggle('has-text', inp.value.trim().length > 0);
+    }
+
+    function cerrarBusquedaAgregar(soloLimpiar) {
+      var input = document.getElementById('inputAgregar');
+      input.value = '';
+      syncAddClearBtn();
+      document.getElementById('search-dropdown').classList.remove('open');
+      if (soloLimpiar) {
+        activarModoBusquedaAgregar(true);
+        input.focus();
+        return;
+      }
+      document.getElementById('add-wrapper-box').classList.remove('expanded');
+      document.getElementById('right-ctrls').classList.remove('hidden');
+      if (document.activeElement === input) input.blur();
+    }
+
+    const autocompletarAgregarDebounced = debounce(function() {
+      var val = document.getElementById('inputAgregar').value.trim();
+      if (val.length < 3) {
+        document.getElementById('search-dropdown').classList.remove('open');
+        return;
+      }
+      var esUrlOId = /^\d+$/.test(val) || val.includes('http://') || val.includes('https://') || /^(movie|tv|al)-\d+$/i.test(val);
+      if (!esUrlOId) manejarAgregar(true);
+    }, 500);
+
+    function cambiarCategoria(cat) {
+      if (cat === currentCategory) return;
+      currentCategory = cat;
+      paginaActual = 1;
+
+      var panel = document.getElementById('panel-filtros');
+      if (panel.classList.contains('open')) {
+        panel.classList.remove('open');
+        document.getElementById('btn-toggle-filtros').classList.remove('active');
+      }
+
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-cat') === cat);
+      });
+
+      var grid = document.getElementById('grid');
+      var statsView = document.getElementById('stats-view');
+      var controlsBox = document.getElementById('main-controls-box');
+      var statsBar = document.getElementById('stats-bar');
+
+      if (cat === 'Estadisticas') {
+        grid.style.display = 'none';
+        statsBar.style.display = 'none';
+        controlsBox.style.display = 'none';
+        statsView.style.display = 'flex';
+        document.body.classList.add('view-stats');
+        ['Juegos', 'Peliculas_Series', 'Libros', 'Mangas'].forEach(c => precargarCategoriaSilenciosa(c));
+        renderizarEstadisticas();
+        return;
+      } else {
+        document.body.classList.remove('view-stats');
+        controlsBox.style.display = 'flex';
+        statsView.style.display = 'none';
+        grid.style.display = 'grid';
+      }
+
+      var cfg = CAT_CONFIG[cat];
+      document.getElementById('inputBuscar').value = '';
+      document.getElementById('inputBuscar').placeholder = cfg.searchPlaceholder;
+      document.getElementById('inputAgregar').value = '';
+      document.getElementById('inputAgregar').placeholder = cfg.addPlaceholder;
+      cerrarBusquedaAgregar();
+
+      grid.classList.toggle('poster-mode', cfg.poster);
+
+      configurarFiltrosCategoria(cat);
+      resetFiltros(true);
+      cargarCategoria(cat, false);
+    }
+
+    function cargarCategoria(cat, forzarRed) {
+      if (cat === 'Estadisticas') return;
+      if (!forzarRed) {
+        try {
+          var raw = localStorage.getItem(`media_lib_${CACHE_VERSION}_${cat}`);
+          var ts = localStorage.getItem(`media_lib_time_${CACHE_VERSION}_${cat}`);
+          if (raw && ts && (Date.now() - Number(ts) < MAX_CACHE_AGE)) {
+            itemsByCategory[cat] = JSON.parse(raw);
+            nexusRebuildPersonas();
+            nexusRenderFilterPersonas();
+            filtrarItems();
+            return;
+          }
+        } catch (e) {}
+      }
+
+      var grid = document.getElementById('grid');
+      if (currentCategory === cat) {
+        grid.innerHTML = '<div class="spinner-container"><div class="spinner"></div><div style="color:var(--accent);font-weight:700;">Cargando ' + CAT_CONFIG[cat].label + '...</div></div>';
+      }
+
+      RUN
+        .withSuccessHandler(function(lista) {
+          itemsByCategory[cat] = Array.isArray(lista) ? lista : [];
+          try {
+            localStorage.setItem(`media_lib_${CACHE_VERSION}_${cat}`, JSON.stringify(itemsByCategory[cat]));
+            localStorage.setItem(`media_lib_time_${CACHE_VERSION}_${cat}`, String(Date.now()));
+          } catch (e) {}
+          nexusRebuildPersonas();
+          nexusRenderFilterPersonas();
+          if (currentCategory === cat) filtrarItems();
+          else if (currentCategory === 'Estadisticas') renderizarEstadisticas();
+        })
+        .withFailureHandler(function(err) {
+          if (currentCategory === cat) {
+            grid.innerHTML = '<p style="text-align:center;grid-column:1/-1;color:#ff6b6b;">Error: ' + escaparHTML(err.message) + '</p>';
+          }
+        })
+        .getItems(cat);
+    }
+
+    function forzarSincronizacion() {
+      if (currentCategory === 'Estadisticas') {
+        ['Juegos', 'Peliculas_Series', 'Libros', 'Mangas'].forEach(c => cargarCategoria(c, true));
+        showToast('Actualizando estadísticas...', 'success');
+      } else {
+        cargarCategoria(currentCategory, true);
+      }
+    }
+
+    function configurarFiltrosCategoria(cat) {
+      var f1 = document.getElementById('extra-filter-1');
+      var f2 = document.getElementById('extra-filter-2');
+      var f3 = document.getElementById('extra-filter-3');
+
+      if (cat === 'Juegos') {
+        f1.innerHTML = '<label>Modo / Co-op</label><select id="f-extra-1" onchange="filtrarItems()"><option value="todos">Todos</option><option value="coop">Cualquier Co-op</option><option value="Un jugador">Un jugador</option><option value="Multijugador">Multijugador</option></select>';
+        f2.innerHTML = '<label>Steam Deck</label><select id="f-extra-2" onchange="filtrarItems()"><option value="todos">Todos</option><option value="Verificado">Verificado</option><option value="Jugable">Jugable</option></select>';
+        f3.innerHTML = '<label>Precio</label><select id="f-extra-3" onchange="filtrarItems()"><option value="todos">Todos</option><option value="gratis">Gratis</option><option value="pago">De Pago</option></select>';
+      } else if (cat === 'Peliculas_Series') {
+        f1.innerHTML = '<label>Tipo</label><select id="f-extra-1" onchange="filtrarItems()"><option value="todos">Todos</option><option value="Película">Películas</option><option value="Serie">Series / Animes</option></select>';
+        f2.innerHTML = '<label>Plataforma</label><select id="f-extra-2" onchange="filtrarItems()"><option value="todos">Todas</option><option value="Netflix">Netflix</option><option value="Crunchyroll">Crunchyroll</option><option value="Max">Max</option><option value="Prime">Prime Video</option><option value="Disney">Disney+</option></select>';
+        f3.innerHTML = '<label>Estado</label><select id="f-extra-3" onchange="filtrarItems()"><option value="todos">Todos</option><option value="En emisión">En emisión</option><option value="Finalizada">Finalizada</option></select>';
+      } else if (cat === 'Libros') {
+        f1.innerHTML = '<label>Extensión</label><select id="f-extra-1" onchange="filtrarItems()"><option value="todos">Todas</option><option value="corto">Corto (&lt; 250 págs)</option><option value="medio">Medio (250 - 500)</option><option value="largo">Largo (&gt; 500 págs)</option></select>';
+        f2.innerHTML = ''; f3.innerHTML = '';
+      } else if (cat === 'Mangas') {
+        f1.innerHTML = '<label>Estado</label><select id="f-extra-1" onchange="filtrarItems()"><option value="todos">Todos</option><option value="En emisión">En emisión</option><option value="Finalizado">Finalizado</option></select>';
+        f2.innerHTML = '<label>Demografía</label><select id="f-extra-2" onchange="filtrarItems()"><option value="todos">Todas</option><option value="Shounen">Shounen</option><option value="Seinen">Seinen</option><option value="Shoujo">Shoujo</option><option value="Josei">Josei</option></select>';
+        f3.innerHTML = '';
+      }
+    }
+
+    function toggleFiltros(e) {
+      e.stopPropagation();
+      cerrarBusquedaAgregar();
+      var panel = document.getElementById('panel-filtros');
+      panel.classList.toggle('open');
+      document.getElementById('btn-toggle-filtros').classList.toggle('active');
+      if (panel.classList.contains('open')) {
+        history.pushState(null, '', window.location.href);
+      }
+    }
+
+    function resetFiltros(noRender) {
+      (_personas || []).forEach(function(p) {
+        var e = document.getElementById('filter-est-' + p.key);
+        var n = document.getElementById('filter-nota-' + p.key);
+        if (e) e.value = 'todos';
+        if (n) n.value = '0';
+      });
+      document.getElementById('filter-deseado').value = 'todos';
+      document.getElementById('filter-orden').value = 'az';
+      ['f-extra-1', 'f-extra-2', 'f-extra-3'].forEach(id => {
+        var el = document.getElementById(id);
+        if (el) el.value = 'todos';
+      });
+      if (!noRender) filtrarItems();
+    }
+
+    function filtrarItems() {
+      paginaActual = 1;
+      var lista = itemsByCategory[currentCategory] || [];
+      var q = document.getElementById('inputBuscar').value.toLowerCase().trim();
+      var fDeseado = document.getElementById('filter-deseado').value;
+      var fOrden = document.getElementById('filter-orden').value;
+      var e1 = document.getElementById('f-extra-1')?.value || 'todos';
+      var e2 = document.getElementById('f-extra-2')?.value || 'todos';
+      var e3 = document.getElementById('f-extra-3')?.value || 'todos';
+
+      // filtros por persona: {key: {est, notaMin}}
+      var fPers = {};
+      var hayPers = false;
+      (_personas || []).forEach(function(p) {
+        var est = document.getElementById('filter-est-' + p.key);
+        var nota = document.getElementById('filter-nota-' + p.key);
+        var fv = est ? est.value : 'todos';
+        var nv = nota ? (parseInt(nota.value, 10) || 0) : 0;
+        fPers[p.key] = { est: fv, notaMin: nv, suffix: p.suffix };
+        if (fv !== 'todos' || nv > 0) hayPers = true;
+      });
+
+      var hayFiltros = hayPers || fDeseado !== 'todos' || e1 !== 'todos' || e2 !== 'todos' || e3 !== 'todos' || fOrden !== 'az' || q.length > 0;
+      document.getElementById('btn-toggle-filtros').classList.toggle('has-filters', hayFiltros);
+
+      var filtrados = lista.filter(function(it) {
+        var matchQ = !q ||
+          String(it.titulo).toLowerCase().includes(q) ||
+          String(it.creador).toLowerCase().includes(q) ||
+          String(it.generos).toLowerCase().includes(q) ||
+          String(it.tags || '').toLowerCase().includes(q) ||
+          String(it.id).toLowerCase().includes(q);
+
+        // filtros por persona
+        var dMap = {};
+        var allDeseado = true, anyDeseado = false;
+        for (var pk in fPers) {
+          var fp = fPers[pk];
+          var est = it['estado' + fp.suffix] || 'No jugado';
+          if (fp.est !== 'todos' && est !== fp.est) return false;
+          var pts = Number(it['estrellas' + fp.suffix]) || 0;
+          if (fp.notaMin > 0 && pts < fp.notaMin) return false;
+          var d = Boolean(it['deseado' + fp.suffix]);
+          dMap[pk] = d;
+          if (d) anyDeseado = true; else allDeseado = false;
+        }
+        if (fDeseado === 'cualquiera' && !anyDeseado) return false;
+        if (fDeseado === 'ninguno' && anyDeseado) return false;
+        if (fDeseado === 'all' && !allDeseado) return false;
+        if (fDeseado.indexOf('solo:') === 0) {
+          var sk = fDeseado.slice(5);
+          var sp = (_personas || []).filter(function(x) { return x.key === sk; })[0];
+          if (sp && !it['deseado' + sp.suffix]) return false;
+        }
+
+        if (currentCategory === 'Juegos') {
+          var modos = String(it.modos || '').toLowerCase();
+          if (e1 === 'coop' && !(modos.includes('co-op') || modos.includes('cooperativo') || modos.includes('remote play'))) return false;
+          if (e1 !== 'todos' && e1 !== 'coop' && !modos.includes(e1.toLowerCase())) return false;
+          if (e2 !== 'todos' && !String(it.steamdeck || '').toLowerCase().includes(e2.toLowerCase())) return false;
+          var pr = String(it.precio || '').toLowerCase();
+          var gratis = pr.includes('gratis') || pr.includes('free');
+          if (e3 === 'gratis' && !gratis) return false;
+          if (e3 === 'pago' && (gratis || !pr || pr === 'n/a')) return false;
+        } else if (currentCategory === 'Peliculas_Series') {
+          if (e1 !== 'todos' && it.tipo !== e1) return false;
+          if (e2 !== 'todos' && !String(it.plataformas || '').toLowerCase().includes(e2.toLowerCase())) return false;
+          if (e3 !== 'todos' && !String(it.estadoEmision || '').toLowerCase().includes(e3.toLowerCase())) return false;
+        } else if (currentCategory === 'Libros') {
+          var pags = parseInt(String(it.extension || '').replace(/\D/g, ''), 10) || 0;
+          if (e1 === 'corto' && (pags === 0 || pags >= 250)) return false;
+          if (e1 === 'medio' && (pags < 250 || pags > 500)) return false;
+          if (e1 === 'largo' && pags <= 500) return false;
+        } else if (currentCategory === 'Mangas') {
+          if (e1 !== 'todos' && !String(it.estadoEmision || '').toLowerCase().includes(e1.toLowerCase())) return false;
+          if (e2 !== 'todos' && !String(it.demografia || '').toLowerCase().includes(e2.toLowerCase())) return false;
+        }
+
+        return matchQ;
+      });
+
+      function obtenerPuntuacionNormalizada(puntuacionRaw) {
+        var s = formatearPuntuacionBadge_(puntuacionRaw);
+        if (!s) return 0;
+        var num = parseFloat(s);
+        if (isNaN(num)) return 0;
+        if (num > 10) return num / 10;
+        return num;
+      }
+
+      filteredItems = [].concat(filtrados).sort(function(a, b) {
+        if (fOrden === 'za') return String(b.titulo).localeCompare(String(a.titulo));
+        if (fOrden === 'recientes') return (b.index || 0) - (a.index || 0);
+        if (fOrden.indexOf('nota:') === 0) {
+          var ok = fOrden.slice(5);
+          var op = (_personas || []).filter(function(x) { return x.key === ok; })[0];
+          if (op) return (b['estrellas' + op.suffix] || 0) - (a['estrellas' + op.suffix] || 0);
+        }
+        if (fOrden === 'puntuacion') return obtenerPuntuacionNormalizada(b.puntuacion) - obtenerPuntuacionNormalizada(a.puntuacion);
+        return String(a.titulo).localeCompare(String(b.titulo));
+      });
+
+      actualizarStats(lista.length, filteredItems.length);
+      renderGrid(filteredItems);
+    }
+
+    function actualizarStats(total, mostrados) {
+      var bar = document.getElementById('stats-bar');
+      if (!total) { bar.style.display = 'none'; return; }
+      var lista = itemsByCategory[currentCategory] || [];
+      var pills = '';
+      (_personas || []).forEach(function(p) {
+        var cN = lista.filter(function(x) {
+          return x['estado' + p.suffix] === 'Completado' && x['visible' + p.suffix] !== false;
+        }).length;
+        pills += `<div class="stat-pill">${nexusPersonaDot(p, 12)} Completados: <strong>${cN}</strong></div>`;
+      });
+      var des = lista.filter(function(x) {
+        return (_personas || []).some(function(p) { return x['deseado' + p.suffix] && x['visible' + p.suffix] !== false; });
+      }).length;
+
+      bar.style.display = 'flex';
+      bar.innerHTML =
+        `<div class="stat-pill">${svgIcon('i-folder', 'ico-sm')} Mostrando <strong>${mostrados} / ${total}</strong></div>` +
+        pills +
+        `<div class="stat-pill">${svgIcon('i-heart-fill', 'ico-sm ico-wish')} Deseados: <strong>${des}</strong></div>`;
+    }
+
+    function escaparHTML(s) {
+      return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    const FALLBACK_SVG = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='450'><rect width='100%25' height='100%25' fill='%23171a21'/><text x='50%25' y='50%25' fill='%2366c0f4' font-family='sans-serif' font-size='16' font-weight='bold' text-anchor='middle' dominant-baseline='middle'>Sin Imagen</text></svg>";
+
+    function renderGrid(items) {
+      var grid = document.getElementById('grid');
+      if (!items || items.length === 0) {
+        grid.innerHTML = '<p style="text-align:center;grid-column:1/-1;color:#8f98a0;margin-top:30px;">No hay elementos en esta vista.</p>';
+        return;
+      }
+      var itemsVisibles = items.slice(0, paginaActual * elementosPorPagina);
+      var frag = document.createDocumentFragment();
+
+      itemsVisibles.forEach(function(it) {
+        var card = document.createElement('div');
+        card.className = 'card';
+        card.onclick = () => abrirModal(it.id);
+
+        // personas del item (dinámico multi-vínculo)
+        var pers = nexusItemPersonas(it);
+        var chipsHTML = '';
+        var wishDots = '';
+        var anyWish = false;
+        pers.forEach(function(p) {
+          var vis = it['visible' + p.suffix] !== false;
+          if (!vis) return;
+          var est = it['estado' + p.suffix] || 'No jugado';
+          var cls = est === 'Completado' ? 'status-done' : (est === 'En proceso' ? 'status-playing' : 'status-none');
+          var lbl = (!est || est === 'No jugado') ? 'Pendiente' : est;
+          var lock = p.mine && it['privado' + p.suffix] === true ? svgIcon('i-lock', 'ico-sm') + ' ' : '';
+          chipsHTML += `<div class="status-chip ${cls}" style="display:inline-flex;align-items:center;gap:5px;">${nexusPersonaDot(p, 13)} ${lock}${escaparHTML(lbl)}</div>`;
+          if (it['deseado' + p.suffix]) { wishDots += nexusPersonaDot(p, 13); anyWish = true; }
+        });
+
+        var topBadgeHTML = '';
+        if (currentCategory === 'Juegos') {
+          var m = String(it.modos || '').toLowerCase();
+          if (m.includes('co-op') || m.includes('cooperativo')) topBadgeHTML = `<div class="top-badge">${svgIcon('i-users', 'ico-sm')} Co-op</div>`;
+        } else if (currentCategory === 'Peliculas_Series' && it.tipo) {
+          topBadgeHTML = `<div class="top-badge">${it.tipo === 'Serie' ? svgIcon('i-tv', 'ico-sm') + ' Serie' : svgIcon('i-film', 'ico-sm') + ' Película'}</div>`;
+        } else if (currentCategory === 'Libros' && it.extension && it.extension !== 'N/A') {
+          topBadgeHTML = `<div class="top-badge">${svgIcon('i-book', 'ico-sm')} ${escaparHTML(it.extension)}</div>`;
+        } else if (currentCategory === 'Mangas' && it.demografia) {
+          topBadgeHTML = `<div class="top-badge">${svgIcon('i-manga', 'ico-sm')} ${escaparHTML(it.demografia)}</div>`;
+        }
+
+        var wishBadgeHTML = anyWish ?
+          `<div class="wishlist-badge" style="display:flex;align-items:center;gap:2px;">${svgIcon('i-heart-fill', 'ico-sm ico-wish')}${wishDots}</div>` : '';
+
+        card.innerHTML = `
+          <div class="img-container">
+            ${topBadgeHTML} ${wishBadgeHTML}
+            <img src="${escaparHTML(it.portada)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src=FALLBACK_SVG;">
+          </div>
+          <div class="card-content">
+            <div class="card-title">${escaparHTML(it.titulo)}</div>
+            <div class="card-dev">${escaparHTML((it.creador && String(it.creador).toLowerCase() !== 'undefined') ? it.creador : ((it.autor && String(it.autor).toLowerCase() !== 'undefined') ? it.autor : 'Autor por definir'))}</div>
+            <div class="status-container">
+              ${chipsHTML}
+            </div>
+            ${generarBarraLecturaCard(it)}
+          </div>`;
+        frag.appendChild(card);
+      });
+      grid.replaceChildren(frag);
+
+      if (itemsVisibles.length < items.length) {
+        var sentinel = document.createElement('div');
+        sentinel.id = 'scroll-sentinel';
+        sentinel.style.gridColumn = '1 / -1'; sentinel.style.height = '35px'; sentinel.style.textAlign = 'center';
+        sentinel.innerHTML = '<span style="color:#8f98a0;font-size:11px;">Cargando más...</span>';
+        grid.appendChild(sentinel);
+        configurarObserver();
+      }
+    }
+
+    function configurarObserver() {
+      if (observer) observer.disconnect();
+      var sentinel = document.getElementById('scroll-sentinel');
+      if (!sentinel) return;
+      observer = new IntersectionObserver(function(entries) {
+        if (entries[0].isIntersecting) { paginaActual++; renderGrid(filteredItems); }
+      }, { rootMargin: '250px' });
+      observer.observe(sentinel);
+    }
+
+    function manejarAgregar(silencioso) {
+      var val = document.getElementById('inputAgregar').value.trim();
+      if (!val) { if (!silencioso) showToast('Escribe un nombre, ID o URL.', 'warning'); return; }
+
+      var esDirecto = false;
+      if (currentCategory === 'Juegos' && (/^\d+$/.test(val) || val.includes('steampowered.com/app/'))) esDirecto = true;
+      if (currentCategory === 'Peliculas_Series' && (/^(movie|tv)-\d+$/i.test(val) || val.includes('themoviedb.org/'))) esDirecto = true;
+      if (currentCategory === 'Libros' && (/^OL\d+[WM]$/i.test(val) || /^(\d{10}|\d{13})$/.test(val.replace(/[-\s]/g, '')) || val.includes('openlibrary.org/'))) esDirecto = true;
+      if (currentCategory === 'Mangas' && (/^(al-)?\d+$/i.test(val) || val.includes('myanimelist.net/manga/') || val.includes('anilist.co/manga/'))) esDirecto = true;
+
+      if (esDirecto) { ejecutarAgregarDirecto(val); return; }
+
+      activarModoBusquedaAgregar(true);
+
+      var btn = document.getElementById('btn-add');
+      var dd = document.getElementById('search-dropdown');
+      btn.innerHTML = '...'; btn.disabled = true;
+      dd.innerHTML = '<div style="padding:12px;text-align:center;color:var(--accent);font-size:12px;">Buscando coincidencias...</div>';
+      dd.classList.add('open');
+
+      var finalizado = false;
+      var timer = setTimeout(function() {
+        if (finalizado) return;
+        finalizado = true;
+        btn.innerHTML = svgIcon('i-plus', 'ico-sm'); btn.disabled = false;
+        dd.innerHTML = '<div style="padding:12px;text-align:center;color:#ff8585;font-size:12px;">Tiempo agotado. Intenta de nuevo.</div>';
+      }, 12000);
+
+      RUN
+        .withSuccessHandler(function(resultados) {
+          if (finalizado) return;
+          finalizado = true; clearTimeout(timer);
+          btn.innerHTML = svgIcon('i-plus', 'ico-sm'); btn.disabled = false;
+          if (!resultados || resultados.length === 0) {
+            dd.innerHTML = '<div style="padding:12px;text-align:center;color:#8f98a0;font-size:12px;">Sin resultados.</div>';
+            return;
+          }
+          dd.innerHTML = resultados.map(r => `
+            <div class="search-result-item" onclick="ejecutarAgregarDirecto('${escaparHTML(r.id)}')">
+              <img src="${escaparHTML(r.portada)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src=FALLBACK_SVG;">
+              <div class="search-result-info">
+                <div class="search-result-title">${escaparHTML(r.titulo)}</div>
+                <div class="search-result-sub">${escaparHTML(r.subtitulo)}</div>
+              </div>
+              <span class="search-result-badge">+ Añadir</span>
+            </div>
+          `).join('');
+        })
+        .withFailureHandler(function(err) {
+          if (finalizado) return;
+          finalizado = true; clearTimeout(timer);
+          btn.innerHTML = svgIcon('i-plus', 'ico-sm'); btn.disabled = false;
+          dd.classList.remove('open');
+          showToast(err.message, 'error');
+        })
+        .buscarCatalogoExterno(currentCategory, val);
+    }
+
+    function ejecutarAgregarDirecto(idOUrl) {
+      var btn = document.getElementById('btn-add');
+      document.getElementById('search-dropdown').classList.remove('open');
+      btn.innerHTML = '...'; btn.disabled = true;
+
+      RUN
+        .withSuccessHandler(function(res) {
+          btn.innerHTML = svgIcon('i-plus', 'ico-sm'); btn.disabled = false;
+          if (res.success) {
+            document.getElementById('inputAgregar').value = '';
+            cerrarBusquedaAgregar();
+            showToast(res.msg, 'success');
+            forzarSincronizacion();
+          } else {
+            showToast(res.msg || 'No se pudo añadir', 'warning');
+          }
+        })
+        .withFailureHandler(function(err) {
+          btn.innerHTML = svgIcon('i-plus', 'ico-sm'); btn.disabled = false;
+          showToast('Error: ' + err.message, 'error');
+        })
+        .agregarItem(currentCategory, idOUrl);
+    }
+
+    function formatearPuntuacionBadge_(val) {
+      if (val === null || val === undefined) return '';
+      var s = String(val).trim();
+      if (!s || s === 'N/A' || s.toLowerCase() === 'undefined' || s.toLowerCase() === 'null' || s === 'NaT') return '';
+      // Bloquea fechas (YYYY-MM-DD, ISO o DD/MM/YYYY) para no mostrarlas como puntuación
+      if (/^\d{4}-\d{2}-\d{2}/.test(s) || /^\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}$/.test(s)) return '';
+      return s;
+    }
+
+    // HTML de una sección de persona en el modal (dinámico multi-vínculo)
+    function nexusPersonaAccordionHTML(p, esLectura, showProg) {
+      var k = p.key, n = p.suffix, lbl = p.label || n;
+      var jsN = String(n).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+      var progDisp = showProg ? 'block' : 'none';
+      var chapDisp = esLectura ? 'block' : 'none';
+      return '<div class="player-accordion' + (NEXUS_MODE && !p.mine ? ' is-remote' : '') + '" id="acc-' + k + '">' +
+        '<div class="player-summary" onclick="togglePlayerAccordion(\'' + k + '\')">' +
+          '<div class="ps-row ps-row-top">' +
+            '<span class="pa-avatar" style="background:' + p.color + ';">' + vinculosEsc(lbl.charAt(0)) + '</span>' +
+            '<span class="pa-name">' + vinculosEsc(lbl) + '</span>' +
+            '<span id="sum-wish-' + k + '" style="display:none;"><svg class="ico ico-sm ico-wish"><use href="#i-heart-fill"/></svg></span>' +
+            '<span id="sum-note-' + k + '" style="display:none;"><svg class="ico ico-sm" style="color:var(--accent);"><use href="#i-note"/></svg></span>' +
+          '</div>' +
+          '<div class="ps-row ps-row-bottom">' +
+            '<div class="status-chip status-none" id="sum-status-' + k + '">Pendiente</div>' +
+            '<span class="preview-stars no-stars" id="sum-stars-' + k + '">Sin nota</span>' +
+            '<svg class="ico ico-sm pa-chev"><use href="#i-chevron-down"/></svg>' +
+          '</div>' +
+        '</div>' +
+        '<div class="player-details">' +
+          '<button type="button" id="btn-wish-' + k + '" class="wish-toggle" onclick="toggleDeseado(\'' + jsN + '\')"><svg class="ico ico-sm"><use href="#i-heart"/></svg> Marcar como deseado</button>' +
+          '<select id="select-estado-' + k + '" class="status-select" onchange="guardarTracking(\'' + jsN + '\')">' +
+            '<option value="No jugado">Pendiente / No jugado</option><option value="En proceso">En proceso</option><option value="Completado">Completado</option></select>' +
+          '<input type="text" id="prog-' + k + '" class="progress-input" placeholder="Progreso (ej. T2 E04)..." style="display:' + progDisp + ';" onchange="guardarTracking(\'' + jsN + '\')">' +
+          '<div id="chap-box-' + k + '" class="chapter-tracker-box" style="display:' + chapDisp + ';">' +
+            '<div style="font-size:11px;color:#8f98a0;font-weight:700;margin-bottom:5px;display:flex;justify-content:space-between;align-items:center;gap:6px;">' +
+              '<span style="display:inline-flex;align-items:center;gap:4px;"><svg class="ico ico-sm"><use href="#i-book"/></svg> Capítulos leídos</span>' +
+              '<span id="chap-hint-' + k + '" style="color:var(--accent);">Total manual</span></div>' +
+            '<div class="chapter-inputs-row">' +
+              '<input type="number" min="0" id="chap-cur-' + k + '" class="chapter-num-input" placeholder="Leídos" onchange="actualizarCapitulosUI(\'' + jsN + '\')">' +
+              '<span class="chapter-sep">/</span>' +
+              '<input type="number" min="0" id="chap-tot-' + k + '" class="chapter-num-input" placeholder="Total" onchange="guardarTotalCapsDesdeModal(\'' + jsN + '\')">' +
+              '<span id="chap-pct-' + k + '" class="chapter-pct-badge">0%</span>' +
+            '</div>' +
+            '<div class="reading-progress-track"><div id="chap-bar-' + k + '" class="reading-progress-fill"></div></div>' +
+          '</div>' +
+          '<div class="stars" id="stars-' + k + '"></div>' +
+          '<textarea id="note-' + k + '" class="player-note" placeholder="Apunte rápido de ' + vinculosEsc(lbl) + '..." onchange="guardarNotaJugador(\'' + jsN + '\', this.value)"></textarea>' +
+          '<div id="share-box-' + k + '" style="display:none;margin-top:10px;">' +
+            '<div style="display:flex;gap:8px;">' +
+              '<button type="button" id="btn-share-' + k + '" class="btn-text" style="flex:1;background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--border);" onclick="toggleSharePanel(\'' + k + '\')"></button>' +
+              '<button type="button" id="btn-send-' + k + '" class="btn-text" style="flex:1;background:rgba(102,192,244,.1);color:var(--accent);border:1px solid rgba(102,192,244,.3);" onclick="toggleSendPanel(\'' + k + '\')"><svg class="ico ico-sm"><use href="#i-send"/></svg> Enviar</button>' +
+            '</div>' +
+            '<div class="sp-panel" id="share-panel-' + k + '" style="display:none;margin-top:8px;"></div>' +
+            '<div class="sp-panel" id="send-panel-' + k + '" style="display:none;margin-top:8px;"></div>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }
+
+    // genera las secciones por persona del modal y rellena sus valores
+    function nexusRenderPersonasModal(it, esLectura, showProg) {
+      var wrap = document.getElementById('tracking-personas');
+      if (!wrap) return;
+      var pers = nexusItemPersonas(it);
+      wrap.innerHTML = pers.map(function(p) {
+        return nexusPersonaAccordionHTML(p, esLectura, showProg);
+      }).join('');
+      pers.forEach(function(p) {
+        var k = p.key;
+        var est = it['estado' + p.suffix] || 'No jugado';
+        var pts = it['estrellas' + p.suffix] || 0;
+        var wish = Boolean(it['deseado' + p.suffix]);
+        var prog = it['progreso' + p.suffix] || '';
+        var nota = it['nota' + p.suffix] || '';
+        document.getElementById('select-estado-' + k).value = est;
+        document.getElementById('prog-' + k).value = prog;
+        document.getElementById('note-' + k).value = nota;
+        if (esLectura) inicializarCapitulosModal(k, it, prog);
+        renderEstrellas('stars-' + k, pts, p.suffix);
+        actualizarResumenJugador(k, est, pts, wish, nota);
+      });
+      nexusSetAccordionVisibility(it);
+    }
+
+    function abrirModal(id) {
+      var lista = itemsByCategory[currentCategory] || [];
+      var indexEnFiltrados = filteredItems.findIndex(x => String(x.id) === String(id));
+      if (indexEnFiltrados !== -1) {
+        var paginaRequerida = Math.floor(indexEnFiltrados / elementosPorPagina) + 1;
+        if (paginaRequerida > paginaActual) {
+          paginaActual = paginaRequerida;
+          renderGrid(filteredItems);
+        }
+      }
+
+      var it = lista.find(x => String(x.id) === String(id));
+      if (!it) return;
+
+      document.querySelectorAll('.modal-content').forEach(function(el) { el.scrollTop = 0; });
+      currentItemId = it.id;
+      detenerTrailer();
+
+      var headerGrid = document.getElementById('m-header-grid');
+      headerGrid.className = 'modal-header-grid ' + (CAT_CONFIG[currentCategory].poster ? 'poster' : 'landscape');
+
+      var mImg = document.getElementById('m-img');
+      mImg.onerror = function() { this.onerror = null; this.src = FALLBACK_SVG; };
+      mImg.src = it.portada || FALLBACK_SVG;
+
+      var autorTexto = (it.creador && String(it.creador).trim() && String(it.creador).trim().toLowerCase() !== 'undefined')
+        ? String(it.creador).trim()
+        : ((it.autor && String(it.autor).trim() && String(it.autor).trim().toLowerCase() !== 'undefined')
+          ? String(it.autor).trim()
+          : 'Autor por definir');
+
+      document.getElementById('m-titulo').innerText = it.titulo || 'Sin título';
+      document.getElementById('m-dev').innerText = autorTexto;
+      var puntLimpia = formatearPuntuacionBadge_(it.puntuacion);
+      document.getElementById('m-price').innerHTML = currentCategory === 'Juegos'
+        ? escaparHTML(it.precio || '')
+        : (puntLimpia ? `${svgIcon('i-star', 'ico-sm ico-gold')} ${escaparHTML(puntLimpia)}` : '');
+      document.getElementById('m-genres').innerHTML = `${svgIcon('i-tag', 'ico-sm')} ${escaparHTML((it.generos && String(it.generos).toLowerCase() !== 'undefined') ? it.generos : 'Sin géneros')}`;
+      document.getElementById('m-desc').innerText = (it.descripcion && String(it.descripcion).toLowerCase() !== 'undefined') ? it.descripcion : 'Sin descripción.';
+
+      var badges = document.getElementById('m-badges');
+      if (currentCategory === 'Juegos') {
+        var rawBuild = String(it.buildEstable || it.versionEstable || 'N/A').trim();
+        var buildTexto = /^estable:/i.test(rawBuild) ? rawBuild : ('Build: ' + rawBuild);
+        var badgeBuild = `<div class="badge-ver badge-estable">${escaparHTML(buildTexto)}</div>`;
+        var badgeFecha = (it.fechaEstable && it.fechaEstable !== 'N/A' && it.fechaEstable !== '-')
+          ? `<div class="badge-ver badge-patch">Fecha Build: ${escaparHTML(it.fechaEstable)}</div>`
+          : '';
+        var badgeBeta = (it.beta && it.beta !== 'N/A' && it.beta !== '-')
+          ? `<div class="badge-ver badge-beta">Beta: ${escaparHTML(it.beta)}</div>`
+          : '';
+        badges.innerHTML = badgeBuild + badgeFecha + badgeBeta;
+      } else if (currentCategory === 'Libros') {
+        var bBook1 = (it.estadoEmision && it.estadoEmision !== 'N/A') ? `<div class="badge-ver badge-estable">${escaparHTML(it.estadoEmision)}</div>` : '';
+        var bBook2 = (it.extension && it.extension !== 'N/A') ? `<div class="badge-ver badge-patch">${escaparHTML(it.extension)}</div>` : `<div class="badge-ver badge-patch">N/A</div>`;
+        var bBook3 = (it.fecha && it.fecha !== 'N/A') ? `<div class="badge-ver badge-beta">${escaparHTML(it.fecha)}</div>` : '';
+        var bBook4 = (it.isbn && it.isbn !== 'N/A') ? `<div class="badge-ver badge-patch">ISBN: ${escaparHTML(it.isbn)}</div>` : '';
+        badges.innerHTML = bBook1 + bBook2 + bBook3 + bBook4;
+      } else {
+        var b1 = it.estadoEmision ? `<div class="badge-ver badge-estable">${escaparHTML(it.estadoEmision)}</div>` : '';
+        var b2 = it.extension ? `<div class="badge-ver badge-patch">${escaparHTML(it.extension)}</div>` : '';
+        var b3 = (it.plataformas || it.demografia) ? `<div class="badge-ver badge-beta">${escaparHTML(it.plataformas || it.demografia)}</div>` : '';
+        badges.innerHTML = b1 + b2 + b3;
+      }
+
+      var trBar = document.getElementById('m-trailer-bar');
+      var admiteTrailer = (currentCategory === 'Juegos' || currentCategory === 'Peliculas_Series');
+      var rawTr = String(it.trailer || '').trim();
+      if (admiteTrailer && rawTr.startsWith('http')) {
+        currentTrailerUrl = rawTr;
+        trBar.style.display = 'block';
+        document.getElementById('btn-toggle-trailer').innerHTML = `${svgIcon('i-play', 'ico-sm')} Ver Tráiler`;
+      } else {
+        currentTrailerUrl = '';
+        trBar.style.display = 'none';
+      }
+
+      var rows = [['ID', it.id], ['Autor', autorTexto], ['Lanzamiento / Fecha', it.fecha], ['Editorial / Estudio', it.editorial]];
+      if (currentCategory === 'Juegos') {
+        rows.push(
+          ['Build Estable', it.buildEstable],
+          ['Fecha Build', it.fechaEstable],
+          ['Beta', it.beta],
+          ['Nota Parche', String(it.notaParche || '').replace(/^\[\d{4}-\d{2}-\d{2}\]\s*/, '')],
+          ['Modos', it.modos],
+          ['Steam Deck', it.steamdeck],
+          ['DLCs', it.dlcs],
+          ['Tags', it.tags]
+        );
+      }
+      else if (currentCategory === 'Peliculas_Series') { rows.push(['Tipo', it.tipo], ['Duración / Temporadas', it.extension], ['Plataformas', it.plataformas]); }
+      else if (currentCategory === 'Libros') {
+        var capsTotal = obtenerTotalCapitulosItem(it);
+        rows.push(['Páginas', it.extension], ['ISBN', it.isbn], ['Capítulos Totales', capsTotal > 0 ? capsTotal : 'N/A'], ['Puntuación', puntLimpia || 'N/A']);
+      }
+      else if (currentCategory === 'Mangas') { rows.push(['Tomos / Capítulos', it.extension], ['Demografía', it.demografia]); }
+
+      document.getElementById('m-details-list').innerHTML = rows
+        .filter(r => r[1] && r[1] !== 'N/A')
+        .map(r => `<div class="detail-row"><span class="detail-label">${r[0]}:</span><span class="detail-val">${escaparHTML(r[1])}</span></div>`)
+        .join('');
+
+      var carWrap = document.getElementById('m-screenshots-container');
+      var car = document.getElementById('m-screenshots');
+      car.innerHTML = '';
+      if (currentCategory === 'Juegos' && it.capturas) {
+        var urls = it.capturas.split(',').map(u => u.trim()).filter(u => u.startsWith('http'));
+        if (urls.length > 0) {
+          carWrap.style.display = 'block';
+          urls.forEach(u => {
+            var img = document.createElement('img');
+            img.src = u; img.loading = 'lazy'; img.decoding = 'async'; img.referrerPolicy = 'no-referrer';
+            img.onclick = () => window.open(u, '_blank');
+            car.appendChild(img);
+          });
+        } else carWrap.style.display = 'none';
+      } else carWrap.style.display = 'none';
+
+      var b1El = document.getElementById('btn-ext-1');
+      var b2El = document.getElementById('btn-ext-2');
+      if (currentCategory === 'Juegos') {
+        b1El.innerText = 'Ver en Steam'; b1El.href = `https://store.steampowered.com/app/${it.id}/?l=spanish`;
+        b2El.innerText = 'SteamDB'; b2El.href = `https://steamdb.info/app/${it.id}/`;
+      } else if (currentCategory === 'Peliculas_Series') {
+        var p = String(it.id).split('-');
+        b1El.innerText = 'Ver en TMDB'; b1El.href = `https://www.themoviedb.org/${p[0]}/${p[1] || p[0]}`;
+        b2El.innerText = 'JustWatch'; b2El.href = `https://www.justwatch.com/es/buscar?q=${encodeURIComponent(it.titulo)}`;
+      } else if (currentCategory === 'Libros') {
+        var bookId = String(it.id || '').trim();
+        b1El.innerText = 'Open Library';
+        if (/^OL\d+M$/i.test(bookId)) {
+          b1El.href = `https://openlibrary.org/books/${encodeURIComponent(bookId)}`;
+        } else if (/^OL\d+W$/i.test(bookId)) {
+          b1El.href = `https://openlibrary.org/works/${encodeURIComponent(bookId)}`;
+        } else {
+          b1El.href = `https://openlibrary.org/search?q=${encodeURIComponent(it.titulo)}`;
+        }
+        b2El.innerText = 'Goodreads'; b2El.href = `https://www.goodreads.com/search?q=${encodeURIComponent(it.titulo)}`;
+      } else if (currentCategory === 'Mangas') {
+        var isAL = String(it.id).startsWith('al-');
+        b1El.innerText = isAL ? 'Ver en AniList' : 'MyAnimeList';
+        b1El.href = isAL ? `https://anilist.co/manga/${String(it.id).replace('al-', '')}` : `https://myanimelist.net/manga/${it.id}`;
+        b2El.innerText = 'Buscar en AniList'; b2El.href = `https://anilist.co/search/manga?search=${encodeURIComponent(it.titulo)}`;
+      }
+
+      var esLectura = (currentCategory === 'Libros' || currentCategory === 'Mangas');
+      var showProg = (currentCategory === 'Peliculas_Series');
+      nexusRenderPersonasModal(it, esLectura, showProg);
+      nexusSyncShareUI(it);
+      nexusRefreshItemPrivacy(it);
+
+      resetearDesplegablesModal();
+
+      var modal = document.getElementById('modal');
+      modal.style.display = 'flex';
+      requestAnimationFrame(() => requestAnimationFrame(() => modal.style.opacity = '1'));
+      history.pushState(null, '', window.location.href);
+    }
+
+    function resetearDesplegablesModal() {
+      var detAcc = document.getElementById('m-details-accordion');
+      if (detAcc) detAcc.open = false;
+      document.querySelectorAll('#tracking-personas .player-accordion').forEach(function(a) {
+        a.classList.remove('active');
+      });
+    }
+
+    function cerrarModal() {
+      detenerTrailer();
+      document.querySelectorAll('.modal-content').forEach(function(el) { el.scrollTop = 0; });
+      resetearDesplegablesModal();
+      var modal = document.getElementById('modal');
+      modal.style.opacity = '0';
+      setTimeout(() => modal.style.display = 'none', 220);
+    }
+
+    function togglePlayerAccordion(k) {
+      var el = document.getElementById('acc-' + k);
+      if (!el) return;
+      var open = el.classList.contains('active');
+      document.querySelectorAll('#tracking-personas .player-accordion').forEach(function(a) {
+        a.classList.remove('active');
+      });
+      if (!open) el.classList.add('active');
+    }
+
+    function actualizarResumenJugador(k, est, pts, wish, nota) {
+      var stEl = document.getElementById('sum-status-' + k);
+      stEl.innerText = (!est || est === 'No jugado') ? 'Pendiente' : est;
+      stEl.className = 'status-chip ' + (est === 'Completado' ? 'status-done' : (est === 'En proceso' ? 'status-playing' : 'status-none'));
+
+      var ptsEl = document.getElementById('sum-stars-' + k);
+      ptsEl.innerHTML = pts > 0 ? `${svgIcon('i-star', 'ico-sm ico-gold')} ${pts}/10` : 'Sin nota';
+      ptsEl.classList.toggle('no-stars', !(pts > 0));
+
+      document.getElementById('sum-wish-' + k).style.display = wish ? 'inline-flex' : 'none';
+      document.getElementById('sum-note-' + k).style.display = String(nota || '').trim() ? 'inline-flex' : 'none';
+
+      var wBtn = document.getElementById('btn-wish-' + k);
+      wBtn.classList.toggle('active', wish);
+      wBtn.innerHTML = wish ?
+        `${svgIcon('i-heart-fill', 'ico-sm ico-wish')} En deseados` :
+        `${svgIcon('i-heart', 'ico-sm')} Marcar como deseado`;
+    }
+
+    function renderEstrellas(containerId, valor, persona) {
+      var c = document.getElementById(containerId);
+      c.innerHTML = '';
+      for (var i = 1; i <= 10; i++) {
+        var s = document.createElement('span');
+        s.className = 'star ' + (i <= valor ? 'active' : '');
+        s.innerHTML = '&#9733;';
+        s.onclick = (function(idx) {
+          return function() {
+            renderEstrellas(containerId, idx, persona);
+            guardarTracking(persona, idx);
+          };
+        })(i);
+        c.appendChild(s);
+      }
+    }
+
+    function extraerNumeroCapitulo(progStr) {
+      const m = String(progStr || '').match(/(\d+)/);
+      return m ? parseInt(m[1], 10) : 0;
+    }
+
+    function obtenerTotalCapitulosItem(it) {
+      if (it.capitulosTotales && Number(it.capitulosTotales) > 0) return Number(it.capitulosTotales);
+      const mCaps = String(it.extension || '').match(/(\d+)\s*caps/i);
+      if (mCaps) return parseInt(mCaps[1], 10);
+      return 0;
+    }
+
+    function calcularPorcentajeLectura(actual, total) {
+      if (!total || total <= 0 || !actual || actual <= 0) return 0;
+      return Math.min(100, Math.round((actual / total) * 100));
+    }
+
+    function generarBarraLecturaCard(it) {
+      if (currentCategory !== 'Libros' && currentCategory !== 'Mangas') return '';
+      const total = obtenerTotalCapitulosItem(it);
+      const pers = nexusItemPersonas(it);
+      let html = '';
+      pers.forEach(function(p) {
+        const vis = it['visible' + p.suffix] !== false;
+        const act = extraerNumeroCapitulo(it['progreso' + p.suffix]);
+        if (!vis || (!act && it['estado' + p.suffix] !== 'En proceso')) return;
+        const pct = calcularPorcentajeLectura(act, total);
+        const txt = (total > 0 ? `Cap. ${act}/${total} (${pct}%)` : `Cap. ${act}`);
+        html += `<div class="card-reading-labels"><span style="display:inline-flex;align-items:center;gap:5px;">${nexusPersonaDot(p, 13)} ${txt}</span></div>` +
+                (total > 0 ? `<div class="reading-progress-track"><div class="reading-progress-fill" style="width:${pct}%"></div></div>` : '');
+      });
+      return html ? '<div class="card-reading-bar">' + html + '</div>' : '';
+    }
+
+    function inicializarCapitulosModal(k, it, progStr) {
+      const actual = extraerNumeroCapitulo(progStr);
+      const total = obtenerTotalCapitulosItem(it);
+      const curEl = document.getElementById('chap-cur-' + k);
+      const totEl = document.getElementById('chap-tot-' + k);
+      const hintEl = document.getElementById('chap-hint-' + k);
+
+      curEl.value = actual > 0 ? actual : '';
+      totEl.value = total > 0 ? total : '';
+
+      if (currentCategory === 'Mangas') {
+        totEl.disabled = true;
+        totEl.placeholder = 'Auto';
+        hintEl.innerText = 'Auto API (semanal)';
+      } else {
+        totEl.disabled = false;
+        totEl.placeholder = 'Desconocido';
+        hintEl.innerText = 'Total editable';
+      }
+      refrescarPorcentajeUI(k, actual, total);
+    }
+
+    function refrescarPorcentajeUI(k, actual, total) {
+      const pct = calcularPorcentajeLectura(actual, total);
+      document.getElementById('chap-pct-' + k).innerText = pct + '%';
+      document.getElementById('chap-bar-' + k).style.width = pct + '%';
+    }
+
+    function actualizarCapitulosUI(persona) {
+      const k = persona.toLowerCase();
+      const actual = Math.max(0, parseInt(document.getElementById('chap-cur-' + k).value, 10) || 0);
+      const total = Math.max(0, parseInt(document.getElementById('chap-tot-' + k).value, 10) || 0);
+      refrescarPorcentajeUI(k, actual, total);
+
+      document.getElementById('prog-' + k).value = actual > 0 ? `Cap. ${actual}` : '';
+      if (actual > 0 && (!document.getElementById('select-estado-' + k).value || document.getElementById('select-estado-' + k).value === 'No jugado')) {
+        document.getElementById('select-estado-' + k).value = (total > 0 && actual >= total) ? 'Completado' : 'En proceso';
+      }
+      guardarTracking(persona);
+    }
+
+    function guardarTotalCapsDesdeModal(persona) {
+      if (currentCategory === 'Mangas') return;
+      const k = persona.toLowerCase();
+      const total = Math.max(0, parseInt(document.getElementById('chap-tot-' + k).value, 10) || 0);
+      // sincroniza el total con TODAS las demás secciones de persona del modal
+      document.querySelectorAll('#tracking-personas [id^="chap-tot-"]').forEach(function(el) {
+        if (el.id !== 'chap-tot-' + k) el.value = total > 0 ? total : '';
+      });
+
+      const actK = Math.max(0, parseInt(document.getElementById('chap-cur-' + k).value, 10) || 0);
+      document.querySelectorAll('#tracking-personas .player-accordion').forEach(function(acc) {
+        var kk = acc.id.replace('acc-', '');
+        var act = Math.max(0, parseInt((document.getElementById('chap-cur-' + kk) || {}).value, 10) || 0);
+        refrescarPorcentajeUI(kk, act, total);
+      });
+
+      const it = (itemsByCategory[currentCategory] || []).find(x => String(x.id) === String(currentItemId));
+      if (it) {
+        it.capitulosTotales = total;
+        try { localStorage.setItem(`media_lib_${CACHE_VERSION}_${currentCategory}`, JSON.stringify(itemsByCategory[currentCategory])); } catch (e) {}
+        filtrarItems();
+      }
+      RUN.guardarTotalCapitulos(currentCategory, currentItemId, total);
+    }
+
+    function guardarTracking(persona, estrellasOverride) {
+      var it = (itemsByCategory[currentCategory] || []).find(x => String(x.id) === String(currentItemId));
+      if (!it) return;
+      var k = persona.toLowerCase();
+      var est = document.getElementById('select-estado-' + k).value || 'No jugado';
+      var prog = document.getElementById('prog-' + k).value;
+      var pts = estrellasOverride !== undefined ? estrellasOverride : (it['estrellas' + persona] || 0);
+
+      it['estado' + persona] = est;
+      it['estrellas' + persona] = pts;
+      it['progreso' + persona] = prog;
+
+      actualizarResumenJugador(k, est, pts, Boolean(it['deseado' + persona]), it['nota' + persona]);
+      try { localStorage.setItem(`media_lib_${CACHE_VERSION}_${currentCategory}`, JSON.stringify(itemsByCategory[currentCategory])); } catch (e) {}
+      filtrarItems();
+
+      RUN.guardarProgresoItem(currentCategory, currentItemId, persona, est, pts, prog);
+    }
+
+    function toggleDeseado(persona) {
+      var it = (itemsByCategory[currentCategory] || []).find(x => String(x.id) === String(currentItemId));
+      if (!it) return;
+      var k = persona.toLowerCase();
+      var nuevo = !Boolean(it['deseado' + persona]);
+      it['deseado' + persona] = nuevo;
+
+      actualizarResumenJugador(k, it['estado' + persona] || 'No jugado', it['estrellas' + persona] || 0, nuevo, it['nota' + persona]);
+      try { localStorage.setItem(`media_lib_${CACHE_VERSION}_${currentCategory}`, JSON.stringify(itemsByCategory[currentCategory])); } catch (e) {}
+      filtrarItems();
+
+      RUN.guardarDeseadoItem(currentCategory, currentItemId, persona, nuevo);
+    }
+
+    function guardarNotaJugador(persona, valor) {
+      var it = (itemsByCategory[currentCategory] || []).find(x => String(x.id) === String(currentItemId));
+      if (!it) return;
+      var k = persona.toLowerCase();
+      it['nota' + persona] = valor;
+      actualizarResumenJugador(k, it['estado' + persona] || 'No jugado', it['estrellas' + persona] || 0, Boolean(it['deseado' + persona]), valor);
+      try { localStorage.setItem(`media_lib_${CACHE_VERSION}_${currentCategory}`, JSON.stringify(itemsByCategory[currentCategory])); } catch (e) {}
+      RUN.guardarNotaItem(currentCategory, currentItemId, persona, valor);
+    }
+
+    function repararItemActual() {
+      var btn = document.getElementById('btn-repair');
+      btn.disabled = true; btn.innerText = 'Actualizando...';
+      RUN
+        .withSuccessHandler(function(res) {
+          btn.disabled = false; btn.innerHTML = `${svgIcon('i-wrench', 'ico-sm')} Reparar / Actualizar Metadata`;
+          if (res.success && res.data) {
+            var lista = itemsByCategory[currentCategory];
+            var idx = lista.findIndex(x => String(x.id) === String(currentItemId));
+            if (idx !== -1) lista[idx] = res.data;
+            try { localStorage.setItem(`media_lib_${CACHE_VERSION}_${currentCategory}`, JSON.stringify(lista)); } catch (e) {}
+            abrirModal(res.data.id);
+            filtrarItems();
+            showToast('Ficha actualizada.', 'success');
+          } else showToast(res.msg || 'Error al actualizar', 'error');
+        })
+        .withFailureHandler(function(err) {
+          btn.disabled = false; btn.innerHTML = `${svgIcon('i-wrench', 'ico-sm')} Reparar / Actualizar Metadata`;
+          showToast('Error: ' + err.message, 'error');
+        })
+        .repararItemIndividual(currentCategory, currentItemId);
+    }
+
+    function eliminarItemActual() {
+      if (!confirm('¿Mover a la Papelera?')) return;
+      RUN
+        .withSuccessHandler(function(res) {
+          if (res.success) {
+            showToast('Movido a la papelera.', 'warning');
+            cerrarModal();
+            forzarSincronizacion();
+          } else {
+            showToast(res.msg || 'No se pudo eliminar', 'error');
+          }
+        })
+        .withFailureHandler(function(err) {
+          showToast('Error: ' + err.message, 'error');
+        })
+        .eliminarItem(currentCategory, currentItemId);
+    }
+
+    function cambiarPerfilStats(prof) {
+      currentStatsProfile = prof;
+      document.querySelectorAll('.stats-prof-btn').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-prof') === prof);
+      });
+      renderizarEstadisticas();
+    }
+
+    function cambiarCategoriaStats(cat) {
+      currentStatsCategory = cat;
+      document.querySelectorAll('.stats-cat-btn').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-statcat') === cat);
+      });
+      renderizarEstadisticas();
+    }
+
+    function toggleStatCard(cardEl) {
+      cardEl.classList.toggle('open');
+    }
+
+    // botones de perfil de stats — uno por persona registrada + "Todos"
+    function nexusRenderStatsProfButtons() {
+      var wrap = document.getElementById('stats-prof-buttons');
+      if (!wrap) return;
+      var h = '<button class="stats-prof-btn' + (currentStatsProfile === 'ambos' ? ' active' : '') +
+        '" data-prof="ambos" onclick="cambiarPerfilStats(\'ambos\')">' +
+        svgIcon('i-users', 'ico-sm') + ' Todos</button>';
+      (_personas || []).forEach(function(p) {
+        h += '<button class="stats-prof-btn' + (currentStatsProfile === p.key ? ' active' : '') +
+          '" data-prof="' + p.key + '" onclick="cambiarPerfilStats(\'' + p.key + '\')">' +
+          nexusPersonaDot(p, 14) + ' <span class="stat-prof-name">' + vinculosEsc(p.label || p.suffix) + '</span></button>';
+      });
+      wrap.innerHTML = h;
+    }
+
+    function renderizarEstadisticas() {
+      var container = document.getElementById('stats-cards-container');
+      nexusRenderStatsProfButtons();
+      var pers = (_personas || []).slice();
+      if (currentStatsProfile !== 'ambos' && !pers.some(function(p) { return p.key === currentStatsProfile; })) {
+        currentStatsProfile = 'ambos';
+      }
+      var selPers = currentStatsProfile === 'ambos' ? pers :
+        pers.filter(function(p) { return p.key === currentStatsProfile; });
+      var profTitulo = currentStatsProfile === 'ambos' ? 'Todos' :
+        (selPers[0] ? selPers[0].suffix : 'Todos');
+
+      var catsToProcess = currentStatsCategory === 'todas' ? ['Juegos', 'Peliculas_Series', 'Libros', 'Mangas'] : [currentStatsCategory];
+      var catTitulo = currentStatsCategory === 'todas' ? 'Global' : (CAT_CONFIG[currentStatsCategory]?.label || currentStatsCategory);
+
+      let totalElementos = 0;
+      var stats = {};
+      pers.forEach(function(p) { stats[p.suffix] = { comp: 0, proc: 0, wish: 0, suma: 0, cuenta: 0 }; });
+      let distribucion = { Juegos: 0, 'Cine/Series': 0, Libros: 0, Mangas: 0 };
+
+      ['Juegos', 'Peliculas_Series', 'Libros', 'Mangas'].forEach(cat => {
+        var lista = itemsByCategory[cat] || [];
+        distribucion[cat === 'Peliculas_Series' ? 'Cine/Series' : (cat === 'Mangas' ? 'Mangas' : (cat === 'Libros' ? 'Libros' : 'Juegos'))] = lista.length;
+      });
+
+      catsToProcess.forEach(cat => {
+        var lista = itemsByCategory[cat] || [];
+        totalElementos += lista.length;
+
+        lista.forEach(it => {
+          pers.forEach(function(p) {
+            var s = p.suffix, st = stats[s];
+            var est = it['estado' + s] || 'No jugado';
+            var nota = Number(it['estrellas' + s]) || 0;
+            if (est === 'Completado') st.comp++;
+            if (est === 'En proceso') st.proc++;
+            if (it['deseado' + s]) st.wish++;
+            if (nota > 0) { st.suma += nota; st.cuenta++; }
+          });
+        });
+      });
+
+      function agg(field) {
+        return selPers.reduce(function(acc, p) { return acc + stats[p.suffix][field]; }, 0);
+      }
+      function aggNota() {
+        var suma = 0, cuenta = 0;
+        selPers.forEach(function(p) { suma += stats[p.suffix].suma; cuenta += stats[p.suffix].cuenta; });
+        return cuenta > 0 ? (suma / cuenta).toFixed(1) : '0.0';
+      }
+      var valCompletados = agg('comp');
+      var valProceso = agg('proc');
+      var valDeseados = agg('wish');
+      var notaMediaVal = aggNota();
+
+      function barraPersona(p, field) {
+        var st = stats[p.suffix];
+        var pct = totalElementos > 0 ? Math.round((st[field] / totalElementos) * 100) : 0;
+        return '<div class="stat-bar-row">' +
+          '<div class="stat-bar-labels"><span style="color:' + p.color + ';">' + nexusPersonaDot(p, 14) + ' ' +
+          vinculosEsc(p.label || p.suffix) + ': ' + st[field] + '</span><span>' + pct + '%</span></div>' +
+          '<div class="stat-bar-track"><div class="stat-bar-fill" style="width:' + pct + '%;background:' + p.color + ';"></div></div>' +
+        '</div>';
+      }
+      function barras(field) {
+        return pers.map(function(p) { return barraPersona(p, field); }).join('');
+      }
+      function lineasNota() {
+        return pers.map(function(p) {
+          var st = stats[p.suffix];
+          var media = st.cuenta > 0 ? (st.suma / st.cuenta).toFixed(1) : '0.0';
+          return '<div class="stat-detail-line">' + nexusPersonaDot(p, 14) + ' Nota media ' +
+            vinculosEsc(p.label || p.suffix) + ': <strong>' + media + ' / 10</strong> (' + st.cuenta + ' valoraciones)</div>';
+        }).join('');
+      }
+
+      const toggleHdr = `<span class="stat-toggle-lbl">Desplegar ${svgIcon('i-chevron-down', 'ico-sm')}</span>`;
+
+      container.innerHTML = `
+        <div class="stat-card" onclick="toggleStatCard(this)">
+          <div class="stat-card-header">
+            <div class="stat-card-title">Biblioteca Total (${escaparHTML(catTitulo)})</div>
+            ${toggleHdr}
+          </div>
+          <div class="stat-card-value">${totalElementos}</div>
+          <div class="stat-card-sub"><span>Elementos registrados</span><span>${escaparHTML(catTitulo)}</span></div>
+          <div class="stat-accordion-content">
+            <div style="font-size:11px;color:#8f98a0;margin-bottom:2px;">Desglose general:</div>
+            <div class="stat-detail-line">${svgIcon('i-gamepad', 'ico-sm')} Juegos: <strong>${distribucion.Juegos}</strong></div>
+            <div class="stat-detail-line">${svgIcon('i-film', 'ico-sm')} Cine/Series: <strong>${distribucion['Cine/Series']}</strong></div>
+            <div class="stat-detail-line">${svgIcon('i-book', 'ico-sm')} Libros: <strong>${distribucion.Libros}</strong></div>
+            <div class="stat-detail-line">${svgIcon('i-manga', 'ico-sm')} Mangas: <strong>${distribucion.Mangas}</strong></div>
+          </div>
+        </div>
+
+        <div class="stat-card" onclick="toggleStatCard(this)">
+          <div class="stat-card-header">
+            <div class="stat-card-title">Completados</div>
+            ${toggleHdr}
+          </div>
+          <div class="stat-card-value">${valCompletados}</div>
+          <div class="stat-card-sub"><span>Fines de obra alcanzados</span><span>${escaparHTML(profTitulo)}</span></div>
+          <div class="stat-accordion-content">
+            ${barras('comp')}
+          </div>
+        </div>
+
+        <div class="stat-card" onclick="toggleStatCard(this)">
+          <div class="stat-card-header">
+            <div class="stat-card-title">En Proceso</div>
+            ${toggleHdr}
+          </div>
+          <div class="stat-card-value">${valProceso}</div>
+          <div class="stat-card-sub"><span>Actualmente activos</span><span>${escaparHTML(profTitulo)}</span></div>
+          <div class="stat-accordion-content">
+            ${barras('proc')}
+          </div>
+        </div>
+
+        <div class="stat-card" onclick="toggleStatCard(this)">
+          <div class="stat-card-header">
+            <div class="stat-card-title">Lista de Deseados</div>
+            ${toggleHdr}
+          </div>
+          <div class="stat-card-value">${valDeseados}</div>
+          <div class="stat-card-sub"><span>Guardados en wishlist</span><span>${escaparHTML(profTitulo)}</span></div>
+          <div class="stat-accordion-content">
+            ${barras('wish')}
+          </div>
+        </div>
+
+        <div class="stat-card" onclick="toggleStatCard(this)">
+          <div class="stat-card-header">
+            <div class="stat-card-title">Nota Media Otorgada</div>
+            ${toggleHdr}
+          </div>
+          <div class="stat-card-value">${svgIcon('i-star', 'ico-lg ico-gold')} ${notaMediaVal} / 10</div>
+          <div class="stat-card-sub"><span>Basado en valoraciones</span><span>${escaparHTML(profTitulo)}</span></div>
+          <div class="stat-accordion-content">
+            ${lineasNota()}
+          </div>
+        </div>
+      `;
+    }
+
+    var currentMatchCategory = 'Juegos';
+    function abrirMatchModal() {
+      ['Juegos', 'Peliculas_Series', 'Libros', 'Mangas'].forEach(c => precargarCategoriaSilenciosa(c));
+      var modal = document.getElementById('modal-match');
+      modal.style.display = 'flex';
+      requestAnimationFrame(() => requestAnimationFrame(() => modal.style.opacity = '1'));
+      renderMatchGrid(currentMatchCategory);
+      history.pushState(null, '', window.location.href);
+    }
+
+    function cerrarMatchModal() {
+      var modal = document.getElementById('modal-match');
+      modal.style.opacity = '0';
+      setTimeout(() => modal.style.display = 'none', 220);
+    }
+
+    function cambiarMatchCat(cat) {
+      currentMatchCategory = cat;
+      document.querySelectorAll('.match-tab').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-matchcat') === cat);
+      });
+      renderMatchGrid(cat);
+    }
+
+    function seleccionarMatchItem(cat, id) {
+      cerrarMatchModal();
+      if (currentCategory !== cat) {
+        cambiarCategoria(cat);
+      }
+      abrirModal(id);
+    }
+
+    function renderMatchGrid(cat) {
+      var gridEl = document.getElementById('match-grid');
+      var lista = itemsByCategory[cat] || [];
+
+      var matches = lista.filter(it => {
+        var set = {};
+        nexusScanItemPersonas(it, set);
+        var sufs = Object.keys(set);
+        if (sufs.length === 0) return false;
+        var allPend = true, allDeseado = true;
+        sufs.forEach(s => {
+          var est = it['estado' + s] || 'No jugado';
+          if (est !== 'No jugado') allPend = false;
+          if (!it['deseado' + s]) allDeseado = false;
+        });
+        return allPend || allDeseado;
+      });
+
+      if (matches.length === 0) {
+        gridEl.innerHTML = '<p style="text-align:center;color:#8f98a0;grid-column:1/-1;padding:20px;">No hay coincidencias en esta categoría.</p>';
+        return;
+      }
+
+      gridEl.innerHTML = matches.map(it => `
+        <div class="match-card" onclick="seleccionarMatchItem('${escaparHTML(cat)}', '${escaparHTML(it.id)}')">
+          <img src="${escaparHTML(it.portada)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src=FALLBACK_SVG;">
+          <div class="match-card-body">
+            <div class="match-card-title">${escaparHTML(it.titulo)}</div>
+            <div style="font-size:10px;color:var(--accent);margin-top:auto;display:inline-flex;align-items:center;gap:4px;">${svgIcon('i-heart-fill', 'ico-sm ico-wish')} Coincidencia</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function abrirPapelera() {
+      var m = document.getElementById('modal-papelera');
+      var l = document.getElementById('lista-papelera');
+      l.innerHTML = '<div class="spinner" style="margin:20px auto;"></div>';
+      m.style.display = 'flex';
+      requestAnimationFrame(() => requestAnimationFrame(() => m.style.opacity = '1'));
+      history.pushState(null, '', window.location.href);
+
+      RUN
+        .withSuccessHandler(function(items) {
+          if (!items || items.length === 0) {
+            l.innerHTML = '<p style="text-align:center;color:#8f98a0;">La papelera está vacía.</p>';
+            return;
+          }
+          l.innerHTML = items.map(it => `
+            <div class="papelera-item">
+              <div class="papelera-item-info">
+                <div class="papelera-item-title">${escaparHTML(it.titulo)}</div>
+                <div style="font-size:11px;color:#8f98a0;">${escaparHTML(it.categoria)}</div>
+              </div>
+              <button class="btn btn-primary" style="width:auto;padding:5px 12px;border-radius:20px;font-size:11px;" onclick="restaurarDesdePapelera('${escaparHTML(it.categoria)}','${escaparHTML(it.id)}')">Restaurar</button>
+            </div>
+          `).join('');
+        })
+        .withFailureHandler(function(err) {
+          l.innerHTML = '<p style="text-align:center;color:#ff6b6b;">Error al cargar papelera: ' + escaparHTML(err.message) + '</p>';
+        })
+        .getItemsEliminados();
+    }
+
+    function cerrarPapelera() {
+      var m = document.getElementById('modal-papelera');
+      m.style.opacity = '0';
+      setTimeout(() => m.style.display = 'none', 220);
+    }
+
+    function restaurarDesdePapelera(cat, id) {
+      RUN
+        .withSuccessHandler(function(res) {
+          if (res.success) {
+            showToast('Restaurado en ' + cat, 'success');
+            cerrarPapelera();
+            cargarCategoria(cat, true);
+          } else {
+            showToast('No se pudo restaurar el elemento.', 'error');
+          }
+        })
+        .withFailureHandler(function(err) {
+          showToast('Error: ' + err.message, 'error');
+        })
+        .restaurarItem(cat, id);
+    }
+
+    function elegirAleatorio() {
+      var pool = filteredItems.length > 0 ? filteredItems : (itemsByCategory[currentCategory] || []);
+      if (pool.length === 0) return showToast('No hay elementos para elegir.', 'warning');
+      var el = pool[Math.floor(Math.random() * pool.length)];
+      showToast('Elegido: ' + el.titulo, 'success');
+      abrirModal(el.id);
+    }
+
+    function extraerYouTubeId(url) {
+      var m = String(url || '').match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+      return m ? m[1] : null;
+    }
+
+    function toggleTrailer() {
+      var box = document.getElementById('m-trailer-box');
+      var btn = document.getElementById('btn-toggle-trailer');
+      if (box.style.display === 'block') return detenerTrailer();
+
+      detenerTrailer();
+      box.style.display = 'block';
+      btn.classList.add('active');
+      btn.innerHTML = `${svgIcon('i-x', 'ico-sm')} Ocultar Tráiler`;
+
+      var ytId = extraerYouTubeId(currentTrailerUrl);
+      if (ytId) {
+        var iframe = document.createElement('iframe');
+        iframe.src = `https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&rel=0`;
+        iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+        iframe.allowFullscreen = true;
+        box.appendChild(iframe);
+        return;
+      }
+
+      var video = document.createElement('video');
+      video.controls = true; video.playsInline = true; video.autoplay = true;
+      box.appendChild(video);
+
+      if (currentTrailerUrl.includes('.m3u8')) {
+        const iniciarHls = () => {
+          if (typeof Hls !== 'undefined' && Hls.isSupported()) {
+            hlsInstance = new Hls();
+            hlsInstance.loadSource(currentTrailerUrl);
+            hlsInstance.attachMedia(video);
+          } else { video.src = currentTrailerUrl; }
+        };
+        if (typeof Hls === 'undefined') {
+          const s = document.createElement('script');
+          s.src = 'https://cdn.jsdelivr.net/npm/hls.js@1';
+          s.onload = iniciarHls;
+          document.head.appendChild(s);
+        } else { iniciarHls(); }
+      } else { video.src = currentTrailerUrl; }
+    }
+
+    function detenerTrailer() {
+      var box = document.getElementById('m-trailer-box');
+      var btn = document.getElementById('btn-toggle-trailer');
+      if (hlsInstance) { try { hlsInstance.destroy(); } catch (e) {} hlsInstance = null; }
+      if (box) { box.innerHTML = ''; box.style.display = 'none'; }
+      if (btn) { btn.classList.remove('active'); btn.innerHTML = `${svgIcon('i-play', 'ico-sm')} Ver Tráiler`; }
+    }
+  </script>
+
+  <script>
+    window.addEventListener('error', (e) => {
+      console.error('[NexusLib] Error:', e.message, e.filename, e.lineno);
+    });
+    window.addEventListener('unhandledrejection', (e) => {
+      console.error('[NexusLib] Promesa rechazada:', e.reason);
+    });
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(() => console.log('PWA lista para instalar'))
+          .catch(err => console.log('Error en Service Worker:', err));
+      });
+    }
+  </script>
 </body>
 </html>
