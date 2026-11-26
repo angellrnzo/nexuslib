@@ -325,7 +325,7 @@
     .custom-select.open .custom-select-chevron { transform: rotate(180deg); color: var(--accent); }
     .custom-select-menu {
       position: absolute; top: calc(100% + 6px); left: 0; right: 0; min-width: 170px; margin: 0;
-      padding: 5px; list-style: none; background: var(--bg-solid, #0b0e14); border: 1px solid var(--border);
+      padding: 5px; list-style: none; background: #0d1322; border: 1px solid var(--border);
       border-radius: 9px; box-shadow: 0 14px 30px rgba(0,0,0,0.8); z-index: 100;
       opacity: 0; visibility: hidden; transform: translateY(-6px) scale(0.98);
       transform-origin: top center; transition: opacity 0.16s ease, transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.16s;
@@ -1541,8 +1541,8 @@
               <span>Todos</span>
               <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
             </li>
-            <li role="option" data-value="deseado">
-              <span>Deseados</span>
+            <li role="option" data-value="cualquiera">
+              <span>Cualquiera</span>
               <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
             </li>
             <li role="option" data-value="ninguno">
@@ -1564,15 +1564,19 @@
           </button>
           <ul class="custom-select-menu" role="listbox">
             <li role="option" data-value="az" aria-selected="true">
-              <span>A-Z</span>
+              <span>Alfabético (A - Z)</span>
               <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
             </li>
             <li role="option" data-value="za">
-              <span>Z-A</span>
+              <span>Alfabético (Z - A)</span>
               <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
             </li>
-            <li role="option" data-value="recent">
-              <span>Recientes</span>
+            <li role="option" data-value="recientes">
+              <span>Últimos añadidos</span>
+              <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </li>
+            <li role="option" data-value="puntuacion">
+              <span>Puntuación</span>
               <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
             </li>
           </ul>
@@ -1582,15 +1586,6 @@
       <div class="filter-group" id="extra-filter-2"></div>
       <div class="filter-group" id="extra-filter-3"></div>
 
-      <div class="filter-group">
-        <label><span data-i18n="filter.ordenar">Ordenar por</span></label>
-        <select id="filter-orden" onchange="filtrarItems()">
-          <option value="az" data-i18n="sort.az">Alfabético (A - Z)</option>
-          <option value="za" data-i18n="sort.za">Alfabético (Z - A)</option>
-          <option value="recientes" data-i18n="sort.recientes">Últimos añadidos</option>
-          <option value="puntuacion" data-i18n="sort.puntuacion">Puntuación</option>
-        </select>
-      </div>
       <button class="filter-reset" onclick="resetFiltros()"><span data-i18n="filter.limpiar">Limpiar Filtros</span></button>
     </div>
 
@@ -3097,10 +3092,6 @@
     // deseados, orden) — preserva selecciones actuales
     function nexusRenderFilterPersonas() {
       var wrap = document.getElementById('filter-personas');
-      var selDeseado = document.getElementById('filter-deseado');
-      var selOrden = document.getElementById('filter-orden');
-      var prevDeseado = selDeseado ? selDeseado.value : 'todos';
-      var prevOrden = selOrden ? selOrden.value : 'az';
       var prevEst = {}, prevNota = {};
       (_personas || []).forEach(function(p) {
         var e = document.getElementById('filter-est-' + p.key);
@@ -3112,47 +3103,49 @@
       var h = '';
       (_personas || []).forEach(function(p) {
         h += '<div class="filter-group"><label>' + nexusPersonaDot(p, 12) + ' ' + vinculosEsc(p.label || p.suffix) + ' (' + t('fl.estado') + ')</label>' +
-             '<select id="filter-est-' + p.key + '" onchange="filtrarItems()">' +
-             '<option value="todos">' + t('fl.todos') + '</option><option value="No jugado">' + t('st.nojugado') + '</option>' +
-             '<option value="En proceso">' + t('st.enproceso') + '</option><option value="Completado">' + t('st.completado') + '</option></select></div>';
+             nexusCustomSelectWrap('filter-est-' + p.key, [
+               { v: 'todos', text: t('fl.todos') },
+               { v: 'No jugado', text: t('st.nojugado') },
+               { v: 'En proceso', text: t('st.enproceso') },
+               { v: 'Completado', text: t('st.completado') }
+             ], prevEst[p.key] || 'todos') + '</div>';
         h += '<div class="filter-group"><label><svg class="ico ico-sm ico-gold"><use href="#i-star"/></svg>' + t('fl.nota_min') + '' + vinculosEsc(p.label || p.suffix) + '</label>' +
-             '<select id="filter-nota-' + p.key + '" onchange="filtrarItems()">' +
-             '<option value="0">' + t('fl.todasnotas') + '</option><option value="5">' + t('fl.nota5') + '</option>' +
-             '<option value="7">' + t('fl.nota7') + '</option><option value="9">' + t('fl.nota9') + '</option></select></div>';
+             nexusCustomSelectWrap('filter-nota-' + p.key, [
+               { v: '0', text: t('fl.todasnotas') },
+               { v: '5', text: t('fl.nota5') },
+               { v: '7', text: t('fl.nota7') },
+               { v: '9', text: t('fl.nota9') }
+             ], prevNota[p.key] || '0') + '</div>';
       });
       if (wrap) wrap.innerHTML = h;
       (_personas || []).forEach(function(p) {
-        var e = document.getElementById('filter-est-' + p.key);
-        var n = document.getElementById('filter-nota-' + p.key);
-        if (e) e.value = prevEst[p.key] || 'todos';
-        if (n) n.value = prevNota[p.key] || '0';
+        initCustomSelect('filter-est-' + p.key + '-dropdown', filtrarItems);
+        initCustomSelect('filter-nota-' + p.key + '-dropdown', filtrarItems);
       });
 
       // deseados: todos / cualquiera / ninguno / solo:{key} / all
-      if (selDeseado) {
-        var dh = '<option value="todos">' + t('fl.todos') + '</option><option value="cualquiera">' + t('fl.cualquiera') + '</option>' +
-                 '<option value="ninguno">' + t('fl.ninguno') + '</option>';
-        (_personas || []).forEach(function(p) {
-          dh += '<option value="solo:' + p.key + '">' + tf('fl.solo', { n: vinculosEsc(p.label || p.suffix) }) + '</option>';
-        });
-        if ((_personas || []).length > 1) dh += '<option value="all">' + t('fl.todosigual') + '</option>';
-        selDeseado.innerHTML = dh;
-        selDeseado.value = prevDeseado;
-        if (selDeseado.value !== prevDeseado) selDeseado.value = 'todos';
-      }
+      var dopts = [
+        { v: 'todos', text: t('fl.todos') },
+        { v: 'cualquiera', text: t('fl.cualquiera') },
+        { v: 'ninguno', text: t('fl.ninguno') }
+      ];
+      (_personas || []).forEach(function(p) {
+        dopts.push({ v: 'solo:' + p.key, text: tf('fl.solo', { n: p.label || p.suffix }) });
+      });
+      if ((_personas || []).length > 1) dopts.push({ v: 'all', text: t('fl.todosigual') });
+      nexusCSRebuildMenu('filter-deseado', dopts);
 
       // orden por nota de cada persona
-      if (selOrden) {
-        var oh = '<option value="az">' + t('sort.az') + '</option><option value="za">' + t('sort.za') + '</option>' +
-                '<option value="recientes">' + t('sort.recientes') + '</option>';
-        (_personas || []).forEach(function(p) {
-          oh += '<option value="nota:' + p.key + '">' + tf('fl.nota', { n: vinculosEsc(p.label || p.suffix) }) + '</option>';
-        });
-        oh += '<option value="puntuacion">' + t('sort.puntuacion') + '</option>';
-        selOrden.innerHTML = oh;
-        selOrden.value = prevOrden;
-        if (selOrden.value !== prevOrden) selOrden.value = 'az';
-      }
+      var oopts = [
+        { v: 'az', text: t('sort.az') },
+        { v: 'za', text: t('sort.za') },
+        { v: 'recientes', text: t('sort.recientes') }
+      ];
+      (_personas || []).forEach(function(p) {
+        oopts.push({ v: 'nota:' + p.key, text: tf('fl.nota', { n: p.label || p.suffix }) });
+      });
+      oopts.push({ v: 'puntuacion', text: t('sort.puntuacion') });
+      nexusCSRebuildMenu('filter-orden', oopts);
     }
     var currentItemId = '';
     var currentTrailerUrl = '';
@@ -3887,24 +3880,55 @@
       var f2 = document.getElementById('extra-filter-2');
       var f3 = document.getElementById('extra-filter-3');
 
+      var mkOpts = function(pairs) {
+        return pairs.map(function(pr) { return { v: pr[0], text: pr[1] }; });
+      };
+
       if (cat === 'Juegos') {
-        f1.innerHTML = '<label>' + t('fl.modo') + '</label><select id="f-extra-1" onchange="filtrarItems()"><option value="todos">' + t('fl.todos') + '</option><option value="coop">' + t('fl.coop') + '</option><option value="Un jugador">' + t('fl.unplayer') + '</option><option value="Multijugador">' + t('fl.multi') + '</option></select>';
-        f2.innerHTML = '<label>' + t('fl.deck') + '</label><select id="f-extra-2" onchange="filtrarItems()"><option value="todos">' + t('fl.todos') + '</option><option value="Verificado">' + t('fl.verif') + '</option><option value="Jugable">' + t('fl.playable') + '</option></select>';
-        f3.innerHTML = '<label>' + t('fl.precio') + '</label><select id="f-extra-3" onchange="filtrarItems()"><option value="todos">' + t('fl.todos') + '</option><option value="gratis">' + t('fl.free') + '</option><option value="pago">' + t('fl.paid') + '</option></select>';
+        f1.innerHTML = '<label>' + t('fl.modo') + '</label>' + nexusCustomSelectWrap('f-extra-1', mkOpts([
+          ['todos', t('fl.todos')], ['coop', t('fl.coop')], ['Un jugador', t('fl.unplayer')], ['Multijugador', t('fl.multi')]
+        ]), 'todos');
+        f2.innerHTML = '<label>' + t('fl.deck') + '</label>' + nexusCustomSelectWrap('f-extra-2', mkOpts([
+          ['todos', t('fl.todos')], ['Verificado', t('fl.verif')], ['Jugable', t('fl.playable')]
+        ]), 'todos');
+        f3.innerHTML = '<label>' + t('fl.precio') + '</label>' + nexusCustomSelectWrap('f-extra-3', mkOpts([
+          ['todos', t('fl.todos')], ['gratis', t('fl.free')], ['pago', t('fl.paid')]
+        ]), 'todos');
       } else if (cat === 'Peliculas_Series') {
-        f1.innerHTML = '<label>' + t('fl.tipo') + '</label><select id="f-extra-1" onchange="fSubcat=this.value;filtrarItems()"><option value="todos">' + t('fl.todos') + '</option><option value="pelicula">' + t('fl.pelicula') + '</option><option value="serie">' + t('fl.serie') + '</option><option value="anime">' + t('fl.anime') + '</option></select>';
-        f2.innerHTML = '<label>' + t('fl.plataforma') + '</label><select id="f-extra-2" onchange="filtrarItems()"><option value="todos">' + t('fl.allf') + '</option><option value="Netflix">Netflix</option><option value="Crunchyroll">Crunchyroll</option><option value="Max">Max</option><option value="Prime">Prime Video</option><option value="Disney">Disney+</option></select>';
-        f3.innerHTML = '<label>' + t('fl.estado') + '</label><select id="f-extra-3" onchange="filtrarItems()"><option value="todos">' + t('fl.todos') + '</option><option value="En emisión">' + t('fl.emision') + '</option><option value="Finalizada">' + t('fl.finalizada') + '</option></select>';
+        f1.innerHTML = '<label>' + t('fl.tipo') + '</label>' + nexusCustomSelectWrap('f-extra-1', mkOpts([
+          ['todos', t('fl.todos')], ['pelicula', t('fl.pelicula')], ['serie', t('fl.serie')], ['anime', t('fl.anime')]
+        ]), 'todos');
+        f2.innerHTML = '<label>' + t('fl.plataforma') + '</label>' + nexusCustomSelectWrap('f-extra-2', mkOpts([
+          ['todos', t('fl.allf')], ['Netflix', 'Netflix'], ['Crunchyroll', 'Crunchyroll'], ['Max', 'Max'], ['Prime', 'Prime Video'], ['Disney', 'Disney+']
+        ]), 'todos');
+        f3.innerHTML = '<label>' + t('fl.estado') + '</label>' + nexusCustomSelectWrap('f-extra-3', mkOpts([
+          ['todos', t('fl.todos')], ['En emisión', t('fl.emision')], ['Finalizada', t('fl.finalizada')]
+        ]), 'todos');
       } else if (cat === 'Libros') {
-        f1.innerHTML = '<label>' + t('fl.ext') + '</label><select id="f-extra-1" onchange="filtrarItems()"><option value="todos">' + t('fl.allf') + '</option><option value="corto">' + t('fl.corto') + '</option><option value="medio">' + t('fl.medio') + '</option><option value="largo">' + t('fl.largo') + '</option></select>';
+        f1.innerHTML = '<label>' + t('fl.ext') + '</label>' + nexusCustomSelectWrap('f-extra-1', mkOpts([
+          ['todos', t('fl.allf')], ['corto', t('fl.corto')], ['medio', t('fl.medio')], ['largo', t('fl.largo')]
+        ]), 'todos');
         f2.innerHTML = ''; f3.innerHTML = '';
       } else if (cat === 'Mangas') {
-        f1.innerHTML = '<label>' + t('fl.estado') + '</label><select id="f-extra-1" onchange="filtrarItems()"><option value="todos">' + t('fl.todos') + '</option><option value="En emisión">' + t('fl.emision') + '</option><option value="Finalizado">' + t('fl.finalizado') + '</option></select>';
-        f2.innerHTML = '<label>' + t('fl.demog') + '</label><select id="f-extra-2" onchange="filtrarItems()"><option value="todos">' + t('fl.allf') + '</option><option value="Shounen">Shounen</option><option value="Seinen">Seinen</option><option value="Shoujo">Shoujo</option><option value="Josei">Josei</option></select>';
+        f1.innerHTML = '<label>' + t('fl.estado') + '</label>' + nexusCustomSelectWrap('f-extra-1', mkOpts([
+          ['todos', t('fl.todos')], ['En emisión', t('fl.emision')], ['Finalizado', t('fl.finalizado')]
+        ]), 'todos');
+        f2.innerHTML = '<label>' + t('fl.demog') + '</label>' + nexusCustomSelectWrap('f-extra-2', mkOpts([
+          ['todos', t('fl.allf')], ['Shounen', 'Shounen'], ['Seinen', 'Seinen'], ['Shoujo', 'Shoujo'], ['Josei', 'Josei']
+        ]), 'todos');
         f3.innerHTML = '';
       } else {
         f1.innerHTML = ''; f2.innerHTML = ''; f3.innerHTML = '';
       }
+
+      ['f-extra-1', 'f-extra-2', 'f-extra-3'].forEach(function(id) {
+        var wrapEl = document.getElementById(id + '-dropdown');
+        if (!wrapEl) return;
+        var cb = (cat === 'Peliculas_Series' && id === 'f-extra-1')
+          ? function(val) { fSubcat = val; filtrarItems(); }
+          : filtrarItems;
+        initCustomSelect(id + '-dropdown', cb);
+      });
     }
 
     function toggleFiltros(e) {
@@ -3917,8 +3941,8 @@
       if (panel.classList.contains('open')) {
         posicionarPanelFiltros();
         history.pushState(null, '', window.location.href);
-        initCustomSelect('filter-deseado-dropdown');
-        initCustomSelect('filter-orden-dropdown');
+        initCustomSelect('filter-deseado-dropdown', filtrarItems);
+        initCustomSelect('filter-orden-dropdown', filtrarItems);
       }
     }
 
@@ -3999,6 +4023,7 @@
         var el = document.getElementById(id);
         if (el) el.value = 'todos';
       });
+      nexusSyncPanelCustomSelects();
       if (!noRender) filtrarItems();
     }
 
@@ -4725,7 +4750,7 @@
         nexusRenderModsSearch();
         document.getElementById('mod-nombre').oninput = nexusValidarFormMods;
         document.getElementById('mod-url').oninput = nexusValidarFormMods;
-        initCustomSelect('fuente-dropdown');
+        initCustomSelect('fuente-dropdown', nexusValidarFormMods);
       } catch (e) {
         list.innerHTML = '<div class="mods-empty">' + t('err.prefix') + escaparHTML(e.message || '') + '</div>';
       }
@@ -5909,41 +5934,121 @@
       if (btn) { btn.classList.remove('active'); btn.innerHTML = `${svgIcon('i-play', 'ico-sm')} ${t('trail.show')}`; }
     }
 
-    function initCustomSelect(id) {
+    var _nexusCSCheckSVG = '<svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+    var _nexusCSCallbacks = {};
+
+    // opts: [{v, text, html?}] — text = etiqueta plana para el trigger, html = etiqueta del item (opcional)
+    function nexusCSMenuHTML(opts, selectedVal) {
+      return opts.map(function(o) {
+        var sel = (selectedVal !== undefined ? o.v === selectedVal : o.selected) ? ' aria-selected="true"' : '';
+        var dt = vinculosEsc(o.text != null ? o.text : '');
+        var inner = o.html != null ? o.html : vinculosEsc(o.text);
+        return '<li role="option" data-value="' + vinculosEsc(o.v) + '" data-text="' + dt + '"' + sel + '>' +
+               '<span>' + inner + '</span>' + _nexusCSCheckSVG + '</li>';
+      }).join('');
+    }
+
+    // markup completo de un custom-select; hiddenId conserva el id que lee el JS existente
+    function nexusCustomSelectWrap(hiddenId, opts, selected) {
+      var sel = (selected != null) ? selected : opts[0].v;
+      var selOpt = opts.filter(function(o) { return o.v === sel; })[0] || opts[0];
+      return '<div class="custom-select" id="' + hiddenId + '-dropdown">' +
+        '<input type="hidden" id="' + hiddenId + '" value="' + vinculosEsc(sel) + '">' +
+        '<button type="button" class="custom-select-trigger" aria-haspopup="listbox" aria-expanded="false">' +
+          '<span class="custom-select-label">' + vinculosEsc(selOpt.text) + '</span>' +
+          '<svg class="custom-select-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>' +
+        '</button>' +
+        '<ul class="custom-select-menu" role="listbox">' + nexusCSMenuHTML(opts, sel) + '</ul>' +
+      '</div>';
+    }
+
+    // sincroniza label + aria-selected del wrapper con el valor del hidden input
+    function nexusCSSyncSelect(wrap) {
+      if (!wrap) return;
+      var hiddenInput = wrap.querySelector('input[type="hidden"]');
+      var lbl = wrap.querySelector('.custom-select-label');
+      var items = wrap.querySelectorAll('.custom-select-menu li[role="option"]');
+      if (!hiddenInput || !items.length) return;
+      var val = hiddenInput.value, match = null;
+      items.forEach(function(li) {
+        var on = li.dataset.value === val;
+        if (on) match = li;
+        if (on) li.setAttribute('aria-selected', 'true'); else li.removeAttribute('aria-selected');
+      });
+      if (!match) { match = items[0]; hiddenInput.value = match.dataset.value; }
+      if (lbl) lbl.textContent = match.dataset.text || match.querySelector('span').textContent;
+    }
+
+    function nexusSyncPanelCustomSelects() {
+      document.querySelectorAll('#panel-filtros .custom-select').forEach(nexusCSSyncSelect);
+    }
+
+    // reconstruye el menu de un custom-select existente (hidden input ya en el DOM)
+    function nexusCSRebuildMenu(hiddenId, opts) {
+      var hidden = document.getElementById(hiddenId);
+      var wrap = hidden && hidden.closest('.custom-select');
+      if (!wrap) return;
+      var menu = wrap.querySelector('.custom-select-menu');
+      if (!menu) return;
+      var valid = opts.some(function(o) { return o.v === hidden.value; });
+      if (!valid) hidden.value = opts[0].v;
+      menu.innerHTML = nexusCSMenuHTML(opts, hidden.value);
+      nexusCSSyncSelect(wrap);
+    }
+
+    function nexusCSCloseOthers(keep) {
+      document.querySelectorAll('.custom-select.open').forEach(function(w) {
+        if (w === keep) return;
+        w.classList.remove('open');
+        var tr = w.querySelector('.custom-select-trigger');
+        if (tr) tr.setAttribute('aria-expanded', 'false');
+      });
+    }
+
+    function initCustomSelect(id, onChange) {
       var wrap = document.getElementById(id);
       if (!wrap) return;
-      var trigger = wrap.querySelector('.custom-select-trigger');
-      var label = wrap.querySelector('.custom-select-label');
       var hiddenInput = wrap.querySelector('input[type="hidden"]');
-      var options = wrap.querySelectorAll('li');
-      if (!trigger || !label || !hiddenInput || !options.length) return;
+      if (!hiddenInput) return;
+      if (onChange) _nexusCSCallbacks[id] = onChange;
+      if (wrap.dataset.csInit) { nexusCSSyncSelect(wrap); return; }
+      wrap.dataset.csInit = '1';
 
+      var trigger = wrap.querySelector('.custom-select-trigger');
       var closeMenu = function() {
         wrap.classList.remove('open');
-        trigger.setAttribute('aria-expanded', 'false');
+        if (trigger) trigger.setAttribute('aria-expanded', 'false');
       };
 
-      trigger.addEventListener('click', function() {
-        var isOpen = wrap.classList.toggle('open');
-        trigger.setAttribute('aria-expanded', String(isOpen));
-      });
-
-      options.forEach(function(opt) {
-        opt.addEventListener('click', function() {
-          options.forEach(function(o) { o.removeAttribute('aria-selected'); });
-          opt.setAttribute('aria-selected', 'true');
-          var val = opt.dataset.value;
-          hiddenInput.value = val;
-          label.textContent = opt.querySelector('span').textContent;
-          closeMenu();
-          if (id === 'fuente-dropdown') nexusValidarFormMods();
+      if (trigger) {
+        trigger.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var isOpen = wrap.classList.toggle('open');
+          trigger.setAttribute('aria-expanded', String(isOpen));
+          if (isOpen) nexusCSCloseOthers(wrap);
         });
+      }
+
+      // delegacion: los <li> se regeneran dinamicamente, el listener vive en el wrap
+      wrap.addEventListener('click', function(e) {
+        var li = e.target.closest('li[role="option"]');
+        if (!li || !wrap.contains(li)) return;
+        var menu = wrap.querySelector('.custom-select-menu');
+        if (!menu || !menu.contains(li)) return;
+        menu.querySelectorAll('li').forEach(function(o) { o.removeAttribute('aria-selected'); });
+        li.setAttribute('aria-selected', 'true');
+        hiddenInput.value = li.dataset.value;
+        var lbl = wrap.querySelector('.custom-select-label');
+        if (lbl) lbl.textContent = li.dataset.text || li.querySelector('span').textContent;
+        closeMenu();
+        var cb = _nexusCSCallbacks[id];
+        if (cb) cb(hiddenInput.value);
+        hiddenInput.dispatchEvent(new Event('change', { bubbles: true }));
       });
 
       document.addEventListener('click', function(e) {
         if (!wrap.contains(e.target)) closeMenu();
       });
-
       document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') closeMenu();
       });
