@@ -550,6 +550,10 @@ Arquitectura de respaldo en 3 capas — runbook completo en `database/RESTORE.md
 - [x] Backup local cifrado — `database/backup_local.py` (Fernet AES, clave en `_local/backup_key.key` — respaldar aparte). Probado en vivo: 237 KB, 8 tablas.
 - [x] Standby `uxixiwrvobkulkjkicjm` (us-west-2) **REPLICADO 2026-11-25**: schema identico (12t/49f/12p/2v) + datos completos (1093 filas via `restore_backup.py` con remap de profile ids) + 2 auth users (via `sync_auth_users.py`). REST/Auth responden. **COMPLETADO 2026-11-25:** PAT account-level `SUPABASE_ADMIN_TOKEN` (org angellrnzo, 2 proyectos, Never) → 3 Edge Functions deployadas + secrets + auth URLs (site_url=Pages). **E2E verificado: catalog-search OK, get_items_merged 251 items.** Secrets GitHub cargados + var activa → **workflow verificado E2E 2026-11-26** (run 45730023321: dump+artifact+mirror todo verde). Mirror usa `mirror_to_standby.py` (pg_restore no servia: auth UUIDs difieren entre proyectos).
 
+### Phase 6a — Perf `get_items_merged` (2026-11-26)
+
+`database/06_get_items_merged_perf.sql` — reescritura set-based: los ~4 queries por item (tracking propio/vinculados, exists library_items, string_agg géneros/beta) y la query de vínculos re-ejecutada por item ahora son 6 lookups jsonb prefetcheados una vez. **0.92s → 0.78s en 251 juegos** (la ventaja crece con más items: O(items×queries) → O(1) queries + ensamblado). Mismo shape exacto, verificado E2E (ambos sufijos, privacidad, is_private). Aplicado en principal + standby.
+
 ### Phase 4.7 — Auditoría DB para features pendientes (2026-11-25)
 
 Schema ya cubre casi todo lo que Phase 3+ necesita — **no hay SQL nuevo urgente**:

@@ -11,7 +11,7 @@ Si no se pasa --password, lo lee de _local/supabase_credentials.env
 SUPABASE_STANDBY_DB_PASSWORD o pasalo con --password).
 
 Orden aplicado (fuente de verdad: database/RESTORE.md):
-    00_schema.sql, 01_phase4_5.sql, 02_phase5c, 03_phase5d, 04_phase5e, 05_phase5h
+    00-06 (schema + phases + perf)
 """
 
 import argparse
@@ -31,6 +31,7 @@ FILES = [
     "03_phase5d_item_shares.sql",
     "04_phase5e_optin_label.sql",
     "05_phase5h_username.sql",
+    "06_get_items_merged_perf.sql",
 ]
 
 

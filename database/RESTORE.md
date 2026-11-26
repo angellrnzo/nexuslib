@@ -26,7 +26,7 @@ Como reconstruir la base de datos completa desde cero o desde un respaldo.
    python database/apply_schema.py --project-ref <ref>
    ```
 
-   Aplica en orden numerico `00` a `05` por pooler.
+   Aplica en orden numerico `00` a `06` por pooler (`06` = optimizacion de `get_items_merged`, reemplaza la funcion de `05`).
    Manual (SQL Editor): mismo orden — `database/legacy/` (phase5b/5f/5g)
    queda subsumido por `05_phase5h_username.sql`, NO correrlo.
 
