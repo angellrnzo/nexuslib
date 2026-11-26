@@ -204,6 +204,7 @@
     .add-wrapper {
       display: flex;
       align-items: center;
+      column-gap: 6px;
       background: rgba(0, 0, 0, 0.45);
       border-radius: 20px;
       padding: 0 4px 0 10px;
@@ -219,8 +220,35 @@
       width: 100%;
       background: rgba(11, 14, 20, 0.98);
       border-color: var(--accent);
-      box-shadow: 0 0 20px rgba(102, 192, 244, 0.4);
+      box-shadow: 0 0 0 3px rgba(102, 192, 244, 0.16), 0 0 24px rgba(102, 192, 244, 0.28);
     }
+
+    /* botones nav dentro de la barra: colapsan animados al expandir (estilo muestra) */
+    .add-collapse {
+      flex-shrink: 0; overflow: hidden;
+      transition: width var(--t-slow) var(--ease-inout), flex-basis var(--t-slow) var(--ease-inout),
+                  max-width var(--t-slow) var(--ease-inout), opacity var(--t-slow) var(--ease-inout),
+                  transform var(--t-slow) var(--ease-inout), margin var(--t-slow) var(--ease-inout),
+                  padding var(--t-slow) var(--ease-inout);
+    }
+    .menu-wrap.add-collapse { display: flex; align-items: center; }
+    .add-wrapper .btn-circle { width: 30px; height: 30px; }
+    .add-wrapper.expanded .add-collapse {
+      width: 0; min-width: 0; max-width: 0; flex-basis: 0;
+      padding: 0; margin: 0; opacity: 0;
+      transform: scale(0.8) translateX(-6px);
+      pointer-events: none;
+    }
+
+    .add-plus {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 30px; height: 30px; border-radius: 50%; border: none; padding: 0;
+      background: transparent; color: var(--muted); cursor: pointer; flex-shrink: 0;
+      transition: color var(--t-fast) var(--ease-out), background var(--t-fast) var(--ease-out);
+    }
+    .add-plus:hover { color: var(--bright); background: rgba(255,255,255,0.08); }
+    .add-plus:active { transform: scale(0.94); }
+    .add-wrapper.expanded .add-plus { color: var(--accent); }
     
     .btn-clear-add {
       background: transparent; border: none; color: var(--muted); cursor: pointer;
@@ -231,24 +259,6 @@
     .add-wrapper.has-text .btn-clear-add { display: inline-flex; }
 
     #inputAgregar { width: 100%; min-width: 0; border: none; background: transparent; color: white; outline: none; font-family: 'Inter', sans-serif; font-size: 13px; }
-
-    .right-controls {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      flex-shrink: 0;
-      opacity: 1;
-      max-width: 250px;
-      overflow: hidden;
-      transition: flex-grow var(--t-slow) var(--ease-inout), width var(--t-slow) var(--ease-inout), background-color var(--t-slow) var(--ease-inout), border-color var(--t-slow) var(--ease-inout), box-shadow var(--t-slow) var(--ease-inout), transform var(--t-slow) var(--ease-inout), opacity var(--t-slow) var(--ease-inout);
-    }
-    .right-controls.hidden {
-      opacity: 0;
-      transform: translateX(20px);
-      max-width: 0;
-      gap: 0;
-      pointer-events: none;
-    }
 
     .search-results-dropdown {
       display: none;
@@ -1480,22 +1490,10 @@
 
         <div class="controls-row">
           <div class="add-wrapper" id="add-wrapper-box">
-            <svg class="ico ico-sm" style="color:var(--muted); margin-right:6px;"><use href="#i-plus"/></svg>
-            <input type="text" id="inputAgregar" data-i18n-ph="cfg.Juegos.add" placeholder="AppID, URL o nombre..." onfocus="activarModoBusquedaAgregar(true)" oninput="syncAddClearBtn(); autocompletarAgregarInput()" onkeydown="if(event.key==='Enter') manejarAgregar()">
-            <button type="button" class="btn-clear-add" onclick="cerrarBusquedaAgregar(true)" title="Limpiar" data-i18n-title="tip.limpiar">
-              <svg class="ico ico-sm"><use href="#i-x"/></svg>
-            </button>
-            <button id="btn-add" class="btn btn-primary" onclick="manejarAgregar()" title="Buscar o añadir" data-i18n-title="tip.buscar" style="margin-left:3px;">
-              <svg class="ico ico-sm"><use href="#i-plus"/></svg>
-            </button>
-            <div id="search-dropdown" class="search-results-dropdown"></div>
-          </div>
-
-          <div class="right-controls" id="right-ctrls">
-            <button id="btn-toggle-filtros" class="btn btn-circle" onclick="toggleFiltros(event)" title="Filtros y Orden" data-i18n-title="tip.filtros">
+            <button id="btn-toggle-filtros" class="btn btn-circle add-collapse" onclick="toggleFiltros(event)" title="Filtros y Orden" data-i18n-title="tip.filtros">
               <svg class="ico"><use href="#i-filter"/></svg>
             </button>
-            <div class="menu-wrap">
+            <div class="menu-wrap add-collapse">
               <button class="btn btn-circle" id="btn-menu" onclick="toggleMenu(event)" title="Menú" data-i18n-title="tip.menu">
                 <svg class="ico"><use href="#i-menu"/></svg>
               </button>
@@ -1525,6 +1523,17 @@
                 </button>
               </div>
             </div>
+            <button type="button" class="add-plus" onclick="document.getElementById('inputAgregar').focus()" title="Buscar o añadir" data-i18n-title="tip.buscar">
+              <svg class="ico ico-sm"><use href="#i-plus"/></svg>
+            </button>
+            <input type="text" id="inputAgregar" data-i18n-ph="cfg.Juegos.add" placeholder="AppID, URL o nombre..." onfocus="activarModoBusquedaAgregar(true)" oninput="syncAddClearBtn(); autocompletarAgregarInput()" onkeydown="if(event.key==='Enter') manejarAgregar()">
+            <button type="button" class="btn-clear-add" onclick="cerrarBusquedaAgregar(true)" title="Limpiar" data-i18n-title="tip.limpiar">
+              <svg class="ico ico-sm"><use href="#i-x"/></svg>
+            </button>
+            <button id="btn-add" class="btn btn-primary" onclick="manejarAgregar()" title="Buscar o añadir" data-i18n-title="tip.buscar" style="margin-left:3px;">
+              <svg class="ico ico-sm"><use href="#i-plus"/></svg>
+            </button>
+            <div id="search-dropdown" class="search-results-dropdown"></div>
           </div>
         </div>
 
@@ -3700,10 +3709,9 @@
 
     function activarModoBusquedaAgregar(activar) {
       var box = document.getElementById('add-wrapper-box');
-      var rightCtrls = document.getElementById('right-ctrls');
       if (activar && !box.classList.contains('expanded')) {
+        cerrarMenuPanel();
         box.classList.add('expanded');
-        rightCtrls.classList.add('hidden');
         history.pushState(null, '', window.location.href);
       }
     }
@@ -3725,7 +3733,6 @@
         return;
       }
       document.getElementById('add-wrapper-box').classList.remove('expanded');
-      document.getElementById('right-ctrls').classList.remove('hidden');
       if (document.activeElement === input) input.blur();
     }
 
