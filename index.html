@@ -295,10 +295,10 @@
 
     .btn-circle {
       width: 32px; height: 32px; border-radius: 50%; padding: 0;
-      background: rgba(42, 71, 94, 0.85); color: var(--bright); border: 1px solid rgba(255, 255, 255, 0.15);
-      position: relative; opacity: 0.7; transition: opacity var(--t-base) var(--ease-out), background var(--t-base) var(--ease-out), border-color var(--t-base) var(--ease-out);
+      background: var(--btn-primary); color: var(--on-accent); border: 1px solid rgba(255, 255, 255, 0.15);
+      position: relative; opacity: 0.7; transition: opacity var(--t-base) var(--ease-out), filter var(--t-base) var(--ease-out);
     }
-    .btn-circle:hover { opacity: 1; background: rgba(42, 71, 94, 0.95); border-color: rgba(255, 255, 255, 0.25); }
+    .btn-circle:hover { opacity: 1; filter: brightness(1.1); }
     .btn-circle.active { background: var(--accent); color: var(--on-accent); border-color: var(--accent); opacity: 1; }
     .btn-circle.has-filters { border-color: var(--accent); box-shadow: 0 0 0 1px rgba(102, 192, 244, 0.5); }
     .btn-circle.has-filters::after {
