@@ -159,19 +159,6 @@
       box-shadow: 0 2px 10px rgba(102, 192, 244, 0.4);
     }
 
-    .sub-tabs {
-      display: flex; gap: 4px; background: rgba(16,24,36,.98);
-      padding: 4px 6px; border-radius: 24px; border: 1px solid rgba(102,192,244,.18);
-      width: max-content; max-width: 100%; overflow-x: auto; scrollbar-width: none;
-    }
-    .sub-tabs::-webkit-scrollbar { display: none; }
-    .sub-tab {
-      padding: 5px 12px; border: none; border-radius: 18px; background: transparent;
-      color: #8f98a0; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 800;
-      cursor: pointer; white-space: nowrap; transition: all var(--t-fast) var(--ease-out);
-    }
-    .sub-tab.active { background: rgba(102,192,244,.18); color: var(--accent); }
-
     .controls {
       display: flex;
       flex-direction: column;
@@ -393,7 +380,7 @@
       max-height: 0; opacity: 0; overflow: hidden; margin-top: 0;
       transition: max-height .32s var(--ease-out), opacity .22s var(--ease-out), margin .32s var(--ease-out);
     }
-    .perfil-edit.open { max-height: 640px; opacity: 1; margin-top: 10px; }
+    .perfil-edit.open { max-height: 640px; opacity: 1; margin-top: 8px; }
     .perfil-edit-inner { display: grid; gap: 12px; }
     .pf-card {
       background: #21262d; border: 1px solid rgba(255,255,255,.08);
@@ -1157,7 +1144,6 @@
 
     @media (pointer: coarse) {
       .tab-btn { padding: 9px 12px; }
-      .sub-tab { padding: 8px 14px; font-size: 12px; }
       .stats-prof-btn, .stats-cat-btn { padding: 9px 10px; font-size: 12px; }
       .btn-circle { width: 36px; height: 36px; }
       .menu-item { padding: 12px 14px; font-size: 14px; min-height: 44px; }
@@ -1321,13 +1307,6 @@
           <svg class="ico"><use href="#i-star"/></svg> <span class="tab-text">Coleccionables</span>
         </button>
 
-      </div>
-
-      <div id="sub-tabs" class="sub-tabs" style="display:none;">
-        <button class="sub-tab active" data-sub="todos" onclick="cambiarSubcat('todos')">Todos</button>
-        <button class="sub-tab" data-sub="pelicula" onclick="cambiarSubcat('pelicula')">Películas</button>
-        <button class="sub-tab" data-sub="serie" onclick="cambiarSubcat('serie')">Series</button>
-        <button class="sub-tab" data-sub="anime" onclick="cambiarSubcat('anime')">Anime</button>
       </div>
 
       <div class="controls" id="main-controls-box">
@@ -3208,13 +3187,6 @@
       cerrarBusquedaAgregar();
 
       grid.classList.toggle('poster-mode', cfg.poster);
-      var subTabs = document.getElementById('sub-tabs');
-      if (subTabs) {
-        var showSub = (cat === 'Peliculas_Series');
-        subTabs.style.display = showSub ? 'flex' : 'none';
-        if (!showSub) { fSubcat = 'todos'; document.querySelectorAll('.sub-tab').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-sub')==='todos'); }); }
-        setTimeout(nexusSyncHeaderSpace, 0);
-      }
       if (window._pendingGridDir) {
         grid.classList.remove('grid-in-next', 'grid-in-prev');
         void grid.offsetWidth;
@@ -3312,7 +3284,7 @@
         f2.innerHTML = '<label>Steam Deck</label><select id="f-extra-2" onchange="filtrarItems()"><option value="todos">Todos</option><option value="Verificado">Verificado</option><option value="Jugable">Jugable</option></select>';
         f3.innerHTML = '<label>Precio</label><select id="f-extra-3" onchange="filtrarItems()"><option value="todos">Todos</option><option value="gratis">Gratis</option><option value="pago">De Pago</option></select>';
       } else if (cat === 'Peliculas_Series') {
-        f1.innerHTML = '';
+        f1.innerHTML = '<label>Tipo</label><select id="f-extra-1" onchange="fSubcat=this.value;filtrarItems()"><option value="todos">Todos</option><option value="pelicula">Películas</option><option value="serie">Series</option><option value="anime">Anime</option></select>';
         f2.innerHTML = '<label>Plataforma</label><select id="f-extra-2" onchange="filtrarItems()"><option value="todos">Todas</option><option value="Netflix">Netflix</option><option value="Crunchyroll">Crunchyroll</option><option value="Max">Max</option><option value="Prime">Prime Video</option><option value="Disney">Disney+</option></select>';
         f3.innerHTML = '<label>Estado</label><select id="f-extra-3" onchange="filtrarItems()"><option value="todos">Todos</option><option value="En emisión">En emisión</option><option value="Finalizada">Finalizada</option></select>';
       } else if (cat === 'Libros') {
@@ -3355,7 +3327,7 @@
       nexusSyncHeaderSpace();
     });
 
-    // el header fijo crece con sub-tabs/filtros — el padding-top del body
+    // el header fijo puede cambiar de alto — el padding-top del body
     // debe seguir su borde real o el grid queda tapado por el header
     function nexusSyncHeaderSpace() {
       var h = document.querySelector('.top-header');
@@ -3401,6 +3373,7 @@
       });
       document.getElementById('filter-deseado').value = 'todos';
       document.getElementById('filter-orden').value = 'az';
+      fSubcat = 'todos';
       ['f-extra-1', 'f-extra-2', 'f-extra-3'].forEach(id => {
         var el = document.getElementById(id);
         if (el) el.value = 'todos';
@@ -3409,13 +3382,6 @@
     }
 
     var fSubcat = 'todos'; // sub-filtro Cine y Series: todos|pelicula|serie|anime
-    function cambiarSubcat(v) {
-      fSubcat = v;
-      document.querySelectorAll('.sub-tab').forEach(function(b) {
-        b.classList.toggle('active', b.getAttribute('data-sub') === v);
-      });
-      filtrarItems();
-    }
 
     function filtrarItems() {
       paginaActual = 1;
@@ -3494,7 +3460,7 @@
           if (e3 === 'gratis' && !gratis) return false;
           if (e3 === 'pago' && (gratis || !pr || pr === 'n/a')) return false;
         } else if (currentCategory === 'Peliculas_Series') {
-          if (e1 !== 'todos' && it.tipo !== e1) return false;
+          // e1 (Tipo) lo maneja el sub-filtro fSubcat — evita doble filtro
           if (e2 !== 'todos' && !String(it.plataformas || '').toLowerCase().includes(e2.toLowerCase())) return false;
           if (e3 !== 'todos' && !String(it.estadoEmision || '').toLowerCase().includes(e3.toLowerCase())) return false;
         } else if (currentCategory === 'Libros') {
