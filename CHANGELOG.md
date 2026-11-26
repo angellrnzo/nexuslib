@@ -6,6 +6,14 @@ Deploy versions for the Apps Script web app are noted per entry.
 
 ## [Unreleased]
 
+### Added (i18n ES/EN — Phase 2.5 complete)
+
+- Full UI internationalization: `STR` dictionary (338 keys, ES/EN parity), `t()`/`tf()` interpolation, `data-i18n`/`data-i18n-ph`/`data-i18n-title` static pass, `catText()` per-category labels/placeholders.
+- Language toggle (English/Español) in the hamburger menu; persisted in `localStorage nexus_lang`.
+- `metaTr()`/`metaTrList()` render-time translation of closed-vocabulary metadata (genres, platforms, statuses, demographics) — DB keeps canonical Spanish.
+- Edge Functions `catalog-search`/`catalog-add`/`item-refresh` accept `lang` and fetch provider metadata in the UI language (Steam `l=`, TMDB `language=`, OL fields); frontend sends `NEXUS_LANG`.
+- `TESTING.md`: absolute E2E checklist (~90 checkpoints) for the pre-deploy round.
+
 ### Changed (UI/UX iteration — beta)
 
 - Profile editing is now an inline accordion (`.perfil-accordion`) instead of a modal: public name + editable unique username, centered invite-code field with copy button, sign-out/save actions.
@@ -14,6 +22,10 @@ Deploy versions for the Apps Script web app are noted per entry.
 - Share button renamed to "Vínculos" with green accent matching the menu.
 - Responsive hardening: dynamic header spacing (`nexusSyncHeaderSpace`), 16px inputs on mobile (iOS zoom fix), larger touch targets, bottom-sheet modals with scroll-lock.
 - Multi-provider cover `srcset`/`sizes` (OpenLibrary `-S/-M/-L`, TMDB `w342–w780`, Steam header/capsule) via `nexusCoverSrcset`/`nexusCoverFull`; Cine/Series sub-filter moved into the filter panel ("Tipo" group).
+- Supabase GitHub integration configured (prod + standby → `main`): Edge Functions auto-deploy on merge; manual deploy no longer needed.
+- Dead Apps Script path removed from `RUN` (`RUN = nexusRun`); Sheets code frozen in `WebAPP.legacy.gs`.
+- Supabase free-tier pause handling: `cargarCategoria` detects wake/network errors, shows `err.pause` state and auto-retries once after 35 s.
+- Fixed: global string replacements had poisoned `STR` dictionary values with self-referencing `t()` calls (would have crashed the whole script at runtime); restored literals.
 
 ### Added (shell PWA — pre-launch checklist)
 
@@ -26,10 +38,11 @@ Deploy versions for the Apps Script web app are noted per entry.
 
 ### Planned (see `AppScript/road.md`)
 
-- Phase 2: motion system (skeleton shimmer, spring easing, directional tabs, double-tap heart, bottom sheet, scroll-snap) + in-app image lightbox viewer for screenshots
-- Phase 2.5: UI i18n — Spanish/English toggle, ES default on open; all new features ship with i18n keys
-- Phase 3: `fetchAll` parallelization, API health check, offline read-only, Game Mods Tracker, Steam Reviews breakdown, Game Update History (Steam patch log), Book Editions browser (Open Library editions by translator)
-- Phase 3.5: wishlist release calendar, annual stats/goals
+- ~~Phase 2 motion system~~ — DONE (snap+dots, spring easing, lightbox, a11y, optimistic UI, state boxes)
+- ~~Phase 2.5 i18n~~ — DONE (see Added above; pending: user EN review)
+- ~~Phase 3~~ — DONE (`fetchAll`, health check, offline read-only, Mods Tracker, Steam Reviews, Update History, Book Editions verified)
+- ~~Phase 3.5~~ — DONE (release calendar + Balance y Retos stats)
+- Phase 4: Supabase migration in progress — data migrated, auth live, per-category frontend cut; deploy pending (`beta`→`main`)
 - Phase 4+: Supabase migration (the v1→v2 cut), **email-only auth** (password + magic link, no OAuth) + optional TOTP 2FA, user profiles with privacy settings, library links + per-relationship visibility + `is_private`, **shared zone** (zona conjunta — communal library per link), lightweight social layer (Phase 5D toques), activity feed, bulk import, "my edition" ownership field, Capacitor APK
 - Phase 7 candidates (⭐ optional, high interest): Coleccionables category (LEGO/board games/figures/puzzles, `manual` provider) and Podcasts (RSS episodic)
 

@@ -9,9 +9,13 @@
 
 ## Cómo probar una entrada beta
 
-1. Pegar `AppScript/Index.html` (y `WebAPP.gs` si cambió) en el editor de Apps Script.
-2. Abrir la URL `/dev` del proyecto (no `/exec`).
+> **Nota 2026-11-27:** la app ya no corre en Apps Script — es PWA en GitHub Pages + Supabase (`NEXUS_MODE=true`). El flujo abajo queda como referencia histórica.
+
+1. Pegar `AppScript/Index.html` (y `WebAPP.gs` si cambió) en el editor de Apps Script. *(histórico)*
+2. Abrir la URL `/dev` del proyecto (no `/exec`). *(histórico)*
 3. Probar en Android + escritorio según los pasos indicados.
+
+**Flujo actual:** servir `index.html` local (`python -m http.server` en la raíz del repo) o usar el preview de Pages con la rama `beta`; checklist E2E en `TESTING.md`.
 
 ---
 

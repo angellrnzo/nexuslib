@@ -1628,10 +1628,10 @@
         </div>
 
         <button id="btn-repair" class="btn btn-repair btn-full" onclick="repararItemActual()">
-          <svg class="ico ico-sm"><use href="#i-wrench"/></svg> Reparar / Actualizar Metadata
+          <svg class="ico ico-sm"><use href="#i-wrench"/></svg> <span data-i18n="toast.repair">Reparar / Actualizar Metadata</span>
         </button>
         <button id="btn-delete" class="btn btn-delete btn-full" onclick="eliminarItemActual()">
-          <svg class="ico ico-sm"><use href="#i-trash"/></svg> Mover a Papelera
+          <svg class="ico ico-sm"><use href="#i-trash"/></svg> <span data-i18n="btn.papelera">Mover a Papelera</span>
         </button>
       </div>
     </div>
@@ -3036,7 +3036,7 @@
         'toast.noresults': 'Sin resultados.', 'toast.addbtn': '+ Añadir', 'toast.noadd': 'No se pudo añadir',
         'toast.vincacept': 'Vínculo aceptado.', 'toast.rechazada': 'Solicitud rechazada.',
         'toast.itemadded': 'Elemento añadido a tu biblioteca.', 'toast.visupd': 'Visibilidad actualizada.',
-        'toast.privupd': 'Privacidad actualizada.', 'err.pause': 'El servicio está despertando — puede tardar ~30 segundos. Reintentando…', 'prof.userused': 'Ese usuario ya está en uso.',
+        'toast.privupd': 'Privacidad actualizada.', 'btn.papelera': 'Mover a Papelera', 'pa.deseado': 'En deseados', 'err.pause': 'El servicio está despertando — puede tardar ~30 segundos. Reintentando…', 'prof.userused': 'Ese usuario ya está en uso.',
         'cat.collectdesc': 'Figuras, juegos de mesa, rompecabezas, LEGO y más. Esta sección llega en una fase posterior del roadmap.',
         'ext.steam': 'Ver en Steam', 'ext.tmdb': 'Ver en TMDB', 'ext.anilist': 'Ver en AniList',
         'ext.anisearch': 'Buscar en AniList',
@@ -3161,7 +3161,7 @@
         'toast.noresults': 'No results.', 'toast.addbtn': '+ Add', 'toast.noadd': 'Could not add',
         'toast.vincacept': 'Link accepted.', 'toast.rechazada': 'Request declined.',
         'toast.itemadded': 'Item added to your library.', 'toast.visupd': 'Visibility updated.',
-        'toast.privupd': 'Privacy updated.', 'err.pause': 'The service is waking up — may take ~30 seconds. Retrying…', 'prof.userused': 'That username is taken.',
+        'toast.privupd': 'Privacy updated.', 'btn.papelera': 'Move to Trash', 'pa.deseado': 'In wishlist', 'err.pause': 'The service is waking up — may take ~30 seconds. Retrying…', 'prof.userused': 'That username is taken.',
         'cat.collectdesc': 'Figures, board games, puzzles, LEGO and more. This section lands in a later roadmap phase.',
         'ext.steam': 'View on Steam', 'ext.tmdb': 'View on TMDB', 'ext.anilist': 'View on AniList',
         'ext.anisearch': 'Search AniList',
@@ -3667,7 +3667,9 @@
         .withFailureHandler(function(err) {
           // Supabase free-tier pause: el proyecto duerme tras ~7d sin uso y el
           // primer request tarda ~30s en despertar. Detectar y reintentar una vez.
-          var paused = !navigator.onLine || /pause|timed?\s*out|timeout|failed to fetch|network|503|502/i.test(String(err && err.message || ''));
+          var off = !navigator.onLine;
+          var paused = !off && /pause|timed?\s*out|timeout|failed to fetch|network|503|502/i.test(String(err && err.message || ''));
+          var descTxt = off ? t('toast.offline') : (paused ? t('err.pause') : (err.message || ''));
           // si habia cache stale, el grid ya tiene datos — solo avisar
           if (currentCategory === cat && !(itemsByCategory[cat] && itemsByCategory[cat].length)) {
             if (paused && !window._nexusWakeRetry) {
@@ -3675,10 +3677,10 @@
               grid.innerHTML = nexusStateBox('err', 'i-x', t('err.pause'), '', '<button class="sb-action" onclick="cargarCategoria(\'' + cat + '\', true)">' + t('toast.reintentar') + '</button>');
               setTimeout(function() { window._nexusWakeRetry = false; cargarCategoria(cat, true); }, 35000);
             } else {
-              grid.innerHTML = nexusStateBox('err', 'i-x', t('toast.errload'), paused ? t('err.pause') : (err.message || ''), '<button class="sb-action" onclick="cargarCategoria(\'' + cat + '\', true)">' + t('toast.reintentar') + '</button>');
+              grid.innerHTML = nexusStateBox('err', 'i-x', t('toast.errload'), descTxt, '<button class="sb-action" onclick="cargarCategoria(\'' + cat + '\', true)">' + t('toast.reintentar') + '</button>');
             }
           } else if (currentCategory === cat) {
-            showToast && showToast(paused ? t('err.pause') : t('toast.offupd'), 'warning');
+            showToast && showToast(off ? t('toast.offline') : (paused ? t('err.pause') : t('toast.offupd')), 'warning');
           }
         })
         .getItems(cat);
@@ -4447,7 +4449,7 @@
       } else if (currentCategory === 'Peliculas_Series') {
         var p = String(it.id).split('-');
         b1El.innerText = t('ext.tmdb'); b1El.href = `https://www.themoviedb.org/${p[0]}/${p[1] || p[0]}`;
-        b2El.innerText = 'JustWatch'; b2El.href = `'https://www.justwatch.com/' + (NEXUS_LANG === 'en' ? 'en' : 'es') + '/buscar?q='${encodeURIComponent(it.titulo)}`;
+        b2El.innerText = 'JustWatch'; b2El.href = `https://www.justwatch.com/${NEXUS_LANG === 'en' ? 'en' : 'es'}/buscar?q=${encodeURIComponent(it.titulo)}`;
       } else if (currentCategory === 'Libros') {
         var bookId = String(it.id || '').trim();
         b1El.innerText = 'Open Library';
@@ -4659,8 +4661,8 @@
       var wBtn = document.getElementById('btn-wish-' + k);
       wBtn.classList.toggle('active', wish);
       wBtn.innerHTML = wish ?
-        `${svgIcon('i-heart-fill', 'ico-sm ico-wish')} En deseados` :
-        `${svgIcon('i-heart', 'ico-sm')} Marcar como deseado`;
+        `${svgIcon('i-heart-fill', 'ico-sm ico-wish')} ${t('pa.deseado')}` :
+        `${svgIcon('i-heart', 'ico-sm')} ${t('pa.wish')}`;
     }
 
     function renderEstrellas(containerId, valor, persona) {
@@ -4840,7 +4842,7 @@
           } else showToast(res.msg || t('toast.errupd'), 'error');
         })
         .withFailureHandler(function(err) {
-          btn.disabled = false; btn.innerHTML = `${svgIcon('i-wrench', 'ico-sm')} Reparar / Actualizar Metadata`;
+          btn.disabled = false; btn.innerHTML = `${svgIcon('i-wrench', 'ico-sm')} ${t('toast.repair')}`;
           showToast(t('err.prefix') + err.message, 'error');
         })
         .repararItemIndividual(currentCategory, currentItemId);
@@ -5413,7 +5415,7 @@
       var box = document.getElementById('m-updates-box');
       var btn = document.getElementById('btn-toggle-updates');
       if (box) { box.style.display = 'none'; }
-      if (btn) { btn.classList.remove('active'); btn.innerHTML = `${svgIcon('i-sync', 'ico-sm')} Historial de Updates`; }
+      if (btn) { btn.classList.remove('active'); btn.innerHTML = `${svgIcon('i-sync', 'ico-sm')} ${t('upd.hist')}`; }
     }
 
     async function toggleUpdates() {
@@ -5466,7 +5468,7 @@
       var box = document.getElementById('m-editions-box');
       var btn = document.getElementById('btn-toggle-editions');
       if (box) { box.style.display = 'none'; }
-      if (btn) { btn.classList.remove('active'); btn.innerHTML = `${svgIcon('i-book', 'ico-sm')} Ediciones`; }
+      if (btn) { btn.classList.remove('active'); btn.innerHTML = `${svgIcon('i-book', 'ico-sm')} ${t('ed.btn')}`; }
     }
 
     async function toggleEditions() {
@@ -5517,7 +5519,7 @@
       var box = document.getElementById('m-resenas-box');
       var btn = document.getElementById('btn-toggle-resenas');
       if (box) { box.style.display = 'none'; }
-      if (btn) { btn.classList.remove('active'); btn.innerHTML = `${svgIcon('i-star', 'ico-sm')} Reseñas Steam`; }
+      if (btn) { btn.classList.remove('active'); btn.innerHTML = `${svgIcon('i-star', 'ico-sm')} ${t('rv.btn')}`; }
     }
 
     async function toggleResenas() {
