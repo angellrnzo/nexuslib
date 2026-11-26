@@ -2535,19 +2535,26 @@
         box.style.display = 'block';
         var accS = document.getElementById('acc-' + k);
         if (accS) accS.classList.remove('is-remote');
-        btn.innerHTML = svgIcon('i-users', 'ico-sm') + ' Compartir…';
+        btn.innerHTML = svgIcon('i-users', 'ico-sm') + ' Vínculos';
         nexusFetchMyPrivacy(currentCategory, it.id).then(function(st) {
           var sw = st.shared_with;
           var n = Array.isArray(sw) ? sw.length : 0;
           if (st.is_private) {
             btn.innerHTML = svgIcon('i-lock', 'ico-sm') + ' Privado';
+            btn.style.background = 'rgba(255,107,107,.10)';
             btn.style.color = '#ff8585'; btn.style.borderColor = 'rgba(255,133,133,.4)';
+            btn.style.boxShadow = '0 0 10px rgba(255,107,107,.12)';
           } else if (n > 0) {
             btn.innerHTML = svgIcon('i-users', 'ico-sm') + ' Con ' + n + (n === 1 ? ' persona' : ' personas');
+            btn.style.background = 'rgba(126,224,163,.10)';
             btn.style.color = '#7ee0a3'; btn.style.borderColor = 'rgba(126,224,163,.4)';
+            btn.style.boxShadow = '0 0 10px rgba(126,224,163,.12)';
           } else {
-            btn.innerHTML = svgIcon('i-users', 'ico-sm') + ' Todos los vínculos';
-            btn.style.color = ''; btn.style.borderColor = '';
+            btn.innerHTML = svgIcon('i-users', 'ico-sm') + ' Vínculos';
+            btn.style.background = 'rgba(187,134,252,.12)';
+            btn.style.color = '#d9c2ff';
+            btn.style.borderColor = 'rgba(187,134,252,.45)';
+            btn.style.boxShadow = '0 0 10px rgba(187,134,252,.15)';
           }
         }).catch(function() {});
       });
