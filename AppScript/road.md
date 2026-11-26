@@ -938,6 +938,8 @@ These couple touches are the identity layer: they exist **only** because `link_t
 - Reuses `user_media_tracking` pattern (status/rating→valoración/notes) — no new tracking table; new resolver(s) in the Edge Function layer.
 - Fits right of the cut: needs category enum + provider plumbing in SQL.
 
+**Nota datos (2026-11-25):** sub-tabs de `Peliculas_Series` ya distinguen Películas/Series/Anime (anime = Serie + género Animación, heurística). **Doramas quedan pendientes** — requieren `origin_country` en el pipeline TMDB; anotado para trabajar junto con Coleccionables.
+
 **Optional future categories (user-marked ⭐ high interest, 2026-11-21):**
 
 - **Coleccionables** — Phase 7 spec below.
