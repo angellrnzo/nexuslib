@@ -1277,6 +1277,8 @@
     <symbol id="i-tag" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></symbol>
     <symbol id="i-play" viewBox="0 0 24 24"><polygon fill="currentColor" stroke="none" points="5 3 19 12 5 21 5 3"/></symbol>
     <symbol id="i-x" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+    <symbol id="i-save" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></symbol>
+    <symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></symbol>
     <symbol id="i-menu" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
     <symbol id="i-camera" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></symbol>
     <symbol id="i-note" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></symbol>
@@ -1407,26 +1409,40 @@
       <div class="stats-profile-card" id="stats-profile-card"></div>
       <div class="perfil-edit" id="perfil-edit">
         <div class="perfil-edit-inner">
-          <div class="perfil-edit-block">
-            <label for="pf-display">NOMBRE PÚBLICO</label>
-            <input id="pf-display" class="na-in" type="text" maxlength="60" style="margin-bottom:0;">
-            <label for="pf-username" style="margin-top:10px;">USUARIO</label>
-            <div class="perfil-edit-row">
-              <span style="color:#8f98a0;font-weight:700;font-size:13px;">@</span>
-              <input id="pf-username" class="na-in" type="text" maxlength="30" style="margin-bottom:0;flex:1;">
+          <div class="pf-card">
+            <div class="pf-card-title">Perfil Público</div>
+            <div class="pf-grid-2">
+              <div>
+                <label for="pf-display">Nombre público</label>
+                <input id="pf-display" class="na-in" type="text" maxlength="60">
+              </div>
+              <div>
+                <label for="pf-username">Usuario</label>
+                <div class="pf-username-wrap">
+                  <span class="pf-at">@</span>
+                  <input id="pf-username" class="na-in" type="text" maxlength="30">
+                </div>
+              </div>
             </div>
-            <button class="btn btn-text" onclick="guardarPerfil()">Guardar cambios</button>
           </div>
-          <div class="perfil-edit-block">
-            <label for="pf-invite">CÓDIGO DE VÍNCULO</label>
-            <div class="perfil-edit-row" style="margin-top:6px;">
-              <input id="pf-invite" class="na-in" type="text" readonly style="margin-bottom:0;font-family:monospace;letter-spacing:1px;flex:1;">
+          <div class="pf-card">
+            <div class="pf-card-title">Vinculación de Cuenta</div>
+            <div class="pf-invite-row">
+              <input id="pf-invite" class="na-in" type="text" readonly>
               <button class="btn btn-circle" onclick="copiarInvitePerfil()" title="Copiar"><svg class="ico"><use href="#i-copy"/></svg></button>
             </div>
           </div>
-          <button class="btn btn-delete btn-full" onclick="nexusSignOut()" style="margin-top:4px;">
-            <svg class="ico ico-sm"><use href="#i-x"/></svg> Cerrar sesión
-          </button>
+          <div class="pf-card">
+            <div class="pf-card-title">Acciones de Cuenta</div>
+            <div class="pf-actions-row">
+              <button class="pf-btn pf-btn-danger" onclick="nexusSignOut()">
+                <svg class="ico ico-sm"><use href="#i-logout"/></svg> Cerrar sesión
+              </button>
+              <button class="pf-btn pf-btn-save" onclick="guardarPerfil()">
+                <svg class="ico ico-sm"><use href="#i-save"/></svg> Guardar cambios
+              </button>
+            </div>
+          </div>
         </div>
       </div>
       <div class="stats-selectors-row" id="stats-prof-buttons"></div>
