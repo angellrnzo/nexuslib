@@ -7,7 +7,7 @@ Como reconstruir la base de datos completa desde cero o desde un respaldo.
 | Capa | Que | Frecuencia | Donde |
 |---|---|---|---|
 | GitHub Action | `pg_dump` schema `public` (custom format) | Semanal (lunes 5AM UTC) + manual | Artifacts del repo (90 dias) |
-| Standby Supabase | Espejo vivo automatico | Semanal (mismo workflow) | `uxixiwrvobkulkjkicjm` (us-west-2) — **REPLICA 100% FUNCIONAL**: schema + datos (mirror vivo via `mirror_to_standby.py`, NO pg_restore — auth UUIDs difieren) + 2 auth users + 5 Edge Functions + secrets + auth URLs. Workflow verificado E2E 2026-11-26 (run 45730023321 todo verde). Switch = cambiar NEXUS_URL/KEY en Index.html |
+| Standby Supabase | Espejo vivo automatico | Semanal (mismo workflow) | `uxixiwrvobkulkjkicjm` (us-west-2) — **REPLICA 100% FUNCIONAL**: schema + datos (mirror vivo via `mirror_to_standby.py`, NO pg_restore — auth UUIDs difieren) + 2 auth users + 6 Edge Functions + secrets + auth URLs. Workflow verificado E2E 2026-11-26 (run 45730023321 todo verde). Switch = cambiar NEXUS_URL/KEY en Index.html |
 | Local cifrado | JSON.gz + Fernet de todas las tablas | Manual (`backup_local.py`) | `_local/backups/` (NO commitear) |
 
 ## Secrets de GitHub Actions (Settings -> Secrets and variables -> Actions)

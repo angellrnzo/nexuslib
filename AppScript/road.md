@@ -58,21 +58,21 @@
 | Requirement | Status | Location | Details |
 | :--- | :---: | :--- | :--- |
 | **Mobile Top Search (`popstate` Back Button)** | 🔴 **PENDING** | `Index.html` (~L1303, ~L1335) | `#inputBuscar` only calls `cerrarBusquedaAgregar()` on `focus`/`click`; no `history.pushState()`. `popstate` covers modals, `#panel-filtros`, `#inputAgregar`/dropdown — not the top search. Android back button exits instead of blurring search. |
-| **Strip `[YYYY-MM-DD]` dates from Patch Notes** | 🔴 **PENDING** | `WebAPP.gs` L807 / `Index.html` ~L1937 | `WebAPP.gs` stores `'[' + fDate + '] ' + title` into `notaParche`; the modal renders it raw in the `rows` array (`'Nota Parche'` row) with no cleanup regex. |
-| **Reset modal scroll on open/close** | 🔴 **PENDING** | `Index.html` ~L1855 / ~L2040 | No `scrollTop` usage exists. `.modal-content` is the `overflow-y: auto` container (~L560) shared by `#modal`, `#modal-papelera`, `#modal-match`; `abrirModal()`/`cerrarModal()` don't reset it. |
+| **Strip `[YYYY-MM-DD]` dates from Patch Notes** | ✅ DONE | `WebAPP.gs` L807 / `Index.html` ~L1937 | `WebAPP.gs` stores `'[' + fDate + '] ' + title` into `notaParche`; the modal renders it raw in the `rows` array (`'Nota Parche'` row) with no cleanup regex. |
+| **Reset modal scroll on open/close** | ✅ DONE | `Index.html` ~L1855 / ~L2040 | No `scrollTop` usage exists. `.modal-content` is the `overflow-y: auto` container (~L560) shared by `#modal`, `#modal-papelera`, `#modal-match`; `abrirModal()`/`cerrarModal()` don't reset it. |
 
 ### 🎨 2. UI Motion & Micro-Interactions (Instagram / X Patterns)
 
 | Pattern | Status | Target | Implementation Notes |
 | :--- | :---: | :--- | :--- |
 | **Skeleton Shimmer Loading** | 🔴 **PENDING** | `cargarCategoria()` (~L1482) | Replace `.spinner-container` with 6–8 proportion-locked skeleton cards (`460/215` landscape, `2/3` poster). |
-| **Spring Micro-Feedback** | 🔴 **PENDING** | `:root` (~L15), `.wish-toggle`, `.star` | Add `--ease-spring` tactile curves + 0ms Optimistic UI updates. |
+| **Spring Micro-Feedback** | 🟡 PARCIAL 2026-11-26 (--ease-spring/--t-micro/--t-pop tokens + aplicada a chevrons/dots; optimistic UI pendiente) | `:root` (~L15), `.wish-toggle`, `.star` | Add `--ease-spring` tactile curves + 0ms Optimistic UI updates. |
 | **Directional Tab Transitions** | 🔴 **PENDING** | `.category-tabs`, `inicializarGestosSwipe()` (~L1254) | Animate `#grid` entry (`slideInRight`/`slideInLeft`, ±22px) matching swipe direction. |
 | **Double-Tap Heart Burst** | 🔴 **PENDING** | `.img-container` (~L404), `renderGrid()` (~L1679) | Double-tap cover → `igHeartBurst` + wishlist toggle without opening the modal. |
 | **Bottom Sheet & Pull-to-Dismiss** | 🔴 **PENDING** | `#modal .modal-content` (~L559, ~L754) | Mobile modals as bottom-sheet drawers with drag handle and pull-to-close. |
-| **Carousel Scroll-Snap & Dots** | 🔴 **PENDING** | `#m-screenshots` (~L1064, ~L1943) | `scroll-snap-type: x mandatory` + dynamic pagination dots for Steam screenshots. |
-| **Image Lightbox Viewer** | 🔴 **PENDING** | `#m-screenshots`, `.carousel img` (~L650) | Fullscreen in-app lightbox for covers/screenshots/backdrops — arrows, keyboard/swipe nav, ESC/backdrop close. Keeps user inside the app (preferred over `window.open`/new tab, which breaks PWA context). User idea 2026-11-23. |
-| **Dialog Semantics & Focus Trap** | 🔴 **PENDING** | `#modal`, `#modal-papelera`, `#modal-match` | `role="dialog"`/`aria-modal`/`aria-labelledby`, focus trap, focus restore on close. Audit gap 2026-11-23 — spec in Phase 2E. |
+| **Carousel Scroll-Snap & Dots** | ✅ DONE 2026-11-26 (scroll-snap + dots dinámicos) | `#m-screenshots` (~L1064, ~L1943) | `scroll-snap-type: x mandatory` + dynamic pagination dots for Steam screenshots. |
+| **Image Lightbox Viewer** | ✅ DONE 2026-11-26 (fullscreen, flechas, teclado, counter) | `#m-screenshots`, `.carousel img` (~L650) | Fullscreen in-app lightbox for covers/screenshots/backdrops — arrows, keyboard/swipe nav, ESC/backdrop close. Keeps user inside the app (preferred over `window.open`/new tab, which breaks PWA context). User idea 2026-11-23. |
+| **Dialog Semantics & Focus Trap** | 🟡 PARCIAL 2026-11-26 (role=dialog+aria-modal en 4 modales, Escape cierra, focus al .modal-close al abrir; focus trap completo Tab-ciclo pendiente) | `#modal`, `#modal-papelera`, `#modal-match` | `role="dialog"`/`aria-modal`/`aria-labelledby`, focus trap, focus restore on close. Audit gap 2026-11-23 — spec in Phase 2E. |
 | **Empty & Error State Boxes** | 🔴 **PENDING** | `cargarCategoria()` (~L1529), papelera (~L2549), search (~L1810) | Shared `.state-box` component (icon+title+desc+action) replacing inline-styled fallbacks; error variant with Retry, offline variant for Phase 3. Spec in Phase 2F. |
 
 ### 🧪 3. Backend, Infrastructure & Data Audit
@@ -82,9 +82,9 @@
 | **Metadata Recovery (Steam Resilience)** | 🟢 **DONE** | 4-level fallback: Store API ➔ HTML Scraper ➔ SteamCMD ➔ SteamGridDB. |
 | **State & Local Cache Consistency** | 🟢 **DONE** | `CACHE_VERSION` (`v19`) with `localStorage` and async RPC refresh. |
 | **Batch DB Operations (Backend)** | 🟢 **DONE** | `reconstruirJuegosDesdeIdPorLotes` / `rellenarBuildsJuegos` batch writes (60 rows) + 15s self-rescheduling triggers. |
-| **Parallel Fetching (`UrlFetchApp.fetchAll`)** | 🔴 **PENDING** | `resolverAutoresOpenLibrary_` (`WebAPP.gs` ~L930-976) runs up to 4 sequential fetches + title fallback; no `fetchAll` in the project. |
-| **API Key Health Check** | 🔴 **PENDING** | Keys load from `ScriptProperties` (`WebAPP.gs` L4-5, TMDB fallback L182-184) but no diagnostic function validates them before use. |
-| **Offline Read-Only Mode** | 🔴 **PENDING** | No `navigator.onLine` or `online`/`offline` listeners; write buttons stay active without connection. |
+| **Parallel Fetching (`UrlFetchApp.fetchAll`)** | ✅ DONE 2026-11-26 (Promise.all en resolverAutoresOpenLibrary — providers.ts) | `resolverAutoresOpenLibrary_` (`WebAPP.gs` ~L930-976) runs up to 4 sequential fetches + title fallback; no `fetchAll` in the project. |
+| **API Key Health Check** | ✅ DONE 2026-11-26 (Edge Function `health` — valida STEAMGRIDDB+TMDB con probe real, sin exponer keys) | Keys load from `ScriptProperties` (`WebAPP.gs` L4-5, TMDB fallback L182-184) but no diagnostic function validates them before use. |
+| **Offline Read-Only Mode** | ✅ DONE 2026-11-26 (navigator.onLine + body.offline + banner + writes deshabilitados + toast) | No `navigator.onLine` or `online`/`offline` listeners; write buttons stay active without connection. |
 | **DOM Recycling (Virtual List)** | 🔴 **PENDING** | `IntersectionObserver` pagination (36/page) rebuilds the whole fragment via `grid.replaceChildren()` (~L1741). Partial mitigation: `content-visibility: auto` on `.card` (~L392). |
 | **Cross-User Library Linking (`library_links`)** | 🔴 **PENDING** *(v2)* | Link separate user libraries via invite code and compute real-time matches across independent catalogs. |
 
@@ -438,15 +438,15 @@ See [AppScript/BETA.md](BETA.md) — one entry per working session: what was don
 ### Phase 3 — Backend & offline (v1.x)
 
 - [x] **Mods Tracker:** implementado 2026-11-26 directo sobre Supabase (`mods` table + RLS, sin sheet) — ver spec arriba. UI lista en `index.html`; pendiente prueba visual.
-- [ ] **Steam Reviews:** nothing external — reuses existing store-page scrape + agecheck cookies; needs valid Steam appid in game rows (already present).
+- [x] **Steam Reviews:** implementado 2026-11-26 — Edge Function `steam-reviews` (scrape store page, tooltips 30d+all-time, tier 5-bloques, trend chip) + botón lazy "Reseñas Steam" en modal de juegos. E2E: Cyberpunk 92%/23,297.
 - [ ] **Game Update History:** Steam news RSS `feeds/news/app/{appid}` — public, no key; same cookie chain as reviews. Needs appid only.
 - [ ] **Book Editions:** OpenLibrary `works/{key}/editions.json` — free, no key. **Input needed:** the OL **work key** (not edition key) per book — verify resolver captures it at search time or derive via edition→`works[]`; if missing, add work-key capture to the resolver first.
-- [ ] **Open Library `fetchAll`:** just refactor `resolverAutoresOpenLibrary_` — no inputs.
-- [ ] **Health check + offline read-only:** no inputs.
+- [x] **Open Library `fetchAll`:** refactor hecho 2026-11-26 en `providers.ts` (Promise.all).
+- [x] **Health check + offline read-only:** ambos hechos 2026-11-26 (Edge Function `health` + modo offline frontend).
 
 ### Phase 3.5 — Read-only aggregations (v1.x)
 
-- [ ] Nothing — all data already stored/fetched. Pure frontend functions over `datosGlobales`.
+- [x] **DONE 2026-11-26:** cards "Próximos Estrenos" (wishlist + fecha ≤90d, grupo sin-fecha) y "Balance y Retos" (por persona: comp/proc/wish/nota + % backlog resuelto + retos automáticos) en `renderizarEstadisticas`.
 
 ### Phase 4 — THE CUT (v2.0)
 

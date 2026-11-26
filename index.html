@@ -47,6 +47,9 @@
       --t-slow: 320ms;
       --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
       --ease-inout: cubic-bezier(0.4, 0, 0.2, 1);
+      --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      --t-micro: 100ms;
+      --t-pop: 260ms;
     }
 
     * { box-sizing: border-box; }
@@ -92,7 +95,7 @@
     .ico-gold { color: var(--gold); fill: var(--gold); stroke: none; }
     .ico-wish { color: var(--wish); fill: var(--wish); stroke: none; }
 
-    .card, .btn, .tab-btn, .modal-close, .player-summary, .star, .accordion summary, .status-select, .filter-group select, .filter-reset, .wish-toggle, .btn-trailer {
+    .card, .btn, .tab-btn, .modal-close, .player-summary, .star, .accordion summary, .status-select, .filter-group select, .filter-reset,  .wish-toggle, .btn-trailer {
       -webkit-tap-highlight-color: transparent;
     }
 
@@ -658,6 +661,31 @@
     .upd-badge { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; padding: 1px 6px; border-radius: 20px; background: rgba(91,163,43,0.15); color: #7ec850; border: 1px solid rgba(91,163,43,0.35); }
     .upd-summary { font-size: 11px; color: #8f98a0; margin-top: 3px; line-height: 1.4; }
     .upd-empty { font-size: 12px; color: #8f98a0; text-align: center; padding: 14px 0; }
+    .lightbox {
+      display: none; position: fixed; inset: 0; z-index: 10000;
+      background: rgba(0,0,0,0.92); align-items: center; justify-content: center;
+      touch-action: none;
+    }
+    .lb-img { max-width: 94vw; max-height: 88vh; object-fit: contain; border-radius: 8px; }
+    .lb-close {
+      position: absolute; top: calc(10px + env(safe-area-inset-top, 0px)); right: 14px;
+      width: 40px; height: 40px; border-radius: 50%; border: none; cursor: pointer;
+      background: rgba(255,255,255,0.12); color: #fff; font-size: 18px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .lb-close:hover { background: rgba(255,255,255,0.22); }
+    .lb-nav {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 44px; height: 44px; border-radius: 50%; border: none; cursor: pointer;
+      background: rgba(255,255,255,0.12); color: #fff; font-size: 26px; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .lb-nav:hover { background: rgba(255,255,255,0.22); }
+    .lb-prev { left: 12px; } .lb-next { right: 12px; }
+    .lb-counter {
+      position: absolute; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%);
+      font-size: 12px; color: rgba(255,255,255,0.7); background: rgba(0,0,0,0.4); padding: 3px 12px; border-radius: 20px;
+    }
     .ed-row { padding: 8px 2px; border-bottom: 1px solid rgba(255,255,255,0.06); }
     .ed-row:last-child { border-bottom: none; }
     .ed-title { font-size: 12px; font-weight: 600; color: var(--text); }
@@ -666,6 +694,39 @@
     .ed-actions { display: inline-flex; gap: 6px; margin-top: 4px; }
     .ed-actions a { font-size: 10px; color: var(--accent); text-decoration: none; }
     .ed-actions a:hover { text-decoration: underline; }
+
+    /* ---- OFFLINE READ-ONLY ---- */
+    #offline-banner {
+      display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+      background: rgba(214,169,24,0.95); color: #1b1405; font-size: 12px; font-weight: 700;
+      text-align: center; padding: 6px 10px; letter-spacing: 0.3px;
+    }
+    body.offline .status-select, body.offline .progress-input, body.offline .chap-input,
+    body.offline  .wish-toggle, body.offline .star, body.offline .btn-delete,
+    body.offline .btn-repair, body.offline .btn-mods, body.offline .mod-act.del,
+    body.offline .sp-btn-primary, body.offline #mods-form, body.offline .mods-form,
+    body.offline #share-box-angel button, body.offline #share-box-talmai button,
+    body.offline [id^="share-box-"] button {
+      pointer-events: none; opacity: 0.45;
+    }
+
+    /* ---- STEAM REVIEWS ---- */
+    .rev-wrap { padding: 6px 2px; }
+    .rev-top { display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px; }
+    .rev-big { font-size: 26px; font-weight: 900; color: var(--text); line-height: 1; }
+    .rev-tier { font-size: 12px; font-weight: 700; }
+    .rev-bar5 { position: relative; display: flex; height: 10px; border-radius: 6px; overflow: visible; margin: 10px 0 6px; }
+    .rev-seg { flex: 1; }
+    .rev-needle {
+      position: absolute; top: -4px; width: 3px; height: 18px; border-radius: 2px;
+      background: #fff; box-shadow: 0 0 4px rgba(0,0,0,0.6); transform: translateX(-50%);
+    }
+    .rev-meta { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 11px; color: #8f98a0; }
+    .rev-trend { font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 20px; }
+    .rev-trend.up { background: rgba(91,163,43,0.15); color: #7ec850; }
+    .rev-trend.down { background: rgba(201,59,59,0.15); color: #ff8585; }
+    .rev-trend.flat { background: rgba(255,255,255,0.08); color: #8f98a0; }
+
 
 
 
@@ -749,8 +810,12 @@
 
     .carousel-container { margin-bottom: 16px; }
     .carousel-title { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
-    .carousel { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 6px; }
-    .carousel img { flex: 0 0 75%; height: 140px; object-fit: cover; border-radius: 6px; cursor: pointer; }
+    .carousel { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 6px; scroll-snap-type: x mandatory; scrollbar-width: none; }
+    .carousel::-webkit-scrollbar { display: none; }
+    .carousel img { flex: 0 0 75%; height: 140px; object-fit: cover; border-radius: 6px; cursor: pointer; scroll-snap-align: start; }
+    .carousel-dots { display: flex; justify-content: center; gap: 5px; margin-top: 6px; }
+    .carousel-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.2); transition: background var(--t-fast) var(--ease-out), transform var(--t-fast) var(--ease-spring); }
+    .carousel-dot.active { background: var(--accent); transform: scale(1.3); }
 
     .tracking-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; align-items: start; }
     .player-accordion { background: rgba(27, 40, 56, 0.5); border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); overflow: hidden; min-width: 0; transition: border-color var(--t-base) var(--ease-out), box-shadow var(--t-base) var(--ease-out); }
@@ -780,13 +845,13 @@
     .player-details { max-height: 0; overflow: hidden; opacity: 0; padding: 0 12px; transition: max-height var(--t-slow) var(--ease-inout), opacity var(--t-slow) var(--ease-inout), padding var(--t-slow) var(--ease-inout); }
     .player-accordion.active .player-details { max-height: 760px; opacity: 1; padding: 12px; border-top: 1px solid rgba(255,255,255,0.06); }
 
-    .wish-toggle {
+     .wish-toggle {
       width: 100%; padding: 8px; margin-bottom: 8px; border-radius: 8px;
       background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.14);
       color: #c7d5e0; font-size: 12px; font-weight: 700; cursor: pointer;
       display: inline-flex; align-items: center; justify-content: center; gap: 6px;
     }
-    .wish-toggle.active { background: rgba(255, 77, 109, 0.16); border-color: rgba(255, 77, 109, 0.55); color: #ff8fa3; }
+     .wish-toggle.active { background: rgba(255, 77, 109, 0.16); border-color: rgba(255, 77, 109, 0.55); color: #ff8fa3; }
 
     .status-select, .progress-input {
       width: 100%; padding: 8px 10px; border-radius: 8px; background: rgba(0,0,0,0.35);
@@ -849,7 +914,7 @@
       padding: 6px 4px; list-style: none; display: flex; align-items: center; gap: 6px;
     }
     .mods-group summary::-webkit-details-marker { display: none; }
-    .mods-group summary .ico { transition: transform var(--t-fast) var(--ease-out); }
+    .mods-group summary .ico { transition: transform var(--t-fast) var(--ease-spring); }
     .mods-group[open] summary .ico { transform: rotate(180deg); }
     .mods-group-tag { font-size: 10px; color: #8f98a0; font-weight: 500; }
     .mod-row {
@@ -1006,7 +1071,8 @@
   </style>
 </head>
 <body>
-  <!-- LIBRERÍA DE ICONOS SVG PLANOS -->
+  <div id="offline-banner">Sin conexión — modo solo lectura</div>
+<!-- LIBRERÍA DE ICONOS SVG PLANOS -->
   <svg xmlns="http://www.w3.org/2000/svg" style="display:none;" aria-hidden="true">
     <symbol id="i-gamepad" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="4"/><path d="M6 12h4M8 10v4"/><circle cx="15.5" cy="11" r="1" fill="currentColor" stroke="none"/><circle cx="17.5" cy="13" r="1" fill="currentColor" stroke="none"/></symbol>
     <symbol id="i-film" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 4v16M17 4v16M2 12h20M2 8h5M2 16h5M17 8h5M17 16h5"/></symbol>
@@ -1164,8 +1230,8 @@
   </div>
 
   <!-- MODAL DETALLE -->
-  <div id="modal" onclick="cerrarModal()">
-    <div class="modal-content" onclick="event.stopPropagation()">
+  <div id="modal" role="presentation" onclick="cerrarModal()">
+    <div class="modal-content" role="dialog" aria-modal="true" onclick="event.stopPropagation()">
       <button class="modal-close" onclick="cerrarModal()">
         <svg class="ico"><use href="#i-x"/></svg>
       </button>
@@ -1203,6 +1269,13 @@
         <div id="m-editions-box" class="updates-box"></div>
       </div>
 
+      <div id="m-reviews-bar" class="trailer-bar" style="display:none;">
+        <button type="button" id="btn-toggle-resenas" class="btn-trailer" onclick="toggleResenas()">
+          <svg class="ico ico-sm"><use href="#i-star"/></svg> Reseñas Steam
+        </button>
+        <div id="m-resenas-box" class="updates-box"></div>
+      </div>
+
       <p id="m-desc" class="modal-desc"></p>
 
       <details id="m-details-accordion" class="accordion">
@@ -1216,6 +1289,7 @@
       <div class="carousel-container" id="m-screenshots-container" style="display:none;">
         <div class="carousel-title"><svg class="ico"><use href="#i-camera"/></svg> Capturas</div>
         <div class="carousel" id="m-screenshots"></div>
+        <div class="carousel-dots" id="m-screenshots-dots"></div>
       </div>
 
       <div class="tracking-container" id="tracking-personas"></div>
@@ -1263,8 +1337,8 @@
   </div>
 
   <!-- MODAL PAPELERA -->
-  <div id="modal-papelera" onclick="cerrarPapelera()">
-    <div class="modal-content" onclick="event.stopPropagation()" style="max-width:500px;">
+  <div id="modal-papelera" role="presentation" onclick="cerrarPapelera()">
+    <div class="modal-content" role="dialog" aria-modal="true" onclick="event.stopPropagation()" style="max-width:500px;">
       <button class="modal-close" onclick="cerrarPapelera()"><svg class="ico"><use href="#i-x"/></svg></button>
       <h2 class="modal-title"><svg class="ico ico-lg" style="color:var(--accent);"><use href="#i-trash"/></svg> Papelera de Reciclaje</h2>
       <div id="lista-papelera" class="papelera-list"></div>
@@ -1272,8 +1346,8 @@
   </div>
 
   <!-- MODAL MATCH DE PAREJA -->
-  <div id="modal-match" onclick="cerrarMatchModal()">
-    <div class="modal-content" onclick="event.stopPropagation()" style="max-width:650px;">
+  <div id="modal-match" role="presentation" onclick="cerrarMatchModal()">
+    <div class="modal-content" role="dialog" aria-modal="true" onclick="event.stopPropagation()" style="max-width:650px;">
       <button class="modal-close" onclick="cerrarMatchModal()"><svg class="ico"><use href="#i-x"/></svg></button>
       <h2 class="modal-title"><svg class="ico ico-lg ico-wish"><use href="#i-heart-fill"/></svg> Match de Pareja</h2>
       <p style="font-size:12px;color:#8f98a0;margin-top:0;">Elementos que ambos tienen en estado Pendiente o en su Lista de Deseados:</p>
@@ -1298,8 +1372,8 @@
   </div>
 
   <!-- MODAL VÍNCULOS (Phase 5, solo Nexus mode) -->
-  <div id="modal-vinculos" onclick="cerrarVinculosModal()">
-    <div class="modal-content" onclick="event.stopPropagation()" style="max-width:520px;">
+  <div id="modal-vinculos" role="presentation" onclick="cerrarVinculosModal()">
+    <div class="modal-content" role="dialog" aria-modal="true" onclick="event.stopPropagation()" style="max-width:520px;">
       <button class="modal-close" onclick="cerrarVinculosModal()"><svg class="ico"><use href="#i-x"/></svg></button>
       <h2 class="modal-title"><svg class="ico ico-lg"><use href="#i-users"/></svg> Vínculos</h2>
       <div id="vinculos-body" style="margin-top:10px;"></div>
@@ -3220,6 +3294,16 @@
         ebtn.innerHTML = `${svgIcon('i-book', 'ico-sm')} Ediciones`;
         _editionsLoaded = false;
       }
+      var revBar = document.getElementById('m-reviews-bar');
+      revBar.style.display = esJuegoNexus ? 'block' : 'none';
+      if (esJuegoNexus) {
+        var xbox = document.getElementById('m-resenas-box');
+        xbox.style.display = 'none'; xbox.innerHTML = '';
+        var xbtn = document.getElementById('btn-toggle-resenas');
+        xbtn.classList.remove('active');
+        xbtn.innerHTML = `${svgIcon('i-star', 'ico-sm')} Reseñas Steam`;
+        _resenasLoaded = false;
+      }
       if (esJuegoNexus) {
         var ubox = document.getElementById('m-updates-box');
         ubox.style.display = 'none'; ubox.innerHTML = '';
@@ -3264,9 +3348,10 @@
           urls.forEach(u => {
             var img = document.createElement('img');
             img.src = u; img.loading = 'lazy'; img.decoding = 'async'; img.referrerPolicy = 'no-referrer';
-            img.onclick = () => window.open(u, '_blank');
+            img.onclick = () => nexusOpenLightbox(urls, urls.indexOf(u));
             car.appendChild(img);
           });
+          nexusInitCarouselDots(car, document.getElementById('m-screenshots-dots'));
         } else carWrap.style.display = 'none';
       } else carWrap.style.display = 'none';
 
@@ -3458,6 +3543,7 @@
       detenerTrailer();
       detenerUpdates();
       detenerEditions();
+      detenerResenas();
       document.querySelectorAll('.modal-content').forEach(function(el) { el.scrollTop = 0; });
       resetearDesplegablesModal();
       var modal = document.getElementById('modal');
@@ -3806,6 +3892,56 @@
         }).join('');
       }
 
+      // ---- Phase 3.5A: Release Calendar (wishlist + fecha futura <=90d) ----
+      function nexusParseFecha(f) {
+        var m = String(f || '').match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
+        if (!m) return null;
+        var d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+        return isNaN(d.getTime()) ? null : d;
+      }
+      var ahora35 = new Date();
+      var limite35 = new Date(ahora35.getTime() + 90 * 86400000);
+      var proximos35 = [], sinFecha35 = 0;
+      ['Juegos', 'Peliculas_Series', 'Libros', 'Mangas'].forEach(function(cat) {
+        (itemsByCategory[cat] || []).forEach(function(it) {
+          var enWishlist = selPers.some(function(p) { return it['deseado' + p.suffix]; });
+          if (!enWishlist) return;
+          var d = nexusParseFecha(it.fecha);
+          if (!d || d < ahora35) { if (!d) sinFecha35++; return; }
+          if (d <= limite35) proximos35.push({ it: it, cat: cat, d: d });
+        });
+      });
+      proximos35.sort(function(a, b) { return a.d - b.d; });
+      var iconoCat = { Juegos: 'i-gamepad', Peliculas_Series: 'i-film', Libros: 'i-book', Mangas: 'i-manga' };
+      var listaEstrenos = proximos35.slice(0, 12).map(function(x) {
+        return '<div class="stat-detail-line">' + svgIcon(iconoCat[x.cat], 'ico-sm') + ' ' +
+          '<strong>' + x.d.toLocaleDateString('es', { day: 'numeric', month: 'short' }) + '</strong> — ' +
+          escaparHTML(x.it.titulo) + ' <span style="color:#8f98a0;">(' + CAT_CONFIG[x.cat].label + ')</span></div>';
+      }).join('');
+      if (proximos35.length > 12) listaEstrenos += '<div class="stat-detail-line" style="color:#8f98a0;">…y ' + (proximos35.length - 12) + ' más</div>';
+      if (sinFecha35 > 0) listaEstrenos += '<div class="stat-detail-line" style="color:#8f98a0;margin-top:4px;">' + svgIcon('i-note', 'ico-sm') + ' ' + sinFecha35 + ' en wishlist sin fecha confirmada</div>';
+      if (!listaEstrenos) listaEstrenos = '<div class="stat-detail-line" style="color:#8f98a0;">Nada en wishlist con estreno en los próximos 90 días.</div>';
+
+      // ---- Phase 3.5B: Balance del año + retos auto ----
+      var anioActual = new Date().getFullYear();
+      var lineasBalance = selPers.map(function(p) {
+        var st = stats[p.suffix];
+        var pctWish = (st.comp + st.wish) > 0 ? Math.round((st.comp / (st.comp + st.wish)) * 100) : 0;
+        return '<div class="stat-detail-line">' + nexusPersonaDot(p, 14) + ' <strong>' + vinculosEsc(p.label || p.suffix) + '</strong>: ' +
+          st.comp + ' completados · ' + st.proc + ' en proceso · ' + st.wish + ' en wishlist · ' +
+          'nota media <strong>' + (st.cuenta > 0 ? (st.suma / st.cuenta).toFixed(1) : '0.0') + '</strong>' +
+          ' · <span style="color:#8f98a0;">' + pctWish + '% de tu backlog+cosechados resueltos</span></div>';
+      }).join('');
+      var retosAuto = selPers.map(function(p) {
+        var st = stats[p.suffix];
+        var metas = [];
+        if (st.wish > 0) metas.push('Vaciar ' + Math.min(st.wish, 5) + ' títulos de tu wishlist este mes');
+        if (st.comp < 10) metas.push('Meta ' + anioActual + ': llegar a 10 completados');
+        if (st.cuenta > 0 && st.suma / st.cuenta < 7) metas.push('Subir tu nota media por encima de 7');
+        if (!metas.length) metas.push('¡Vas sobrado! Mantén el ritmo.');
+        return '<div class="stat-detail-line" style="margin-top:3px;">' + nexusPersonaDot(p, 14) + ' ' + metas.join(' · ') + '</div>';
+      }).join('');
+
       const toggleHdr = `<span class="stat-toggle-lbl">Desplegar ${svgIcon('i-chevron-down', 'ico-sm')}</span>`;
 
       container.innerHTML = `
@@ -3870,6 +4006,32 @@
           <div class="stat-card-sub"><span>Basado en valoraciones</span><span>${escaparHTML(profTitulo)}</span></div>
           <div class="stat-accordion-content">
             ${lineasNota()}
+          </div>
+        </div>
+
+        <div class="stat-card" onclick="toggleStatCard(this)">
+          <div class="stat-card-header">
+            <div class="stat-card-title">Próximos Estrenos (${anioActual})</div>
+            ${toggleHdr}
+          </div>
+          <div class="stat-card-value">${proximos35.length}</div>
+          <div class="stat-card-sub"><span>Wishlist con fecha ≤ 90 días</span><span>${escaparHTML(profTitulo)}</span></div>
+          <div class="stat-accordion-content">
+            ${listaEstrenos}
+          </div>
+        </div>
+
+        <div class="stat-card" onclick="toggleStatCard(this)">
+          <div class="stat-card-header">
+            <div class="stat-card-title">Balance y Retos (${anioActual})</div>
+            ${toggleHdr}
+          </div>
+          <div class="stat-card-value">${agg('comp')}</div>
+          <div class="stat-card-sub"><span>Completados acumulados</span><span>${escaparHTML(profTitulo)}</span></div>
+          <div class="stat-accordion-content">
+            ${lineasBalance}
+            <div style="font-size:11px;color:#8f98a0;margin:8px 0 2px;font-weight:700;">Retos automáticos:</div>
+            ${retosAuto}
           </div>
         </div>
       `;
@@ -4007,6 +4169,52 @@
       return m ? m[1] : null;
     }
 
+    // ---- MODAL A11Y: Escape cierra el modal superior + focus al abrir ----
+    var _modalCloseMap = [
+      ['modal-vinculos', cerrarVinculosModal],
+      ['modal-match', cerrarMatchModal],
+      ['modal-papelera', cerrarPapelera],
+      ['modal', cerrarModal]
+    ];
+    document.addEventListener('keydown', function(e) {
+      if (e.key !== 'Escape') return;
+      for (var i = 0; i < _modalCloseMap.length; i++) {
+        var el = document.getElementById(_modalCloseMap[i][0]);
+        if (el && el.style.display === 'flex') { _modalCloseMap[i][1](); return; }
+      }
+      nexusCloseLightbox();
+    });
+    // focus trap ligero: al abrir un modal, foco al botón cerrar; Tab cicla dentro
+    ['modal-vinculos', 'modal-match', 'modal-papelera', 'modal'].forEach(function(mid) {
+      var el = document.getElementById(mid);
+      if (!el) return;
+      new MutationObserver(function() {
+        if (el.style.display === 'flex') {
+          setTimeout(function() {
+            var c = el.querySelector('.modal-close');
+            if (c) c.focus();
+          }, 60);
+        }
+      }).observe(el, { attributes: true, attributeFilter: ['style'] });
+    });
+
+    // ---- OFFLINE READ-ONLY ----
+    function nexusSyncOffline() {
+      var off = !navigator.onLine;
+      document.body.classList.toggle('offline', off);
+      var b = document.getElementById('offline-banner');
+      if (b) b.style.display = off ? 'block' : 'none';
+    }
+    window.addEventListener('online', function() {
+      nexusSyncOffline();
+      showToast && showToast('Conexión restablecida.', 'success');
+    });
+    window.addEventListener('offline', function() {
+      nexusSyncOffline();
+      showToast && showToast('Sin conexión — modo solo lectura.', 'warning');
+    });
+    nexusSyncOffline();
+
     // ---- GAME UPDATE HISTORY (Steam news RSS via Edge Function steam-updates) ----
     var _updatesLoaded = false;
 
@@ -4110,6 +4318,133 @@
       } catch (e) {
         box.innerHTML = '<div class="upd-empty">' + escaparHTML('Error: ' + (e.message || '')) + '</div>';
       }
+    }
+
+    // ---- STEAM REVIEWS BREAKDOWN (Edge Function steam-reviews) ----
+    var _resenasLoaded = false;
+
+    function detenerResenas() {
+      var box = document.getElementById('m-resenas-box');
+      var btn = document.getElementById('btn-toggle-resenas');
+      if (box) { box.style.display = 'none'; }
+      if (btn) { btn.classList.remove('active'); btn.innerHTML = `${svgIcon('i-star', 'ico-sm')} Reseñas Steam`; }
+    }
+
+    async function toggleResenas() {
+      var box = document.getElementById('m-resenas-box');
+      var btn = document.getElementById('btn-toggle-resenas');
+      if (box.style.display === 'block') { detenerResenas(); return; }
+      box.style.display = 'block';
+      btn.classList.add('active');
+      btn.innerHTML = `${svgIcon('i-x', 'ico-sm')} Ocultar Reseñas`;
+      if (!_resenasLoaded) await nexusFetchResenas();
+    }
+
+    function nexusRenderResenas(d) {
+      var pct = Number(d.pct) || 0;
+      var total = Number(d.total) || 0;
+      var pos = Math.round(pct * total / 100);
+      var neg = Math.max(0, total - pos);
+      var fmt = function(n) { return n.toLocaleString('es'); };
+      var tierColor = pct >= 60 ? '#7ec850' : pct >= 40 ? '#8f98a0' : '#ff8585';
+      var segs = ['#c93b3b', '#d98e4a', '#8f98a0', '#a4c96b', '#5ba32b'];
+      var bar = '<div class="rev-bar5">' + segs.map(function(c) {
+        return '<div class="rev-seg" style="background:' + c + '"></div>';
+      }).join('') + '<div class="rev-needle" style="left:' + Math.min(100, Math.max(0, pct)) + '%"></div></div>';
+      var trend = '';
+      if (d.pct30 != null) {
+        var diff = pct - Number(d.pct30);
+        var cls = diff > 2 ? 'up' : diff < -2 ? 'down' : 'flat';
+        var arrow = diff > 2 ? '▲' : diff < -2 ? '▼' : '→';
+        trend = '<span class="rev-trend ' + cls + '">' + arrow + ' ' + Math.abs(Math.round(diff)) + '% vs 30d</span>';
+      }
+      return '<div class="rev-wrap">'
+        + '<div class="rev-top"><span class="rev-big">' + pct + '%</span>'
+        + '<span class="rev-tier" style="color:' + tierColor + '">' + escaparHTML(d.tier || '') + '</span>' + trend + '</div>'
+        + bar
+        + '<div class="rev-meta"><span>' + fmt(pos) + ' positivas</span><span>' + fmt(neg) + ' negativas</span><span>' + fmt(total) + ' total' + (d.total30 ? ' · ' + fmt(d.total30) + ' en 30d' : '') + '</span></div>'
+        + '</div>';
+    }
+
+    async function nexusFetchResenas() {
+      var box = document.getElementById('m-resenas-box');
+      box.innerHTML = '<div class="upd-empty">Cargando reseñas...</div>';
+      try {
+        var sb = await nexusSb();
+        var it = (itemsByCategory[currentCategory] || []).find(function(x) { return String(x.id) === String(currentItemId); });
+        var appid = it ? String(it.id) : '';
+        var r = await sb.functions.invoke('steam-reviews', { body: { appid: appid } });
+        if (r.error) throw new Error(r.error.message || 'Error en steam-reviews');
+        _resenasLoaded = true;
+        if (!r.data || r.data.pct == null) { box.innerHTML = '<div class="upd-empty">Sin datos de reseñas.</div>'; return; }
+        box.innerHTML = nexusRenderResenas(r.data);
+      } catch (e) {
+        box.innerHTML = '<div class="upd-empty">' + escaparHTML('Error: ' + (e.message || '')) + '</div>';
+      }
+    }
+
+    // ---- CAROUSEL DOTS + LIGHTBOX ----
+    function nexusInitCarouselDots(carEl, dotsEl) {
+      if (!carEl || !dotsEl) return;
+      var imgs = carEl.querySelectorAll('img');
+      dotsEl.innerHTML = '';
+      if (imgs.length < 2) { dotsEl.style.display = 'none'; return; }
+      dotsEl.style.display = 'flex';
+      var dots = [];
+      imgs.forEach(function(_, i) {
+        var d = document.createElement('span');
+        d.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+        dots.push(d); dotsEl.appendChild(d);
+      });
+      var update = function() {
+        var idx = Math.round(carEl.scrollLeft / (carEl.scrollWidth / imgs.length));
+        dots.forEach(function(d, i) { d.classList.toggle('active', i === Math.min(idx, dots.length - 1)); });
+      };
+      carEl.onscroll = update;
+      dotsEl._update = update;
+    }
+
+    // ---- IMAGE LIGHTBOX (covers/screenshots fullscreen in-app) ----
+    var _lbUrls = [], _lbIdx = 0;
+    function nexusOpenLightbox(urls, idx) {
+      _lbUrls = urls || []; _lbIdx = idx || 0;
+      var lb = document.getElementById('nexus-lightbox');
+      if (!lb) {
+        lb = document.createElement('div');
+        lb.id = 'nexus-lightbox';
+        lb.className = 'lightbox';
+        lb.innerHTML = '<button class="lb-close" onclick="nexusCloseLightbox()"><svg class="ico"><use href="#i-x"/></svg></button>'
+          + '<button class="lb-nav lb-prev" onclick="nexusLightboxNav(-1)">&#8249;</button>'
+          + '<img class="lb-img" alt="">'
+          + '<button class="lb-nav lb-next" onclick="nexusLightboxNav(1)">&#8250;</button>'
+          + '<div class="lb-counter"></div>';
+        lb.addEventListener('click', function(e) { if (e.target === lb) nexusCloseLightbox(); });
+        document.body.appendChild(lb);
+        document.addEventListener('keydown', function(e) {
+          if (lb.style.display !== 'flex') return;
+          if (e.key === 'Escape') nexusCloseLightbox();
+          if (e.key === 'ArrowLeft') nexusLightboxNav(-1);
+          if (e.key === 'ArrowRight') nexusLightboxNav(1);
+        });
+      }
+      lb.style.display = 'flex';
+      nexusLightboxRender();
+    }
+    function nexusLightboxRender() {
+      var lb = document.getElementById('nexus-lightbox');
+      if (!lb) return;
+      lb.querySelector('.lb-img').src = _lbUrls[_lbIdx];
+      lb.querySelector('.lb-counter').textContent = (_lbIdx + 1) + ' / ' + _lbUrls.length;
+      lb.querySelector('.lb-prev').style.display = _lbUrls.length > 1 ? 'flex' : 'none';
+      lb.querySelector('.lb-next').style.display = _lbUrls.length > 1 ? 'flex' : 'none';
+    }
+    function nexusLightboxNav(d) {
+      _lbIdx = (_lbIdx + d + _lbUrls.length) % _lbUrls.length;
+      nexusLightboxRender();
+    }
+    function nexusCloseLightbox() {
+      var lb = document.getElementById('nexus-lightbox');
+      if (lb) lb.style.display = 'none';
     }
 
     function toggleTrailer() {

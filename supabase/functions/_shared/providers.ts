@@ -503,6 +503,10 @@ async function resolverAutoresOpenLibrary(authorsArr: any, fallbackTitulo?: stri
   const vistos: Record<string, boolean> = {};
 
   if (Array.isArray(authorsArr) && authorsArr.length > 0) {
+    // fetchAll: resolver las keys primero, luego fetch paralelo (Promise.all)
+    // — antes eran hasta 4 fetches secuenciales (~4x latencia).
+    const direct: string[] = [];
+    const fetches: Promise<string>[] = [];
     for (let i = 0; i < Math.min(authorsArr.length, 4); i++) {
       let entry = authorsArr[i];
       if (!entry) continue;
@@ -510,7 +514,7 @@ async function resolverAutoresOpenLibrary(authorsArr: any, fallbackTitulo?: stri
         const cleanStr = entry.trim();
         if (cleanStr && cleanStr.indexOf('/authors/') !== 0 && !vistos[cleanStr.toLowerCase()]) {
           vistos[cleanStr.toLowerCase()] = true;
-          nombres.push(cleanStr);
+          direct.push(cleanStr);
           continue;
         }
         entry = { key: cleanStr };
@@ -518,17 +522,23 @@ async function resolverAutoresOpenLibrary(authorsArr: any, fallbackTitulo?: stri
       const aKey = (entry.author && entry.author.key) ? entry.author.key : (entry.key || '');
       if (!aKey) continue;
       const pathKey = aKey.indexOf('/') === 0 ? aKey : ('/authors/' + aKey);
-      try {
-        const aRes = await fetch('https://openlibrary.org' + pathKey + '.json');
-        if (aRes.ok) {
+      fetches.push((async () => {
+        try {
+          const aRes = await fetch('https://openlibrary.org' + pathKey + '.json');
+          if (!aRes.ok) return '';
           const aJson: any = await aRes.json();
-          const aName = (aJson && (aJson.name || aJson.personal_name)) ? String(aJson.name || aJson.personal_name).trim() : '';
-          if (aName && !vistos[aName.toLowerCase()]) {
-            vistos[aName.toLowerCase()] = true;
-            nombres.push(aName);
-          }
-        }
-      } catch { /* siguiente autor */ }
+          return (aJson && (aJson.name || aJson.personal_name)) ? String(aJson.name || aJson.personal_name).trim() : '';
+        } catch { return ''; }
+      })());
+    }
+    // nombres directos primero (orden de entrada), luego los resueltos en paralelo
+    for (const n of direct) { if (!vistos[n.toLowerCase()]) { vistos[n.toLowerCase()] = true; nombres.push(n); } }
+    const resueltos = await Promise.all(fetches);
+    for (const aName of resueltos) {
+      if (aName && !vistos[aName.toLowerCase()]) {
+        vistos[aName.toLowerCase()] = true;
+        nombres.push(aName);
+      }
     }
   }
 
