@@ -321,7 +321,9 @@
     }
     .custom-select-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .custom-select-chevron { flex-shrink: 0; color: var(--muted); transition: transform var(--t-base) var(--ease-out); }
+    .custom-select-trigger:focus, .custom-select-trigger:focus-visible { outline: none; }
     .custom-select.open .custom-select-trigger { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(155, 89, 182, 0.12); }
+    #fuente-dropdown.open .custom-select-trigger { border-color: rgba(187, 134, 252, 0.55); box-shadow: 0 0 0 2px rgba(187, 134, 252, 0.14); }
     .custom-select.open .custom-select-chevron { transform: rotate(180deg); color: var(--accent); }
     .custom-select-menu {
       position: absolute; top: calc(100% + 6px); left: 0; right: 0; min-width: 170px; margin: 0;
@@ -1199,6 +1201,7 @@
       padding: 0 2.2rem 0 0.75rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .mods-form select:focus { border-color: var(--mods); box-shadow: 0 0 0 2px rgba(155, 89, 182, 0.12); }
+    .mods-form input:focus, .mods-form textarea:focus { border-color: rgba(187, 134, 252, 0.55); box-shadow: 0 0 0 2px rgba(187, 134, 252, 0.10); outline: none; }
     .mods-form select option { background-color: rgba(0,0,0,0.25); color: var(--text); }
     .mods-form textarea { resize: vertical; min-height: 80px; height: auto; line-height: 1.4; }
     .mods-form-row { display: grid; grid-template-columns: 2fr 1.2fr 1fr; gap: 10px; width: 100%; }
