@@ -159,6 +159,19 @@
       box-shadow: 0 2px 10px rgba(102, 192, 244, 0.4);
     }
 
+    .sub-tabs {
+      display: flex; gap: 4px; background: rgba(16,24,36,.98);
+      padding: 4px 6px; border-radius: 24px; border: 1px solid rgba(102,192,244,.18);
+      width: max-content; max-width: 100%; overflow-x: auto; scrollbar-width: none;
+    }
+    .sub-tabs::-webkit-scrollbar { display: none; }
+    .sub-tab {
+      padding: 5px 12px; border: none; border-radius: 18px; background: transparent;
+      color: #8f98a0; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 800;
+      cursor: pointer; white-space: nowrap; transition: all var(--t-fast) var(--ease-out);
+    }
+    .sub-tab.active { background: rgba(102,192,244,.18); color: var(--accent); }
+
     .controls {
       display: flex;
       flex-direction: column;
@@ -1242,9 +1255,14 @@
         <button class="tab-btn" data-cat="Coleccionables" title="Coleccionables" onclick="cambiarCategoria('Coleccionables')">
           <svg class="ico"><use href="#i-star"/></svg> <span class="tab-text">Coleccionables</span>
         </button>
-        <button class="tab-btn" data-cat="Estadisticas" title="Perfil" onclick="cambiarCategoria('Estadisticas')">
-          <svg class="ico"><use href="#i-user"/></svg> <span class="tab-text">Perfil</span>
-        </button>
+
+      </div>
+
+      <div id="sub-tabs" class="sub-tabs" style="display:none;">
+        <button class="sub-tab active" data-sub="todos" onclick="cambiarSubcat('todos')">Todos</button>
+        <button class="sub-tab" data-sub="pelicula" onclick="cambiarSubcat('pelicula')">Películas</button>
+        <button class="sub-tab" data-sub="serie" onclick="cambiarSubcat('serie')">Series</button>
+        <button class="sub-tab" data-sub="anime" onclick="cambiarSubcat('anime')">Anime</button>
       </div>
 
       <div class="controls" id="main-controls-box">
@@ -2676,7 +2694,7 @@
   </script>
 
   <script>
-    const CATEGORY_ORDER = ['Juegos', 'Peliculas_Series', 'Libros', 'Mangas', 'Coleccionables', 'Estadisticas'];
+    const CATEGORY_ORDER = ['Juegos', 'Peliculas_Series', 'Libros', 'Mangas', 'Coleccionables'];
     var currentCategory = 'Juegos';
     var elementosPorPagina = 36;
     var paginaActual = 1;
@@ -3115,6 +3133,12 @@
       cerrarBusquedaAgregar();
 
       grid.classList.toggle('poster-mode', cfg.poster);
+      var subTabs = document.getElementById('sub-tabs');
+      if (subTabs) {
+        var showSub = (cat === 'Peliculas_Series');
+        subTabs.style.display = showSub ? 'flex' : 'none';
+        if (!showSub) { fSubcat = 'todos'; document.querySelectorAll('.sub-tab').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-sub')==='todos'); }); }
+      }
       if (window._pendingGridDir) {
         grid.classList.remove('grid-in-next', 'grid-in-prev');
         void grid.offsetWidth;
@@ -3212,7 +3236,7 @@
         f2.innerHTML = '<label>Steam Deck</label><select id="f-extra-2" onchange="filtrarItems()"><option value="todos">Todos</option><option value="Verificado">Verificado</option><option value="Jugable">Jugable</option></select>';
         f3.innerHTML = '<label>Precio</label><select id="f-extra-3" onchange="filtrarItems()"><option value="todos">Todos</option><option value="gratis">Gratis</option><option value="pago">De Pago</option></select>';
       } else if (cat === 'Peliculas_Series') {
-        f1.innerHTML = '<label>Tipo</label><select id="f-extra-1" onchange="filtrarItems()"><option value="todos">Todos</option><option value="Película">Películas</option><option value="Serie">Series / Animes</option></select>';
+        f1.innerHTML = '';
         f2.innerHTML = '<label>Plataforma</label><select id="f-extra-2" onchange="filtrarItems()"><option value="todos">Todas</option><option value="Netflix">Netflix</option><option value="Crunchyroll">Crunchyroll</option><option value="Max">Max</option><option value="Prime">Prime Video</option><option value="Disney">Disney+</option></select>';
         f3.innerHTML = '<label>Estado</label><select id="f-extra-3" onchange="filtrarItems()"><option value="todos">Todos</option><option value="En emisión">En emisión</option><option value="Finalizada">Finalizada</option></select>';
       } else if (cat === 'Libros') {
@@ -3298,6 +3322,15 @@
       if (!noRender) filtrarItems();
     }
 
+    var fSubcat = 'todos'; // sub-filtro Cine y Series: todos|pelicula|serie|anime
+    function cambiarSubcat(v) {
+      fSubcat = v;
+      document.querySelectorAll('.sub-tab').forEach(function(b) {
+        b.classList.toggle('active', b.getAttribute('data-sub') === v);
+      });
+      filtrarItems();
+    }
+
     function filtrarItems() {
       paginaActual = 1;
       var lista = itemsByCategory[currentCategory] || [];
@@ -3322,6 +3355,18 @@
 
       var hayFiltros = hayPers || fDeseado !== 'todos' || e1 !== 'todos' || e2 !== 'todos' || e3 !== 'todos' || fOrden !== 'az';
       document.getElementById('btn-toggle-filtros').classList.toggle('has-filters', hayFiltros);
+
+      // sub-filtro superior solo para Peliculas_Series
+      if (currentCategory === 'Peliculas_Series' && fSubcat !== 'todos') {
+        lista = lista.filter(function(it) {
+          var tipo = String(it.tipo || '');
+          var esAnime = tipo === 'Serie' && /animaci/i.test(String(it.generos || ''));
+          if (fSubcat === 'pelicula') return tipo === 'Película';
+          if (fSubcat === 'serie') return tipo === 'Serie' && !esAnime;
+          if (fSubcat === 'anime') return esAnime;
+          return true;
+        });
+      }
 
       var filtrados = lista.filter(function(it) {
         var matchQ = !q ||
