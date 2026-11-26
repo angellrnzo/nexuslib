@@ -616,7 +616,7 @@
     .stat-bar-fill-talmai { height: 100%; background: var(--talmai-color); transition: width var(--t-slow) var(--ease-out); }
 
     /* MODALES GENERALES */
-    #modal, #modal-papelera, #modal-match, #modal-vinculos, #modal-share {
+    #modal, #modal-papelera, #modal-match, #modal-vinculos, #modal-share, #modal-perfil {
       display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(6, 9, 14, 0.88); z-index: 10000;
       justify-content: center; align-items: center; opacity: 0;
@@ -634,13 +634,15 @@
     #modal-papelera[style*="opacity: 1"] .modal-content,
     #modal-match[style*="opacity: 1"] .modal-content,
     #modal-vinculos[style*="opacity: 1"] .modal-content,
-    #modal-share[style*="opacity: 1"] .modal-content {
+    #modal-share[style*="opacity: 1"] .modal-content,
+    #modal-perfil[style*="opacity: 1"] .modal-content {
       transform: translateY(0) scale(1);
     }
-    /* boton cerrar: fijo arriba-derecha sobre el modal, con zona reservada
-       (padding-top del contenido) para que nunca pise titulo/nota/metadata */
+    /* boton cerrar: sticky arriba-derecha — sigue visible al hacer scroll
+       dentro del modal; margin-bottom negativo evita reservar fila extra */
     .modal-close {
-      position: absolute; top: 12px; right: 12px; z-index: 50;
+      position: sticky; top: 12px; z-index: 50;
+      margin-left: auto; margin-bottom: -34px; display: flex;
       width: 34px; height: 34px; padding: 0;
       border-radius: 50%; background: rgba(13, 19, 27, 0.9);
       border: 1px solid rgba(255, 255, 255, 0.28); color: #fff;
@@ -713,6 +715,50 @@
       background: var(--accent); color: #0b0e14; font-weight: 700; font-size: 12px; cursor: pointer;
     }
     .state-box.err .ico { color: #ff8585; }
+
+    /* 2A skeleton shimmer — mismos ritmos que .card */
+    .skel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; width: 100%; }
+    .skel-card { background: var(--panel); border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,.06); }
+    .skel-img { aspect-ratio: 460 / 215; }
+    .skel-body { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+    .skel-line { height: 12px; border-radius: 6px; }
+    .skel-line.w60 { width: 60%; } .skel-line.w80 { width: 80%; } .skel-line.w40 { width: 40%; }
+    .skel-img, .skel-line {
+      background: linear-gradient(90deg, rgba(255,255,255,.05) 25%, rgba(255,255,255,.11) 50%, rgba(255,255,255,.05) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s var(--ease-inout) infinite;
+    }
+    @keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+    /* 2B entrada direccional del grid al cambiar de categoria */
+    #grid.grid-in-next .card, #grid.grid-in-prev .card {
+      animation: gridCardIn var(--t-slow) var(--ease-out) both;
+    }
+    #grid.grid-in-next .card { animation-name: gridCardInNext; }
+    #grid.grid-in-prev .card { animation-name: gridCardInPrev; }
+    #grid.grid-in-next .card:nth-child(6n+2), #grid.grid-in-prev .card:nth-child(6n+2) { animation-delay: 30ms; }
+    #grid.grid-in-next .card:nth-child(6n+3), #grid.grid-in-prev .card:nth-child(6n+3) { animation-delay: 60ms; }
+    #grid.grid-in-next .card:nth-child(6n+4), #grid.grid-in-prev .card:nth-child(6n+4) { animation-delay: 90ms; }
+    #grid.grid-in-next .card:nth-child(6n+5), #grid.grid-in-prev .card:nth-child(6n+5) { animation-delay: 120ms; }
+    #grid.grid-in-next .card:nth-child(6n+0), #grid.grid-in-prev .card:nth-child(6n+0) { animation-delay: 150ms; }
+    @keyframes gridCardInNext { from { opacity: 0; transform: translateX(22px); } to { opacity: 1; transform: none; } }
+    @keyframes gridCardInPrev { from { opacity: 0; transform: translateX(-22px); } to { opacity: 1; transform: none; } }
+
+    /* 2C burst de corazon en double-tap */
+    .heart-burst {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      pointer-events: none; z-index: 5;
+    }
+    .heart-burst svg {
+      width: 64px; height: 64px; color: var(--wish); filter: drop-shadow(0 2px 10px rgba(0,0,0,.6));
+      animation: heartPop 600ms var(--ease-out) forwards;
+    }
+    @keyframes heartPop {
+      0% { opacity: 0; transform: scale(0); }
+      30% { opacity: 1; transform: scale(1.25); }
+      55% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(1.1) translateY(-14px); }
+    }
     .lightbox {
       display: none; position: fixed; inset: 0; z-index: 10000;
       background: rgba(0,0,0,0.92); align-items: center; justify-content: center;
@@ -950,15 +996,15 @@
       background: rgba(102,192,244,0.08); color: var(--accent);
       border: 1px solid rgba(102,192,244,0.25); text-decoration: none;
     }
-    .mods-form { display: grid; gap: 6px; margin-bottom: 12px; }
+    .mods-form { display: grid; gap: 8px; margin-bottom: 14px; }
     .mods-form input, .mods-form select, .mods-form textarea {
-      width: 100%; padding: 8px 10px; border-radius: 8px; font-size: 12px;
+      width: 100%; padding: 11px 12px; border-radius: 10px; font-size: 13px;
       background: rgba(0,0,0,0.25); color: var(--text);
       border: 1px solid var(--border); font-family: inherit;
     }
     .mods-form textarea { resize: vertical; min-height: 44px; }
     .mods-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-    .mods-form .btn-save { justify-content: center; }
+    .mods-form .btn-save { justify-content: center; padding: 14px; font-size: 14px; border-radius: 10px; margin-top: 4px; }
     .mods-empty { font-size: 12px; color: #8f98a0; text-align: center; padding: 10px 0; }
     .mods-group { margin-bottom: 8px; }
     .mods-group summary {
@@ -1050,8 +1096,22 @@
       }
     }
 
+    @media (max-width: 768px) {
+      #modal, #modal-papelera, #modal-match, #modal-vinculos, #modal-share, #modal-perfil {
+        align-items: flex-end; padding: 0;
+      }
+      .modal-content {
+        border-radius: 16px 16px 0 0; max-height: 85dvh; width: 100%; max-width: 100%;
+        padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+      }
+      .modal-content::before {
+        content: ''; display: block; width: 36px; height: 4px; border-radius: 2px;
+        background: rgba(255,255,255,.28); margin: 0 auto 10px; flex-shrink: 0;
+        position: sticky; top: 0; z-index: 2;
+      }
+    }
     @media (max-width: 600px) {
-      .modal-content { padding: 14px; border-radius: 14px; }
+      .modal-content { padding: 14px; border-radius: 16px 16px 0 0; }
       .modal-title { font-size: 17px; padding-right: 36px; }
       .stats-cards-grid { grid-template-columns: minmax(0, 1fr); gap: 10px; }
       .tracking-container { grid-template-columns: 1fr; }
@@ -1175,6 +1235,9 @@
         </button>
         <button class="tab-btn" data-cat="Mangas" title="Mangas" onclick="cambiarCategoria('Mangas')">
           <svg class="ico"><use href="#i-manga"/></svg> <span class="tab-text">Mangas</span>
+        </button>
+        <button class="tab-btn" data-cat="Coleccionables" title="Coleccionables" onclick="cambiarCategoria('Coleccionables')">
+          <svg class="ico"><use href="#i-star"/></svg> <span class="tab-text">Coleccionables</span>
         </button>
         <button class="tab-btn" data-cat="Estadisticas" title="Perfil" onclick="cambiarCategoria('Estadisticas')">
           <svg class="ico"><use href="#i-user"/></svg> <span class="tab-text">Perfil</span>
@@ -2610,7 +2673,7 @@
   </script>
 
   <script>
-    const CATEGORY_ORDER = ['Juegos', 'Peliculas_Series', 'Libros', 'Mangas', 'Estadisticas'];
+    const CATEGORY_ORDER = ['Juegos', 'Peliculas_Series', 'Libros', 'Mangas', 'Coleccionables', 'Estadisticas'];
     var currentCategory = 'Juegos';
     var elementosPorPagina = 36;
     var paginaActual = 1;
@@ -2763,6 +2826,7 @@
       Peliculas_Series: { label: 'Cine y Series', icon: 'i-film', searchPlaceholder: 'Filtrar películas, series y animes...', addPlaceholder: 'Buscar película, serie o URL...', poster: true },
       Libros: { label: 'Libros', icon: 'i-book', searchPlaceholder: 'Filtrar libros por título, autor o género...', addPlaceholder: 'Buscar libro, autor o ISBN...', poster: true },
       Mangas: { label: 'Mangas', icon: 'i-manga', searchPlaceholder: 'Filtrar mangas por título, mangaka o género...', addPlaceholder: 'Buscar manga o URL...', poster: true },
+      Coleccionables: { label: 'Coleccionables', icon: 'i-star', searchPlaceholder: '', addPlaceholder: '', poster: false },
       Estadisticas: { label: 'Perfil', icon: 'i-user', searchPlaceholder: '', addPlaceholder: '', poster: false }
     };
 
@@ -2936,12 +3000,14 @@
     };
 
     function precargarCategoriaSilenciosa(cat) {
+      var _hasFresh = false;
       try {
         var raw = localStorage.getItem(`media_lib_${CACHE_VERSION}_${cat}`);
         var ts = localStorage.getItem(`media_lib_time_${CACHE_VERSION}_${cat}`);
-        if (raw && ts && (Date.now() - Number(ts) < MAX_CACHE_AGE)) {
+        if (raw && ts) {
           itemsByCategory[cat] = JSON.parse(raw);
-          return;
+          _hasFresh = (Date.now() - Number(ts) < MAX_CACHE_AGE);
+          if (_hasFresh) return;
         }
       } catch (e) {}
 
@@ -3000,8 +3066,12 @@
 
     function cambiarCategoria(cat) {
       if (cat === currentCategory) return;
+      var _prevIdx = CATEGORY_ORDER.indexOf(currentCategory);
+      var _newIdx = CATEGORY_ORDER.indexOf(cat);
+      var _dir = (_prevIdx !== -1 && _newIdx > _prevIdx) ? 'next' : (_prevIdx !== -1 ? 'prev' : '');
       currentCategory = cat;
       paginaActual = 1;
+      window._pendingGridDir = _dir;
 
       var panel = document.getElementById('panel-filtros');
       if (panel.classList.contains('open')) {
@@ -3042,6 +3112,14 @@
       cerrarBusquedaAgregar();
 
       grid.classList.toggle('poster-mode', cfg.poster);
+      if (window._pendingGridDir) {
+        grid.classList.remove('grid-in-next', 'grid-in-prev');
+        void grid.offsetWidth;
+        grid.classList.add('grid-in-' + window._pendingGridDir);
+        var _gd = window._pendingGridDir;
+        window._pendingGridDir = '';
+        setTimeout(function() { grid.classList.remove('grid-in-' + _gd); }, 700);
+      }
 
       configurarFiltrosCategoria(cat);
       resetFiltros(true);
@@ -3050,23 +3128,41 @@
 
     function cargarCategoria(cat, forzarRed) {
       if (cat === 'Estadisticas') return;
+      if (cat === 'Coleccionables') {
+        if (currentCategory === cat) {
+          document.getElementById('grid').innerHTML = nexusStateBox('empty', 'i-star',
+            'Coleccionables — próximamente',
+            'Figuras, juegos de mesa, rompecabezas, LEGO y más. Esta sección llega en una fase posterior del roadmap.');
+        }
+        return;
+      }
+      var _stale = false;
       if (!forzarRed) {
         try {
           var raw = localStorage.getItem(`media_lib_${CACHE_VERSION}_${cat}`);
           var ts = localStorage.getItem(`media_lib_time_${CACHE_VERSION}_${cat}`);
-          if (raw && ts && (Date.now() - Number(ts) < MAX_CACHE_AGE)) {
-            itemsByCategory[cat] = JSON.parse(raw);
-            nexusRebuildPersonas();
-            nexusRenderFilterPersonas();
-            filtrarItems();
-            return;
+          if (raw && ts) {
+            var cached = JSON.parse(raw);
+            itemsByCategory[cat] = cached;
+            if (Date.now() - Number(ts) < MAX_CACHE_AGE) {
+              nexusRebuildPersonas();
+              nexusRenderFilterPersonas();
+              filtrarItems();
+              return;
+            }
+            _stale = true; // cache viejo: mostrar ya y refrescar en segundo plano
           }
         } catch (e) {}
+      }
+      if (_stale && currentCategory === cat) {
+        nexusRebuildPersonas();
+        nexusRenderFilterPersonas();
+        filtrarItems();
       }
 
       var grid = document.getElementById('grid');
       if (currentCategory === cat) {
-        grid.innerHTML = '<div class="spinner-container"><div class="spinner"></div><div style="color:var(--accent);font-weight:700;">Cargando ' + CAT_CONFIG[cat].label + '...</div></div>';
+        grid.innerHTML = nexusSkeletonGrid(8);
       }
 
       RUN
@@ -3082,8 +3178,11 @@
           else if (currentCategory === 'Estadisticas') renderizarEstadisticas();
         })
         .withFailureHandler(function(err) {
-          if (currentCategory === cat) {
+          // si habia cache stale, el grid ya tiene datos — solo avisar
+          if (currentCategory === cat && !(itemsByCategory[cat] && itemsByCategory[cat].length)) {
             grid.innerHTML = nexusStateBox('err', 'i-x', 'No se pudieron cargar los elementos', err.message || '', '<button class="sb-action" onclick="cargarCategoria(\'' + cat + '\', true)">Reintentar</button>');
+          } else if (currentCategory === cat) {
+            showToast && showToast('Sin conexión para actualizar — mostrando datos guardados.', 'warning');
           }
         })
         .getItems(cat);
@@ -3093,6 +3192,8 @@
       if (currentCategory === 'Estadisticas') {
         ['Juegos', 'Peliculas_Series', 'Libros', 'Mangas'].forEach(c => cargarCategoria(c, true));
         showToast('Actualizando estadísticas...', 'success');
+      } else if (currentCategory === 'Coleccionables') {
+        showToast('Coleccionables aún no tiene contenido.', 'warning');
       } else {
         cargarCategoria(currentCategory, true);
       }
@@ -3118,6 +3219,8 @@
         f1.innerHTML = '<label>Estado</label><select id="f-extra-1" onchange="filtrarItems()"><option value="todos">Todos</option><option value="En emisión">En emisión</option><option value="Finalizado">Finalizado</option></select>';
         f2.innerHTML = '<label>Demografía</label><select id="f-extra-2" onchange="filtrarItems()"><option value="todos">Todas</option><option value="Shounen">Shounen</option><option value="Seinen">Seinen</option><option value="Shoujo">Shoujo</option><option value="Josei">Josei</option></select>';
         f3.innerHTML = '';
+      } else {
+        f1.innerHTML = ''; f2.innerHTML = ''; f3.innerHTML = '';
       }
     }
 
@@ -3214,7 +3317,7 @@
         if (fv !== 'todos' || nv > 0) hayPers = true;
       });
 
-      var hayFiltros = hayPers || fDeseado !== 'todos' || e1 !== 'todos' || e2 !== 'todos' || e3 !== 'todos' || fOrden !== 'az' || q.length > 0;
+      var hayFiltros = hayPers || fDeseado !== 'todos' || e1 !== 'todos' || e2 !== 'todos' || e3 !== 'todos' || fOrden !== 'az';
       document.getElementById('btn-toggle-filtros').classList.toggle('has-filters', hayFiltros);
 
       var filtrados = lista.filter(function(it) {
@@ -3326,6 +3429,28 @@
 
     const FALLBACK_SVG = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='450'><rect width='100%25' height='100%25' fill='%23171a21'/><text x='50%25' y='50%25' fill='%2366c0f4' font-family='sans-serif' font-size='16' font-weight='bold' text-anchor='middle' dominant-baseline='middle'>Sin Imagen</text></svg>";
 
+    var _nexusLastTouchTs = 0;
+    document.addEventListener('touchstart', function() { _nexusLastTouchTs = Date.now(); }, true);
+
+    // double-tap en tarjeta: burst + toggle wishlist propio (sin abrir modal)
+    function nexusHeartBurst(card) {
+      var hb = document.createElement('div');
+      hb.className = 'heart-burst';
+      hb.innerHTML = '<svg class="ico"><use href="#i-heart-fill"/></svg>';
+      card.querySelector('.img-container').appendChild(hb);
+      setTimeout(function() { hb.remove(); }, 650);
+    }
+    function nexusToggleDeseadoCard(it) {
+      var me = (_personas || []).find(function(p) { return p.mine; });
+      if (!me) return;
+      var suf = me.suffix;
+      var nuevo = !Boolean(it['deseado' + suf]);
+      it['deseado' + suf] = nuevo;
+      try { localStorage.setItem('media_lib_' + CACHE_VERSION + '_' + currentCategory, JSON.stringify(itemsByCategory[currentCategory])); } catch (e) {}
+      filtrarItems();
+      RUN.guardarDeseadoItem(currentCategory, it.id, suf, nuevo);
+    }
+
     function renderGrid(items) {
       var grid = document.getElementById('grid');
       if (!items || items.length === 0) {
@@ -3338,7 +3463,34 @@
       itemsVisibles.forEach(function(it) {
         var card = document.createElement('div');
         card.className = 'card';
-        card.onclick = () => abrirModal(it.id);
+        var _tapTs = 0, _suppressUntil = 0;
+        card.addEventListener('touchend', function() {
+          var n = Date.now();
+          if (n - _tapTs < 300) {
+            _suppressUntil = n + 450;
+            nexusHeartBurst(card);
+            nexusToggleDeseadoCard(it);
+          }
+          _tapTs = n;
+        }, { passive: true });
+        card.addEventListener('dblclick', function(e) {
+          if (Date.now() - _nexusLastTouchTs < 1000) return; // touch ya lo maneja touchend
+          e.preventDefault();
+          nexusHeartBurst(card);
+          nexusToggleDeseadoCard(it);
+        });
+        card.addEventListener('click', function(e) {
+          if (e.detail > 1) return;
+          if (Date.now() < _suppressUntil) return;
+          var recentTouch = (Date.now() - _nexusLastTouchTs) < 1000;
+          if (recentTouch) {
+            setTimeout(function() {
+              if (Date.now() >= _suppressUntil) abrirModal(it.id);
+            }, 300);
+          } else {
+            abrirModal(it.id);
+          }
+        });
 
         // personas del item (dinámico multi-vínculo)
         var pers = nexusItemPersonas(it);
@@ -3599,6 +3751,18 @@
       var mImg = document.getElementById('m-img');
       mImg.onerror = function() { this.onerror = null; this.src = FALLBACK_SVG; };
       mImg.src = it.portada || FALLBACK_SVG;
+      mImg.style.cursor = 'zoom-in';
+      mImg.onclick = function() {
+        var urls = [];
+        if (it.portada && String(it.portada).startsWith('http')) urls.push(it.portada);
+        if (it.capturas) {
+          it.capturas.split(',').forEach(function(u) {
+            u = u.trim();
+            if (u.startsWith('http') && urls.indexOf(u) === -1) urls.push(u);
+          });
+        }
+        if (urls.length) nexusOpenLightbox(urls, 0);
+      };
 
       var autorTexto = (it.creador && String(it.creador).trim() && String(it.creador).trim().toLowerCase() !== 'undefined')
         ? String(it.creador).trim()
@@ -4590,6 +4754,16 @@
       else if (!e.shiftKey && document.activeElement === last) { first.focus(); e.preventDefault(); }
     });
 
+    function nexusSkeletonGrid(n) {
+      var h = '<div class="skel-grid">';
+      for (var i = 0; i < n; i++) {
+        h += '<div class="skel-card"><div class="skel-img"></div><div class="skel-body">' +
+             '<div class="skel-line w80"></div><div class="skel-line w60"></div><div class="skel-line w40"></div>' +
+             '</div></div>';
+      }
+      return h + '</div>';
+    }
+
     // ---- MODAL A11Y: Escape cierra el modal superior + focus al abrir ----
     var _modalCloseMap = [
       ['modal-perfil', cerrarPerfilModal],
@@ -4620,6 +4794,38 @@
         }
       }).observe(el, { attributes: true, attributeFilter: ['style'] });
     });
+
+    // ---- BOTTOM SHEET: pull-down para cerrar (solo <=768px) ----
+    (function() {
+      var mq = window.matchMedia('(max-width: 768px)');
+      if (!mq.matches) return;
+      var CLOSERS = {
+        'modal': cerrarModal, 'modal-papelera': cerrarPapelera, 'modal-match': cerrarMatchModal,
+        'modal-vinculos': cerrarVinculosModal, 'modal-share': function() {}, 'modal-perfil': cerrarPerfilModal
+      };
+      document.querySelectorAll('.modal-content').forEach(function(mc) {
+        var sy = 0, dragging = false;
+        mc.addEventListener('touchstart', function(e) {
+          if (mc.scrollTop <= 0 && e.touches.length === 1) { sy = e.touches[0].clientY; dragging = true; }
+        }, { passive: true });
+        mc.addEventListener('touchmove', function(e) {
+          if (!dragging || e.touches.length !== 1) return;
+          var dy = e.touches[0].clientY - sy;
+          if (dy > 0) mc.style.transform = 'translateY(' + Math.min(dy, 220) + 'px)';
+        }, { passive: true });
+        mc.addEventListener('touchend', function() {
+          if (!dragging) return;
+          dragging = false;
+          var m = mc.style.transform.match(/translateY\((\d+)px\)/);
+          mc.style.transform = '';
+          if (m && Number(m[1]) > 90) {
+            var ov = mc.parentElement;
+            var fn = ov && CLOSERS[ov.id];
+            if (fn) fn();
+          }
+        }, { passive: true });
+      });
+    })();
 
     // ---- OFFLINE READ-ONLY ----
     function nexusSyncOffline() {
