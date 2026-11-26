@@ -207,7 +207,7 @@ For each **video game** with a Steam appid, show the game's **update history** (
 
 ## 🔧 Planned Feature: Book Editions by Translator (v1.x read-only + v2 ownership)
 
-> **Status:** 📋 **SPEC** — documented 2026-11-23, pending implementation decision.
+> **Status:** ✅ **Half A IMPLEMENTADA 2026-11-26 (Supabase)** — Edge Function `book-editions` (POST {id} → resuelve work key desde external_id almacenado — `W` directo, `M` vía edition→works[], `isbn:` vía isbn→works[] → `works/{key}/editions.json?limit=100`, traductores resueltos a nombre vía /authors/ cap 20, sort ES primero + año desc). Deployada principal+standby. UI: botón "Ediciones" lazy en modal de Libros — filas con título, traductor·editorial·fecha·idioma, tag ES, links ISBN/archive.org "Leer". Verificado E2E (El Diario de Ana Frank 2 eds, El imperio final 45 eds ES-first). Half B (ownership por usuario → visibility matrix) sigue pendiente — right of the cut.
 > User idea: same book exists in multiple translations/editions and some are better than others — Pedro owns translator X's version, Juan owns translator Y's. Want a per-work **editions list** (translator, publisher, year, language, ISBN) and eventually track *which edition each user owns*.
 
 ### Concept — two halves with different cut positions

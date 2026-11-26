@@ -658,6 +658,15 @@
     .upd-badge { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; padding: 1px 6px; border-radius: 20px; background: rgba(91,163,43,0.15); color: #7ec850; border: 1px solid rgba(91,163,43,0.35); }
     .upd-summary { font-size: 11px; color: #8f98a0; margin-top: 3px; line-height: 1.4; }
     .upd-empty { font-size: 12px; color: #8f98a0; text-align: center; padding: 14px 0; }
+    .ed-row { padding: 8px 2px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .ed-row:last-child { border-bottom: none; }
+    .ed-title { font-size: 12px; font-weight: 600; color: var(--text); }
+    .ed-meta { display: flex; flex-wrap: wrap; gap: 4px 10px; margin-top: 3px; font-size: 10px; color: #8f98a0; }
+    .ed-tag { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; padding: 1px 6px; border-radius: 20px; background: rgba(102,192,244,0.12); color: var(--accent); border: 1px solid rgba(102,192,244,0.3); }
+    .ed-actions { display: inline-flex; gap: 6px; margin-top: 4px; }
+    .ed-actions a { font-size: 10px; color: var(--accent); text-decoration: none; }
+    .ed-actions a:hover { text-decoration: underline; }
+
 
 
     #modal-vinculos .modal-title { min-height: 38px; }
@@ -1185,6 +1194,13 @@
           <svg class="ico ico-sm"><use href="#i-sync"/></svg> Historial de Updates
         </button>
         <div id="m-updates-box" class="updates-box"></div>
+      </div>
+
+      <div id="m-editions-bar" class="trailer-bar" style="display:none;">
+        <button type="button" id="btn-toggle-editions" class="btn-trailer" onclick="toggleEditions()">
+          <svg class="ico ico-sm"><use href="#i-book"/></svg> Ediciones
+        </button>
+        <div id="m-editions-box" class="updates-box"></div>
       </div>
 
       <p id="m-desc" class="modal-desc"></p>
@@ -3193,6 +3209,17 @@
       var updBar = document.getElementById('m-updates-bar');
       var esJuegoNexus = (NEXUS_MODE && currentCategory === 'Juegos' && /^\d+$/.test(String(it.id || '')));
       updBar.style.display = esJuegoNexus ? 'block' : 'none';
+
+      var edBar = document.getElementById('m-editions-bar');
+      edBar.style.display = (NEXUS_MODE && currentCategory === 'Libros') ? 'block' : 'none';
+      if (edBar.style.display === 'block') {
+        var ebox = document.getElementById('m-editions-box');
+        ebox.style.display = 'none'; ebox.innerHTML = '';
+        var ebtn = document.getElementById('btn-toggle-editions');
+        ebtn.classList.remove('active');
+        ebtn.innerHTML = `${svgIcon('i-book', 'ico-sm')} Ediciones`;
+        _editionsLoaded = false;
+      }
       if (esJuegoNexus) {
         var ubox = document.getElementById('m-updates-box');
         ubox.style.display = 'none'; ubox.innerHTML = '';
@@ -3430,6 +3457,7 @@
     function cerrarModal() {
       detenerTrailer();
       detenerUpdates();
+      detenerEditions();
       document.querySelectorAll('.modal-content').forEach(function(el) { el.scrollTop = 0; });
       resetearDesplegablesModal();
       var modal = document.getElementById('modal');
@@ -4026,6 +4054,57 @@
             + '<div class="upd-meta"><span>' + escaparHTML(nexusFmtDate(u.date)) + '</span>'
             + (u.is_update ? '<span class="upd-badge">Update</span>' : '') + '</div>'
             + (u.summary ? '<div class="upd-summary">' + escaparHTML(u.summary) + '</div>' : '')
+            + '</div>';
+        }).join('');
+      } catch (e) {
+        box.innerHTML = '<div class="upd-empty">' + escaparHTML('Error: ' + (e.message || '')) + '</div>';
+      }
+    }
+
+    // ---- BOOK EDITIONS (OpenLibrary works/{key}/editions via Edge Function book-editions) ----
+    var _editionsLoaded = false;
+
+    function detenerEditions() {
+      var box = document.getElementById('m-editions-box');
+      var btn = document.getElementById('btn-toggle-editions');
+      if (box) { box.style.display = 'none'; }
+      if (btn) { btn.classList.remove('active'); btn.innerHTML = `${svgIcon('i-book', 'ico-sm')} Ediciones`; }
+    }
+
+    async function toggleEditions() {
+      var box = document.getElementById('m-editions-box');
+      var btn = document.getElementById('btn-toggle-editions');
+      if (box.style.display === 'block') { detenerEditions(); return; }
+      box.style.display = 'block';
+      btn.classList.add('active');
+      btn.innerHTML = `${svgIcon('i-x', 'ico-sm')} Ocultar Ediciones`;
+      if (!_editionsLoaded) await nexusFetchEditions();
+    }
+
+    async function nexusFetchEditions() {
+      var box = document.getElementById('m-editions-box');
+      box.innerHTML = '<div class="upd-empty">Cargando ediciones...</div>';
+      try {
+        var sb = await nexusSb();
+        var it = (itemsByCategory[currentCategory] || []).find(function(x) { return String(x.id) === String(currentItemId); });
+        var r = await sb.functions.invoke('book-editions', { body: { id: it ? String(it.id) : '' } });
+        if (r.error) throw new Error(r.error.message || 'Error en book-editions');
+        var editions = (r.data && r.data.editions) || [];
+        _editionsLoaded = true;
+        if (!editions.length) { box.innerHTML = '<div class="upd-empty">' + escaparHTML((r.data && r.data.error) || 'Sin ediciones en OpenLibrary.') + '</div>'; return; }
+        box.innerHTML = editions.map(function(e) {
+          var meta = [];
+          if (e.translators && e.translators.length) meta.push('Trad: ' + e.translators.join(', '));
+          if (e.publishers && e.publishers.length) meta.push(e.publishers[0]);
+          if (e.publish_date) meta.push(e.publish_date);
+          if (e.languages && e.languages.length) meta.push(e.languages.join(', '));
+          var links = [];
+          if (e.isbn) links.push('<a href="https://openlibrary.org/isbn/' + encodeURIComponent(e.isbn) + '" target="_blank" rel="noopener noreferrer">ISBN ' + escaparHTML(e.isbn) + '</a>');
+          if (e.ocaid) links.push('<a href="https://archive.org/details/' + encodeURIComponent(e.ocaid) + '" target="_blank" rel="noopener noreferrer">Leer ↗</a>');
+          return '<div class="ed-row">'
+            + '<div class="ed-title">' + escaparHTML(e.title || 'Edición') + '</div>'
+            + '<div class="ed-meta">' + meta.map(escaparHTML).join(' · ') + (e.languages && e.languages.indexOf('Español') !== -1 ? ' <span class="ed-tag">ES</span>' : '') + '</div>'
+            + (links.length ? '<div class="ed-actions">' + links.join('') + '</div>' : '')
             + '</div>';
         }).join('');
       } catch (e) {
