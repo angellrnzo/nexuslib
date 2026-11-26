@@ -322,13 +322,13 @@
 
     #progress-container {
       width: 100%; display: none; margin-top: 2px;
-      background: rgba(0,0,0,0.8); border-radius: 8px; overflow: hidden; height: 10px; position: relative;
+      background: rgba(0,0,0,0.8); border-radius: 8px; overflow: hidden; height: 16px; position: relative;
     }
     #progress-bar { height: 100%; background: linear-gradient(90deg, var(--warning), #ffeb3b); width: 0%; transition: width var(--t-slow) var(--ease-out); }
     #progress-text {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
       display: flex; align-items: center; justify-content: center;
-      font-size: 9px; font-weight: bold; color: #0b0e14;
+      font-size: 10px; font-weight: bold; color: #0b0e14;
     }
 
     .stats-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; margin-top: 6px; }
@@ -342,7 +342,7 @@
     /* PANEL DE FILTROS */
     .menu-wrap { position: relative; flex-shrink: 0; }
     .menu-panel {
-      position: fixed; top: 0; right: 0; min-width: 210px;
+      position: fixed; top: 0; right: 0; min-width: 210px; max-width: calc(100vw - 16px);
       background: linear-gradient(180deg, rgba(27,40,56,.99) 0%, rgba(18,27,40,.99) 100%);
       border: 1px solid rgba(102,192,244,.35); border-radius: 14px;
       padding: 6px; box-shadow: 0 14px 40px rgba(0,0,0,.85);
@@ -1142,6 +1142,15 @@
     .spinner { width: 35px; height: 35px; border: 3px solid rgba(102, 192, 244, 0.2); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 10px; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    @media (pointer: coarse) {
+      .tab-btn { padding: 9px 12px; }
+      .sub-tab { padding: 8px 14px; font-size: 12px; }
+      .stats-prof-btn, .stats-cat-btn { padding: 9px 10px; font-size: 12px; }
+      .btn-circle { width: 36px; height: 36px; }
+      .menu-item { padding: 12px 14px; font-size: 14px; min-height: 44px; }
+      #inputBuscar, #inputAgregar { font-size: 16px; }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
         animation-duration: 0.01ms !important;
@@ -1163,6 +1172,9 @@
         background: rgba(255,255,255,.28); margin: 0 auto 10px; flex-shrink: 0;
         position: sticky; top: 0; z-index: 2;
       }
+    }
+    @media (max-width: 768px) {
+      #inputBuscar, #inputAgregar { font-size: 16px; }
     }
     @media (max-width: 600px) {
       .modal-content { padding: 14px; border-radius: 16px 16px 0 0; }
@@ -1873,7 +1885,7 @@
         '.na-tabs{display:flex;gap:4px;background:rgba(0,0,0,.25);border-radius:10px;padding:4px;margin-bottom:18px;}' +
         '.na-tab{flex:1;padding:8px;border:none;border-radius:8px;background:transparent;color:#8f98a0;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all var(--t-fast) var(--ease-out);}' +
         '.na-tab.active{background:var(--accent,#66c0f4);color:#0b0e14;}' +
-        '.na-in{width:100%;padding:12px;border-radius:8px;border:1px solid var(--border);background:#0b0e14;color:var(--text);margin-bottom:10px;font-size:14px;box-sizing:border-box;font-family:inherit;}' +
+        '.na-in{width:100%;padding:12px;border-radius:8px;border:1px solid var(--border);background:#0b0e14;color:var(--text);margin-bottom:10px;font-size:16px;box-sizing:border-box;font-family:inherit;}' +
         '.na-in:focus{outline:none;border-color:var(--accent,#66c0f4);}' +
         '.na-btn{width:100%;padding:12px;border:none;border-radius:8px;background:var(--accent,#66c0f4);color:#0b0e14;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;}' +
         '.na-btn:hover{filter:brightness(1.1);}' +
@@ -2967,6 +2979,7 @@
       }
       configurarFiltrosCategoria('Juegos');
       cargarCategoria('Juegos', false);
+      setTimeout(nexusSyncHeaderSpace, 50);
       ['Peliculas_Series', 'Libros', 'Mangas'].forEach(c => precargarCategoriaSilenciosa(c));
       inicializarGestosSwipe();
       var inputBuscarEl = document.getElementById('inputBuscar');
@@ -3178,6 +3191,7 @@
         var showSub = (cat === 'Peliculas_Series');
         subTabs.style.display = showSub ? 'flex' : 'none';
         if (!showSub) { fSubcat = 'todos'; document.querySelectorAll('.sub-tab').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-sub')==='todos'); }); }
+        setTimeout(nexusSyncHeaderSpace, 0);
       }
       if (window._pendingGridDir) {
         grid.classList.remove('grid-in-next', 'grid-in-prev');
@@ -3316,7 +3330,17 @@
     window.addEventListener('resize', function() {
       var panel = document.getElementById('panel-filtros');
       if (panel && panel.classList.contains('open')) posicionarPanelFiltros();
+      nexusSyncHeaderSpace();
     });
+
+    // el header fijo crece con sub-tabs/filtros — el padding-top del body
+    // debe seguir su borde real o el grid queda tapado por el header
+    function nexusSyncHeaderSpace() {
+      var h = document.querySelector('.top-header');
+      if (!h) return;
+      var bottom = h.getBoundingClientRect().bottom;
+      document.body.style.paddingTop = Math.max(120, bottom + 10) + 'px';
+    }
 
     // ---- menu hamburguesa ----
     function toggleMenu(e) {
