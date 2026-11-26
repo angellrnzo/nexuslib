@@ -92,7 +92,7 @@
 
 ## 🔧 Planned Feature: Game Mods Tracker (v1.x — spec only, not implemented)
 
-> **Status:** 📋 **SPEC** — documented 2026-11-21, pending implementation decision.
+> **Status:** ✅ **IMPLEMENTADO 2026-11-26** — versión Supabase (no Sheets): tabla `mods` ya existía con RLS `mods_self` (privado por usuario, sin match de pareja). UI en `index.html`: botón "Mods" en la fila de acciones del modal de juego (solo Juegos + NEXUS_MODE), panel con búsqueda rápida (Nexus/Workshop exacto por appid/CurseForge/Google), formulario nombre+fuente+URL+versión+notas, lista agrupada por `version_juego` (details colapsables), eliminar. Pendiente: prueba visual en /dev con mods reales.
 > Per-user mod lists per game, inspired by titles like *The Binding of Isaac* (many interesting mods outside Steam Workshop).
 
 ### Concept
@@ -437,7 +437,7 @@ See [AppScript/BETA.md](BETA.md) — one entry per working session: what was don
 
 ### Phase 3 — Backend & offline (v1.x)
 
-- [ ] **Mods Tracker:** new `mods` sheet must exist in `GameList.xlsx` with headers (`juego`, `nombre`, `fuente`, `url`, `version_juego`, `notas`, `usuario`) — **user action: create the sheet** before coding the backend branch.
+- [x] **Mods Tracker:** implementado 2026-11-26 directo sobre Supabase (`mods` table + RLS, sin sheet) — ver spec arriba. UI lista en `index.html`; pendiente prueba visual.
 - [ ] **Steam Reviews:** nothing external — reuses existing store-page scrape + agecheck cookies; needs valid Steam appid in game rows (already present).
 - [ ] **Game Update History:** Steam news RSS `feeds/news/app/{appid}` — public, no key; same cookie chain as reviews. Needs appid only.
 - [ ] **Book Editions:** OpenLibrary `works/{key}/editions.json` — free, no key. **Input needed:** the OL **work key** (not edition key) per book — verify resolver captures it at search time or derive via edition→`works[]`; if missing, add work-key capture to the resolver first.

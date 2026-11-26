@@ -792,6 +792,71 @@
     .btn-db { background: rgba(255, 255, 255, 0.05); color: #fff; border-color: rgba(255, 255, 255, 0.1); }
     .btn-repair { background: rgba(214, 169, 24, 0.1); color: #f4d03f; border-color: rgba(214, 169, 24, 0.3); }
     .btn-delete { background: rgba(201, 59, 59, 0.1); color: #ff6b6b; border-color: rgba(201, 59, 59, 0.3); }
+    .btn-mods { background: rgba(155, 89, 182, 0.12); color: #bb86fc; border-color: rgba(155, 89, 182, 0.35); }
+
+    /* ---- MODS TRACKER ---- */
+    .mods-panel {
+      margin-top: 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .mods-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .mods-title { font-size: 13px; font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 6px; }
+    .mods-count { font-size: 11px; color: #8f98a0; }
+    .mods-search-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+    .mods-search-btn {
+      flex: 1 1 auto; min-width: 70px;
+      display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+      padding: 7px 8px; border-radius: 8px; font-size: 11px; font-weight: 600;
+      background: rgba(102,192,244,0.08); color: var(--accent);
+      border: 1px solid rgba(102,192,244,0.25); text-decoration: none;
+    }
+    .mods-form { display: grid; gap: 6px; margin-bottom: 12px; }
+    .mods-form input, .mods-form select, .mods-form textarea {
+      width: 100%; padding: 8px 10px; border-radius: 8px; font-size: 12px;
+      background: rgba(0,0,0,0.25); color: var(--text);
+      border: 1px solid var(--border); font-family: inherit;
+    }
+    .mods-form textarea { resize: vertical; min-height: 44px; }
+    .mods-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .mods-form .btn-save { justify-content: center; }
+    .mods-empty { font-size: 12px; color: #8f98a0; text-align: center; padding: 10px 0; }
+    .mods-group { margin-bottom: 8px; }
+    .mods-group summary {
+      cursor: pointer; font-size: 12px; font-weight: 700; color: var(--text);
+      padding: 6px 4px; list-style: none; display: flex; align-items: center; gap: 6px;
+    }
+    .mods-group summary::-webkit-details-marker { display: none; }
+    .mods-group summary .ico { transition: transform var(--t-fast) var(--ease-out); }
+    .mods-group[open] summary .ico { transform: rotate(180deg); }
+    .mods-group-tag { font-size: 10px; color: #8f98a0; font-weight: 500; }
+    .mod-row {
+      display: flex; align-items: flex-start; gap: 8px;
+      padding: 8px 10px; margin-bottom: 6px; border-radius: 8px;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+    }
+    .mod-row-main { flex: 1; min-width: 0; }
+    .mod-name { font-size: 12px; font-weight: 600; color: var(--text); word-break: break-word; }
+    .mod-meta { display: flex; align-items: center; gap: 6px; margin-top: 3px; flex-wrap: wrap; }
+    .mod-source {
+      font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px;
+      padding: 2px 6px; border-radius: 20px;
+      background: rgba(155,89,182,0.15); color: #bb86fc;
+      border: 1px solid rgba(155,89,182,0.3);
+    }
+    .mod-version { font-size: 10px; color: #8f98a0; }
+    .mod-notes { font-size: 11px; color: #8f98a0; margin-top: 3px; font-style: italic; }
+    .mod-actions { display: flex; gap: 4px; flex-shrink: 0; }
+    .mod-act {
+      width: 26px; height: 26px; border-radius: 6px; border: none; cursor: pointer;
+      background: rgba(255,255,255,0.06); color: #8f98a0;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .mod-act:hover { background: rgba(255,255,255,0.12); color: #fff; }
+    .mod-act.del:hover { background: rgba(201,59,59,0.2); color: #ff6b6b; }
+
 
     .papelera-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
     .papelera-item { display: flex; justify-content: space-between; align-items: center; gap: 10px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; border: 1px solid var(--border); }
@@ -950,6 +1015,7 @@
     <symbol id="i-x" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
     <symbol id="i-camera" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></symbol>
     <symbol id="i-note" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></symbol>
+    <symbol id="i-puzzle" viewBox="0 0 24 24"><path d="M19.439 7.85c-.049.322.059.648.289.878l1.568 1.568c.47.47.706 1.087.706 1.704s-.235 1.233-.706 1.704l-1.611 1.611a.98.98 0 0 1-.837.276c-.47-.07-.802-.48-.968-.925a2.501 2.501 0 1 0-3.214 3.214c.446.166.855.497.925.968a.979.979 0 0 1-.276.837l-1.61 1.61a2.404 2.404 0 0 1-1.705.707 2.402 2.402 0 0 1-1.704-.706l-1.568-1.568a1.026 1.026 0 0 0-.877-.29c-.493.074-.84.504-1.02.968a2.5 2.5 0 1 1-3.237-3.237c.464-.18.894-.527.967-1.02a1.026 1.026 0 0 0-.289-.877l-1.568-1.568A2.402 2.402 0 0 1 1.998 12c0-.617.236-1.234.706-1.704L4.23 8.77c.24-.24.581-.353.917-.303.515.077.877.528 1.073 1.01a2.5 2.5 0 1 0 3.259-3.259c-.482-.196-.933-.558-1.01-1.073-.05-.336.062-.676.303-.917l1.525-1.525A2.402 2.402 0 0 1 12 1.998c.617 0 1.234.236 1.704.706l1.568 1.568c.23.23.556.338.877.29.493-.074.84-.504 1.02-.968a2.5 2.5 0 1 1 3.237 3.237c-.464.18-.894.527-.967 1.02Z"/></symbol>
     <symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></symbol>
     <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
     <symbol id="i-chevron-down" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></symbol>
@@ -1120,9 +1186,38 @@
 
       <div class="tracking-container" id="tracking-personas"></div>
 
+      <div id="m-mods-panel" class="mods-panel" style="display:none;">
+        <div class="mods-head">
+          <span class="mods-title"><svg class="ico"><use href="#i-puzzle"/></svg> Mods</span>
+          <span class="mods-count" id="mods-count"></span>
+        </div>
+        <div class="mods-search-row" id="mods-search-row"></div>
+        <div class="mods-form" id="mods-form">
+          <input type="text" id="mod-nombre" placeholder="Nombre del mod" maxlength="200">
+          <div class="mods-form-row">
+            <select id="mod-fuente">
+              <option value="nexus_mods">Nexus Mods</option>
+              <option value="steam_workshop">Steam Workshop</option>
+              <option value="curseforge">CurseForge</option>
+              <option value="otra_url">Otra URL</option>
+            </select>
+            <input type="text" id="mod-version" placeholder="Versión del juego (ej. v1.7.9b)" maxlength="60">
+          </div>
+          <input type="url" id="mod-url" placeholder="URL del mod" maxlength="500">
+          <textarea id="mod-notas" placeholder="Notas (load order, dependencias...)" maxlength="500"></textarea>
+          <button type="button" class="btn btn-mods btn-full btn-save" onclick="nexusModGuardar()">
+            <svg class="ico ico-sm"><use href="#i-plus"/></svg> Guardar mod
+          </button>
+        </div>
+        <div id="mods-list"></div>
+      </div>
+
       <div class="action-buttons">
         <a href="#" id="btn-ext-1" target="_blank" rel="noopener noreferrer" class="btn btn-steam">Ver ficha</a>
         <a href="#" id="btn-ext-2" target="_blank" rel="noopener noreferrer" class="btn btn-db">Más info</a>
+        <button id="btn-mods" class="btn btn-mods btn-full" style="display:none;" onclick="toggleModsPanel()">
+          <svg class="ico ico-sm"><use href="#i-puzzle"/></svg> Mods
+        </button>
         <button id="btn-repair" class="btn btn-repair btn-full" onclick="repararItemActual()">
           <svg class="ico ico-sm"><use href="#i-wrench"/></svg> Reparar / Actualizar Metadata
         </button>
@@ -3151,12 +3246,147 @@
       nexusSyncShareUI(it);
       nexusRefreshItemPrivacy(it);
 
+      var btnMods = document.getElementById('btn-mods');
+      var modsPanel = document.getElementById('m-mods-panel');
+      btnMods.style.display = (NEXUS_MODE && currentCategory === 'Juegos') ? '' : 'none';
+      modsPanel.style.display = 'none';
+      _modsCtx = null;
+      _modsList = [];
+
       resetearDesplegablesModal();
 
       var modal = document.getElementById('modal');
       modal.style.display = 'flex';
       requestAnimationFrame(() => requestAnimationFrame(() => modal.style.opacity = '1'));
       history.pushState(null, '', window.location.href);
+    }
+
+    // ---- MODS TRACKER (per-user, tabla mods + RLS mods_self) ----
+    var _modsCtx = null;   // {cat, extId, mediaId}
+    var _modsList = [];
+    var MODS_SOURCE_LABEL = { nexus_mods: 'Nexus Mods', steam_workshop: 'Steam Workshop', curseforge: 'CurseForge', otra_url: 'Otra URL' };
+
+    async function nexusModsMediaId() {
+      if (_modsCtx && _modsCtx.cat === currentCategory && String(_modsCtx.extId) === String(currentItemId)) {
+        return _modsCtx.mediaId;
+      }
+      var mediaId = await nexusMediaId(currentCategory, currentItemId);
+      _modsCtx = { cat: currentCategory, extId: currentItemId, mediaId: mediaId };
+      return mediaId;
+    }
+
+    async function toggleModsPanel() {
+      if (!NEXUS_MODE || currentCategory !== 'Juegos') return;
+      var panel = document.getElementById('m-mods-panel');
+      var showing = panel.style.display === 'none';
+      panel.style.display = showing ? 'block' : 'none';
+      if (showing) await nexusLoadMods();
+    }
+
+    async function nexusLoadMods() {
+      var list = document.getElementById('mods-list');
+      list.innerHTML = '<div class="mods-empty">Cargando...</div>';
+      try {
+        await nexusEnsureProfile();
+        var mediaId = await nexusModsMediaId();
+        if (!mediaId) { list.innerHTML = '<div class="mods-empty">Item no encontrado en el catálogo.</div>'; return; }
+        var sb = await nexusSb();
+        var r = await sb.from('mods').select('id,name,source,url,version_juego,notes,created_at')
+          .eq('media_item_id', mediaId).order('created_at', { ascending: true });
+        if (r.error) throw new Error(r.error.message);
+        _modsList = r.data || [];
+        nexusRenderMods();
+        nexusRenderModsSearch();
+      } catch (e) {
+        list.innerHTML = '<div class="mods-empty">Error: ' + escaparHTML(e.message || '') + '</div>';
+      }
+    }
+
+    function nexusRenderMods() {
+      var list = document.getElementById('mods-list');
+      var count = document.getElementById('mods-count');
+      count.textContent = _modsList.length ? (_modsList.length + (_modsList.length === 1 ? ' mod' : ' mods')) : '';
+      if (!_modsList.length) { list.innerHTML = '<div class="mods-empty">Sin mods guardados todavía.</div>'; return; }
+      var groups = {}, order = [];
+      _modsList.forEach(function(m) {
+        var v = (m.version_juego && String(m.version_juego).trim()) ? String(m.version_juego).trim() : 'Sin versión';
+        if (!groups[v]) { groups[v] = []; order.push(v); }
+        groups[v].push(m);
+      });
+      list.innerHTML = order.map(function(v) {
+        var rows = groups[v].map(function(m) {
+          var src = MODS_SOURCE_LABEL[m.source] || m.source;
+          return '<div class="mod-row">'
+            + '<div class="mod-row-main">'
+            +   '<div class="mod-name">' + (m.url
+                  ? '<a href="' + escaparHTML(m.url) + '" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;">' + escaparHTML(m.name) + '</a>'
+                  : escaparHTML(m.name)) + '</div>'
+            +   '<div class="mod-meta"><span class="mod-source">' + escaparHTML(src) + '</span><span class="mod-version">' + escaparHTML(v) + '</span></div>'
+            +   (m.notes ? '<div class="mod-notes">' + escaparHTML(m.notes) + '</div>' : '')
+            + '</div>'
+            + '<div class="mod-actions">'
+            +   (m.url ? '<a class="mod-act" href="' + escaparHTML(m.url) + '" target="_blank" rel="noopener noreferrer" title="Abrir"><svg class="ico ico-sm"><use href="#i-globe"/></svg></a>' : '')
+            +   '<button class="mod-act del" onclick="nexusModBorrar(\'' + m.id + '\')" title="Eliminar"><svg class="ico ico-sm"><use href="#i-trash"/></svg></button>'
+            + '</div></div>';
+        }).join('');
+        return '<details class="mods-group" open><summary><svg class="ico ico-sm"><use href="#i-chevron-down"/></svg> ' + escaparHTML(v)
+          + ' <span class="mods-group-tag">· ' + groups[v].length + '</span></summary>' + rows + '</details>';
+      }).join('');
+    }
+
+    function nexusRenderModsSearch() {
+      var it = (itemsByCategory[currentCategory] || []).find(function(x) { return String(x.id) === String(currentItemId); });
+      var title = it ? (it.titulo || '') : '';
+      var q = encodeURIComponent(title);
+      var appid = it ? String(it.id) : '';
+      var links = [
+        ['Nexus Mods', 'https://www.nexusmods.com/search/?gterm=' + q],
+        ['Workshop', 'https://steamcommunity.com/workshop/browse/?appid=' + appid + '&searchtext=' + q],
+        ['CurseForge', 'https://www.curseforge.com/search?searchText=' + q],
+        ['Google', 'https://www.google.com/search?q=' + q + '+mod']
+      ];
+      document.getElementById('mods-search-row').innerHTML = links.map(function(l) {
+        return '<a class="mods-search-btn" href="' + l[1] + '" target="_blank" rel="noopener noreferrer">'
+          + svgIcon('i-search', 'ico-sm') + escaparHTML(l[0]) + '</a>';
+      }).join('');
+    }
+
+    async function nexusModGuardar() {
+      var nombre = document.getElementById('mod-nombre').value.trim();
+      var fuente = document.getElementById('mod-fuente').value;
+      var version = document.getElementById('mod-version').value.trim();
+      var url = document.getElementById('mod-url').value.trim();
+      var notas = document.getElementById('mod-notas').value.trim();
+      if (!nombre) { showToast && showToast('Ponle nombre al mod.', 'error'); return; }
+      try {
+        await nexusEnsureProfile();
+        var mediaId = await nexusModsMediaId();
+        if (!mediaId) throw new Error('Item no encontrado en el catálogo.');
+        var sb = await nexusSb();
+        var r = await sb.from('mods').insert({
+          profile_id: _nexusUser.id, media_item_id: mediaId,
+          name: nombre, source: fuente,
+          url: url || null, version_juego: version || null, notes: notas || null
+        });
+        if (r.error) throw new Error(r.error.message);
+        ['mod-nombre', 'mod-url', 'mod-version', 'mod-notas'].forEach(function(id) { document.getElementById(id).value = ''; });
+        showToast && showToast('Mod guardado.', 'success');
+        await nexusLoadMods();
+      } catch (e) {
+        showToast && showToast('Error: ' + (e.message || ''), 'error');
+      }
+    }
+
+    async function nexusModBorrar(id) {
+      try {
+        var sb = await nexusSb();
+        var r = await sb.from('mods').delete().eq('id', id);
+        if (r.error) throw new Error(r.error.message);
+        _modsList = _modsList.filter(function(m) { return m.id !== id; });
+        nexusRenderMods();
+      } catch (e) {
+        showToast && showToast('Error: ' + (e.message || ''), 'error');
+      }
     }
 
     function resetearDesplegablesModal() {
