@@ -186,3 +186,27 @@ Generado 2026-11-26. Último commit: `8383b87`.
 - Botones nav: transiciones opacity 180ms / transform 240ms spring
   (mismo ease-out de la muestra), `:active scale(0.94)`, y bloque
   `prefers-reduced-motion` para toda la familia de controles.
+
+### Sesión estándares UI/UX (commit `2ff4f3d`, SW v100)
+
+- Lineamientos del usuario archivados en `docs/standards/` (3 docs:
+  manual de coincidencia de elementos, instrucciones dev UI/UX, guía
+  de diseño web). Son la referencia oficial para futuros cambios UI.
+- Barra agregar según guía §4: cierre fuera con `pointerdown` +
+  `Escape`; ELIMINADOS closers por scroll/touchmove (prohibidos) y el
+  `pushState` en focus (desincronizaba popstate / doble "Atrás").
+- `guardarSharePanel` ahora actualiza `itemsByCategory` + `privado{Suf}`
+  de mi persona + localStorage, y pasa el item real a
+  `nexusSyncShareUI` (antes pasaba `{id}` falso → botón nunca cambiaba).
+- `nexusRebuildPersonas` escanea TODOS los items (antes solo 3 por
+  categoría — bug de personas tardías).
+- `estadoEmision`: `NEXUS_EMISION_MAP` + `nexusCanonEmision`/
+  `nexusEmisionMatch` — filtra ES/EN ("Airing"≈"En emisión",
+  "Finished"≈"Finalizado/a") en Peliculas_Series y Mangas.
+- Viewport sin `user-scalable=no` (accesibilidad, zoom permitido).
+- i18n: `mods.saved`, `chap.autoapi/auto/unknown/manual` y badges
+  "Fecha Build"/"Beta" migrados a STR.es/STR.en.
+- Pendiente de los docs (no implementado aún): delegación de eventos
+  data-*/onclick en TODAS las plantillas (refactor grande), agrupación
+  visual por elemento común, STR duplicados=0 verificado, ~resto de
+  literales hardcodeados.
