@@ -6,6 +6,15 @@ Deploy versions for the Apps Script web app are noted per entry.
 
 ## [Unreleased]
 
+### Changed (UI/UX iteration — beta)
+
+- Profile editing is now an inline accordion (`.perfil-accordion`) instead of a modal: public name + editable unique username, centered invite-code field with copy button, sign-out/save actions.
+- Unified "accordion-unit" pattern for expandable sections: `.player-accordion` (per-persona, accent = persona color), `.mods-accordion` and `.perfil-accordion` (single bordered container, section-colored ring+glow when open). Trailer/updates/reviews bars unchanged.
+- Stats: "Balance y Retos" card spans full grid width with two columns; card details respect the persona selector and hide redundant persona names when a single persona is selected.
+- Share button renamed to "Vínculos" with green accent matching the menu.
+- Responsive hardening: dynamic header spacing (`nexusSyncHeaderSpace`), 16px inputs on mobile (iOS zoom fix), larger touch targets, bottom-sheet modals with scroll-lock.
+- Multi-provider cover `srcset`/`sizes` (OpenLibrary `-S/-M/-L`, TMDB `w342–w780`, Steam header/capsule) via `nexusCoverSrcset`/`nexusCoverFull`; Cine/Series sub-filter moved into the filter panel ("Tipo" group).
+
 ### Added (shell PWA — pre-launch checklist)
 
 - `robots.txt` + `sitemap.xml` for the GitHub Pages shell.
