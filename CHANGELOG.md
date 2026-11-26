@@ -28,6 +28,7 @@ Deploy versions for the Apps Script web app are noted per entry.
 - Fixed: global string replacements had poisoned `STR` dictionary values with self-referencing `t()` calls (would have crashed the whole script at runtime); restored literals.
 - Fixed: `nexusRun._exec` returned `undefined`, so post-call chaining `RUN.method(...).withFailureHandler(fn)` threw a TypeError — tracking error toasts never fired. `_exec` now returns a chainable promise; all 11 methods return it.
 - i18n sweep 2: stats-bar pills (`Mostrando`/`Deseados`/`completados`), remaining `toast.savefail` literals.
+- Visual token unification: new CSS vars `--muted`, `--bright`, `--danger-text`, `--links`, `--mods`, `--on-accent`, `--positive`; ~44 style contexts migrated from hardcoded hexes. JS color data (persona palette, badge colors, review scale) intentionally kept as hex for alpha-suffix concatenation. Dead symbols `i-check`/`i-stats` removed.
 - Bug sweep 3: username change now clears `media_lib_*` caches and reloads (persona suffixes derive from username — stale cache showed wrong personas); stats aggregation respects `visible{Persona}` privacy flag (private items no longer counted); Match modal filters out personas hidden from viewer; `Error:` prefixes in share/send panels via `t('err.prefix')`.
 
 ### Added (shell PWA — pre-launch checklist)
