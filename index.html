@@ -3171,12 +3171,14 @@
         document.body.classList.add('view-stats');
         ['Juegos', 'Peliculas_Series', 'Libros', 'Mangas'].forEach(c => precargarCategoriaSilenciosa(c));
         renderizarEstadisticas();
+        setTimeout(nexusSyncHeaderSpace, 0);
         return;
       } else {
         document.body.classList.remove('view-stats');
         controlsBox.style.display = 'flex';
         statsView.style.display = 'none';
         grid.style.display = 'grid';
+        setTimeout(nexusSyncHeaderSpace, 0);
       }
 
       var cfg = CAT_CONFIG[cat];
