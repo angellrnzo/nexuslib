@@ -378,20 +378,23 @@
     .stats-profile-actions .btn.open {
       background: rgba(102,192,244,.28); border-color: var(--accent);
       border-bottom-left-radius: 4px; border-bottom-right-radius: 4px;
+      box-shadow: 0 0 12px rgba(102,192,244,.35), 0 0 4px rgba(187,134,252,.35);
     }
     .perfil-edit {
       max-height: 0; opacity: 0; overflow: hidden; margin-top: 0;
       transition: max-height .32s var(--ease-out), opacity .22s var(--ease-out), margin .32s var(--ease-out);
     }
-    .perfil-edit.open { max-height: 640px; opacity: 1; margin-top: 0; }
+    .perfil-edit.open { max-height: 640px; opacity: 1; margin-top: -8px; } /* cancela gap:8px de #stats-view */
     /* panel de edicion: extension visual del recuadro de perfil —
        comparte borde/fondo, esquinas superiores cuadradas al abrir */
     .stats-profile-card { margin-bottom: 0; }
     .stats-profile-card:has(+ .perfil-edit.open) {
       border-bottom-left-radius: 4px; border-bottom-right-radius: 4px;
+      box-shadow: 0 0 0 1px rgba(102,192,244,.18), 0 0 18px rgba(102,192,244,.20), 0 0 36px rgba(187,134,252,.10);
     }
     .perfil-edit.open .perfil-edit-inner {
       border-top-left-radius: 4px; border-top-right-radius: 4px;
+      box-shadow: 0 0 22px rgba(187,134,252,.16), 0 10px 30px rgba(0,0,0,.28);
     }
     .perfil-edit-inner {
       background: linear-gradient(135deg, rgba(102,192,244,.12), rgba(187,134,252,.10));
@@ -774,7 +777,9 @@
     #btn-toggle-editions.active {
       background: rgba(187,134,252,0.14); border-color: rgba(187,134,252,0.45); color: #d9c2ff;
       border-bottom-left-radius: 4px; border-bottom-right-radius: 4px;
+      box-shadow: 0 0 12px rgba(187,134,252,0.30), 0 0 4px rgba(187,134,252,0.50);
     }
+    #m-editions-box { box-shadow: 0 0 18px rgba(187,134,252,0.12); }
     .upd-item { padding: 8px 2px; border-bottom: 1px solid rgba(255,255,255,0.06); }
     .upd-item:last-child { border-bottom: none; }
     .upd-title { font-size: 12px; font-weight: 600; color: var(--text); line-height: 1.35; }
@@ -980,7 +985,7 @@
     .modal-desc { line-height: 1.5; font-size: 13px; color: #c7d5e0; margin-bottom: 15px; overflow-wrap: break-word; }
 
     .accordion { margin-bottom: 15px; border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 8px; overflow: hidden; transition: border-color var(--t-fast) var(--ease-out); }
-    .accordion[open] { border-color: rgba(102,192,244,0.4); }
+    .accordion[open] { border-color: rgba(102,192,244,0.4); box-shadow: 0 0 14px rgba(102,192,244,0.14); }
     .accordion summary { padding: 10px 12px; background: rgba(255,255,255,0.05); cursor: pointer; font-weight: 700; color: #fff; font-size: 13px; list-style: none; display: flex; justify-content: space-between; align-items: center; }
     .accordion summary::-webkit-details-marker { display: none; }
     .accordion-content { padding: 12px; background: rgba(0,0,0,0.2); display: flex; flex-direction: column; gap: 8px; font-size: 12px; }
@@ -1069,7 +1074,11 @@
       border-radius: 0 0 12px 12px;
       padding: 12px;
     }
-    #btn-mods.open { border-bottom-left-radius: 4px; border-bottom-right-radius: 4px; }
+    #btn-mods.open {
+      border-bottom-left-radius: 4px; border-bottom-right-radius: 4px;
+      box-shadow: 0 0 14px rgba(187,134,252,.35), 0 0 4px rgba(187,134,252,.55);
+    }
+    .mods-panel { box-shadow: 0 0 20px rgba(187,134,252,.14), 0 10px 28px rgba(0,0,0,.30); }
     .mods-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
     .mods-title { font-size: 13px; font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 6px; }
     .mods-count { font-size: 11px; color: #8f98a0; }
