@@ -953,6 +953,15 @@ These couple touches are the identity layer: they exist **only** because `link_t
 
 **Backlog (agregado 2026-11-25):** **caché de portadas en Supabase Storage** — proxy Edge Function que descarga covers de OL/TMDB/Steam una vez y los sirve desde bucket público `covers/` con `cache-control` inmutable (~50-100ms vs ~0.5-1s de archive.org). srcset multi-proveedor ya aplicado (OL -S/M/L, TMDB w342/500/780, Steam header/capsule616). **Caveat escalado:** si el catálogo crece mucho o se comparte entre varios usuarios, el bucket puede llenarse (free tier ~1GB); evaluar límite, TTL o solo-cachear-items-propios en ese momento.
 
+**Backlog (agregado 2026-11-27 — idea usuario, "página frontal"):** **Perfil público shareable** — página estática separada de la app (`perfil.html?u=<username>` o `/u/<username>` en Pages) que muestre una versión saneada de la biblioteca a quien tenga el link. Fuera de la app a propósito: la app es privada (auth+RLS), esto es superficie pública opt-in.
+
+- Reusa flags existentes: `profiles.show_stats` / `show_activity` (Phase 5E) — la página solo responde si `show_stats=true`.
+- Backend: RPC público `security definer` (ej. `get_public_profile(p_username)`) que devuelve SOLO agregados seguros (avatar preset, display_name/username, conteos por categoría, top items opted-in) — nunca tracking, notas, ni confirma existencia de username si está oculto.
+- Frontend: página 100% estática, anon key, mismo design system (tokens de `index.html`).
+- Casos a definir en spec: qué datos son "públicos" (¿solo conteos? ¿portadas top?), URL structure, comportamiento si `show_stats=false` (404 vs "perfil privado").
+- Costo: ~1 sesión — 1 página estática + 1 RPC + toggle en perfil.
+- Orden: post-deploy v2, junto con Phase 5H/6 si se prioriza antes que Android.
+
 **Backlog (queued, low priority — user note 2026-11-23):** **import/export interchange with known sources** — beyond the Phase 4 bulk *import* (Trakt/Steam/GoodReads): also support **export** of the NexusLib library to known formats/services (CSV per category, OPML-like lists, or write-back APIs where available: Trakt sync, Steam wishlist export, GoodReads CSV). Candidate sources to support both directions: Trakt.tv, Steam profile/wishlist, GoodReads, MyAnimeList/AniList list export, Letterboxd CSV, Open Library want-to-read. Decide scope when picked up — likely a Phase 8+ item after v2 stabilizes.
 
 ---
