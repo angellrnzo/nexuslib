@@ -6,6 +6,11 @@ Deploy versions for the Apps Script web app are noted per entry.
 
 ## [Unreleased]
 
+### Security (RLS hardening)
+
+- library_links: la policy 'for all' permitia al lado invitado UPDATE/DELETE sobre la fila del owner (auto-aceptar links, exponer visibility/tracking ajeno). Nueva migracion 07_links_rls_fix.sql con policies granulares: SELECT ambos lados, UPDATE/DELETE solo owner_library_id, INSERT denegado (solo RPCs security definer). Aplicada a prod.
+- Editor de visibilidad: la direccion 'in' (lo que el otro comparte) ahora es solo lectura — el owner es quien controla su exposicion.
+
 ### Fixed (Edge Functions audit)
 
 - i18n capa 2 completada: steam-updates y book-editions aceptan lang (updates/news en ingles, idiomas de ediciones EN); steam-reviews devuelve tier_idx language-neutral y el frontend lo traduce via STR.

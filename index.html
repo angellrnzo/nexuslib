@@ -2534,17 +2534,22 @@
              '" onclick="visSetCat(\'' + pid + '\',\'' + cc[0] + '\')">' + t(cc[1]) + '</button>';
       });
       h += '</div>';
+      // 'in' = la fila es del OTRO (el owner decide su exposicion) -> solo lectura.
+      // El UPDATE de library_links ahora exige ser miembro del owner_library_id.
+      var canEdit = sel.dir === 'out';
       h += '<div class="sp-label" style="margin-bottom:6px;">' + t('vis.fields') + ' — ' +
            vinculosEsc(sel.dir === 'out' ? t('vis.you') : t('vis.them')) + '</div>';
       VINCULOS_FIELDS.forEach(function(f) {
         var on = catVis[f[0]] === true;
-        h += '<label class="sp-row" style="padding:6px 10px;">' +
-             '<input type="checkbox" class="sp-check" id="vis-f-' + pid + '-' + f[0] + '"' + (on ? ' checked' : '') + '> ' +
+        h += '<label class="sp-row" style="padding:6px 10px;' + (canEdit ? '' : 'opacity:.55;') + '">' +
+             '<input type="checkbox" class="sp-check" id="vis-f-' + pid + '-' + f[0] + '"' + (on ? ' checked' : '') + (canEdit ? '' : ' disabled') + '> ' +
              '<span class="sp-name" style="font-size:12px;">' + t(f[1]) + '</span></label>';
       });
-      h += '<div class="sp-hint">' + t('vis.hint') + '</div>';
-      h += '<div class="sp-actions" style="margin-top:10px;">' +
-           '<button class="sp-btn sp-btn-primary" onclick="vinculosGuardarVisibilidad(\'' + pid + '\')">' + t('btn.guardar') + '</button></div>';
+      h += '<div class="sp-hint">' + (canEdit ? t('vis.hint') : tf('vis.owneronly', { n: info.name })) + '</div>';
+      if (canEdit) {
+        h += '<div class="sp-actions" style="margin-top:10px;">' +
+             '<button class="sp-btn sp-btn-primary" onclick="vinculosGuardarVisibilidad(\'' + pid + '\')">' + t('btn.guardar') + '</button></div>';
+      }
       h += '</div>';
       p.innerHTML = h;
     }
@@ -2552,7 +2557,7 @@
     async function vinculosGuardarVisibilidad(pid) {
       var info = (window._vincPorPid || {})[pid];
       var sel = visSel(pid);
-      if (!info || !info.rows[sel.dir]) return;
+      if (!info || !info.rows[sel.dir] || sel.dir !== 'out') return;
       var row = info.rows[sel.dir];
       var vis = JSON.parse(JSON.stringify(row.visibility || {}));
       if (!vis[sel.cat]) vis[sel.cat] = {};
@@ -3087,6 +3092,7 @@
         'vis.none': 'Sin vínculo activo.', 'vis.dir': 'Dirección', 'vis.cat': 'Categoría',
         'vis.fields': 'Campos visibles', 'vis.you': 'lo que tú compartes', 'vis.them': 'lo que te comparte',
         'vis.hint': 'Aplica a todas las personas de ese tipo de vínculo según su propia matriz — esto edita solo esta relación.',
+        'vis.owneronly': 'Solo {n} puede cambiar lo que comparte contigo.',
         'sh.privacy': 'Privacidad de tu tracking', 'sh.private': 'Privado — nadie ve esto', 'sh.visible': 'Visible para',
         'sh.all': 'Todos mis vínculos', 'sh.nolink': 'Sin vínculos aceptados — solo tú verás esto.',
         'sh.hint': 'El candado es solo para ti — los demás nunca ven que existe.', 'sh.privatebtn': 'Privado',
@@ -3214,6 +3220,7 @@
         'vis.none': 'No active link.', 'vis.dir': 'Direction', 'vis.cat': 'Category',
         'vis.fields': 'Visible fields', 'vis.you': 'what you share', 'vis.them': 'what they share',
         'vis.hint': 'Applies to everyone of that link type per their own matrix — this edits only this relationship.',
+        'vis.owneronly': 'Only {n} can change what they share with you.',
         'sh.privacy': 'Your tracking privacy', 'sh.private': 'Private — nobody sees this', 'sh.visible': 'Visible to',
         'sh.all': 'All my links', 'sh.nolink': 'No accepted links — only you will see this.',
         'sh.hint': 'The lock is just for you — others never see it exists.', 'sh.privatebtn': 'Private',

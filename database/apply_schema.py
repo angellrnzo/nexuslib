@@ -32,6 +32,7 @@ FILES = [
     "04_phase5e_optin_label.sql",
     "05_phase5h_username.sql",
     "06_get_items_merged_perf.sql",
+    "07_links_rls_fix.sql",
 ]
 
 # Deltas idempotentes (02+): seguros de re-correr — create or replace,
