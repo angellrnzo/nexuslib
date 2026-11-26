@@ -135,9 +135,15 @@ grep -o "functions.invoke('[a-z-]*'" index.html | sort -u
 
 ### 4b. CSS vars (check mecanico — bug real 2026-11-27)
 
-```bash
-# self-references y aliases a tokens inexistentes (debe dar vacio)
-python -c "import re,glob; pat=re.compile(r'(--[a-zA-Z0-9-]+)\s*:\s*var\(\s*\s*\)'); print([ (f,m.group(1)) for f in glob.glob('**/*.html',recursive=True) for m in pat.finditer(open(f,encoding='utf-8',errors='ignore').read()) ])"
+```python
+# self-references: --x: var(--x)  ->  debe dar vacio
+import re, glob
+for f in glob.glob('**/*.html', recursive=True) + glob.glob('**/*.css', recursive=True):
+    s = open(f, encoding='utf-8', errors='ignore').read()
+    for m in re.finditer(r'(--[\w-]+)\s*:\s*([^;{}]+)', s):
+        name, val = m.group(1), m.group(2)
+        if ('var(' + name + ')') in val:
+            print('SELF-REF', f, name)
 ```
 
 Verificar ademas que todo `var(--x)` usado en CSS exista en `:root` y que
