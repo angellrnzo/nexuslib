@@ -77,6 +77,9 @@ Repetir para **Juegos, Películas/Series, Libros, Mangas**:
 - [ ] Recibir solicitud → aceptar/rechazar → badge por tipo de vínculo
 - [ ] Pendientes salientes listadas; historial de vinculados
 - [ ] **Editor matriz ⚙** por persona: dirección Yo→/→Yo, categoría, 5 campos, guarda
+- [ ] Dirección **Yo → X**: editable, checkboxes habilitados, Guardar funciona
+- [ ] Dirección **X → yo**: **solo lectura** (checkboxes deshabilitados, sin botón Guardar, hint "Solo {n} puede cambiar…") — fix RLS 07
+- [ ] Verificar en la otra cuenta que la matriz "Yo → X" que edité aquí aparece como "X → yo" con los mismos valores
 - [ ] Elementos compartidos recibidos: aceptar (entra a MI biblioteca) / rechazar
 - [ ] Reenviar item ya compartido no duplica; declinado permite reenvío
 - [ ] Username único: intentar username repetido → "Ese usuario ya está en uso."
