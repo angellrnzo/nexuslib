@@ -327,6 +327,47 @@
     .stat-pill strong { color: #fff; }
 
     /* PANEL DE FILTROS */
+    .menu-wrap { position: relative; flex-shrink: 0; }
+    .menu-panel {
+      position: absolute; top: calc(100% + 8px); right: 0; min-width: 210px;
+      background: linear-gradient(180deg, rgba(27,40,56,.99) 0%, rgba(18,27,40,.99) 100%);
+      border: 1px solid rgba(102,192,244,.35); border-radius: 14px;
+      padding: 6px; box-shadow: 0 14px 40px rgba(0,0,0,.85);
+      display: none; flex-direction: column; gap: 2px; z-index: 9999;
+    }
+    .menu-panel.open { display: flex; animation: menuIn var(--t-fast) var(--ease-out); }
+    @keyframes menuIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+    .menu-item {
+      display: flex; align-items: center; gap: 10px; width: 100%;
+      padding: 10px 12px; border: none; border-radius: 9px; background: transparent;
+      color: var(--text); font-size: 13px; font-weight: 600; font-family: inherit;
+      cursor: pointer; text-align: left; transition: background var(--t-fast) var(--ease-out);
+    }
+    .menu-item:hover { background: rgba(102,192,244,.12); }
+    .menu-badge {
+      display: none; margin-left: auto; min-width: 18px; height: 18px; padding: 0 5px;
+      border-radius: 99px; background: #ff4d6d; color: #fff; font-size: 10px;
+      font-weight: 800; line-height: 18px; text-align: center;
+    }
+    .stats-profile-card {
+      display: flex; align-items: center; gap: 14px;
+      background: linear-gradient(135deg, rgba(102,192,244,.12), rgba(187,134,252,.10));
+      border: 1px solid rgba(102,192,244,.3); border-radius: 16px;
+      padding: 16px 18px; margin-bottom: 4px;
+    }
+    .stats-profile-avatar {
+      width: 56px; height: 56px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; font-weight: 900; color: #fff;
+      background: linear-gradient(135deg, #66c0f4, #bb86fc);
+    }
+    .stats-profile-info { flex: 1; min-width: 0; }
+    .stats-profile-name { font-size: 17px; font-weight: 800; color: var(--text); }
+    .stats-profile-user { font-size: 12px; color: var(--accent); font-weight: 600; }
+    .stats-profile-email { font-size: 11px; color: #8f98a0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .stats-profile-actions { display: flex; gap: 8px; flex-shrink: 0; }
+    .stats-profile-actions .btn { padding: 8px 12px; font-size: 11px; }
+
     .filter-panel {
       position: fixed;
       top: calc(165px + env(safe-area-inset-top, 0px));
@@ -1111,6 +1152,7 @@
     <symbol id="i-tag" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></symbol>
     <symbol id="i-play" viewBox="0 0 24 24"><polygon fill="currentColor" stroke="none" points="5 3 19 12 5 21 5 3"/></symbol>
     <symbol id="i-x" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
     <symbol id="i-camera" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></symbol>
     <symbol id="i-note" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></symbol>
     <symbol id="i-puzzle" viewBox="0 0 24 24"><path d="M19.439 7.85c-.049.322.059.648.289.878l1.568 1.568c.47.47.706 1.087.706 1.704s-.235 1.233-.706 1.704l-1.611 1.611a.98.98 0 0 1-.837.276c-.47-.07-.802-.48-.968-.925a2.501 2.501 0 1 0-3.214 3.214c.446.166.855.497.925.968a.979.979 0 0 1-.276.837l-1.61 1.61a2.404 2.404 0 0 1-1.705.707 2.402 2.402 0 0 1-1.704-.706l-1.568-1.568a1.026 1.026 0 0 0-.877-.29c-.493.074-.84.504-1.02.968a2.5 2.5 0 1 1-3.237-3.237c.464-.18.894-.527.967-1.02a1.026 1.026 0 0 0-.289-.877l-1.568-1.568A2.402 2.402 0 0 1 1.998 12c0-.617.236-1.234.706-1.704L4.23 8.77c.24-.24.581-.353.917-.303.515.077.877.528 1.073 1.01a2.5 2.5 0 1 0 3.259-3.259c-.482-.196-.933-.558-1.01-1.073-.05-.336.062-.676.303-.917l1.525-1.525A2.402 2.402 0 0 1 12 1.998c.617 0 1.234.236 1.704.706l1.568 1.568c.23.23.556.338.877.29.493-.074.84-.504 1.02-.968a2.5 2.5 0 1 1 3.237 3.237c-.464.18-.894.527-.967 1.02Z"/></symbol>
@@ -1135,8 +1177,8 @@
         <button class="tab-btn" data-cat="Mangas" title="Mangas" onclick="cambiarCategoria('Mangas')">
           <svg class="ico"><use href="#i-manga"/></svg> <span class="tab-text">Mangas</span>
         </button>
-        <button class="tab-btn" data-cat="Estadisticas" title="Estadísticas" onclick="cambiarCategoria('Estadisticas')">
-          <svg class="ico"><use href="#i-stats"/></svg> <span class="tab-text">Stats</span>
+        <button class="tab-btn" data-cat="Estadisticas" title="Perfil" onclick="cambiarCategoria('Estadisticas')">
+          <svg class="ico"><use href="#i-user"/></svg> <span class="tab-text">Perfil</span>
         </button>
       </div>
 
@@ -1162,28 +1204,35 @@
           </div>
 
           <div class="right-controls" id="right-ctrls">
-            <button class="btn btn-circle" onclick="abrirMatchModal()" title="Modo Match de Pareja" style="color:#ff8fa3;">
-              <svg class="ico"><use href="#i-heart-fill"/></svg>
-            </button>
-            <button class="btn btn-circle" onclick="elegirAleatorio()" title="Elección aleatoria">
-              <svg class="ico"><use href="#i-dice"/></svg>
-            </button>
             <button id="btn-toggle-filtros" class="btn btn-circle" onclick="toggleFiltros(event)" title="Filtros y Orden">
               <svg class="ico"><use href="#i-filter"/></svg>
             </button>
-            <button id="btn-sync" class="btn btn-circle" onclick="forzarSincronizacion()" title="Sincronizar pestaña actual">
-              <svg class="ico"><use href="#i-sync"/></svg>
-            </button>
-            <button class="btn btn-circle" onclick="abrirPapelera()" title="Papelera" style="color:#ff6b6b;">
-              <svg class="ico"><use href="#i-trash"/></svg>
-            </button>
-            <button class="btn btn-circle" id="btn-perfil" onclick="abrirPerfilModal()" title="Mi perfil" style="display:none;">
-              <svg class="ico"><use href="#i-user"/></svg>
-            </button>
-            <button class="btn btn-circle" id="btn-vinculos" onclick="abrirVinculosModal()" title="Vínculos" style="display:none;color:#7ee0a3;position:relative;">
-              <svg class="ico"><use href="#i-users"/></svg>
-              <span id="vinc-badge" style="display:none;position:absolute;top:-5px;right:-5px;min-width:16px;height:16px;padding:0 4px;border-radius:99px;background:#ff4d6d;color:#fff;font-size:10px;font-weight:800;line-height:16px;text-align:center;pointer-events:none;">0</span>
-            </button>
+            <div class="menu-wrap">
+              <button class="btn btn-circle" id="btn-menu" onclick="toggleMenu(event)" title="Menú">
+                <svg class="ico"><use href="#i-menu"/></svg>
+              </button>
+              <div id="menu-panel" class="menu-panel">
+                <button class="menu-item" onclick="menuRun(abrirMatchModal)">
+                  <svg class="ico ico-sm" style="color:#ff8fa3;"><use href="#i-heart-fill"/></svg> Match de Pareja
+                </button>
+                <button class="menu-item" onclick="menuRun(elegirAleatorio)">
+                  <svg class="ico ico-sm"><use href="#i-dice"/></svg> Elección aleatoria
+                </button>
+                <button class="menu-item" onclick="menuRun(forzarSincronizacion)">
+                  <svg class="ico ico-sm"><use href="#i-sync"/></svg> Sincronizar
+                </button>
+                <button class="menu-item" onclick="menuRun(abrirPapelera)">
+                  <svg class="ico ico-sm" style="color:#ff6b6b;"><use href="#i-trash"/></svg> Papelera
+                </button>
+                <button class="menu-item" onclick="menuRun(abrirVinculosModal)">
+                  <svg class="ico ico-sm" style="color:#7ee0a3;"><use href="#i-users"/></svg> Vínculos
+                  <span id="vinc-badge" class="menu-badge">0</span>
+                </button>
+                <button class="menu-item" onclick="menuRun(abrirPerfilModal)">
+                  <svg class="ico ico-sm"><use href="#i-user"/></svg> Mi perfil
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -1222,6 +1271,7 @@
 
     <!-- VISTA DE ESTADÍSTICAS REORGANIZADA Y COMPACTA -->
     <div id="stats-view">
+      <div class="stats-profile-card" id="stats-profile-card"></div>
       <div class="stats-selectors-row" id="stats-prof-buttons"></div>
       <div class="stats-selectors-row">
         <button class="stats-cat-btn active" data-statcat="todas" onclick="cambiarCategoriaStats('todas')">
@@ -2697,7 +2747,7 @@
       Peliculas_Series: { label: 'Cine y Series', icon: 'i-film', searchPlaceholder: 'Filtrar películas, series y animes...', addPlaceholder: 'Buscar película, serie o URL...', poster: true },
       Libros: { label: 'Libros', icon: 'i-book', searchPlaceholder: 'Filtrar libros por título, autor o género...', addPlaceholder: 'Buscar libro, autor o ISBN...', poster: true },
       Mangas: { label: 'Mangas', icon: 'i-manga', searchPlaceholder: 'Filtrar mangas por título, mangaka o género...', addPlaceholder: 'Buscar manga o URL...', poster: true },
-      Estadisticas: { label: 'Estadísticas', icon: 'i-stats', searchPlaceholder: '', addPlaceholder: '', poster: false }
+      Estadisticas: { label: 'Perfil', icon: 'i-user', searchPlaceholder: '', addPlaceholder: '', poster: false }
     };
 
     function svgIcon(id, cls) {
@@ -2770,14 +2820,10 @@
     };
 
     function nexusInitApp() {
-      var btnVinc = document.getElementById('btn-vinculos');
-      if (btnVinc && NEXUS_MODE) {
-        btnVinc.style.display = '';
+      if (NEXUS_MODE) {
         nexusRefreshVinculosBadge();
         setInterval(nexusRefreshVinculosBadge, 60000);
       }
-      var btnPerfil = document.getElementById('btn-perfil');
-      if (btnPerfil && NEXUS_MODE) btnPerfil.style.display = '';
       configurarFiltrosCategoria('Juegos');
       cargarCategoria('Juegos', false);
       ['Peliculas_Series', 'Libros', 'Mangas'].forEach(c => precargarCategoriaSilenciosa(c));
@@ -2832,6 +2878,10 @@
         if (modalDetalle.style.display === 'flex') { cerrarModal(); history.pushState(null, '', window.location.href); }
         else if (modalPapelera.style.display === 'flex') { cerrarPapelera(); history.pushState(null, '', window.location.href); }
         else if (modalMatch.style.display === 'flex') { cerrarMatchModal(); history.pushState(null, '', window.location.href); }
+        else if (document.getElementById('menu-panel') && document.getElementById('menu-panel').classList.contains('open')) {
+          cerrarMenuPanel();
+          history.pushState(null, '', window.location.href);
+        }
         else if (panelFiltros.classList.contains('open')) {
           panelFiltros.classList.remove('open');
           document.getElementById('btn-toggle-filtros').classList.remove('active');
@@ -2855,6 +2905,11 @@
         if (panel.classList.contains('open') && !panel.contains(e.target) && !btn.contains(e.target)) {
           panel.classList.remove('open');
           btn.classList.remove('active');
+        }
+        var mPanel = document.getElementById('menu-panel');
+        var mBtn = document.getElementById('btn-menu');
+        if (mPanel && mPanel.classList.contains('open') && !mPanel.contains(e.target) && !(mBtn && mBtn.contains(e.target))) {
+          cerrarMenuPanel();
         }
         var dd = document.getElementById('search-dropdown');
         var addWrap = document.querySelector('.add-wrapper');
@@ -3053,12 +3108,52 @@
     function toggleFiltros(e) {
       e.stopPropagation();
       cerrarBusquedaAgregar();
+      cerrarMenuPanel();
       var panel = document.getElementById('panel-filtros');
       panel.classList.toggle('open');
       document.getElementById('btn-toggle-filtros').classList.toggle('active');
       if (panel.classList.contains('open')) {
+        posicionarPanelFiltros();
         history.pushState(null, '', window.location.href);
       }
+    }
+
+    // el panel de filtros se ancla abajo de la caja de controles (no px fijos)
+    function posicionarPanelFiltros() {
+      var panel = document.getElementById('panel-filtros');
+      var box = document.getElementById('main-controls-box');
+      if (!panel || !box) return;
+      var bottom = box.getBoundingClientRect().bottom;
+      panel.style.top = Math.max(8, bottom + 8) + 'px';
+      panel.style.maxHeight = Math.max(200, window.innerHeight - bottom - 16) + 'px';
+    }
+    window.addEventListener('resize', function() {
+      var panel = document.getElementById('panel-filtros');
+      if (panel && panel.classList.contains('open')) posicionarPanelFiltros();
+    });
+
+    // ---- menu hamburguesa ----
+    function toggleMenu(e) {
+      e.stopPropagation();
+      var panel = document.getElementById('menu-panel');
+      var btn = document.getElementById('btn-menu');
+      var open = !panel.classList.contains('open');
+      cerrarMenuPanel();
+      if (open) {
+        panel.classList.add('open');
+        btn.classList.add('active');
+        history.pushState(null, '', window.location.href);
+      }
+    }
+    function cerrarMenuPanel() {
+      var panel = document.getElementById('menu-panel');
+      var btn = document.getElementById('btn-menu');
+      if (panel) panel.classList.remove('open');
+      if (btn) btn.classList.remove('active');
+    }
+    function menuRun(fn) {
+      cerrarMenuPanel();
+      if (typeof fn === 'function') setTimeout(fn, 50);
     }
 
     function resetFiltros(noRender) {
@@ -4073,9 +4168,31 @@
       wrap.innerHTML = h;
     }
 
+    async function nexusRenderProfileHeader() {
+      var card = document.getElementById('stats-profile-card');
+      if (!card) return;
+      try {
+        await nexusEnsureProfile();
+        var p = _nexusProfile || {};
+        var nombre = p.display_name || 'Usuario';
+        var user = _nexusUser || {};
+        card.innerHTML =
+          '<div class="stats-profile-avatar">' + escaparHTML((nombre[0] || 'U').toUpperCase()) + '</div>' +
+          '<div class="stats-profile-info">' +
+            '<div class="stats-profile-name">' + escaparHTML(nombre) + '</div>' +
+            '<div class="stats-profile-user">' + (p.username ? '@' + escaparHTML(p.username) : '') + '</div>' +
+            '<div class="stats-profile-email">' + escaparHTML(user.email || '') + '</div>' +
+          '</div>' +
+          '<div class="stats-profile-actions">' +
+            '<button class="btn btn-primary" onclick="abrirPerfilModal()">Editar perfil</button>' +
+          '</div>';
+      } catch (e) { card.innerHTML = ''; }
+    }
+
     function renderizarEstadisticas() {
       var container = document.getElementById('stats-cards-container');
       nexusRenderStatsProfButtons();
+      nexusRenderProfileHeader();
       var pers = (_personas || []).slice();
       if (currentStatsProfile !== 'ambos' && !pers.some(function(p) { return p.key === currentStatsProfile; })) {
         currentStatsProfile = 'ambos';
