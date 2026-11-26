@@ -65,7 +65,7 @@ def main():
 
     env = load_env()
     password = args.password or env.get("SUPABASE_STANDBY_DB_PASSWORD") or env.get("SUPABASE_DB_PASSWORD")
-    if not password:
+    if not args.url and not password:
         sys.exit("Falta password: --password o SUPABASE_*_DB_PASSWORD en _local")
 
     dsn = args.url or (
