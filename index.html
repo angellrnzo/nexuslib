@@ -321,7 +321,7 @@
     }
     .custom-select-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .custom-select-chevron { flex-shrink: 0; color: var(--muted); transition: transform var(--t-base) var(--ease-out); }
-    .custom-select.open .custom-select-trigger { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.18); }
+    .custom-select.open .custom-select-trigger { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(155, 89, 182, 0.12); }
     .custom-select.open .custom-select-chevron { transform: rotate(180deg); color: var(--accent); }
     .custom-select-menu {
       position: absolute; top: calc(100% + 6px); left: 0; right: 0; min-width: 170px; margin: 0;
@@ -338,7 +338,7 @@
       transition: background var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out);
     }
     .custom-select-menu li:hover { background: rgba(255,255,255,0.08); color: var(--bright); }
-    .custom-select-menu li[aria-selected="true"] { background: rgba(249, 115, 22, 0.18); color: var(--accent); font-weight: 600; }
+    .custom-select-menu li[aria-selected="true"] { background: rgba(155, 89, 182, 0.18); color: var(--mods); font-weight: 600; }
     .custom-select-menu li .check-icon { opacity: 0; color: var(--accent); flex-shrink: 0; transition: opacity 0.12s ease; }
     .custom-select-menu li[aria-selected="true"] .check-icon { opacity: 1; }
 
@@ -519,7 +519,7 @@
       background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 15px 15px;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    .filter-group select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.18); }
+    .filter-group select:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(155, 89, 182, 0.12); }
     .filter-group select option { background-color: rgba(0,0,0,0.45); color: white; }
     .filter-reset {
       width: 100%; margin-top: 4px; padding: 8px;
@@ -1198,7 +1198,7 @@
       background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 15px 15px;
       padding: 0 2.2rem 0 0.75rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    .mods-form select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.18); }
+    .mods-form select:focus { border-color: var(--mods); box-shadow: 0 0 0 2px rgba(155, 89, 182, 0.12); }
     .mods-form select option { background-color: rgba(0,0,0,0.25); color: var(--text); }
     .mods-form textarea { resize: vertical; min-height: 80px; height: auto; line-height: 1.4; }
     .mods-form-row { display: grid; grid-template-columns: 2fr 1.2fr 1fr; gap: 10px; width: 100%; }
