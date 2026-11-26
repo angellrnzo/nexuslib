@@ -141,3 +141,16 @@ Generado 2026-11-26. Último commit: `8383b87`.
 - `.custom-select-menu` fondo opaco `#0d1322` (sin transparencia).
 - Verificado en vivo: 9 custom-selects en panel, 0 selects nativos,
   selección filtra, reset sincroniza labels.
+
+### Sesión UI — autocomplete + foco mods (commits `128951e`, `6283c89`, `18ad3d4`, SW v96)
+
+- Foco mods: `.custom-select-trigger:focus-visible{outline:none}` (el
+  "amarillo" era el focus ring default del browser); `#fuente-dropdown.open`
+  borde morado discreto; `.mods-form input/textarea:focus` glow morado sutil.
+- Autocomplete: debounce 300ms, umbral 2 chars,
+  `autocompletarAgregarInput()` abre el dropdown con "Searching..." apenas
+  se teclea (sin Enter). `.search-results-dropdown` fondo opaco #0d1322,
+  top calc(100%+4px), animacion nexusDdDrop.
+- VERIFICADO: el "no sugiere / debo dar Enter" del usuario era el service
+  worker cacheando index.html viejo — tras unregister+reload funciona.
+  Regla: para probar cambios de UI, Ctrl+Shift+R o desregistrar SW.
