@@ -1136,8 +1136,10 @@
       border: 1px solid var(--border); font-family: inherit;
     }
     .mods-form textarea { resize: vertical; min-height: 40px; }
-    .mods-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .mods-form-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
     .mods-form-row > * { min-width: 0; }
+    .mods-form select { appearance: none; padding-right: 28px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23c7d5e0' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; }
+    .mods-form select:focus { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%2366c0f4' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E"); }
     .mods-form .btn-save { justify-content: center; padding: 10px; font-size: 13px; border-radius: 8px; margin-top: 2px; }
     .mods-empty { font-size: 12px; color: var(--muted); text-align: center; padding: 10px 0; }
     .mods-group { margin-bottom: 8px; }
@@ -1256,8 +1258,10 @@
       #inputBuscar, #inputAgregar { font-size: 16px; }
       .perfil-edit-inner .na-in, .mods-form input, .mods-form select, .mods-form textarea { font-size: 16px; }
     }
-    @media (max-width: 600px) {
+    @media (max-width: 560px) {
       .mods-form-row { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
       .modal-content { padding: 14px; border-radius: 16px 16px 0 0; }
       .modal-title { font-size: 17px; padding-right: 36px; }
       .stats-cards-grid { grid-template-columns: minmax(0, 1fr); gap: 10px; }
@@ -1618,8 +1622,8 @@
         </div>
         <div class="mods-search-row" id="mods-search-row"></div>
         <div class="mods-form" id="mods-form">
-          <input type="text" id="mod-nombre" placeholder="Nombre del mod" data-i18n-ph="mods.nameph" maxlength="200">
           <div class="mods-form-row">
+            <input type="text" id="mod-nombre" placeholder="Nombre del mod" data-i18n-ph="mods.nameph" maxlength="200">
             <select id="mod-fuente">
               <option value="nexus_mods">Nexus Mods</option>
               <option value="steam_workshop">Steam Workshop</option>
