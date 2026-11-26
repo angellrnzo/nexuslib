@@ -349,11 +349,19 @@
       border-radius: 99px; background: #ff4d6d; color: #fff; font-size: 10px;
       font-weight: 800; line-height: 18px; text-align: center;
     }
-    .stats-profile-card {
-      display: flex; align-items: center; gap: 14px;
+    .perfil-accordion {
       background: linear-gradient(135deg, rgba(102,192,244,.12), rgba(187,134,252,.10));
       border: 1px solid rgba(102,192,244,.3); border-radius: 16px;
-      padding: 16px 18px; margin-bottom: 4px;
+      overflow: hidden;
+      transition: border-color var(--t-base) var(--ease-out), box-shadow var(--t-base) var(--ease-out);
+    }
+    .perfil-accordion:has(.perfil-edit.open) {
+      border-color: rgba(102,192,244,.55);
+      box-shadow: 0 0 0 1px rgba(102,192,244,.35), 0 0 24px rgba(102,192,244,.20), 0 0 42px rgba(187,134,252,.12), 0 12px 32px rgba(0,0,0,.30);
+    }
+    .stats-profile-card {
+      display: flex; align-items: center; gap: 14px;
+      padding: 16px 18px;
     }
     .stats-profile-avatar {
       width: 56px; height: 56px; border-radius: 50%; flex-shrink: 0;
@@ -377,30 +385,17 @@
     .stats-profile-actions .btn:hover { background: rgba(102,192,244,.22); }
     .stats-profile-actions .btn.open {
       background: rgba(102,192,244,.28); border-color: var(--accent);
-      border-bottom-left-radius: 4px; border-bottom-right-radius: 4px;
-      box-shadow: 0 0 0 1px rgba(102,192,244,.50), 0 0 12px rgba(102,192,244,.35), 0 0 5px rgba(187,134,252,.40);
     }
     .perfil-edit {
       max-height: 0; opacity: 0; overflow: hidden; margin-top: 0;
       transition: max-height .32s var(--ease-out), opacity .22s var(--ease-out), margin .32s var(--ease-out);
     }
-    .perfil-edit.open { max-height: 640px; opacity: 1; margin-top: -8px; } /* cancela gap:8px de #stats-view */
-    /* panel de edicion: extension visual del recuadro de perfil —
-       comparte borde/fondo, esquinas superiores cuadradas al abrir */
-    .stats-profile-card { margin-bottom: 0; }
-    .stats-profile-card:has(+ .perfil-edit.open) {
-      border-bottom-left-radius: 4px; border-bottom-right-radius: 4px;
-      box-shadow: 0 0 0 1px rgba(102,192,244,.30), 0 0 18px rgba(102,192,244,.22), 0 0 38px rgba(187,134,252,.14);
-    }
-    .perfil-edit.open .perfil-edit-inner {
-      border-top-left-radius: 4px; border-top-right-radius: 4px;
-      box-shadow: 0 0 0 1px rgba(187,134,252,.26), 0 0 22px rgba(187,134,252,.17), 0 12px 30px rgba(0,0,0,.30);
-    }
+    .perfil-edit.open { max-height: 640px; opacity: 1; }
+    /* perfil-edit vive dentro de .perfil-accordion: un solo contenedor
+       (patron .player-accordion) — el glow rodea la pieza entera */
     .perfil-edit-inner {
-      background: linear-gradient(135deg, rgba(102,192,244,.12), rgba(187,134,252,.10));
-      border: 1px solid rgba(102,192,244,.3); border-top: none;
-      border-radius: 0 0 16px 16px;
-      padding: 12px 14px 14px; margin-top: -1px;
+      border-top: 1px solid rgba(102,192,244,.16);
+      padding: 12px 14px 14px;
       display: grid; gap: 10px;
     }
     .perfil-edit-inner label { font-size: 11px; color: #8f98a0; font-weight: 700; display: block; margin-bottom: 5px; }
@@ -1064,22 +1059,41 @@
     .btn-delete { background: rgba(201, 59, 59, 0.1); color: #ff6b6b; border-color: rgba(201, 59, 59, 0.3); }
     .btn-mods { background: rgba(155, 89, 182, 0.12); color: #bb86fc; border-color: rgba(155, 89, 182, 0.35); }
 
-    /* ---- MODS TRACKER ---- */
-    .mods-panel {
+    /* ---- MODS TRACKER: acordeon de una sola pieza (patron .player-accordion) ---- */
+    .mods-accordion {
       grid-column: 1 / -1;
-      margin-top: -9px; /* cancela el gap de .action-buttons: pegado al boton Mods */
       background: rgba(155,89,182,0.07);
-      border: 1px solid rgba(155,89,182,0.35);
-      border-top: none;
-      border-radius: 0 0 12px 12px;
-      padding: 12px;
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: border-color var(--t-base) var(--ease-out), box-shadow var(--t-base) var(--ease-out), background var(--t-base) var(--ease-out);
     }
-    #btn-mods.open {
-      border-bottom-left-radius: 4px; border-bottom-right-radius: 4px;
-      box-shadow: 0 0 0 1px rgba(187,134,252,.55), 0 0 16px rgba(187,134,252,.38), 0 0 5px rgba(187,134,252,.60);
+    .mods-accordion.open {
+      border-color: rgba(187,134,252,0.55);
+      background: rgba(155,89,182,0.11);
+      box-shadow: 0 0 0 1px rgba(187,134,252,0.35), 0 0 22px rgba(187,134,252,0.18), 0 12px 30px rgba(0,0,0,0.30);
     }
+    .mods-accordion > #btn-mods {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      width: 100%; padding: 11px 14px;
+      border: none; border-radius: 0; background: transparent;
+      color: #bb86fc; font-size: 12px; font-weight: 800;
+      cursor: pointer; font-family: inherit;
+      transition: background var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out);
+    }
+    .mods-accordion > #btn-mods:hover { background: rgba(187,134,252,0.08); }
+    .mods-accordion.open > #btn-mods { color: #e6d4ff; }
+    .mods-chev { transition: transform var(--t-base) var(--ease-out); flex-shrink: 0; }
+    .mods-accordion.open .mods-chev { transform: rotate(180deg); }
     .mods-panel {
-      box-shadow: 0 0 0 1px rgba(187,134,252,.30), 0 0 22px rgba(187,134,252,.16), 0 12px 30px rgba(0,0,0,.32);
+      max-height: 0; opacity: 0; overflow: hidden;
+      padding: 0 12px;
+      border-top: 1px solid transparent;
+      transition: max-height .45s var(--ease-inout), opacity .3s var(--ease-inout), padding .45s var(--ease-inout);
+    }
+    .mods-accordion.open .mods-panel {
+      max-height: 3000px; opacity: 1; padding: 12px;
+      border-top-color: rgba(187,134,252,0.22);
     }
     .mods-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
     .mods-title { font-size: 13px; font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 6px; }
@@ -1440,6 +1454,7 @@
 
     <!-- VISTA DE ESTADÍSTICAS REORGANIZADA Y COMPACTA -->
     <div id="stats-view">
+      <div class="perfil-accordion" id="perfil-accordion">
       <div class="stats-profile-card" id="stats-profile-card"></div>
       <div class="perfil-edit" id="perfil-edit">
         <div class="perfil-edit-inner">
@@ -1470,6 +1485,7 @@
             </button>
           </div>
         </div>
+      </div>
       </div>
       <div class="stats-selectors-row" id="stats-prof-buttons"></div>
       <div class="stats-selectors-row">
@@ -1561,10 +1577,12 @@
       <div class="action-buttons">
         <a href="#" id="btn-ext-1" target="_blank" rel="noopener noreferrer" class="btn btn-steam">Ver ficha</a>
         <a href="#" id="btn-ext-2" target="_blank" rel="noopener noreferrer" class="btn btn-db">Más info</a>
-        <button id="btn-mods" class="btn btn-mods btn-full" style="display:none;" onclick="toggleModsPanel()">
-          <svg class="ico ico-sm"><use href="#i-puzzle"/></svg> Mods
-        </button>
-      <div id="m-mods-panel" class="mods-panel" style="display:none;">
+        <div class="mods-accordion" id="mods-accordion" style="display:none;">
+          <button id="btn-mods" class="btn btn-mods" onclick="toggleModsPanel()">
+            <svg class="ico ico-sm"><use href="#i-puzzle"/></svg> Mods
+            <svg class="ico ico-sm mods-chev"><use href="#i-chevron-down"/></svg>
+          </button>
+        <div id="m-mods-panel" class="mods-panel">
         <div class="mods-head">
           <span class="mods-title"><svg class="ico"><use href="#i-puzzle"/></svg> Mods</span>
           <span class="mods-count" id="mods-count"></span>
@@ -1588,7 +1606,8 @@
           </button>
         </div>
         <div id="mods-list"></div>
-      </div>
+        </div>
+        </div>
 
         <button id="btn-repair" class="btn btn-repair btn-full" onclick="repararItemActual()">
           <svg class="ico ico-sm"><use href="#i-wrench"/></svg> Reparar / Actualizar Metadata
@@ -4101,11 +4120,9 @@
       nexusSyncShareUI(it);
       nexusRefreshItemPrivacy(it);
 
-      var btnMods = document.getElementById('btn-mods');
-      var modsPanel = document.getElementById('m-mods-panel');
-      btnMods.style.display = (NEXUS_MODE && currentCategory === 'Juegos') ? '' : 'none';
-      btnMods.classList.remove('open');
-      modsPanel.style.display = 'none';
+      var modsAcc = document.getElementById('mods-accordion');
+      modsAcc.style.display = (NEXUS_MODE && currentCategory === 'Juegos') ? '' : 'none';
+      modsAcc.classList.remove('open');
       _modsCtx = null;
       _modsList = [];
 
@@ -4133,11 +4150,9 @@
 
     async function toggleModsPanel() {
       if (!NEXUS_MODE || currentCategory !== 'Juegos') return;
-      var btn = document.getElementById('btn-mods');
-      var panel = document.getElementById('m-mods-panel');
-      var showing = panel.style.display === 'none';
-      panel.style.display = showing ? 'block' : 'none';
-      if (btn) btn.classList.toggle('open', showing);
+      var acc = document.getElementById('mods-accordion');
+      var showing = !acc.classList.contains('open');
+      acc.classList.toggle('open', showing);
       if (showing) await nexusLoadMods();
     }
 
