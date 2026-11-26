@@ -1481,7 +1481,7 @@
         <div class="controls-row">
           <div class="add-wrapper" id="add-wrapper-box">
             <svg class="ico ico-sm" style="color:var(--muted); margin-right:6px;"><use href="#i-plus"/></svg>
-            <input type="text" id="inputAgregar" data-i18n-ph="cfg.Juegos.add" placeholder="AppID, URL o nombre..." onfocus="activarModoBusquedaAgregar(true)" oninput="syncAddClearBtn(); autocompletarAgregarDebounced()" onkeydown="if(event.key==='Enter') manejarAgregar()">
+            <input type="text" id="inputAgregar" data-i18n-ph="cfg.Juegos.add" placeholder="AppID, URL o nombre..." onfocus="activarModoBusquedaAgregar(true)" oninput="syncAddClearBtn(); autocompletarAgregarInput()" onkeydown="if(event.key==='Enter') manejarAgregar()">
             <button type="button" class="btn-clear-add" onclick="cerrarBusquedaAgregar(true)" title="Limpiar" data-i18n-title="tip.limpiar">
               <svg class="ico ico-sm"><use href="#i-x"/></svg>
             </button>
@@ -3731,13 +3731,26 @@
 
     const autocompletarAgregarDebounced = debounce(function() {
       var val = document.getElementById('inputAgregar').value.trim();
-      if (val.length < 3) {
-        document.getElementById('search-dropdown').classList.remove('open');
+      var dd = document.getElementById('search-dropdown');
+      if (val.length < 2) {
+        dd.classList.remove('open');
         return;
       }
       var esUrlOId = /^\d+$/.test(val) || val.includes('http://') || val.includes('https://') || /^(movie|tv|al)-\d+$/i.test(val);
       if (!esUrlOId) manejarAgregar(true);
-    }, 350);
+    }, 300);
+
+    // feedback inmediato al escribir: abre el dropdown con "buscando" antes del debounce
+    function autocompletarAgregarInput() {
+      var val = document.getElementById('inputAgregar').value.trim();
+      var dd = document.getElementById('search-dropdown');
+      if (val.length >= 2 && !dd.classList.contains('open')) {
+        activarModoBusquedaAgregar(true);
+        dd.innerHTML = '<div style="padding:12px;text-align:center;color:var(--accent);font-size:12px;">' + t('toast.busy') + '</div>';
+        dd.classList.add('open');
+      }
+      autocompletarAgregarDebounced();
+    }
 
     function cambiarCategoria(cat) {
       if (cat === currentCategory) return;
