@@ -4542,6 +4542,7 @@
     // ---- MODS TRACKER (per-user, tabla mods + RLS mods_self) ----
     var _modsCtx = null;   // {cat, extId, mediaId}
     var _modsList = [];
+    var _modsOpenVersion = null;
     var MODS_SOURCE_LABEL = { nexus_mods: 'Nexus Mods', steam_workshop: 'Steam Workshop', curseforge: 'CurseForge', otra_url: 'mods.src_otra' };
 
     async function nexusModsMediaId() {
@@ -4591,6 +4592,7 @@
         if (!groups[v]) { groups[v] = []; order.push(v); }
         groups[v].push(m);
       });
+      var openV = _modsOpenVersion; _modsOpenVersion = null;
       list.innerHTML = order.map(function(v) {
         var rows = groups[v].map(function(m) {
           var src = MODS_SOURCE_LABEL[m.source] ? t(MODS_SOURCE_LABEL[m.source]) : m.source;
@@ -4607,7 +4609,8 @@
             +   '<button class="mod-act del" onclick="nexusModBorrar(\'' + m.id + '\')" title="' + t('btn.del') + '"><svg class="ico ico-sm"><use href="#i-trash"/></svg></button>'
             + '</div></div>';
         }).join('');
-        return '<details class="mods-group" open><summary><svg class="ico ico-sm"><use href="#i-chevron-down"/></svg> ' + escaparHTML(v)
+        var openAttr = (v === openV) ? ' open' : '';
+        return '<details class="mods-group"' + openAttr + '><summary><svg class="ico ico-sm"><use href="#i-chevron-down"/></svg> ' + escaparHTML(v)
           + ' <span class="mods-group-tag">· ' + groups[v].length + '</span></summary>' + rows + '</details>';
       }).join('');
     }
@@ -4649,6 +4652,7 @@
         if (r.error) throw new Error(r.error.message);
         ['mod-nombre', 'mod-url', 'mod-version', 'mod-notas'].forEach(function(id) { document.getElementById(id).value = ''; });
         showToast && showToast('Mod guardado.', 'success');
+        _modsOpenVersion = version || t('mods.noversion');
         await nexusLoadMods();
       } catch (e) {
         showToast && showToast(t('err.prefix') + (e.message || ''), 'error');
