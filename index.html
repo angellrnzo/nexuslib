@@ -981,7 +981,8 @@
 
     /* ---- MODS TRACKER ---- */
     .mods-panel {
-      margin-top: 14px;
+      grid-column: 1 / -1;
+      margin-top: 4px;
       background: rgba(255,255,255,0.04);
       border: 1px solid var(--border);
       border-radius: 12px;
@@ -1423,6 +1424,12 @@
 
       <div class="tracking-container" id="tracking-personas"></div>
 
+      <div class="action-buttons">
+        <a href="#" id="btn-ext-1" target="_blank" rel="noopener noreferrer" class="btn btn-steam">Ver ficha</a>
+        <a href="#" id="btn-ext-2" target="_blank" rel="noopener noreferrer" class="btn btn-db">Más info</a>
+        <button id="btn-mods" class="btn btn-mods btn-full" style="display:none;" onclick="toggleModsPanel()">
+          <svg class="ico ico-sm"><use href="#i-puzzle"/></svg> Mods
+        </button>
       <div id="m-mods-panel" class="mods-panel" style="display:none;">
         <div class="mods-head">
           <span class="mods-title"><svg class="ico"><use href="#i-puzzle"/></svg> Mods</span>
@@ -1449,12 +1456,6 @@
         <div id="mods-list"></div>
       </div>
 
-      <div class="action-buttons">
-        <a href="#" id="btn-ext-1" target="_blank" rel="noopener noreferrer" class="btn btn-steam">Ver ficha</a>
-        <a href="#" id="btn-ext-2" target="_blank" rel="noopener noreferrer" class="btn btn-db">Más info</a>
-        <button id="btn-mods" class="btn btn-mods btn-full" style="display:none;" onclick="toggleModsPanel()">
-          <svg class="ico ico-sm"><use href="#i-puzzle"/></svg> Mods
-        </button>
         <button id="btn-repair" class="btn btn-repair btn-full" onclick="repararItemActual()">
           <svg class="ico ico-sm"><use href="#i-wrench"/></svg> Reparar / Actualizar Metadata
         </button>
