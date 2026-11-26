@@ -20,6 +20,24 @@ export interface FlatMeta {
 const STEAMGRIDDB_API_KEY = (Deno.env.get('STEAMGRIDDB_API_KEY') || '').trim();
 const TMDB_API_KEY = (Deno.env.get('TMDB_API_KEY') || '').trim();
 
+export type Lang = 'es' | 'en';
+const steamL = (l: Lang) => l === 'en' ? 'english' : 'spanish';
+const tmdbL = (l: Lang) => l === 'en' ? 'en-US' : 'es-ES';
+const acceptL = (l: Lang) => l === 'en' ? 'en-US,en;q=0.9' : 'es-ES,es;q=0.9,en;q=0.8';
+const UI: Record<string, Record<Lang, string>> = {
+  autor: { es: 'Autor por definir', en: 'Author TBD' },
+  sintitulo: { es: 'Sin título', en: 'Untitled' },
+  serie: { es: 'Serie', en: 'TV Series' },
+  pelicula: { es: 'Película', en: 'Movie' },
+  caps: { es: 'caps', en: 'chs' },
+  encurso: { es: 'En curso', en: 'Ongoing' },
+  manga: { es: 'Manga', en: 'Manga' },
+  catalogo: { es: 'Catálogo general', en: 'General catalog' },
+  gratis: { es: 'Gratis', en: 'Free' },
+  ninguno: { es: 'Ninguno', en: 'None' },
+};
+const ui = (k: string, l: Lang) => (UI[k] && (UI[k][l] || UI[k].es)) || k;
+
 async function getJson(url: string, init?: RequestInit): Promise<any> {
   const res = await fetch(url, { ...init, headers: { ...(init?.headers || {}) } });
   if (!res.ok) return null;
@@ -46,9 +64,9 @@ function isoDate(tsSeconds: number): string {
 // Búsquedas (shape v1: {id, titulo, subtitulo, portada})
 // ---------------------------------------------------------------------------
 
-async function buscarSteam(query: string): Promise<SearchResult[]> {
+async function buscarSteam(query: string, lang: Lang = 'es'): Promise<SearchResult[]> {
   if (/^\d+$/.test(query)) {
-    const item = await obtenerMetadataSteam(query);
+    const item = await obtenerMetadataSteam(query, lang);
     if (!item) return [];
     return [{
       id: String(item.id), titulo: String(item.titulo),
@@ -61,7 +79,7 @@ async function buscarSteam(query: string): Promise<SearchResult[]> {
 
   const json: any = await getJson(
     'https://store.steampowered.com/api/storesearch/?term=' +
-    encodeURIComponent(query) + '&l=spanish&cc=US'
+    encodeURIComponent(query) + '&l=' + steamL(lang) + '&cc=US'
   );
   if (json && Array.isArray(json.items)) {
     for (const it of json.items.slice(0, 8)) {
@@ -88,7 +106,7 @@ async function buscarSteam(query: string): Promise<SearchResult[]> {
         vistos[idStr2] = true;
         resultados.push({
           id: idStr2, titulo: item.name,
-          subtitulo: 'Steam AppID: ' + idStr2 + ' • Catálogo general',
+          subtitulo: 'Steam AppID: ' + idStr2 + ' • ' + ui('catalogo', lang),
           portada: item.icon || ('https://cdn.cloudflare.steamstatic.com/steam/apps/' + idStr2 + '/header.jpg'),
         });
       }
@@ -97,11 +115,11 @@ async function buscarSteam(query: string): Promise<SearchResult[]> {
   return resultados;
 }
 
-async function buscarTmdb(query: string): Promise<SearchResult[]> {
+async function buscarTmdb(query: string, lang: Lang = 'es'): Promise<SearchResult[]> {
   if (!TMDB_API_KEY) return [];
   const url = 'https://api.themoviedb.org/3/search/multi?api_key=' +
     encodeURIComponent(TMDB_API_KEY) +
-    '&language=es-ES&include_adult=false&query=' + encodeURIComponent(query);
+    '&language=' + tmdbL(lang) + '&include_adult=false&query=' + encodeURIComponent(query);
   const json: any = await getJson(url);
   const results = (json && json.results) ? json.results : [];
 
@@ -115,13 +133,13 @@ async function buscarTmdb(query: string): Promise<SearchResult[]> {
       return {
         id: r.media_type + '-' + r.id,
         titulo: esSerie ? (r.name || r.original_name) : (r.title || r.original_title),
-        subtitulo: (esSerie ? 'Serie' : 'Película') + ' • ' + year,
+        subtitulo: (esSerie ? ui('serie', lang) : ui('pelicula', lang)) + ' • ' + year,
         portada: r.poster_path ? ('https://image.tmdb.org/t/p/w342' + r.poster_path) : '',
       };
     });
 }
 
-async function buscarLibros(query: string): Promise<SearchResult[]> {
+async function buscarLibros(query: string, lang: Lang = 'es'): Promise<SearchResult[]> {
   const q = String(query || '').trim();
   if (!q) return [];
   const url = 'https://openlibrary.org/search.json?q=' + encodeURIComponent(q) +
@@ -135,18 +153,18 @@ async function buscarLibros(query: string): Promise<SearchResult[]> {
     const workId = String(d.key || '').replace('/works/', '');
     const autores = (Array.isArray(d.author_name) && d.author_name.length > 0)
       ? d.author_name.slice(0, 3).join(', ')
-      : 'Autor por definir';
+      : ui('autor', lang);
     const year = d.first_publish_year ? String(d.first_publish_year) : '';
     const portada = d.cover_i ? ('https://covers.openlibrary.org/b/id/' + d.cover_i + '-M.jpg') : '';
     return {
-      id: workId, titulo: d.title || 'Sin título',
+      id: workId, titulo: d.title || ui('sintitulo', lang),
       subtitulo: autores + (year ? ' • ' + year : ''),
       portada,
     };
   }).filter((x: SearchResult) => Boolean(x.id));
 }
 
-async function buscarMangasAniList(query: string): Promise<SearchResult[]> {
+async function buscarMangasAniList(query: string, lang: Lang = 'es'): Promise<SearchResult[]> {
   const gql = 'query ($search: String) { Page(page: 1, perPage: 8) { media(search: $search, type: MANGA, sort: POPULARITY_DESC) { id title { romaji english native } startDate { year } chapters status coverImage { medium large } } } }';
   const res = await fetch('https://graphql.anilist.co', {
     method: 'POST',
@@ -159,22 +177,22 @@ async function buscarMangasAniList(query: string): Promise<SearchResult[]> {
   return media.map((m: any) => {
     const titulo = m.title.english || m.title.romaji || m.title.native || 'Sin título';
     const year = (m.startDate && m.startDate.year) ? m.startDate.year : '';
-    const caps = m.chapters ? (m.chapters + ' caps') : 'En curso';
+    const caps = m.chapters ? (m.chapters + ' ' + ui('caps', lang)) : ui('encurso', lang);
     return {
       id: 'al-' + m.id, titulo,
-      subtitulo: 'Manga' + (year ? ' • ' + year : '') + ' • ' + caps,
+      subtitulo: ui('manga', lang) + (year ? ' • ' + year : '') + ' • ' + caps,
       portada: (m.coverImage && (m.coverImage.large || m.coverImage.medium)) || '',
     };
   });
 }
 
-export async function buscarCatalogoExterno(category: Category, query: string): Promise<SearchResult[]> {
+export async function buscarCatalogoExterno(category: Category, query: string, lang: Lang = 'es'): Promise<SearchResult[]> {
   const q = String(query || '').trim();
   if (!q) return [];
-  if (category === 'Juegos') return buscarSteam(q);
-  if (category === 'Peliculas_Series') return buscarTmdb(q);
-  if (category === 'Libros') return buscarLibros(q);
-  if (category === 'Mangas') return buscarMangasAniList(q);
+  if (category === 'Juegos') return buscarSteam(q, lang);
+  if (category === 'Peliculas_Series') return buscarTmdb(q, lang);
+  if (category === 'Libros') return buscarLibros(q, lang);
+  if (category === 'Mangas') return buscarMangasAniList(q, lang);
   return [];
 }
 
@@ -232,7 +250,7 @@ export function extraerIdDirecto(category: Category, input: string): string | nu
 // Metadata detallada por provider (shape plano v1)
 // ---------------------------------------------------------------------------
 
-export async function obtenerMetadataSteam(appId: string): Promise<FlatMeta | null> {
+export async function obtenerMetadataSteam(appId: string, lang: Lang = 'es'): Promise<FlatMeta | null> {
   const cleanId = String(appId).replace(/\D/g, '');
   if (!cleanId) return null;
 
@@ -253,13 +271,13 @@ export async function obtenerMetadataSteam(appId: string): Promise<FlatMeta | nu
 
   try {
     const json: any = await getJson(
-      'https://store.steampowered.com/api/appdetails?appids=' + cleanId + '&cc=US&l=spanish'
+      'https://store.steampowered.com/api/appdetails?appids=' + cleanId + '&cc=US&l=' + steamL(lang)
     );
     const d = json && json[cleanId] && json[cleanId].success ? json[cleanId].data : null;
     if (d) {
       const genres = (d.genres || []).map((g: any) => g.description).join(', ');
       const devs = (d.developers || []).join(', ');
-      const price = d.is_free ? 'Gratis' : (d.price_overview ? d.price_overview.final_formatted : 'N/A');
+      const price = d.is_free ? ui('gratis', lang) : (d.price_overview ? d.price_overview.final_formatted : 'N/A');
       let trailerUrl = '';
       if (d.movies && d.movies.length > 0) {
         const mv = d.movies[0];
@@ -274,7 +292,7 @@ export async function obtenerMetadataSteam(appId: string): Promise<FlatMeta | nu
       base.generos = genres || 'N/A';
       base.precio = price;
       base.modos = d.categories ? d.categories.map((c: any) => c.description).join(', ') : 'N/A';
-      base.dlcs = d.dlc ? (d.dlc.length + ' DLCs') : 'Ninguno';
+      base.dlcs = d.dlc ? (d.dlc.length + ' DLCs') : ui('ninguno', lang);
       base.trailer = trailerUrl;
       base.capturas = (d.screenshots && d.screenshots.length > 0)
         ? d.screenshots.slice(0, 6).map((s: any) => s.path_full).join(',')
@@ -286,10 +304,10 @@ export async function obtenerMetadataSteam(appId: string): Promise<FlatMeta | nu
 
   if (!encontradoEnTienda) {
     try {
-      const res = await fetch('https://store.steampowered.com/app/' + cleanId + '/?l=spanish&cc=US', {
+      const res = await fetch('https://store.steampowered.com/app/' + cleanId + '/?l=' + steamL(lang) + '&cc=US', {
         headers: {
           'Cookie': 'birthtime=283993201; wants_mature_content=1; lastagecheckage=1-0-1979; mature_content=1',
-          'Accept-Language': 'es-ES,es;q=0.9,en;q=0.8',
+          'Accept-Language': acceptL(lang),
         },
         redirect: 'follow',
       });
@@ -428,7 +446,7 @@ export async function obtenerMetadataSteam(appId: string): Promise<FlatMeta | nu
   return base;
 }
 
-export async function obtenerMetadataTmdb(compositeId: string): Promise<FlatMeta | null> {
+export async function obtenerMetadataTmdb(compositeId: string, lang: Lang = 'es'): Promise<FlatMeta | null> {
   if (!TMDB_API_KEY) return null;
   const parts = String(compositeId).split('-');
   const mediaType = parts[0] === 'tv' ? 'tv' : 'movie';
@@ -436,7 +454,7 @@ export async function obtenerMetadataTmdb(compositeId: string): Promise<FlatMeta
 
   const url = 'https://api.themoviedb.org/3/' + mediaType + '/' + numId +
     '?api_key=' + encodeURIComponent(TMDB_API_KEY) +
-    '&language=es-ES&append_to_response=videos,watch/providers,credits';
+    '&language=' + tmdbL(lang) + '&append_to_response=videos,watch/providers,credits';
   const d: any = await getJson(url);
   if (!d || d.success === false) return null;
 
@@ -563,7 +581,7 @@ async function resolverAutoresOpenLibrary(authorsArr: any, fallbackTitulo?: stri
   return 'Autor por definir';
 }
 
-export async function obtenerMetadataLibro(idOIsbn: string): Promise<FlatMeta | null> {
+export async function obtenerMetadataLibro(idOIsbn: string, _lang: Lang = 'es'): Promise<FlatMeta | null> {
   const clean = String(idOIsbn || '').trim().replace(/^ol-(?=OL\d+[WM]$)/i, '');
   if (!clean) return null;
 
@@ -639,7 +657,7 @@ export async function obtenerMetadataLibro(idOIsbn: string): Promise<FlatMeta | 
   };
 }
 
-export async function obtenerMetadataManga(idStr: string): Promise<FlatMeta | null> {
+export async function obtenerMetadataManga(idStr: string, _lang: Lang = 'es'): Promise<FlatMeta | null> {
   const raw = String(idStr || '').trim().toLowerCase();
   const isMal = raw.indexOf('mal-') === 0;
   const numId = parseInt(raw.replace(/^(al-|mal-)/, ''), 10);
@@ -699,11 +717,11 @@ export async function obtenerMetadataManga(idStr: string): Promise<FlatMeta | nu
   };
 }
 
-export async function obtenerMetadataDetallada(category: Category, id: string): Promise<FlatMeta | null> {
-  if (category === 'Juegos') return obtenerMetadataSteam(id);
-  if (category === 'Peliculas_Series') return obtenerMetadataTmdb(id);
-  if (category === 'Libros') return obtenerMetadataLibro(id);
-  if (category === 'Mangas') return obtenerMetadataManga(id);
+export async function obtenerMetadataDetallada(category: Category, id: string, lang: Lang = 'es'): Promise<FlatMeta | null> {
+  if (category === 'Juegos') return obtenerMetadataSteam(id, lang);
+  if (category === 'Peliculas_Series') return obtenerMetadataTmdb(id, lang);
+  if (category === 'Libros') return obtenerMetadataLibro(id, lang);
+  if (category === 'Mangas') return obtenerMetadataManga(id, lang);
   return null;
 }
 

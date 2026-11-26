@@ -87,6 +87,7 @@ Deno.serve(async (req: Request) => {
     const body = await req.json();
     const category = String(body.category || '') as Category;
     const input = String(body.idOrUrlOrName || '').trim();
+    const lang = body.lang === 'en' ? 'en' : 'es';
     if (!CATEGORIES.includes(category)) return json({ success: false, msg: 'Categoría inválida.' }, 400);
     if (!input) return json({ success: false, msg: 'Introduce un valor válido.' });
 
@@ -104,7 +105,7 @@ Deno.serve(async (req: Request) => {
         return json({ success: false, msg: 'Este elemento ya está en tu biblioteca.' });
       }
 
-      const meta = await obtenerMetadataDetallada(category, idDirecto);
+      const meta = await obtenerMetadataDetallada(category, idDirecto, lang);
       if (!meta) return json({ success: false, msg: 'No se encontraron datos para el ID indicado.' });
       const row = flatMetaToRow(category, meta);
 
@@ -128,7 +129,7 @@ Deno.serve(async (req: Request) => {
     }
 
     // 2) Búsqueda -> primer resultado
-    const resultados = await buscarCatalogoExterno(category, input);
+    const resultados = await buscarCatalogoExterno(category, input, lang);
     if (resultados && resultados.length > 0) {
       const primero = resultados[0];
       let probeId = primero.id;
@@ -138,7 +139,7 @@ Deno.serve(async (req: Request) => {
         return json({ success: false, msg: 'Ya existe en tu lista: ' + primero.titulo });
       }
 
-      const meta = await obtenerMetadataDetallada(category, primero.id);
+      const meta = await obtenerMetadataDetallada(category, primero.id, lang);
       if (meta) {
         const row = flatMetaToRow(category, meta);
         let item = await findMediaItem(admin, category, row.provider, row.external_id);

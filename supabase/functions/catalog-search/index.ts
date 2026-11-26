@@ -15,7 +15,8 @@ Deno.serve(async (req: Request) => {
     if (!['Juegos', 'Peliculas_Series', 'Libros', 'Mangas'].includes(category)) {
       return json({ error: 'categoría inválida' }, 400);
     }
-    const results = await buscarCatalogoExterno(category, query);
+    const lang = body.lang === 'en' ? 'en' : 'es';
+    const results = await buscarCatalogoExterno(category, query, lang);
     return json(results);
   } catch (e) {
     return json({ error: (e as Error).message || 'error en búsqueda' }, 500);

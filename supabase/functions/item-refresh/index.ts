@@ -35,7 +35,8 @@ Deno.serve(async (req: Request) => {
     if (!item) return json({ success: false, msg: 'Elemento no encontrado en el catálogo.' });
 
     const apiId = toApiId(category, item.external_id);
-    const meta = await obtenerMetadataDetallada(category, apiId);
+    const lang = body.lang === 'en' ? 'en' : 'es';
+    const meta = await obtenerMetadataDetallada(category, apiId, lang);
     if (!meta) return json({ success: false, msg: 'No se pudo obtener metadata desde la API externa.' });
 
     const row = flatMetaToRow(category, meta);

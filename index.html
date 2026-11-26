@@ -1478,25 +1478,25 @@
         <div class="perfil-edit-inner">
           <div class="pf-grid-2">
             <div>
-              <label for="pf-display">Nombre público</label>
+              <label for="pf-display" data-i18n="pf.display">Nombre público</label>
               <input id="pf-display" class="na-in" type="text" maxlength="60">
             </div>
             <div>
-              <label for="pf-username">Usuario</label>
+              <label for="pf-username" data-i18n="pf.username">Usuario</label>
               <input id="pf-username" class="na-in" type="text" maxlength="30">
             </div>
           </div>
           <div class="pf-sep"></div>
           <div>
-            <div class="pf-sub">Código de vinculación</div>
+            <div class="pf-sub" data-i18n="pf.invite">Código de vinculación</div>
             <div class="pf-invite-row" style="margin-top:6px;">
               <input id="pf-invite" class="na-in" type="text" readonly>
-              <button class="btn btn-circle" onclick="copiarInvitePerfil()" title="Copiar"><svg class="ico"><use href="#i-copy"/></svg></button>
+              <button class="btn btn-circle" onclick="copiarInvitePerfil()" title="Copiar" data-i18n-title="pf.copy"><svg class="ico"><use href="#i-copy"/></svg></button>
             </div>
           </div>
           <div class="pf-actions-row">
             <button class="pf-btn pf-btn-danger" onclick="nexusSignOut()">
-              <svg class="ico ico-sm"><use href="#i-logout"/></svg> Cerrar sesión
+              <svg class="ico ico-sm"><use href="#i-logout"/></svg> <span data-i18n="pf.logout">Cerrar sesión</span>
             </button>
             <button class="pf-btn pf-btn-save" onclick="guardarPerfil()">
               <svg class="ico ico-sm"><use href="#i-save"/></svg> Guardar cambios
@@ -1548,28 +1548,28 @@
 
       <div id="m-trailer-bar" class="trailer-bar" style="display:none;">
         <button type="button" id="btn-toggle-trailer" class="btn-trailer" onclick="toggleTrailer()">
-          <svg class="ico ico-sm"><use href="#i-play"/></svg> Ver Tráiler
+          <svg class="ico ico-sm"><use href="#i-play"/></svg> <span data-i18n="trail.show">Ver Tráiler</span>
         </button>
         <div id="m-trailer-box" class="trailer-box"></div>
       </div>
 
       <div id="m-updates-bar" class="trailer-bar" style="display:none;">
         <button type="button" id="btn-toggle-updates" class="btn-trailer" onclick="toggleUpdates()">
-          <svg class="ico ico-sm"><use href="#i-sync"/></svg> Historial de Updates
+          <svg class="ico ico-sm"><use href="#i-sync"/></svg> <span data-i18n="upd.hist">Historial de Updates</span>
         </button>
         <div id="m-updates-box" class="updates-box"></div>
       </div>
 
       <div id="m-editions-bar" class="trailer-bar" style="display:none;">
         <button type="button" id="btn-toggle-editions" class="btn-trailer" onclick="toggleEditions()">
-          <svg class="ico ico-sm"><use href="#i-book"/></svg> Ediciones
+          <svg class="ico ico-sm"><use href="#i-book"/></svg> <span data-i18n="ed.btn">Ediciones</span>
         </button>
         <div id="m-editions-box" class="updates-box"></div>
       </div>
 
       <div id="m-reviews-bar" class="trailer-bar" style="display:none;">
         <button type="button" id="btn-toggle-resenas" class="btn-trailer" onclick="toggleResenas()">
-          <svg class="ico ico-sm"><use href="#i-star"/></svg> Reseñas Steam
+          <svg class="ico ico-sm"><use href="#i-star"/></svg> <span data-i18n="rv.btn">Reseñas Steam</span>
         </button>
         <div id="m-resenas-box" class="updates-box"></div>
       </div>
@@ -1578,14 +1578,14 @@
 
       <details id="m-details-accordion" class="accordion">
         <summary>
-          <span>Ver ficha técnica completa</span>
+          <span data-i18n="ficha.tech">Ver ficha técnica completa</span>
           <svg class="ico ico-sm"><use href="#i-chevron-down"/></svg>
         </summary>
         <div class="accordion-content" id="m-details-list"></div>
       </details>
 
       <div class="carousel-container" id="m-screenshots-container" style="display:none;">
-        <div class="carousel-title"><svg class="ico"><use href="#i-camera"/></svg> Capturas</div>
+        <div class="carousel-title"><svg class="ico"><use href="#i-camera"/></svg> <span data-i18n="cap.title">Capturas</span></div>
         <div class="carousel" id="m-screenshots"></div>
         <div class="carousel-dots" id="m-screenshots-dots"></div>
       </div>
@@ -1593,8 +1593,8 @@
       <div class="tracking-container" id="tracking-personas"></div>
 
       <div class="action-buttons">
-        <a href="#" id="btn-ext-1" target="_blank" rel="noopener noreferrer" class="btn btn-steam">Ver ficha</a>
-        <a href="#" id="btn-ext-2" target="_blank" rel="noopener noreferrer" class="btn btn-db">Más info</a>
+        <a href="#" id="btn-ext-1" target="_blank" rel="noopener noreferrer" class="btn btn-steam" data-i18n="ficha.ver">Ver ficha</a>
+        <a href="#" id="btn-ext-2" target="_blank" rel="noopener noreferrer" class="btn btn-db" data-i18n="ficha.more">Más info</a>
         <div class="mods-accordion" id="mods-accordion" style="display:none;">
           <button id="btn-mods" class="btn btn-mods" onclick="toggleModsPanel()">
             <svg class="ico ico-sm"><use href="#i-puzzle"/></svg> Mods
@@ -1607,7 +1607,7 @@
         </div>
         <div class="mods-search-row" id="mods-search-row"></div>
         <div class="mods-form" id="mods-form">
-          <input type="text" id="mod-nombre" placeholder="Nombre del mod" maxlength="200">
+          <input type="text" id="mod-nombre" placeholder="Nombre del mod" data-i18n-ph="mods.nameph" maxlength="200">
           <div class="mods-form-row">
             <select id="mod-fuente">
               <option value="nexus_mods">Nexus Mods</option>
@@ -1615,12 +1615,12 @@
               <option value="curseforge">CurseForge</option>
               <option value="otra_url">Otra URL</option>
             </select>
-            <input type="text" id="mod-version" placeholder="Versión del juego (ej. v1.7.9b)" maxlength="60">
+            <input type="text" id="mod-version" placeholder="Versión del juego (ej. v1.7.9b)" data-i18n-ph="mods.verph" maxlength="60">
           </div>
-          <input type="url" id="mod-url" placeholder="URL del mod" maxlength="500">
-          <textarea id="mod-notas" placeholder="Notas (load order, dependencias...)" maxlength="500"></textarea>
+          <input type="url" id="mod-url" placeholder="URL del mod" data-i18n-ph="mods.urlph" maxlength="500">
+          <textarea id="mod-notas" placeholder="Notas (load order, dependencias...)" data-i18n-ph="mods.notesph" maxlength="500"></textarea>
           <button type="button" class="btn btn-mods btn-full btn-save" onclick="nexusModGuardar()">
-            <svg class="ico ico-sm"><use href="#i-plus"/></svg> Guardar mod
+            <svg class="ico ico-sm"><use href="#i-plus"/></svg> <span data-i18n="mods.save">Guardar mod</span>
           </button>
         </div>
         <div id="mods-list"></div>
@@ -1740,7 +1740,7 @@
       var sb = await nexusSb();
       await nexusEnsureProfile();
       var mediaId = await nexusMediaId(category, externalId);
-      if (!mediaId) return { success: false, msg: 'Item no encontrado en el catálogo.' };
+      if (!mediaId) return { success: false, msg: t('err.itemnf') };
       var payload = { profile_id: _nexusUser.id, media_item_id: mediaId };
       Object.keys(fields).forEach(function(k) { payload[k] = fields[k]; });
       var r = await sb.from('user_media_tracking')
@@ -1778,7 +1778,7 @@
       guardarProgresoItem: function(cat, id, persona, estado, estrellas, progreso) {
         this._exec((async function() {
           await nexusSb(); await nexusEnsureProfile();
-          if (!nexusPersonaOk(persona)) return { success: false, msg: 'Solo puedes editar tu propio tracking.' };
+          if (!nexusPersonaOk(persona)) return { success: false, msg: t('err.owntrack') };
           return nexusTrackingUpsert(cat, id, {
             status: NEXUS_STATUS_MAP[estado] || null,
             rating: (Number(estrellas) > 0) ? Number(estrellas) : null,
@@ -1789,14 +1789,14 @@
       guardarDeseadoItem: function(cat, id, persona, deseado) {
         this._exec((async function() {
           await nexusSb(); await nexusEnsureProfile();
-          if (!nexusPersonaOk(persona)) return { success: false, msg: 'Solo puedes editar tu propio tracking.' };
+          if (!nexusPersonaOk(persona)) return { success: false, msg: t('err.owntrack') };
           return nexusTrackingUpsert(cat, id, { is_wishlisted: Boolean(deseado) });
         })());
       },
       guardarNotaItem: function(cat, id, persona, nota) {
         this._exec((async function() {
           await nexusSb(); await nexusEnsureProfile();
-          if (!nexusPersonaOk(persona)) return { success: false, msg: 'Solo puedes editar tu propio tracking.' };
+          if (!nexusPersonaOk(persona)) return { success: false, msg: t('err.owntrack') };
           return nexusTrackingUpsert(cat, id, { personal_notes: nota || null });
         })());
       },
@@ -1805,7 +1805,7 @@
           var sb = await nexusSb();
           var r = await sb.from('media_items').select('id')
             .eq('category', cat).eq('external_id', String(id)).single();
-          if (r.error || !r.data) return { success: false, msg: 'Item no encontrado.' };
+          if (r.error || !r.data) return { success: false, msg: t('err.itemnf2') };
           var u = await sb.rpc('set_media_total_chapters', { p_media_id: r.data.id, p_total: Number(total) || 0 });
           if (u.error) throw new Error(u.error.message);
           return { success: true };
@@ -1815,7 +1815,7 @@
         this._exec((async function() {
           var sb = await nexusSb(); await nexusEnsureProfile();
           var mediaId = await nexusMediaId(cat, id);
-          if (!mediaId || !_nexusLibId) return { success: false, msg: 'No se encontró el elemento.' };
+          if (!mediaId || !_nexusLibId) return { success: false, msg: t('err.elemnf') };
           var r = await sb.from('library_items')
             .update({ deleted_at: new Date().toISOString() })
             .eq('library_id', _nexusLibId).eq('media_item_id', mediaId).is('deleted_at', null);
@@ -1852,7 +1852,7 @@
       buscarCatalogoExterno: function(cat, query) {
         this._exec((async function() {
           var sb = await nexusSb(); await nexusEnsureProfile();
-          var r = await sb.functions.invoke('catalog-search', { body: { category: cat, query: query } });
+          var r = await sb.functions.invoke('catalog-search', { body: { category: cat, query: query, lang: NEXUS_LANG } });
           if (r.error) throw new Error(r.error.message);
           return r.data || [];
         })());
@@ -1860,7 +1860,7 @@
       agregarItem: function(cat, idOUrlOrName) {
         this._exec((async function() {
           var sb = await nexusSb(); await nexusEnsureProfile();
-          var r = await sb.functions.invoke('catalog-add', { body: { category: cat, idOrUrlOrName: idOUrlOrName } });
+          var r = await sb.functions.invoke('catalog-add', { body: { category: cat, idOrUrlOrName: idOUrlOrName, lang: NEXUS_LANG } });
           if (r.error) {
             var ctx = r.error.context;
             if (ctx && typeof ctx.json === 'function') {
@@ -1874,7 +1874,7 @@
       repararItemIndividual: function(cat, id) {
         this._exec((async function() {
           var sb = await nexusSb(); await nexusEnsureProfile();
-          var r = await sb.functions.invoke('item-refresh', { body: { category: cat, id: id } });
+          var r = await sb.functions.invoke('item-refresh', { body: { category: cat, id: id, lang: NEXUS_LANG } });
           if (r.error) {
             var ctx = r.error.context;
             if (ctx && typeof ctx.json === 'function') {
@@ -1918,10 +1918,10 @@
     async function guardarPerfil() {
       try {
         var nombre = document.getElementById('pf-display').value.trim();
-        if (!nombre) { showToast && showToast('El nombre no puede estar vacío.', 'error'); return; }
+        if (!nombre) { showToast && showToast(t('err.noname'), 'error'); return; }
         var uname = document.getElementById('pf-username').value.trim().toLowerCase()
           .replace(/[^a-z0-9_]/g, '').slice(0, 30);
-        if (!uname) { showToast && showToast('El usuario no puede estar vacío (solo a-z, 0-9 y _).', 'error'); return; }
+        if (!uname) { showToast && showToast(t('err.nouser'), 'error'); return; }
         var sb = await nexusSb();
         var r = await sb.from('profiles').update({ display_name: nombre, username: uname }).eq('id', _nexusUser.id);
         if (r.error) {
@@ -1933,17 +1933,17 @@
         _nexusProfile.display_name = nombre;
         _nexusProfile.username = uname;
         nexusRenderProfileHeader();
-        showToast && showToast('Perfil guardado.', 'success');
+        showToast && showToast(t('toast.profile'), 'success');
         cerrarPerfilEdit();
       } catch (e) {
-        showToast && showToast('Error: ' + (e.message || ''), 'error');
+        showToast && showToast(t('err.prefix') + (e.message || ''), 'error');
       }
     }
     function copiarInvitePerfil() {
       var v = document.getElementById('pf-invite').value;
       if (!v) return;
       navigator.clipboard.writeText(v).then(function() {
-        showToast && showToast('Código copiado.', 'success');
+        showToast && showToast(t('toast.copied'), 'success');
       });
     }
     async function nexusSignOut() {
@@ -2184,7 +2184,7 @@
 
     // ---- vínculos (Phase 5, solo Nexus mode) ----
     var VINCULOS_LINK_TYPES = {
-      pareja: 'Pareja', familia: 'Familia', amigo: 'Amigo', custom: 'Personalizado'
+      pareja: 'lt.pareja', familia: 'lt.familia', amigo: 'lt.amigo', custom: 'lt.custom'
     };
 
     async function nexusMisVinculos() {
@@ -2203,9 +2203,9 @@
       return out;
     }
 
-    // nombre visible de un vínculo: username (handle) > display_name > 'Usuario'
+    // nombre visible de un vínculo: username (handle) > display_name > t('vinc.user')
     function vinculosNombre(other) {
-      return (other && (other.username || other.display_name)) || 'Usuario';
+      return (other && (other.username || other.display_name)) || t('vinc.user');
     }
 
     function vinculosEsc(s) {
@@ -2218,11 +2218,11 @@
       var ov = document.getElementById('modal-vinculos');
       if (!ov) return;
       var body = document.getElementById('vinculos-body');
-      body.innerHTML = '<p style="color:#8f98a0;font-size:13px;">Cargando…</p>';
+      body.innerHTML = '<p style="color:#8f98a0;font-size:13px;">' + t('vinc.loading') + '</p>';
       ov.style.display = 'flex';
       requestAnimationFrame(() => requestAnimationFrame(() => ov.style.opacity = '1'));
       nexusMisVinculos().then(function(d) { renderVinculos(d); }).catch(function(e) {
-        body.innerHTML = '<p style="color:#ff8585;font-size:13px;">Error: ' + vinculosEsc(e.message) + '</p>';
+        body.innerHTML = '<p style="color:#ff8585;font-size:13px;">' + t('err.prefix') + vinculosEsc(e.message) + '</p>';
       });
     }
 
@@ -2237,29 +2237,29 @@
 
       // --- mi código ---
       h += '<div style="background:rgba(255,255,255,.04);border:1px solid var(--border,rgba(255,255,255,.1));border-radius:10px;padding:12px 14px;margin-bottom:14px;">';
-      h += '<div style="font-size:11px;color:#8f98a0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Mi código de invitación</div>';
+      h += '<div style="font-size:11px;color:#8f98a0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">' + t('vinc.mycode') + '</div>';
       if (d.invite_code) {
         h += '<div style="display:flex;align-items:center;gap:10px;">' +
              '<code style="font-size:18px;font-weight:700;color:#7ee0a3;letter-spacing:2px;">' + vinculosEsc(d.invite_code) + '</code>' +
-             '<button class="btn btn-circle" onclick="vinculosCopiar()" title="Copiar"><svg class="ico"><use href="#i-copy"/></svg></button></div>';
-        h += '<div style="font-size:11px;color:#8f98a0;margin-top:6px;">Comparte este código — la otra persona lo introduce en su perfil.</div>';
+             '<button class="btn btn-circle" onclick="vinculosCopiar()" title="' + t('pf.copy') + '"><svg class="ico"><use href="#i-copy"/></svg></button></div>';
+        h += '<div style="font-size:11px;color:#8f98a0;margin-top:6px;">' + t('vinc.mycodedesc') + '</div>';
       } else {
-        h += '<div style="font-size:12px;color:#8f98a0;">No disponible.</div>';
+        h += '<div style="font-size:12px;color:#8f98a0;">' + t('vinc.nodisp') + '</div>';
       }
       h += '</div>';
 
       // --- solicitar vínculo ---
       h += '<div style="margin-bottom:14px;">';
-      h += '<div style="font-size:11px;color:#8f98a0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Añadir vínculo</div>';
+      h += '<div style="font-size:11px;color:#8f98a0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">' + t('vinc.addlink') + '</div>';
       h += '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
-           '<input id="vinc-codigo" type="text" placeholder="Código" style="flex:1;min-width:110px;padding:10px;border-radius:8px;border:1px solid var(--border);background:#0b0e14;color:var(--text);font-size:14px;text-transform:uppercase;">' +
+           '<input id="vinc-codigo" type="text" placeholder="' + t('vinc.codeph') + '" style="flex:1;min-width:110px;padding:10px;border-radius:8px;border:1px solid var(--border);background:#0b0e14;color:var(--text);font-size:14px;text-transform:uppercase;">' +
            '<select id="vinc-tipo" onchange="vinculosToggleLabel()" style="padding:10px;border-radius:8px;border:1px solid var(--border);background:#0b0e14;color:var(--text);font-size:13px;">';
       Object.keys(VINCULOS_LINK_TYPES).forEach(function(k) {
-        h += '<option value="' + k + '">' + VINCULOS_LINK_TYPES[k] + '</option>';
+        h += '<option value="' + k + '">' + t(VINCULOS_LINK_TYPES[k]) + '</option>';
       });
       h += '</select>' +
-           '<button class="btn btn-text" onclick="vinculosSolicitar()">Enviar</button></div>' +
-           '<input id="vinc-label" type="text" placeholder="Nombre del vínculo (ej. Vecino, Compañero de trabajo…)" ' +
+           '<button class="btn btn-text" onclick="vinculosSolicitar()">' + t('btn.send') + '</button></div>' +
+           '<input id="vinc-label" type="text" placeholder="' + t('vinc.nameph') + '" ' +
            'style="display:none;width:100%;margin-top:8px;padding:10px;border-radius:8px;border:1px solid var(--border);background:#0b0e14;color:var(--text);font-size:13px;">';
       h += '<div id="vinc-msg" style="font-size:12px;margin-top:6px;min-height:14px;"></div></div>';
 
@@ -2289,21 +2289,21 @@
 
       // --- pendientes entrantes ---
       if (pendientesIn.length) {
-        h += '<div style="margin-bottom:14px;"><div style="font-size:11px;color:#ffd479;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Solicitudes recibidas</div>';
+        h += '<div style="margin-bottom:14px;"><div style="font-size:11px;color:#ffd479;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">' + t('vinc.requests') + '</div>';
         pendientesIn.forEach(function(x) {
           var nombre = vinculosNombre(x.other);
           h += '<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(255,212,121,.06);border:1px solid rgba(255,212,121,.25);border-radius:8px;margin-bottom:6px;">' +
                '<span style="flex:1;font-size:13px;">' + vinculosEsc(nombre) +
                ' <span style="color:#8f98a0;font-size:11px;">(' + vinculosEsc(vinculosTypeLabel(x)) + ')</span></span>' +
-               '<button class="btn btn-text" style="padding:6px 12px;font-size:12px;" onclick="vinculosResponder(\'' + x.link_id + '\',true)">Aceptar</button>' +
-               '<button class="btn btn-circle" style="color:#ff8585;" onclick="vinculosResponder(\'' + x.link_id + '\',false)" title="Rechazar"><svg class="ico"><use href="#i-x"/></svg></button></div>';
+               '<button class="btn btn-text" style="padding:6px 12px;font-size:12px;" onclick="vinculosResponder(\'' + x.link_id + '\',true)">' + t('vinc.accept') + '</button>' +
+               '<button class="btn btn-circle" style="color:#ff8585;" onclick="vinculosResponder(\'' + x.link_id + '\',false)" title="' + t('vinc.reject') + '"><svg class="ico"><use href="#i-x"/></svg></button></div>';
         });
         h += '</div>';
       }
 
       // --- pendientes salientes ---
       if (pendientesOut.length) {
-        h += '<div style="margin-bottom:14px;"><div style="font-size:11px;color:#8f98a0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Enviadas (esperando respuesta)</div>';
+        h += '<div style="margin-bottom:14px;"><div style="font-size:11px;color:#8f98a0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">' + t('vinc.sentwait') + '</div>';
         pendientesOut.forEach(function(x) {
           var nombre = vinculosNombre(x.other);
           h += '<div style="padding:8px 10px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;margin-bottom:6px;font-size:13px;">' +
@@ -2313,9 +2313,9 @@
       }
 
       // --- aceptados ---
-      h += '<div><div style="font-size:11px;color:#7ee0a3;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Vinculados</div>';
+      h += '<div><div style="font-size:11px;color:#7ee0a3;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">' + t('vinc.linked') + '</div>';
       if (!aceptados.length) {
-        h += '<div style="font-size:12px;color:#8f98a0;">Sin vínculos aceptados todavía.</div>';
+        h += '<div style="font-size:12px;color:#8f98a0;">' + t('vinc.nolink') + '</div>';
       }
       aceptados.forEach(function(x) {
         var nombre = vinculosNombre(x.other);
@@ -2324,7 +2324,7 @@
              '<div style="display:flex;align-items:center;gap:8px;">' +
              '<span style="flex:1;font-size:13px;">' + vinculosEsc(nombre) + '</span>' +
              nexusLinkBadge(x.link_type, x.link_label) +
-             (pid ? '<button class="btn btn-circle" style="width:26px;height:26px;" onclick="toggleVisPanel(\'' + pid + '\')" title="Visibilidad"><svg class="ico ico-sm"><use href="#i-settings"/></svg></button>' : '') +
+             (pid ? '<button class="btn btn-circle" style="width:26px;height:26px;" onclick="toggleVisPanel(\'' + pid + '\')" title="' + t('vinc.visib') + '"><svg class="ico ico-sm"><use href="#i-settings"/></svg></button>' : '') +
              '</div>' +
              (pid ? '<div id="vis-panel-' + pid + '" style="display:none;margin-top:8px;"></div>' : '') +
              '</div>';
@@ -2336,19 +2336,19 @@
       var sharesIn = shares.filter(function(x) { return x.direction === 'incoming' && x.status === 'pending'; });
       var sharesOut = shares.filter(function(x) { return x.direction === 'outgoing' && x.status === 'pending'; });
       if (sharesIn.length || sharesOut.length) {
-        h += '<div style="margin-top:14px;"><div style="font-size:11px;color:#7ee0a3;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Elementos compartidos</div>';
+        h += '<div style="margin-top:14px;"><div style="font-size:11px;color:#7ee0a3;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">' + t('vinc.shared') + '</div>';
         sharesIn.forEach(function(x) {
           var it = x.item || {};
           h += '<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(126,224,163,.06);border:1px solid rgba(126,224,163,.25);border-radius:8px;margin-bottom:6px;">' +
-               '<span style="flex:1;font-size:13px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + vinculosEsc(it.titulo || 'Item') +
-               ' <span style="color:#8f98a0;font-size:11px;">de ' + vinculosEsc(x.other_name || 'alguien') + '</span></span>' +
-               '<button class="btn btn-text" style="padding:6px 12px;font-size:12px;" onclick="vinculosItemResponder(\'' + x.request_id + '\',true)">Aceptar</button>' +
-               '<button class="btn btn-circle" style="color:#ff8585;" onclick="vinculosItemResponder(\'' + x.request_id + '\',false)" title="Rechazar"><svg class="ico"><use href="#i-x"/></svg></button></div>';
+               '<span style="flex:1;font-size:13px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + vinculosEsc(it.titulo || t('vinc.item')) +
+               ' <span style="color:#8f98a0;font-size:11px;">' + t('vinc.de') + ' ' + vinculosEsc(x.other_name || t('vinc.someone')) + '</span></span>' +
+               '<button class="btn btn-text" style="padding:6px 12px;font-size:12px;" onclick="vinculosItemResponder(\'' + x.request_id + '\',true)">' + t('vinc.accept') + '</button>' +
+               '<button class="btn btn-circle" style="color:#ff8585;" onclick="vinculosItemResponder(\'' + x.request_id + '\',false)" title="' + t('vinc.reject') + '"><svg class="ico"><use href="#i-x"/></svg></button></div>';
         });
         sharesOut.forEach(function(x) {
           var it = x.item || {};
           h += '<div style="padding:8px 10px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;margin-bottom:6px;font-size:13px;">' +
-               vinculosEsc(it.titulo || 'Item') + ' <span style="color:#8f98a0;font-size:11px;">→ ' + vinculosEsc(x.other_name || '') + ' (esperando)</span></div>';
+               vinculosEsc(it.titulo || 'Item') + ' <span style="color:#8f98a0;font-size:11px;">→ ' + vinculosEsc(x.other_name || '') + ' ' + t('vinc.waiting') + '</span></div>';
         });
         h += '</div>';
       }
@@ -2397,8 +2397,8 @@
       var lbl = document.getElementById('vinc-label');
       var msg = document.getElementById('vinc-msg');
       var code = (inp.value || '').trim();
-      if (!code) { msg.textContent = 'Escribe un código.'; msg.style.color = '#ff8585'; return; }
-      msg.textContent = 'Enviando…'; msg.style.color = '#8f98a0';
+      if (!code) { msg.textContent = t('vinc.errcode'); msg.style.color = '#ff8585'; return; }
+      msg.textContent = t('vinc.sending'); msg.style.color = '#8f98a0';
       try {
         var sb = await nexusSb();
         var r = await sb.rpc('request_library_link', {
@@ -2407,7 +2407,7 @@
           p_link_label: (lbl && sel.value === 'custom') ? (lbl.value || '').trim() : null
         });
         if (r.error) throw new Error(r.error.message);
-        msg.textContent = 'Solicitud enviada.'; msg.style.color = '#7bd88f';
+        msg.textContent = t('vinc.sentok'); msg.style.color = '#7bd88f';
         inp.value = '';
         setTimeout(function() { abrirVinculosModal(); }, 800);
       } catch (e) {
@@ -2420,10 +2420,10 @@
         var sb = await nexusSb();
         var r = await sb.rpc('respond_item_share', { p_request_id: requestId, p_accept: accept });
         if (r.error) throw new Error(r.error.message);
-        showToast && showToast(accept ? 'Elemento añadido a tu biblioteca.' : 'Solicitud rechazada.', accept ? 'success' : 'warning');
+        showToast && showToast(accept ? t('toast.itemadded') : t('toast.rechazada'), accept ? 'success' : 'warning');
         abrirVinculosModal();
       } catch (e) {
-        showToast && showToast('Error: ' + (e.message || ''), 'error');
+        showToast && showToast(t('err.prefix') + (e.message || ''), 'error');
       }
     }
 
@@ -2432,21 +2432,21 @@
         var sb = await nexusSb();
         var r = await sb.rpc('respond_library_link', { p_link_id: linkId, p_accept: accept });
         if (r.error) throw new Error(r.error.message);
-        showToast && showToast(accept ? 'Vínculo aceptado.' : 'Solicitud rechazada.', accept ? 'success' : 'warning');
+        showToast && showToast(accept ? t('toast.vincacept') : t('toast.rechazada'), accept ? 'success' : 'warning');
         abrirVinculosModal();
       } catch (e) {
-        showToast && showToast('Error: ' + (e.message || ''), 'error');
+        showToast && showToast(t('err.prefix') + (e.message || ''), 'error');
       }
     }
 
     // ---- editor matriz visibility por vínculo (Phase 5A) ----
     var VINCULOS_CATS = [
-      ['Juegos', 'Juegos'], ['Peliculas_Series', 'Películas/Series'],
-      ['Libros', 'Libros'], ['Mangas', 'Mangas']
+      ['Juegos', 'cfg.Juegos.label'], ['Peliculas_Series', 'Películas/Series'],
+      ['Libros', 'cfg.Libros.label'], ['Mangas', 'cfg.Mangas.label']
     ];
     var VINCULOS_FIELDS = [
-      ['status', 'Estado'], ['rating', 'Valoración'], ['wishlist', 'Deseado'],
-      ['progress', 'Progreso'], ['notes', 'Notas']
+      ['status', 'vf.status'], ['rating', 'vf.rating'], ['wishlist', 'vf.wishlist'],
+      ['progress', 'vf.progress'], ['notes', 'vf.notes']
     ];
 
     function visSel(pid) {
@@ -2477,13 +2477,13 @@
       var dirs = [];
       if (info.rows.out) dirs.push({ k: 'out', label: 'Yo → ' + info.name });
       if (info.rows.in)  dirs.push({ k: 'in',  label: info.name + ' → yo' });
-      if (!dirs.length) { p.innerHTML = '<div class="sp-empty">Sin vínculo activo.</div>'; return; }
+      if (!dirs.length) { p.innerHTML = '<div class="sp-empty">' + t('vis.none') + '</div>'; return; }
       if (!info.rows[sel.dir]) sel.dir = dirs[0].k;
       var row = info.rows[sel.dir];
       var catVis = (row.visibility && row.visibility[sel.cat]) || {};
 
       var h = '<div class="sp-panel" style="padding:10px;">';
-      h += '<div class="sp-label" style="margin-bottom:6px;">Dirección</div>' +
+      h += '<div class="sp-label" style="margin-bottom:6px;">' + t('vis.dir') + '</div>' +
            '<div style="display:flex;gap:6px;margin-bottom:10px;">';
       dirs.forEach(function(dd) {
         var on = dd.k === sel.dir;
@@ -2492,26 +2492,26 @@
              '" onclick="visSetDir(\'' + pid + '\',\'' + dd.k + '\')">' + vinculosEsc(dd.label) + '</button>';
       });
       h += '</div>';
-      h += '<div class="sp-label" style="margin-bottom:6px;">Categoría</div>' +
+      h += '<div class="sp-label" style="margin-bottom:6px;">' + t('vis.cat') + '</div>' +
            '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">';
       VINCULOS_CATS.forEach(function(cc) {
         var on = cc[0] === sel.cat;
         h += '<button class="sp-btn" style="padding:5px 9px;font-size:11px;' +
              (on ? 'background:rgba(102,192,244,.18);border-color:rgba(102,192,244,.4);color:var(--accent);' : '') +
-             '" onclick="visSetCat(\'' + pid + '\',\'' + cc[0] + '\')">' + cc[1] + '</button>';
+             '" onclick="visSetCat(\'' + pid + '\',\'' + cc[0] + '\')">' + t(cc[1]) + '</button>';
       });
       h += '</div>';
-      h += '<div class="sp-label" style="margin-bottom:6px;">Campos visibles — ' +
-           vinculosEsc(sel.dir === 'out' ? 'lo que tú compartes' : 'lo que te comparte') + '</div>';
+      h += '<div class="sp-label" style="margin-bottom:6px;">' + t('vis.fields') + ' — ' +
+           vinculosEsc(sel.dir === 'out' ? t('vis.you') : t('vis.them')) + '</div>';
       VINCULOS_FIELDS.forEach(function(f) {
         var on = catVis[f[0]] === true;
         h += '<label class="sp-row" style="padding:6px 10px;">' +
              '<input type="checkbox" class="sp-check" id="vis-f-' + pid + '-' + f[0] + '"' + (on ? ' checked' : '') + '> ' +
-             '<span class="sp-name" style="font-size:12px;">' + f[1] + '</span></label>';
+             '<span class="sp-name" style="font-size:12px;">' + t(f[1]) + '</span></label>';
       });
-      h += '<div class="sp-hint">Aplica a todas las personas de ese tipo de vínculo según su propia matriz — esto edita solo esta relación.</div>';
+      h += '<div class="sp-hint">' + t('vis.hint') + '</div>';
       h += '<div class="sp-actions" style="margin-top:10px;">' +
-           '<button class="sp-btn sp-btn-primary" onclick="vinculosGuardarVisibilidad(\'' + pid + '\')">Guardar</button></div>';
+           '<button class="sp-btn sp-btn-primary" onclick="vinculosGuardarVisibilidad(\'' + pid + '\')">' + t('btn.guardar') + '</button></div>';
       h += '</div>';
       p.innerHTML = h;
     }
@@ -2532,10 +2532,10 @@
         var r = await sb.from('library_links').update({ visibility: vis }).eq('id', row.link_id);
         if (r.error) throw new Error(r.error.message);
         row.visibility = vis;
-        showToast && showToast('Visibilidad actualizada.', 'success');
+        showToast && showToast(t('toast.visupd'), 'success');
         renderVisPanel(pid);
       } catch (e) {
-        showToast && showToast('Error: ' + (e.message || ''), 'error');
+        showToast && showToast(t('err.prefix') + (e.message || ''), 'error');
       }
     }
 
@@ -2578,22 +2578,22 @@
         box.style.display = 'block';
         var accS = document.getElementById('acc-' + k);
         if (accS) accS.classList.remove('is-remote');
-        btn.innerHTML = svgIcon('i-users', 'ico-sm') + ' Vínculos';
+        btn.innerHTML = svgIcon('i-users', 'ico-sm') + ' ' + t('sh.links');
         nexusFetchMyPrivacy(currentCategory, it.id).then(function(st) {
           var sw = st.shared_with;
           var n = Array.isArray(sw) ? sw.length : 0;
           if (st.is_private) {
-            btn.innerHTML = svgIcon('i-lock', 'ico-sm') + ' Privado';
+            btn.innerHTML = svgIcon('i-lock', 'ico-sm') + ' ' + t('sh.privatebtn');
             btn.style.background = 'rgba(255,107,107,.10)';
             btn.style.color = '#ff8585'; btn.style.borderColor = 'rgba(255,133,133,.4)';
             btn.style.boxShadow = '0 0 10px rgba(255,107,107,.12)';
           } else if (n > 0) {
-            btn.innerHTML = svgIcon('i-users', 'ico-sm') + ' Con ' + n + (n === 1 ? ' persona' : ' personas');
+            btn.innerHTML = svgIcon('i-users', 'ico-sm') + ' ' + tf('sh.withn', { n: n, w: n === 1 ? t('sh.person') : t('sh.people') });
             btn.style.background = 'rgba(126,224,163,.10)';
             btn.style.color = '#7ee0a3'; btn.style.borderColor = 'rgba(126,224,163,.4)';
             btn.style.boxShadow = '0 0 10px rgba(126,224,163,.12)';
           } else {
-            btn.innerHTML = svgIcon('i-users', 'ico-sm') + ' Vínculos';
+            btn.innerHTML = svgIcon('i-users', 'ico-sm') + ' ' + t('sh.links');
             btn.style.background = 'rgba(126,224,163,.10)';
             btn.style.color = '#7ee0a3';
             btn.style.borderColor = 'rgba(126,224,163,.4)';
@@ -2616,7 +2616,7 @@
         return;
       }
       panel.style.display = 'block';
-      panel.innerHTML = '<div class="sp-empty">Cargando…</div>';
+      panel.innerHTML = '<div class="sp-empty">' + t('vinc.loading') + '</div>';
       _shareCtx = { cat: currentCategory, id: currentItemId, k: k };
       try {
         var d = await nexusMisVinculos();
@@ -2636,13 +2636,13 @@
     };
     function vinculosTypeLabel(x) {
       if (x && x.link_type === 'custom' && x.link_label) return x.link_label;
-      return VINCULOS_LINK_TYPES[x && x.link_type] || (x && x.link_type) || '';
+      return t(VINCULOS_LINK_TYPES[x && x.link_type]) || (x && x.link_type) || '';
     }
 
     function nexusLinkBadge(linkType, linkLabel) {
       var c = VINCULOS_BADGE_COLORS[linkType] || VINCULOS_BADGE_COLORS.custom;
       var label = (linkType === 'custom' && linkLabel) ? linkLabel
-                : (VINCULOS_LINK_TYPES[linkType] || linkType || '');
+                : t(VINCULOS_LINK_TYPES[linkType] || linkType || '');
       return '<span class="sp-badge" style="background:' + c.bg + '22;color:' + c.bg + ';border:1px solid ' + c.bg + '55;">' + vinculosEsc(label) + '</span>';
     }
     function nexusAvatar(name, color) {
@@ -2665,18 +2665,18 @@
       var sw = Array.isArray(st.shared_with) ? st.shared_with : [];
       var h = '';
 
-      h += '<div class="sp-label" style="color:#ff8585;">' + svgIcon('i-lock', 'ico-sm') + ' Privacidad de tu tracking</div>';
+      h += '<div class="sp-label" style="color:#ff8585;">' + svgIcon('i-lock', 'ico-sm') + ' ' + t('sh.privacy') + '</div>';
 
       // toggle privado
       h += '<label class="sp-row' + (st.is_private ? ' sp-row-danger' : '') + '">' +
            '<input type="checkbox" class="sp-check" id="share-privado-' + k + '"' + (st.is_private ? ' checked' : '') + '> ' +
-           svgIcon('i-lock', 'ico-sm') + ' <span class="sp-name" style="font-size:12px;">Privado — nadie ve esto</span></label>';
+           svgIcon('i-lock', 'ico-sm') + ' <span class="sp-name" style="font-size:12px;">' + t('sh.private') + '</span></label>';
 
       // audiencia (solo si no está privado)
       h += '<div id="share-aud-' + k + '" style="' + (st.is_private ? 'display:none;' : '') + 'margin-top:10px;">';
-      h += '<div class="sp-label">Visible para</div>';
+      h += '<div class="sp-label">' + t('sh.visible') + '</div>';
       h += '<label class="sp-row" style="padding:8px 10px;"><input type="radio" class="sp-check" name="share-mode-' + k + '"' + (sw.length === 0 ? ' checked' : '') + '> ' +
-           '<span class="sp-name" style="font-size:12px;">Todos mis vínculos</span></label>';
+           '<span class="sp-name" style="font-size:12px;">' + t('sh.all') + '</span></label>';
       personas.forEach(function(x) {
         var pid = x.other.profile_id;
         var sel = sw.indexOf(pid) !== -1;
@@ -2687,13 +2687,13 @@
              nexusLinkBadge(x.link_type, x.link_label) + '</label>';
       });
       if (!personas.length) {
-        h += '<div class="sp-empty">Sin vínculos aceptados — solo tú verás esto.</div>';
+        h += '<div class="sp-empty">' + t('sh.nolink') + '</div>';
       }
       h += '</div>';
-      h += '<div class="sp-hint">El candado es solo para ti — los demás nunca ven que existe.</div>';
+      h += '<div class="sp-hint">' + t('sh.hint') + '</div>';
       h += '<div class="sp-actions">' +
-           '<button class="sp-btn sp-btn-primary" onclick="guardarSharePanel(\'' + k + '\')">Guardar</button>' +
-           '<button class="sp-btn" onclick="nexusSharePanel(\'' + k + '\').style.display=\'none\'">Cerrar</button></div>';
+           '<button class="sp-btn sp-btn-primary" onclick="guardarSharePanel(\'' + k + '\')">' + t('btn.guardar') + '</button>' +
+           '<button class="sp-btn" onclick="nexusSharePanel(\'' + k + '\').style.display=\'none\'">' + t('btn.cerrar') + '</button></div>';
 
       panel.innerHTML = h;
       var priv = document.getElementById('share-privado-' + k);
@@ -2760,7 +2760,7 @@
         return;
       }
       panel.style.display = 'block';
-      panel.innerHTML = '<div class="sp-empty">Cargando…</div>';
+      panel.innerHTML = '<div class="sp-empty">' + t('vinc.loading') + '</div>';
       try {
         var d = await nexusMisVinculos();
         if (!nexusSendPanel(k) || nexusSendPanel(k).style.display === 'none') return;
@@ -2773,9 +2773,9 @@
         window._sendPersonas = window._sendPersonas || {};
         window._sendPersonas[k] = {};
         personas.forEach(function(x) { window._sendPersonas[k][x.other.profile_id] = vinculosNombre(x.other); });
-        var h = '<div class="sp-label">' + svgIcon('i-send', 'ico-sm') + ' Enviar este elemento a</div>';
+        var h = '<div class="sp-label">' + svgIcon('i-send', 'ico-sm') + ' ' + t('send.to') + '</div>';
         if (!personas.length) {
-          h += '<div class="sp-empty">No tienes vínculos aceptados.</div>';
+          h += '<div class="sp-empty">' + t('send.nolink') + '</div>';
         }
         personas.forEach(function(x) {
           var col = VINCULOS_BADGE_COLORS[x.link_type] ? VINCULOS_BADGE_COLORS[x.link_type].bg : '#66c0f4';
@@ -2785,7 +2785,7 @@
                nexusLinkBadge(x.link_type, x.link_label) +
                svgIcon('i-chevron-down', 'ico-sm') + '</button>';
         });
-        h += '<div class="sp-hint">Te llega una solicitud — al aceptarla, el elemento aparece en su biblioteca.</div>';
+        h += '<div class="sp-hint">' + t('send.hint') + '</div>';
         h += '<div id="send-msg-' + k + '" class="sp-msg"></div>';
         panel.innerHTML = h;
       } catch (e) {
@@ -2794,9 +2794,9 @@
     }
 
     async function nexusSendItem(k, profileId) {
-      var nombre = (window._sendPersonas && window._sendPersonas[k] && window._sendPersonas[k][profileId]) || 'la persona';
+      var nombre = (window._sendPersonas && window._sendPersonas[k] && window._sendPersonas[k][profileId]) || t('send.person');
       var msg = document.getElementById('send-msg-' + k);
-      if (msg) { msg.textContent = 'Enviando…'; msg.style.color = '#8f98a0'; }
+      if (msg) { msg.textContent = t('vinc.sending'); msg.style.color = '#8f98a0'; }
       try {
         var sb = await nexusSb();
         var r = await sb.rpc('send_item_share', {
@@ -2805,8 +2805,8 @@
           p_to_profile_id: profileId
         });
         if (r.error) throw new Error(r.error.message);
-        if (msg) { msg.textContent = 'Enviado a ' + nombre + ' — esperando confirmación.'; msg.style.color = '#7ee0a3'; }
-        showToast && showToast('Elemento enviado a ' + nombre, 'success');
+        if (msg) { msg.textContent = tf('send.sent', { n: nombre }); msg.style.color = '#7ee0a3'; }
+        showToast && showToast(tf('send.toast', { n: nombre }), 'success');
       } catch (e) {
         if (msg) { msg.textContent = e.message || 'Error'; msg.style.color = '#ff8585'; }
       }
@@ -2828,9 +2828,9 @@
         var ctx = _shareCtx;
         nexusSharePanel(k).style.display = 'none';
         nexusSyncShareUI({ id: ctx.id });
-        showToast && showToast('Privacidad actualizada.', 'success');
+        showToast && showToast(t('toast.privupd'), 'success');
       } catch (e) {
-        showToast && showToast('Error: ' + (e.message || ''), 'error');
+        showToast && showToast(t('err.prefix') + (e.message || ''), 'error');
       }
     }
   </script>
@@ -2932,14 +2932,14 @@
 
       var h = '';
       (_personas || []).forEach(function(p) {
-        h += '<div class="filter-group"><label>' + nexusPersonaDot(p, 12) + ' ' + vinculosEsc(p.label || p.suffix) + ' (Estado)</label>' +
+        h += '<div class="filter-group"><label>' + nexusPersonaDot(p, 12) + ' ' + vinculosEsc(p.label || p.suffix) + ' (' + t('fl.estado') + ')</label>' +
              '<select id="filter-est-' + p.key + '" onchange="filtrarItems()">' +
-             '<option value="todos">Todos</option><option value="No jugado">Pendiente</option>' +
-             '<option value="En proceso">En proceso</option><option value="Completado">Completado</option></select></div>';
-        h += '<div class="filter-group"><label><svg class="ico ico-sm ico-gold"><use href="#i-star"/></svg> Nota Mínima ' + vinculosEsc(p.label || p.suffix) + '</label>' +
+             '<option value="todos">' + t('fl.todos') + '</option><option value="No jugado">' + t('st.nojugado') + '</option>' +
+             '<option value="En proceso">' + t('st.enproceso') + '</option><option value="Completado">' + t('st.completado') + '</option></select></div>';
+        h += '<div class="filter-group"><label><svg class="ico ico-sm ico-gold"><use href="#i-star"/></svg>' + t('fl.nota_min') + '' + vinculosEsc(p.label || p.suffix) + '</label>' +
              '<select id="filter-nota-' + p.key + '" onchange="filtrarItems()">' +
-             '<option value="0">Todas las notas</option><option value="5">5+ (5/10 o superior)</option>' +
-             '<option value="7">7+ (7/10 o superior)</option><option value="9">9+ (9/10 o superior)</option></select></div>';
+             '<option value="0">' + t('fl.todasnotas') + '</option><option value="5">' + t('fl.nota5') + '</option>' +
+             '<option value="7">' + t('fl.nota7') + '</option><option value="9">' + t('fl.nota9') + '</option></select></div>';
       });
       if (wrap) wrap.innerHTML = h;
       (_personas || []).forEach(function(p) {
@@ -2951,12 +2951,12 @@
 
       // deseados: todos / cualquiera / ninguno / solo:{key} / all
       if (selDeseado) {
-        var dh = '<option value="todos">Todos</option><option value="cualquiera">Cualquiera</option>' +
-                 '<option value="ninguno">Ninguno</option>';
+        var dh = '<option value="todos">' + t('fl.todos') + '</option><option value="cualquiera">' + t('fl.cualquiera') + '</option>' +
+                 '<option value="ninguno">' + t('fl.ninguno') + '</option>';
         (_personas || []).forEach(function(p) {
-          dh += '<option value="solo:' + p.key + '">Solo ' + vinculosEsc(p.label || p.suffix) + '</option>';
+          dh += '<option value="solo:' + p.key + '">' + tf('fl.solo', { n: vinculosEsc(p.label || p.suffix) }) + '</option>';
         });
-        if ((_personas || []).length > 1) dh += '<option value="all">Todos por igual</option>';
+        if ((_personas || []).length > 1) dh += '<option value="all">' + t('fl.todosigual') + '</option>';
         selDeseado.innerHTML = dh;
         selDeseado.value = prevDeseado;
         if (selDeseado.value !== prevDeseado) selDeseado.value = 'todos';
@@ -2964,12 +2964,12 @@
 
       // orden por nota de cada persona
       if (selOrden) {
-        var oh = '<option value="az">Alfabético (A - Z)</option><option value="za">Alfabético (Z - A)</option>' +
-                '<option value="recientes">Últimos añadidos</option>';
+        var oh = '<option value="az">' + t('sort.az') + '</option><option value="za">' + t('sort.za') + '</option>' +
+                '<option value="recientes">' + t('sort.recientes') + '</option>';
         (_personas || []).forEach(function(p) {
-          oh += '<option value="nota:' + p.key + '">Nota de ' + vinculosEsc(p.label || p.suffix) + '</option>';
+          oh += '<option value="nota:' + p.key + '">' + tf('fl.nota', { n: vinculosEsc(p.label || p.suffix) }) + '</option>';
         });
-        oh += '<option value="puntuacion">Puntuación</option>';
+        oh += '<option value="puntuacion">' + t('sort.puntuacion') + '</option>';
         selOrden.innerHTML = oh;
         selOrden.value = prevOrden;
         if (selOrden.value !== prevOrden) selOrden.value = 'az';
@@ -3020,7 +3020,88 @@
         'pa.pendiente': 'Pendiente', 'pa.sinnota': 'Sin nota', 'pa.wish': 'Marcar como deseado',
         'st.nojugado': 'Pendiente / No jugado', 'st.enproceso': 'En proceso', 'st.completado': 'Completado',
         'pa.progph': 'Progreso (ej. T2 E04)...', 'pa.chaps': 'Capítulos leídos', 'pa.chapstotal': 'Total manual',
-        'pa.leidos': 'Leídos', 'pa.total': 'Total', 'pa.noteph': 'Apunte rápido de {n}...', 'btn.send': 'Enviar'
+        'pa.leidos': 'Leídos', 'pa.total': 'Total', 'pa.noteph': 'Apunte rápido de {n}...', 'btn.send': 'Enviar',
+        'err.prefix': 'Error: ', 'err.itemnf': t('err.itemnf'), 'err.itemnf2': t('err.itemnf2'),
+        'err.elemnf': 'No se encontró el elemento.', 'err.owntrack': t('err.owntrack'),
+        'err.noname': 'El nombre no puede estar vacío.', 'err.nouser': 'El usuario no puede estar vacío (solo a-z, 0-9 y _).',
+        'toast.copied': 'Código copiado.', 'toast.profile': 'Perfil guardado.', 'toast.savefail': 'No se pudo guardar el cambio.',
+        'toast.movido': 'Movido a la papelera.', 'toast.noelim': 'No se pudo eliminar', 'confirm.papelera': '¿Mover a la Papelera?',
+        'toast.actualizada': 'Ficha actualizada.', 'toast.errupd': 'Error al actualizar', 'toast.actualizando': 'Actualizando...',
+        'toast.repair': 'Reparar / Actualizar Metadata', 'toast.conn': 'Conexión restablecida.',
+        'toast.offline': 'Sin conexión — modo solo lectura.', 'toast.offupd': 'Sin conexión para actualizar — mostrando datos guardados.',
+        'toast.statsupd': 'Actualizando estadísticas...', 'toast.nocolec': 'Coleccionables aún no tiene contenido.',
+        'toast.coming': 'Coleccionables — próximamente', 'toast.reintentar': 'Reintentar',
+        'toast.errload': 'No se pudieron cargar los elementos', 'toast.addreq': 'Escribe un nombre, ID o URL.',
+        'toast.busy': 'Buscando coincidencias...', 'toast.timeout': 'Tiempo agotado. Intenta de nuevo.',
+        'toast.noresults': 'Sin resultados.', 'toast.addbtn': '+ Añadir', 'toast.noadd': 'No se pudo añadir',
+        'toast.vincacept': 'Vínculo aceptado.', 'toast.rechazada': 'Solicitud rechazada.',
+        'toast.itemadded': 'Elemento añadido a tu biblioteca.', 'toast.visupd': 'Visibilidad actualizada.',
+        'toast.privupd': 'Privacidad actualizada.',
+        'vinc.loading': 'Cargando…', 'vinc.mycode': 'Mi código de invitación',
+        'vinc.mycodedesc': 'Comparte este código — la otra persona lo introduce en su perfil.', 'vinc.nodisp': 'No disponible.',
+        'vinc.addlink': 'Añadir vínculo', 'vinc.codeph': 'Código',
+        'vinc.nameph': 'Nombre del vínculo (ej. Vecino, Compañero de trabajo…)', 'vinc.requests': 'Solicitudes recibidas',
+        'vinc.accept': 'Aceptar', 'vinc.reject': 'Rechazar', 'vinc.sentwait': 'Enviadas (esperando respuesta)',
+        'vinc.linked': 'Vinculados', 'vinc.nolink': 'Sin vínculos aceptados todavía.', 'vinc.shared': 'Elementos compartidos',
+        'vinc.de': 'de', 'vinc.waiting': '(esperando)', 'vinc.errcode': 'Escribe un código.', 'vinc.sending': 'Enviando…',
+        'vinc.sentok': 'Solicitud enviada.', 'vinc.user': 'Usuario', 'vinc.visib': 'Visibilidad',
+        'vinc.item': 'Item', 'vinc.someone': 'alguien', 'vinc.inprofile': 'Añadir vínculo',
+        'lt.pareja': 'Pareja', 'lt.familia': 'Familia', 'lt.amigo': 'Amigo', 'lt.custom': 'Personalizado',
+        'vf.status': 'Estado', 'vf.rating': 'Valoración', 'vf.wishlist': 'Deseado', 'vf.progress': 'Progreso', 'vf.notes': 'Notas',
+        'vis.none': 'Sin vínculo activo.', 'vis.dir': 'Dirección', 'vis.cat': 'Categoría',
+        'vis.fields': 'Campos visibles', 'vis.you': 'lo que tú compartes', 'vis.them': 'lo que te comparte',
+        'vis.hint': 'Aplica a todas las personas de ese tipo de vínculo según su propia matriz — esto edita solo esta relación.',
+        'sh.privacy': 'Privacidad de tu tracking', 'sh.private': 'Privado — nadie ve esto', 'sh.visible': 'Visible para',
+        'sh.all': 'Todos mis vínculos', 'sh.nolink': 'Sin vínculos aceptados — solo tú verás esto.',
+        'sh.hint': 'El candado es solo para ti — los demás nunca ven que existe.', 'sh.privatebtn': 'Privado',
+        'sh.person': 'persona', 'sh.people': 'personas', 'sh.links': 'Vínculos',
+        'send.to': 'Enviar este elemento a', 'send.nolink': 'No tienes vínculos aceptados.',
+        'send.hint': 'Te llega una solicitud — al aceptarla, el elemento aparece en su biblioteca.',
+        'send.sent': 'Enviado a {n} — esperando confirmación.', 'send.toast': 'Elemento enviado a {n}', 'send.person': 'la persona',
+        'st.todos': 'Todos', 'st.edit': 'Editar perfil', 'st.total': 'Biblioteca Total', 'st.items': 'Elementos registrados',
+        'st.comp': 'Completados', 'st.compdesc': 'Fines de obra alcanzados', 'st.proc': 'En Proceso', 'st.procdesc': 'Actualmente activos',
+        'st.wish': 'Lista de Deseados', 'st.wishdesc': 'Guardados en wishlist', 'st.avg': 'Nota Media Otorgada',
+        'st.avgdesc': 'Basado en valoraciones', 'st.upcoming': 'Próximos Estrenos', 'st.upcomingdesc': 'Wishlist con fecha ≤ 90 días',
+        'st.balance': 'Balance y Retos', 'st.compacc': 'Completados acumulados', 'st.expand': 'Desplegar',
+        'st.breakdown': 'Desglose general:', 'st.noteavg': 'nota media', 'st.ratings': 'valoraciones',
+        'st.more': '…y {n} más', 'st.nofecha': '{n} en wishlist sin fecha confirmada',
+        'st.noup': 'Nada en wishlist con estreno en los próximos 90 días.', 'st.balperson': 'Balance por persona',
+        'st.retos': 'Retos automáticos', 'st.retowish': 'Vaciar {n} títulos de tu wishlist este mes',
+        'st.retocomp': 'Meta {y}: llegar a 10 completados', 'st.retorate': 'Subir tu nota media por encima de 7',
+        'st.retosobra': '¡Vas sobrado! Mantén el ritmo.', 'st.backlog': '{n}% de tu backlog+cosechados resueltos',
+        'match.coinc': 'Coincidencia', 'match.none': 'No hay coincidencias en esta categoría.',
+        'pb.empty': 'Papelera vacía', 'pb.desc': 'Los elementos que elimines aparecerán aquí por 30 días.',
+        'pb.restore': 'Restaurar', 'pb.errload': 'No se pudo cargar la papelera', 'pb.restored': 'Restaurado en {c}',
+        'pb.errrestore': 'No se pudo restaurar el elemento.', 'pb.none': 'No hay elementos para elegir.', 'pb.picked': 'Elegido: {t}',
+        'grid.empty': 'Nada por aquí todavía', 'grid.emptydesc': 'Prueba ajustando los filtros o añade tu primer elemento desde el buscador.',
+        'grid.more': 'Cargando más...', 'grid.author': t('grid.author'), 'grid.pend': 'Pendiente',
+        'grid.serie': 'Serie', 'grid.pelicula': 'Película',
+        'upd.load': 'Cargando updates...', 'upd.none': 'Sin noticias en Steam para este juego.', 'upd.err': t('upd.err'),
+        'ed.load': 'Cargando ediciones...', 'ed.none': t('ed.none'), 'ed.err': t('ed.err'),
+        'ed.edition': 'Edición', 'ed.transl': 'Trad: ', 'ed.read': t('ed.read'),
+        'rv.load': 'Cargando reseñas...', 'rv.none': 'Sin datos de reseñas.', 'rv.err': t('rv.err'),
+        'rv.pos': 'positivas', 'rv.neg': 'negativas', 'rv.total': 'total', 'rv.30d': 'en 30d', 'rv.vs30d': 'vs 30d',
+        'trail.show': 'Ver Tráiler', 'trail.hide': 'Ocultar Tráiler', 'ficha.ver': 'Ver ficha', 'ficha.more': 'Más info',
+        'ficha.tech': 'Ver ficha técnica completa', 'cap.title': 'Capturas',
+        'fl.todos': 'Todos', 'fl.allf': 'Todas', 'fl.cualquiera': 'Cualquiera', 'fl.ninguno': 'Ninguno',
+        'fl.todosigual': 'Todos por igual', 'fl.solo': 'Solo {n}', 'fl.nota': 'Nota de {n}',
+        'fl.todasnotas': 'Todas las notas', 'fl.nota5': '5+ (5/10 o superior)', 'fl.nota7': '7+ (7/10 o superior)', 'fl.nota9': '9+ (9/10 o superior)',
+        'fl.coop': 'Cualquier Co-op', 'fl.unplayer': 'Un jugador', 'fl.multi': 'Multijugador', 'fl.verif': 'Verificado',
+        'fl.playable': 'Jugable', 'fl.free': 'Gratis', 'fl.paid': 'De Pago', 'fl.pelicula': 'Películas', 'fl.serie': 'Series',
+        'fl.anime': 'Anime', 'fl.emision': 'En emisión', 'fl.finalizada': 'Finalizada', 'fl.finalizado': 'Finalizado',
+        'fl.corto': 'Corto (< 250 págs)', 'fl.medio': 'Medio (250 - 500)', 'fl.largo': 'Largo (> 500 págs)',
+        'fl.ext': 'Extensión', 'fl.modo': 'Modo / Co-op', 'fl.deck': 'Steam Deck', 'fl.precio': 'Precio',
+        'fl.tipo': 'Tipo', 'fl.plataforma': 'Plataforma', 'fl.estado': 'Estado', 'fl.demog': 'Demografía',
+        'pf.display': 'Nombre público', 'pf.username': 'Usuario', 'pf.invite': 'Código de vinculación',
+        'pf.logout': 'Cerrar sesión', 'pf.save': 'Guardar cambios', 'pf.copy': 'Copiar',
+        'mods.nameph': 'Nombre del mod', 'mods.verph': 'Versión del juego (ej. v1.7.9b)', 'mods.urlph': 'URL del mod',
+        'mods.notesph': 'Notas (load order, dependencias...)', 'mods.save': 'Guardar mod', 'mods.noversion': 'Sin versión',
+        'mods.noname': 'Ponle nombre al mod.', 'btn.cerrar': 'Cerrar', 'btn.guardar': 'Guardar',
+        'sh.withn': 'Con {n} {w}', 'upd.hist': 'Historial de Updates', 'ed.btn': 'Ediciones', 'rv.btn': 'Reseñas Steam',
+        'fl.nota_min': 'Nota Mínima', 'st.comp_lc': 'completados', 'st.proc_lc': 'en proceso',
+        'upd.hide': 'Ocultar Updates', 'ed.hide': 'Ocultar Ediciones', 'rv.hide': 'Ocultar Reseñas',
+        'md.singenres': 'Sin géneros', 'md.sindesc': 'Sin descripción.', 'md.sintitulo': 'Sin título',
+        'md.tipo': 'Tipo', 'md.duracion': 'Duración / Temporadas', 'md.plataformas': 'Plataformas'
       },
       en: {
         'cat.Juegos': 'Games', 'cat.Peliculas_Series': 'Movies & TV', 'cat.Libros': 'Books',
@@ -3053,7 +3134,88 @@
         'pa.pendiente': 'Pending', 'pa.sinnota': 'No rating', 'pa.wish': 'Mark as wanted',
         'st.nojugado': 'Pending / Not started', 'st.enproceso': 'In progress', 'st.completado': 'Completed',
         'pa.progph': 'Progress (e.g. S2 E04)...', 'pa.chaps': 'Chapters read', 'pa.chapstotal': 'Manual total',
-        'pa.leidos': 'Read', 'pa.total': 'Total', 'pa.noteph': 'Quick note for {n}...', 'btn.send': 'Send'
+        'pa.leidos': 'Read', 'pa.total': 'Total', 'pa.noteph': 'Quick note for {n}...', 'btn.send': 'Send',
+        'err.prefix': 'Error: ', 'err.itemnf': 'Item not found in catalog.', 'err.itemnf2': 'Item not found.',
+        'err.elemnf': 'Item not found.', 'err.owntrack': 'You can only edit your own tracking.',
+        'err.noname': 'Name cannot be empty.', 'err.nouser': 'Username cannot be empty (a-z, 0-9 and _ only).',
+        'toast.copied': 'Code copied.', 'toast.profile': 'Profile saved.', 'toast.savefail': 'Could not save the change.',
+        'toast.movido': 'Moved to trash.', 'toast.noelim': 'Could not delete', 'confirm.papelera': 'Move to Trash?',
+        'toast.actualizada': 'Entry updated.', 'toast.errupd': 'Error updating', 'toast.actualizando': 'Updating...',
+        'toast.repair': 'Repair / Update Metadata', 'toast.conn': 'Connection restored.',
+        'toast.offline': 'Offline — read-only mode.', 'toast.offupd': 'Offline — showing saved data.',
+        'toast.statsupd': 'Updating stats...', 'toast.nocolec': 'Collectibles has no content yet.',
+        'toast.coming': 'Collectibles — coming soon', 'toast.reintentar': 'Retry',
+        'toast.errload': 'Could not load items', 'toast.addreq': 'Enter a name, ID or URL.',
+        'toast.busy': 'Searching...', 'toast.timeout': 'Timed out. Try again.',
+        'toast.noresults': 'No results.', 'toast.addbtn': '+ Add', 'toast.noadd': 'Could not add',
+        'toast.vincacept': 'Link accepted.', 'toast.rechazada': 'Request declined.',
+        'toast.itemadded': 'Item added to your library.', 'toast.visupd': 'Visibility updated.',
+        'toast.privupd': 'Privacy updated.',
+        'vinc.loading': 'Loading…', 'vinc.mycode': 'My invite code',
+        'vinc.mycodedesc': 'Share this code — the other person enters it in their profile.', 'vinc.nodisp': 'Not available.',
+        'vinc.addlink': 'Add link', 'vinc.codeph': 'Code',
+        'vinc.nameph': 'Link name (e.g. Neighbor, Coworker…)', 'vinc.requests': 'Incoming requests',
+        'vinc.accept': 'Accept', 'vinc.reject': 'Decline', 'vinc.sentwait': 'Sent (waiting for reply)',
+        'vinc.linked': 'Linked', 'vinc.nolink': 'No accepted links yet.', 'vinc.shared': 'Shared items',
+        'vinc.de': 'from', 'vinc.waiting': '(waiting)', 'vinc.errcode': 'Enter a code.', 'vinc.sending': 'Sending…',
+        'vinc.sentok': 'Request sent.', 'vinc.user': 'User', 'vinc.visib': 'Visibility',
+        'vinc.item': 'Item', 'vinc.someone': 'someone', 'vinc.inprofile': 'Add link',
+        'lt.pareja': 'Partner', 'lt.familia': 'Family', 'lt.amigo': 'Friend', 'lt.custom': 'Custom',
+        'vf.status': 'Status', 'vf.rating': 'Rating', 'vf.wishlist': 'Wishlist', 'vf.progress': 'Progress', 'vf.notes': 'Notes',
+        'vis.none': 'No active link.', 'vis.dir': 'Direction', 'vis.cat': 'Category',
+        'vis.fields': 'Visible fields', 'vis.you': 'what you share', 'vis.them': 'what they share',
+        'vis.hint': 'Applies to everyone of that link type per their own matrix — this edits only this relationship.',
+        'sh.privacy': 'Your tracking privacy', 'sh.private': 'Private — nobody sees this', 'sh.visible': 'Visible to',
+        'sh.all': 'All my links', 'sh.nolink': 'No accepted links — only you will see this.',
+        'sh.hint': 'The lock is just for you — others never see it exists.', 'sh.privatebtn': 'Private',
+        'sh.person': 'person', 'sh.people': 'people', 'sh.links': 'Links',
+        'send.to': 'Send this item to', 'send.nolink': 'You have no accepted links.',
+        'send.hint': 'They get a request — once accepted, the item appears in their library.',
+        'send.sent': 'Sent to {n} — waiting for confirmation.', 'send.toast': 'Item sent to {n}', 'send.person': 'them',
+        'st.todos': 'All', 'st.edit': 'Edit profile', 'st.total': 'Total Library', 'st.items': 'Registered items',
+        'st.comp': 'Completed', 'st.compdesc': 'Finished works', 'st.proc': 'In Progress', 'st.procdesc': 'Currently active',
+        'st.wish': 'Wishlist', 'st.wishdesc': 'Saved in wishlist', 'st.avg': 'Average Rating Given',
+        'st.avgdesc': 'Based on ratings', 'st.upcoming': 'Upcoming Releases', 'st.upcomingdesc': 'Wishlist with date ≤ 90 days',
+        'st.balance': 'Balance & Challenges', 'st.compacc': 'Cumulative completions', 'st.expand': 'Expand',
+        'st.breakdown': 'General breakdown:', 'st.noteavg': 'average rating', 'st.ratings': 'ratings',
+        'st.more': '…and {n} more', 'st.nofecha': '{n} in wishlist with no confirmed date',
+        'st.noup': 'Nothing in wishlist releasing in the next 90 days.', 'st.balperson': 'Balance per person',
+        'st.retos': 'Auto challenges', 'st.retowish': 'Clear {n} titles from your wishlist this month',
+        'st.retocomp': 'Goal {y}: reach 10 completions', 'st.retorate': 'Raise your average rating above 7',
+        'st.retosobra': "You're ahead! Keep it up.", 'st.backlog': '{n}% of your backlog+harvested resolved',
+        'match.coinc': 'Match', 'match.none': 'No matches in this category.',
+        'pb.empty': 'Trash empty', 'pb.desc': 'Deleted items will appear here for 30 days.',
+        'pb.restore': 'Restore', 'pb.errload': 'Could not load trash', 'pb.restored': 'Restored to {c}',
+        'pb.errrestore': 'Could not restore the item.', 'pb.none': 'No items to pick.', 'pb.picked': 'Picked: {t}',
+        'grid.empty': 'Nothing here yet', 'grid.emptydesc': 'Try adjusting filters or add your first item from the search.',
+        'grid.more': 'Loading more...', 'grid.author': 'Author TBD', 'grid.pend': 'Pending',
+        'grid.serie': 'Series', 'grid.pelicula': 'Movie',
+        'upd.load': 'Loading updates...', 'upd.none': 'No Steam news for this game.', 'upd.err': 'steam-updates error',
+        'ed.load': 'Loading editions...', 'ed.none': 'No editions in OpenLibrary.', 'ed.err': 'book-editions error',
+        'ed.edition': 'Edition', 'ed.transl': 'Trans: ', 'ed.read': 'Read ↗',
+        'rv.load': 'Loading reviews...', 'rv.none': 'No review data.', 'rv.err': 'steam-reviews error',
+        'rv.pos': 'positive', 'rv.neg': 'negative', 'rv.total': 'total', 'rv.30d': 'in 30d', 'rv.vs30d': 'vs 30d',
+        'trail.show': 'Watch Trailer', 'trail.hide': 'Hide Trailer', 'ficha.ver': 'View entry', 'ficha.more': 'More info',
+        'ficha.tech': 'View full specs', 'cap.title': 'Screenshots',
+        'fl.todos': 'All', 'fl.allf': 'All', 'fl.cualquiera': 'Any', 'fl.ninguno': 'None',
+        'fl.todosigual': 'All equally', 'fl.solo': 'Only {n}', 'fl.nota': "{n}'s rating",
+        'fl.todasnotas': 'All ratings', 'fl.nota5': '5+ (5/10 or higher)', 'fl.nota7': '7+ (7/10 or higher)', 'fl.nota9': '9+ (9/10 or higher)',
+        'fl.coop': 'Any Co-op', 'fl.unplayer': 'Single player', 'fl.multi': 'Multiplayer', 'fl.verif': 'Verified',
+        'fl.playable': 'Playable', 'fl.free': 'Free', 'fl.paid': 'Paid', 'fl.pelicula': 'Movies', 'fl.serie': 'TV Shows',
+        'fl.anime': 'Anime', 'fl.emision': 'Airing', 'fl.finalizada': 'Finished', 'fl.finalizado': 'Completed',
+        'fl.corto': 'Short (< 250 pgs)', 'fl.medio': 'Medium (250 - 500)', 'fl.largo': 'Long (> 500 pgs)',
+        'fl.ext': 'Length', 'fl.modo': 'Mode / Co-op', 'fl.deck': 'Steam Deck', 'fl.precio': 'Price',
+        'fl.tipo': 'Type', 'fl.plataforma': 'Platform', 'fl.estado': 'Status', 'fl.demog': 'Demographics',
+        'pf.display': 'Display name', 'pf.username': 'Username', 'pf.invite': 'Link code',
+        'pf.logout': 'Log out', 'pf.save': 'Save changes', 'pf.copy': 'Copy',
+        'mods.nameph': 'Mod name', 'mods.verph': 'Game version (e.g. v1.7.9b)', 'mods.urlph': 'Mod URL',
+        'mods.notesph': 'Notes (load order, dependencies...)', 'mods.save': 'Save mod', 'mods.noversion': 'No version',
+        'mods.noname': 'Name the mod.', 'btn.cerrar': 'Close', 'btn.guardar': 'Save',
+        'sh.withn': 'With {n} {w}', 'upd.hist': 'Update History', 'ed.btn': 'Editions', 'rv.btn': 'Steam Reviews',
+        'fl.nota_min': 'Min rating', 'st.comp_lc': 'completed', 'st.proc_lc': 'in progress',
+        'upd.hide': 'Hide Updates', 'ed.hide': 'Hide Editions', 'rv.hide': 'Hide Reviews',
+        'md.singenres': 'No genres', 'md.sindesc': 'No description.', 'md.sintitulo': 'Untitled',
+        'md.tipo': 'Type', 'md.duracion': 'Runtime / Seasons', 'md.plataformas': 'Platforms'
       }
     };
     function t(k) {
@@ -3066,6 +3228,37 @@
       if (vars) for (var key in vars) str = str.split('{' + key + '}').join(vars[key]);
       return str;
     }
+
+    // vocabulario de metadata proveniente de APIs (generos, plataformas, etc.)
+    // traducido al vuelo cuando la UI esta en ingles — la DB guarda ES
+    var META_TR = {
+      'Acción': 'Action', 'Aventura': 'Adventure', 'RPG': 'RPG', 'Rol': 'Role-playing',
+      'Estrategia': 'Strategy', 'Simulación': 'Simulation', 'Deportes': 'Sports',
+      'Carreras': 'Racing', 'Indie': 'Indie', 'Terror': 'Horror', 'Suspense': 'Thriller',
+      'Animación': 'Animation', 'Comedia': 'Comedy', 'Drama': 'Drama', 'Ciencia ficción': 'Sci-Fi',
+      'Fantasía': 'Fantasy', 'Romance': 'Romance', 'Documental': 'Documentary', 'Biografía': 'Biography',
+      'Musical': 'Musical', 'Guerra': 'War', 'Western': 'Western', 'Crimen': 'Crime',
+      'Misterio': 'Mystery', 'Familia': 'Family', 'Kids': 'Kids', 'Reality': 'Reality',
+      'Talk': 'Talk', 'Noticias': 'News', 'Anime': 'Anime', 'Shounen': 'Shonen',
+      'Seinen': 'Seinen', 'Shoujo': 'Shojo', 'Josei': 'Josei', 'Isekai': 'Isekai',
+      'Mecha': 'Mecha', 'Slice of Life': 'Slice of Life', 'Harem': 'Harem', 'Ecchi': 'Ecchi',
+      'Yaoi': 'Yaoi', 'Yuri': 'Yuri', 'Shounen Ai': 'Shounen Ai', 'Shojo Ai': 'Shojo Ai',
+      'Netflix': 'Netflix', 'Crunchyroll': 'Crunchyroll', 'Max': 'Max', 'Prime Video': 'Prime Video',
+      'Disney+': 'Disney+', 'HBO': 'HBO', 'Hulu': 'Hulu', 'Apple TV+': 'Apple TV+',
+      'En emisión': 'Airing', 'Finalizada': 'Finished', 'Finalizado': 'Completed',
+      'En proceso': 'In progress', 'Completado': 'Completed', 'Pendiente': 'Pending', 'No jugado': 'Not started',
+      'Película': 'Movie', 'Serie': 'TV Series', 'Corto': 'Short', 'Novela': 'Novel', 'Cómic': 'Comic'
+    };
+    function metaTr(s) {
+      if (NEXUS_LANG !== 'en' || s == null) return s;
+      var key = String(s).trim();
+      return META_TR[key] !== undefined ? META_TR[key] : s;
+    }
+    function metaTrList(s) {
+      if (!s) return s;
+      return String(s).split(/[,;|]/).map(function(x) { return metaTr(x.trim()); }).join(', ');
+    }
+
     function catText(cat, field) { // label/searchPlaceholder/addPlaceholder por idioma
       if (NEXUS_LANG === 'en') {
         var k = 'cfg.' + cat + '.' + ({ label: 'label', searchPlaceholder: 'search', addPlaceholder: 'add' }[field] || field);
@@ -3452,9 +3645,9 @@
         .withFailureHandler(function(err) {
           // si habia cache stale, el grid ya tiene datos — solo avisar
           if (currentCategory === cat && !(itemsByCategory[cat] && itemsByCategory[cat].length)) {
-            grid.innerHTML = nexusStateBox('err', 'i-x', 'No se pudieron cargar los elementos', err.message || '', '<button class="sb-action" onclick="cargarCategoria(\'' + cat + '\', true)">Reintentar</button>');
+            grid.innerHTML = nexusStateBox('err', 'i-x', t('toast.errload'), err.message || '', '<button class="sb-action" onclick="cargarCategoria(\'' + cat + '\', true)">' + t('toast.reintentar') + '</button>');
           } else if (currentCategory === cat) {
-            showToast && showToast('Sin conexión para actualizar — mostrando datos guardados.', 'warning');
+            showToast && showToast(t('toast.offupd'), 'warning');
           }
         })
         .getItems(cat);
@@ -3463,9 +3656,9 @@
     function forzarSincronizacion() {
       if (currentCategory === 'Estadisticas') {
         ['Juegos', 'Peliculas_Series', 'Libros', 'Mangas'].forEach(c => cargarCategoria(c, true));
-        showToast('Actualizando estadísticas...', 'success');
+        showToast(t('toast.statsupd'), 'success');
       } else if (currentCategory === 'Coleccionables') {
-        showToast('Coleccionables aún no tiene contenido.', 'warning');
+        showToast(t('toast.nocolec'), 'warning');
       } else {
         cargarCategoria(currentCategory, true);
       }
@@ -3477,19 +3670,19 @@
       var f3 = document.getElementById('extra-filter-3');
 
       if (cat === 'Juegos') {
-        f1.innerHTML = '<label>Modo / Co-op</label><select id="f-extra-1" onchange="filtrarItems()"><option value="todos">Todos</option><option value="coop">Cualquier Co-op</option><option value="Un jugador">Un jugador</option><option value="Multijugador">Multijugador</option></select>';
-        f2.innerHTML = '<label>Steam Deck</label><select id="f-extra-2" onchange="filtrarItems()"><option value="todos">Todos</option><option value="Verificado">Verificado</option><option value="Jugable">Jugable</option></select>';
-        f3.innerHTML = '<label>Precio</label><select id="f-extra-3" onchange="filtrarItems()"><option value="todos">Todos</option><option value="gratis">Gratis</option><option value="pago">De Pago</option></select>';
+        f1.innerHTML = '<label>' + t('fl.modo') + '</label><select id="f-extra-1" onchange="filtrarItems()"><option value="todos">' + t('fl.todos') + '</option><option value="coop">' + t('fl.coop') + '</option><option value="Un jugador">' + t('fl.unplayer') + '</option><option value="Multijugador">' + t('fl.multi') + '</option></select>';
+        f2.innerHTML = '<label>' + t('fl.deck') + '</label><select id="f-extra-2" onchange="filtrarItems()"><option value="todos">' + t('fl.todos') + '</option><option value="Verificado">' + t('fl.verif') + '</option><option value="Jugable">' + t('fl.playable') + '</option></select>';
+        f3.innerHTML = '<label>' + t('fl.precio') + '</label><select id="f-extra-3" onchange="filtrarItems()"><option value="todos">' + t('fl.todos') + '</option><option value="gratis">' + t('fl.free') + '</option><option value="pago">' + t('fl.paid') + '</option></select>';
       } else if (cat === 'Peliculas_Series') {
-        f1.innerHTML = '<label>Tipo</label><select id="f-extra-1" onchange="fSubcat=this.value;filtrarItems()"><option value="todos">Todos</option><option value="pelicula">Películas</option><option value="serie">Series</option><option value="anime">Anime</option></select>';
-        f2.innerHTML = '<label>Plataforma</label><select id="f-extra-2" onchange="filtrarItems()"><option value="todos">Todas</option><option value="Netflix">Netflix</option><option value="Crunchyroll">Crunchyroll</option><option value="Max">Max</option><option value="Prime">Prime Video</option><option value="Disney">Disney+</option></select>';
-        f3.innerHTML = '<label>Estado</label><select id="f-extra-3" onchange="filtrarItems()"><option value="todos">Todos</option><option value="En emisión">En emisión</option><option value="Finalizada">Finalizada</option></select>';
+        f1.innerHTML = '<label>' + t('fl.tipo') + '</label><select id="f-extra-1" onchange="fSubcat=this.value;filtrarItems()"><option value="todos">' + t('fl.todos') + '</option><option value="pelicula">' + t('fl.pelicula') + '</option><option value="serie">' + t('fl.serie') + '</option><option value="anime">' + t('fl.anime') + '</option></select>';
+        f2.innerHTML = '<label>' + t('fl.plataforma') + '</label><select id="f-extra-2" onchange="filtrarItems()"><option value="todos">' + t('fl.allf') + '</option><option value="Netflix">Netflix</option><option value="Crunchyroll">Crunchyroll</option><option value="Max">Max</option><option value="Prime">Prime Video</option><option value="Disney">Disney+</option></select>';
+        f3.innerHTML = '<label>' + t('fl.estado') + '</label><select id="f-extra-3" onchange="filtrarItems()"><option value="todos">' + t('fl.todos') + '</option><option value="En emisión">' + t('fl.emision') + '</option><option value="Finalizada">' + t('fl.finalizada') + '</option></select>';
       } else if (cat === 'Libros') {
-        f1.innerHTML = '<label>Extensión</label><select id="f-extra-1" onchange="filtrarItems()"><option value="todos">Todas</option><option value="corto">Corto (&lt; 250 págs)</option><option value="medio">Medio (250 - 500)</option><option value="largo">Largo (&gt; 500 págs)</option></select>';
+        f1.innerHTML = '<label>' + t('fl.ext') + '</label><select id="f-extra-1" onchange="filtrarItems()"><option value="todos">' + t('fl.allf') + '</option><option value="corto">' + t('fl.corto') + '</option><option value="medio">' + t('fl.medio') + '</option><option value="largo">' + t('fl.largo') + '</option></select>';
         f2.innerHTML = ''; f3.innerHTML = '';
       } else if (cat === 'Mangas') {
-        f1.innerHTML = '<label>Estado</label><select id="f-extra-1" onchange="filtrarItems()"><option value="todos">Todos</option><option value="En emisión">En emisión</option><option value="Finalizado">Finalizado</option></select>';
-        f2.innerHTML = '<label>Demografía</label><select id="f-extra-2" onchange="filtrarItems()"><option value="todos">Todas</option><option value="Shounen">Shounen</option><option value="Seinen">Seinen</option><option value="Shoujo">Shoujo</option><option value="Josei">Josei</option></select>';
+        f1.innerHTML = '<label>' + t('fl.estado') + '</label><select id="f-extra-1" onchange="filtrarItems()"><option value="todos">' + t('fl.todos') + '</option><option value="En emisión">' + t('fl.emision') + '</option><option value="Finalizado">' + t('fl.finalizado') + '</option></select>';
+        f2.innerHTML = '<label>' + t('fl.demog') + '</label><select id="f-extra-2" onchange="filtrarItems()"><option value="todos">' + t('fl.allf') + '</option><option value="Shounen">Shounen</option><option value="Seinen">Seinen</option><option value="Shoujo">Shoujo</option><option value="Josei">Josei</option></select>';
         f3.innerHTML = '';
       } else {
         f1.innerHTML = ''; f2.innerHTML = ''; f3.innerHTML = '';
@@ -3769,13 +3962,13 @@
       it['deseado' + suf] = nuevo;
       try { localStorage.setItem('media_lib_' + CACHE_VERSION + '_' + currentCategory, JSON.stringify(itemsByCategory[currentCategory])); } catch (e) {}
       filtrarItems();
-      RUN.guardarDeseadoItem(currentCategory, it.id, suf, nuevo).withFailureHandler(function(){ showToast('No se pudo guardar el cambio.', 'error'); });
+      RUN.guardarDeseadoItem(currentCategory, it.id, suf, nuevo).withFailureHandler(function(){ showToast(t('toast.savefail'), 'error'); });
     }
 
     function renderGrid(items) {
       var grid = document.getElementById('grid');
       if (!items || items.length === 0) {
-        grid.innerHTML = nexusStateBox('empty', 'i-search', 'Nada por aquí todavía', 'Prueba ajustando los filtros o añade tu primer elemento desde el buscador.');
+        grid.innerHTML = nexusStateBox('empty', 'i-search', t('grid.empty'), t('grid.emptydesc'));
         return;
       }
       var itemsVisibles = items.slice(0, paginaActual * elementosPorPagina);
@@ -3823,7 +4016,7 @@
           if (!vis) return;
           var est = it['estado' + p.suffix] || 'No jugado';
           var cls = est === 'Completado' ? 'status-done' : (est === 'En proceso' ? 'status-playing' : 'status-none');
-          var lbl = (!est || est === 'No jugado') ? 'Pendiente' : est;
+          var lbl = (!est || est === 'No jugado') ? t('grid.pend') : metaTr(est);
           var lock = p.mine && it['privado' + p.suffix] === true ? svgIcon('i-lock', 'ico-sm') + ' ' : '';
           chipsHTML += `<div class="status-chip ${cls}" style="display:inline-flex;align-items:center;gap:5px;">${nexusPersonaDot(p, 13)} ${lock}${escaparHTML(lbl)}</div>`;
           if (it['deseado' + p.suffix]) { wishDots += nexusPersonaDot(p, 13); anyWish = true; }
@@ -3834,9 +4027,9 @@
           var m = String(it.modos || '').toLowerCase();
           if (m.includes('co-op') || m.includes('cooperativo')) topBadgeHTML = `<div class="top-badge">${svgIcon('i-users', 'ico-sm')} Co-op</div>`;
         } else if (currentCategory === 'Peliculas_Series' && it.tipo) {
-          topBadgeHTML = `<div class="top-badge">${it.tipo === 'Serie' ? svgIcon('i-tv', 'ico-sm') + ' Serie' : svgIcon('i-film', 'ico-sm') + ' Película'}</div>`;
+          topBadgeHTML = `<div class="top-badge">${it.tipo === 'Serie' ? svgIcon('i-tv', 'ico-sm') + ' ' + t('grid.serie') : svgIcon('i-film', 'ico-sm') + ' ' + t('grid.pelicula')}</div>`;
         } else if (currentCategory === 'Libros' && it.extension && it.extension !== 'N/A') {
-          topBadgeHTML = `<div class="top-badge">${svgIcon('i-book', 'ico-sm')} ${escaparHTML(it.extension)}</div>`;
+          topBadgeHTML = `<div class="top-badge">${svgIcon('i-book', 'ico-sm')} ${escaparHTML(metaTr(it.extension))}</div>`;
         } else if (currentCategory === 'Mangas' && it.demografia) {
           topBadgeHTML = `<div class="top-badge">${svgIcon('i-manga', 'ico-sm')} ${escaparHTML(it.demografia)}</div>`;
         }
@@ -3851,7 +4044,7 @@
           </div>
           <div class="card-content">
             <div class="card-title">${escaparHTML(it.titulo)}</div>
-            <div class="card-dev">${escaparHTML((it.creador && String(it.creador).toLowerCase() !== 'undefined') ? it.creador : ((it.autor && String(it.autor).toLowerCase() !== 'undefined') ? it.autor : 'Autor por definir'))}</div>
+            <div class="card-dev">${escaparHTML((it.creador && String(it.creador).toLowerCase() !== 'undefined') ? it.creador : ((it.autor && String(it.autor).toLowerCase() !== 'undefined') ? it.autor : t('grid.author')))}</div>
             <div class="status-container">
               ${chipsHTML}
             </div>
@@ -3865,7 +4058,7 @@
         var sentinel = document.createElement('div');
         sentinel.id = 'scroll-sentinel';
         sentinel.style.gridColumn = '1 / -1'; sentinel.style.height = '35px'; sentinel.style.textAlign = 'center';
-        sentinel.innerHTML = '<span style="color:#8f98a0;font-size:11px;">Cargando más...</span>';
+        sentinel.innerHTML = '<span style="color:#8f98a0;font-size:11px;">' + t('grid.more') + '</span>';
         grid.appendChild(sentinel);
         configurarObserver();
       }
@@ -3883,7 +4076,7 @@
 
     function manejarAgregar(silencioso) {
       var val = document.getElementById('inputAgregar').value.trim();
-      if (!val) { if (!silencioso) showToast('Escribe un nombre, ID o URL.', 'warning'); return; }
+      if (!val) { if (!silencioso) showToast(t('toast.addreq'), 'warning'); return; }
 
       var esDirecto = false;
       if (currentCategory === 'Juegos' && (/^\d+$/.test(val) || val.includes('steampowered.com/app/'))) esDirecto = true;
@@ -3898,7 +4091,7 @@
       var btn = document.getElementById('btn-add');
       var dd = document.getElementById('search-dropdown');
       btn.innerHTML = '...'; btn.disabled = true;
-      dd.innerHTML = '<div style="padding:12px;text-align:center;color:var(--accent);font-size:12px;">Buscando coincidencias...</div>';
+      dd.innerHTML = '<div style="padding:12px;text-align:center;color:var(--accent);font-size:12px;"">' + t('toast.busy') + '</div>';
       dd.classList.add('open');
 
       var finalizado = false;
@@ -3906,7 +4099,7 @@
         if (finalizado) return;
         finalizado = true;
         btn.innerHTML = svgIcon('i-plus', 'ico-sm'); btn.disabled = false;
-        dd.innerHTML = '<div style="padding:12px;text-align:center;color:#ff8585;font-size:12px;">Tiempo agotado. Intenta de nuevo.</div>';
+        dd.innerHTML = '<div style="padding:12px;text-align:center;color:#ff8585;font-size:12px;"">' + t('toast.timeout') + '</div>';
       }, 12000);
 
       RUN
@@ -3915,7 +4108,7 @@
           finalizado = true; clearTimeout(timer);
           btn.innerHTML = svgIcon('i-plus', 'ico-sm'); btn.disabled = false;
           if (!resultados || resultados.length === 0) {
-            dd.innerHTML = '<div style="padding:12px;text-align:center;color:#8f98a0;font-size:12px;">Sin resultados.</div>';
+            dd.innerHTML = '<div style="padding:12px;text-align:center;color:#8f98a0;font-size:12px;"">' + t('toast.noresults') + '</div>';
             return;
           }
           dd.innerHTML = resultados.map(r => `
@@ -3925,7 +4118,7 @@
                 <div class="search-result-title">${escaparHTML(r.titulo)}</div>
                 <div class="search-result-sub">${escaparHTML(r.subtitulo)}</div>
               </div>
-              <span class="search-result-badge">+ Añadir</span>
+              <span class="search-result-badge">' + t('toast.addbtn') + '</span>
             </div>
           `).join('');
         })
@@ -3953,12 +4146,12 @@
             showToast(res.msg, 'success');
             forzarSincronizacion();
           } else {
-            showToast(res.msg || 'No se pudo añadir', 'warning');
+            showToast(res.msg || t('toast.noadd'), 'warning');
           }
         })
         .withFailureHandler(function(err) {
           btn.innerHTML = svgIcon('i-plus', 'ico-sm'); btn.disabled = false;
-          showToast('Error: ' + err.message, 'error');
+          showToast(t('err.prefix') + err.message, 'error');
         })
         .agregarItem(currentCategory, idOUrl);
     }
@@ -4092,16 +4285,16 @@
         ? String(it.creador).trim()
         : ((it.autor && String(it.autor).trim() && String(it.autor).trim().toLowerCase() !== 'undefined')
           ? String(it.autor).trim()
-          : 'Autor por definir');
+          : t('grid.author'));
 
-      document.getElementById('m-titulo').innerText = it.titulo || 'Sin título';
+      document.getElementById('m-titulo').innerText = it.titulo || t('md.sintitulo');
       document.getElementById('m-dev').innerText = autorTexto;
       var puntLimpia = formatearPuntuacionBadge_(it.puntuacion);
       document.getElementById('m-price').innerHTML = currentCategory === 'Juegos'
         ? escaparHTML(it.precio || '')
         : (puntLimpia ? `${svgIcon('i-star', 'ico-sm ico-gold')} ${escaparHTML(puntLimpia)}` : '');
-      document.getElementById('m-genres').innerHTML = `${svgIcon('i-tag', 'ico-sm')} ${escaparHTML((it.generos && String(it.generos).toLowerCase() !== 'undefined') ? it.generos : 'Sin géneros')}`;
-      document.getElementById('m-desc').innerText = (it.descripcion && String(it.descripcion).toLowerCase() !== 'undefined') ? it.descripcion : 'Sin descripción.';
+      document.getElementById('m-genres').innerHTML = `${svgIcon('i-tag', 'ico-sm')} ${escaparHTML(metaTrList((it.generos && String(it.generos).toLowerCase() !== 'undefined') ? it.generos : t('md.singenres')))}`;
+      document.getElementById('m-desc').innerText = (it.descripcion && String(it.descripcion).toLowerCase() !== 'undefined') ? it.descripcion : t('md.sindesc');
 
       var badges = document.getElementById('m-badges');
       if (currentCategory === 'Juegos') {
@@ -4116,15 +4309,15 @@
           : '';
         badges.innerHTML = badgeBuild + badgeFecha + badgeBeta;
       } else if (currentCategory === 'Libros') {
-        var bBook1 = (it.estadoEmision && it.estadoEmision !== 'N/A') ? `<div class="badge-ver badge-estable">${escaparHTML(it.estadoEmision)}</div>` : '';
-        var bBook2 = (it.extension && it.extension !== 'N/A') ? `<div class="badge-ver badge-patch">${escaparHTML(it.extension)}</div>` : `<div class="badge-ver badge-patch">N/A</div>`;
+        var bBook1 = (it.estadoEmision && it.estadoEmision !== 'N/A') ? `<div class="badge-ver badge-estable">${escaparHTML(metaTr(it.estadoEmision))}</div>` : '';
+        var bBook2 = (it.extension && it.extension !== 'N/A') ? `<div class="badge-ver badge-patch">${escaparHTML(metaTr(it.extension))}</div>` : `<div class="badge-ver badge-patch">N/A</div>`;
         var bBook3 = (it.fecha && it.fecha !== 'N/A') ? `<div class="badge-ver badge-beta">${escaparHTML(it.fecha)}</div>` : '';
         var bBook4 = (it.isbn && it.isbn !== 'N/A') ? `<div class="badge-ver badge-patch">ISBN: ${escaparHTML(it.isbn)}</div>` : '';
         badges.innerHTML = bBook1 + bBook2 + bBook3 + bBook4;
       } else {
-        var b1 = it.estadoEmision ? `<div class="badge-ver badge-estable">${escaparHTML(it.estadoEmision)}</div>` : '';
-        var b2 = it.extension ? `<div class="badge-ver badge-patch">${escaparHTML(it.extension)}</div>` : '';
-        var b3 = (it.plataformas || it.demografia) ? `<div class="badge-ver badge-beta">${escaparHTML(it.plataformas || it.demografia)}</div>` : '';
+        var b1 = it.estadoEmision ? `<div class="badge-ver badge-estable">${escaparHTML(metaTr(it.estadoEmision))}</div>` : '';
+        var b2 = it.extension ? `<div class="badge-ver badge-patch">${escaparHTML(metaTr(it.extension))}</div>` : '';
+        var b3 = (it.plataformas || it.demografia) ? `<div class="badge-ver badge-beta">${escaparHTML(metaTrList(it.plataformas || it.demografia))}</div>` : '';
         badges.innerHTML = b1 + b2 + b3;
       }
 
@@ -4134,7 +4327,7 @@
       if (admiteTrailer && rawTr.startsWith('http')) {
         currentTrailerUrl = rawTr;
         trBar.style.display = 'block';
-        document.getElementById('btn-toggle-trailer').innerHTML = `${svgIcon('i-play', 'ico-sm')} Ver Tráiler`;
+        document.getElementById('btn-toggle-trailer').innerHTML = `${svgIcon('i-play', 'ico-sm')} ${t('trail.show')}`;
       } else {
         currentTrailerUrl = '';
         trBar.style.display = 'none';
@@ -4151,7 +4344,7 @@
         ebox.style.display = 'none'; ebox.innerHTML = '';
         var ebtn = document.getElementById('btn-toggle-editions');
         ebtn.classList.remove('active');
-        ebtn.innerHTML = `${svgIcon('i-book', 'ico-sm')} Ediciones`;
+        ebtn.innerHTML = `${svgIcon('i-book', 'ico-sm')} ${t('ed.btn')}`;
         _editionsLoaded = false;
       }
       var revBar = document.getElementById('m-reviews-bar');
@@ -4161,7 +4354,7 @@
         xbox.style.display = 'none'; xbox.innerHTML = '';
         var xbtn = document.getElementById('btn-toggle-resenas');
         xbtn.classList.remove('active');
-        xbtn.innerHTML = `${svgIcon('i-star', 'ico-sm')} Reseñas Steam`;
+        xbtn.innerHTML = `${svgIcon('i-star', 'ico-sm')} ${t('rv.btn')}`;
         _resenasLoaded = false;
       }
       if (esJuegoNexus) {
@@ -4169,7 +4362,7 @@
         ubox.style.display = 'none'; ubox.innerHTML = '';
         var ubtn = document.getElementById('btn-toggle-updates');
         ubtn.classList.remove('active');
-        ubtn.innerHTML = `${svgIcon('i-sync', 'ico-sm')} Historial de Updates`;
+        ubtn.innerHTML = `${svgIcon('i-sync', 'ico-sm')} ${t('upd.hist')}`;
         _updatesLoaded = false;
       }
 
@@ -4186,7 +4379,7 @@
           ['Tags', it.tags]
         );
       }
-      else if (currentCategory === 'Peliculas_Series') { rows.push(['Tipo', it.tipo], ['Duración / Temporadas', it.extension], ['Plataformas', it.plataformas]); }
+      else if (currentCategory === 'Peliculas_Series') { rows.push([t('md.tipo'), metaTr(it.tipo)], [t('md.duracion'), metaTr(it.extension)], [t('md.plataformas'), metaTrList(it.plataformas)]); }
       else if (currentCategory === 'Libros') {
         var capsTotal = obtenerTotalCapitulosItem(it);
         rows.push(['Páginas', it.extension], ['ISBN', it.isbn], ['Capítulos Totales', capsTotal > 0 ? capsTotal : 'N/A'], ['Puntuación', puntLimpia || 'N/A']);
@@ -4290,7 +4483,7 @@
       try {
         await nexusEnsureProfile();
         var mediaId = await nexusModsMediaId();
-        if (!mediaId) { list.innerHTML = '<div class="mods-empty">Item no encontrado en el catálogo.</div>'; return; }
+        if (!mediaId) { list.innerHTML = '<div class="mods-empty">' + t('err.itemnf') + '</div>'; return; }
         var sb = await nexusSb();
         var r = await sb.from('mods').select('id,name,source,url,version_juego,notes,created_at')
           .eq('media_item_id', mediaId).order('created_at', { ascending: true });
@@ -4362,7 +4555,7 @@
       try {
         await nexusEnsureProfile();
         var mediaId = await nexusModsMediaId();
-        if (!mediaId) throw new Error('Item no encontrado en el catálogo.');
+        if (!mediaId) throw new Error(t('err.itemnf'));
         var sb = await nexusSb();
         var r = await sb.from('mods').insert({
           profile_id: _nexusUser.id, media_item_id: mediaId,
@@ -4374,7 +4567,7 @@
         showToast && showToast('Mod guardado.', 'success');
         await nexusLoadMods();
       } catch (e) {
-        showToast && showToast('Error: ' + (e.message || ''), 'error');
+        showToast && showToast(t('err.prefix') + (e.message || ''), 'error');
       }
     }
 
@@ -4386,7 +4579,7 @@
         _modsList = _modsList.filter(function(m) { return m.id !== id; });
         nexusRenderMods();
       } catch (e) {
-        showToast && showToast('Error: ' + (e.message || ''), 'error');
+        showToast && showToast(t('err.prefix') + (e.message || ''), 'error');
       }
     }
 
@@ -4422,7 +4615,7 @@
 
     function actualizarResumenJugador(k, est, pts, wish, nota) {
       var stEl = document.getElementById('sum-status-' + k);
-      stEl.innerText = (!est || est === 'No jugado') ? 'Pendiente' : est;
+      stEl.innerText = (!est || est === 'No jugado') ? t('grid.pend') : metaTr(est);
       stEl.className = 'status-chip ' + (est === 'Completado' ? 'status-done' : (est === 'En proceso' ? 'status-playing' : 'status-none'));
 
       var ptsEl = document.getElementById('sum-stars-' + k);
@@ -4601,10 +4794,10 @@
 
     function repararItemActual() {
       var btn = document.getElementById('btn-repair');
-      btn.disabled = true; btn.innerText = 'Actualizando...';
+      btn.disabled = true; btn.innerText = t('toast.actualizando');
       RUN
         .withSuccessHandler(function(res) {
-          btn.disabled = false; btn.innerHTML = `${svgIcon('i-wrench', 'ico-sm')} Reparar / Actualizar Metadata`;
+          btn.disabled = false; btn.innerHTML = `${svgIcon('i-wrench', 'ico-sm')} ${t('toast.repair')}`;
           if (res.success && res.data) {
             var lista = itemsByCategory[currentCategory];
             var idx = lista.findIndex(x => String(x.id) === String(currentItemId));
@@ -4612,30 +4805,30 @@
             try { localStorage.setItem(`media_lib_${CACHE_VERSION}_${currentCategory}`, JSON.stringify(lista)); } catch (e) {}
             abrirModal(res.data.id);
             filtrarItems();
-            showToast('Ficha actualizada.', 'success');
-          } else showToast(res.msg || 'Error al actualizar', 'error');
+            showToast(t('toast.actualizada'), 'success');
+          } else showToast(res.msg || t('toast.errupd'), 'error');
         })
         .withFailureHandler(function(err) {
           btn.disabled = false; btn.innerHTML = `${svgIcon('i-wrench', 'ico-sm')} Reparar / Actualizar Metadata`;
-          showToast('Error: ' + err.message, 'error');
+          showToast(t('err.prefix') + err.message, 'error');
         })
         .repararItemIndividual(currentCategory, currentItemId);
     }
 
     function eliminarItemActual() {
-      if (!confirm('¿Mover a la Papelera?')) return;
+      if (!confirm(t('confirm.papelera'))) return;
       RUN
         .withSuccessHandler(function(res) {
           if (res.success) {
-            showToast('Movido a la papelera.', 'warning');
+            showToast(t('toast.movido'), 'warning');
             cerrarModal();
             forzarSincronizacion();
           } else {
-            showToast(res.msg || 'No se pudo eliminar', 'error');
+            showToast(res.msg || t('toast.noelim'), 'error');
           }
         })
         .withFailureHandler(function(err) {
-          showToast('Error: ' + err.message, 'error');
+          showToast(t('err.prefix') + err.message, 'error');
         })
         .eliminarItem(currentCategory, currentItemId);
     }
@@ -4666,7 +4859,7 @@
       if (!wrap) return;
       var h = '<button class="stats-prof-btn' + (currentStatsProfile === 'ambos' ? ' active' : '') +
         '" data-prof="ambos" onclick="cambiarPerfilStats(\'ambos\')">' +
-        svgIcon('i-users', 'ico-sm') + ' Todos</button>';
+        svgIcon('i-users', 'ico-sm') + ' ' + t('st.todos') + '</button>';
       (_personas || []).forEach(function(p) {
         h += '<button class="stats-prof-btn' + (currentStatsProfile === p.key ? ' active' : '') +
           '" data-prof="' + p.key + '" onclick="cambiarPerfilStats(\'' + p.key + '\')">' +
@@ -4681,7 +4874,7 @@
       try {
         await nexusEnsureProfile();
         var p = _nexusProfile || {};
-        var nombre = p.display_name || 'Usuario';
+        var nombre = p.display_name || t('vinc.user');
         var user = _nexusUser || {};
         card.innerHTML =
           '<div class="stats-profile-avatar">' + escaparHTML((nombre[0] || 'U').toUpperCase()) + '</div>' +
@@ -4691,7 +4884,7 @@
             '<div class="stats-profile-email">' + escaparHTML(user.email || '') + '</div>' +
           '</div>' +
           '<div class="stats-profile-actions">' +
-            '<button class="btn btn-text" onclick="togglePerfilEdit(this)">Editar perfil</button>' +
+            '<button class="btn btn-text" onclick="togglePerfilEdit(this)">' + t('st.edit') + '</button>' +
           '</div>';
       } catch (e) { card.innerHTML = ''; }
     }
@@ -4706,8 +4899,8 @@
       }
       var selPers = currentStatsProfile === 'ambos' ? pers :
         pers.filter(function(p) { return p.key === currentStatsProfile; });
-      var profTitulo = currentStatsProfile === 'ambos' ? 'Todos' :
-        (selPers[0] ? selPers[0].suffix : 'Todos');
+      var profTitulo = currentStatsProfile === 'ambos' ? t('st.todos') :
+        (selPers[0] ? selPers[0].suffix : t('st.todos'));
 
       var catsToProcess = currentStatsCategory === 'todas' ? ['Juegos', 'Peliculas_Series', 'Libros', 'Mangas'] : [currentStatsCategory];
       var catTitulo = currentStatsCategory === 'todas' ? 'Global' : catText(currentStatsCategory, 'label');
@@ -4771,7 +4964,7 @@
           var media = st.cuenta > 0 ? (st.suma / st.cuenta).toFixed(1) : '0.0';
           return '<div class="stat-detail-line">' + nexusPersonaDot(p, 14) + ' ' +
             (multiPers ? vinculosEsc(p.label || p.suffix) + ' — ' : '') +
-            'nota media <strong>' + media + ' / 10</strong> (' + st.cuenta + ' valoraciones)</div>';
+            t('st.noteavg') + ' <strong>' + media + ' / 10</strong> (' + st.cuenta + ' ' + t('st.ratings') + ')</div>';
         }).join('');
       }
 
@@ -4801,9 +4994,9 @@
           '<strong>' + x.d.toLocaleDateString('es', { day: 'numeric', month: 'short' }) + '</strong> — ' +
           escaparHTML(x.it.titulo) + ' <span style="color:#8f98a0;">(' + CAT_CONFIG[x.cat].label + ')</span></div>';
       }).join('');
-      if (proximos35.length > 12) listaEstrenos += '<div class="stat-detail-line" style="color:#8f98a0;">…y ' + (proximos35.length - 12) + ' más</div>';
-      if (sinFecha35 > 0) listaEstrenos += '<div class="stat-detail-line" style="color:#8f98a0;margin-top:4px;">' + svgIcon('i-note', 'ico-sm') + ' ' + sinFecha35 + ' en wishlist sin fecha confirmada</div>';
-      if (!listaEstrenos) listaEstrenos = '<div class="stat-detail-line" style="color:#8f98a0;">Nada en wishlist con estreno en los próximos 90 días.</div>';
+      if (proximos35.length > 12) listaEstrenos += '<div class="stat-detail-line" style="color:#8f98a0;">' + tf('st.more', { n: proximos35.length - 12 }) + '</div>';
+      if (sinFecha35 > 0) listaEstrenos += '<div class="stat-detail-line" style="color:#8f98a0;margin-top:4px;">' + svgIcon('i-note', 'ico-sm') + ' ' + tf('st.nofecha', { n: sinFecha35 }) + '</div>';
+      if (!listaEstrenos) listaEstrenos = '<div class="stat-detail-line" style="color:#8f98a0;">' + t('st.noup') + '</div>';
 
       // ---- Phase 3.5B: Balance del año + retos auto ----
       var anioActual = new Date().getFullYear();
@@ -4811,32 +5004,32 @@
         var st = stats[p.suffix];
         var pctWish = (st.comp + st.wish) > 0 ? Math.round((st.comp / (st.comp + st.wish)) * 100) : 0;
         return '<div class="br-line">' + nexusPersonaDot(p, 14) + ' ' + (selPers.length > 1 ? '<strong>' + vinculosEsc(p.label || p.suffix) + '</strong>: ' : '') +
-          st.comp + ' completados · ' + st.proc + ' en proceso · ' + st.wish + ' en wishlist · ' +
-          'nota media <strong>' + (st.cuenta > 0 ? (st.suma / st.cuenta).toFixed(1) : '0.0') + '</strong>' +
-          ' · <span style="color:#8f98a0;">' + pctWish + '% de tu backlog+cosechados resueltos</span></div>';
+          st.comp + ' ' + t('st.comp_lc') + ' · ' + st.proc + ' ' + t('st.proc_lc') + ' · ' + st.wish + ' wishlist · ' +
+          t('st.noteavg') + ' <strong>' + (st.cuenta > 0 ? (st.suma / st.cuenta).toFixed(1) : '0.0') + '</strong>' +
+          ' · <span style="color:#8f98a0;">' + tf('st.backlog', { n: pctWish }) + '</span></div>';
       }).join('');
       var retosAuto = selPers.map(function(p) {
         var st = stats[p.suffix];
         var metas = [];
-        if (st.wish > 0) metas.push('Vaciar ' + Math.min(st.wish, 5) + ' títulos de tu wishlist este mes');
-        if (st.comp < 10) metas.push('Meta ' + anioActual + ': llegar a 10 completados');
-        if (st.cuenta > 0 && st.suma / st.cuenta < 7) metas.push('Subir tu nota media por encima de 7');
-        if (!metas.length) metas.push('¡Vas sobrado! Mantén el ritmo.');
+        if (st.wish > 0) metas.push(tf('st.retowish', { n: Math.min(st.wish, 5) }));
+        if (st.comp < 10) metas.push(tf('st.retocomp', { y: anioActual }));
+        if (st.cuenta > 0 && st.suma / st.cuenta < 7) metas.push(t('st.retorate'));
+        if (!metas.length) metas.push(t('st.retosobra'));
         return '<div class="br-line" style="margin-top:3px;">' + nexusPersonaDot(p, 14) + ' ' + metas.join(' · ') + '</div>';
       }).join('');
 
-      const toggleHdr = `<span class="stat-toggle-lbl">Desplegar ${svgIcon('i-chevron-down', 'ico-sm')}</span>`;
+      const toggleHdr = `<span class="stat-toggle-lbl">${t('st.expand')} ${svgIcon('i-chevron-down', 'ico-sm')}</span>`;
 
       container.innerHTML = `
         <div class="stat-card" onclick="toggleStatCard(this)">
           <div class="stat-card-header">
-            <div class="stat-card-title">Biblioteca Total (${escaparHTML(catTitulo)})</div>
+            <div class="stat-card-title">${t('st.total')} (${escaparHTML(catTitulo)})</div>
             ${toggleHdr}
           </div>
           <div class="stat-card-value">${totalElementos}</div>
-          <div class="stat-card-sub"><span>Elementos registrados</span><span>${escaparHTML(catTitulo)}</span></div>
+          <div class="stat-card-sub"><span>${t('st.items')}</span><span>${escaparHTML(catTitulo)}</span></div>
           <div class="stat-accordion-content">
-            <div style="font-size:11px;color:#8f98a0;margin-bottom:2px;">Desglose general:</div>
+            <div style="font-size:11px;color:#8f98a0;margin-bottom:2px;">${t('st.breakdown')}</div>
             <div class="stat-detail-line">${svgIcon('i-gamepad', 'ico-sm')} Juegos: <strong>${distribucion.Juegos}</strong></div>
             <div class="stat-detail-line">${svgIcon('i-film', 'ico-sm')} Cine/Series: <strong>${distribucion['Cine/Series']}</strong></div>
             <div class="stat-detail-line">${svgIcon('i-book', 'ico-sm')} Libros: <strong>${distribucion.Libros}</strong></div>
@@ -4846,11 +5039,11 @@
 
         <div class="stat-card" onclick="toggleStatCard(this)">
           <div class="stat-card-header">
-            <div class="stat-card-title">Completados</div>
+            <div class="stat-card-title">${t('st.comp')}</div>
             ${toggleHdr}
           </div>
           <div class="stat-card-value">${valCompletados}</div>
-          <div class="stat-card-sub"><span>Fines de obra alcanzados</span><span>${escaparHTML(profTitulo)}</span></div>
+          <div class="stat-card-sub"><span>${t('st.compdesc')}</span><span>${escaparHTML(profTitulo)}</span></div>
           <div class="stat-accordion-content">
             ${barras('comp')}
           </div>
@@ -4858,11 +5051,11 @@
 
         <div class="stat-card" onclick="toggleStatCard(this)">
           <div class="stat-card-header">
-            <div class="stat-card-title">En Proceso</div>
+            <div class="stat-card-title">${t('st.proc')}</div>
             ${toggleHdr}
           </div>
           <div class="stat-card-value">${valProceso}</div>
-          <div class="stat-card-sub"><span>Actualmente activos</span><span>${escaparHTML(profTitulo)}</span></div>
+          <div class="stat-card-sub"><span>${t('st.procdesc')}</span><span>${escaparHTML(profTitulo)}</span></div>
           <div class="stat-accordion-content">
             ${barras('proc')}
           </div>
@@ -4870,11 +5063,11 @@
 
         <div class="stat-card" onclick="toggleStatCard(this)">
           <div class="stat-card-header">
-            <div class="stat-card-title">Lista de Deseados</div>
+            <div class="stat-card-title">${t('st.wish')}</div>
             ${toggleHdr}
           </div>
           <div class="stat-card-value">${valDeseados}</div>
-          <div class="stat-card-sub"><span>Guardados en wishlist</span><span>${escaparHTML(profTitulo)}</span></div>
+          <div class="stat-card-sub"><span>${t('st.wishdesc')}</span><span>${escaparHTML(profTitulo)}</span></div>
           <div class="stat-accordion-content">
             ${barras('wish')}
           </div>
@@ -4882,11 +5075,11 @@
 
         <div class="stat-card" onclick="toggleStatCard(this)">
           <div class="stat-card-header">
-            <div class="stat-card-title">Nota Media Otorgada</div>
+            <div class="stat-card-title">${t('st.avg')}</div>
             ${toggleHdr}
           </div>
           <div class="stat-card-value">${svgIcon('i-star', 'ico-lg ico-gold')} ${notaMediaVal} / 10</div>
-          <div class="stat-card-sub"><span>Basado en valoraciones</span><span>${escaparHTML(profTitulo)}</span></div>
+          <div class="stat-card-sub"><span>${t('st.avgdesc')}</span><span>${escaparHTML(profTitulo)}</span></div>
           <div class="stat-accordion-content">
             ${lineasNota()}
           </div>
@@ -4894,11 +5087,11 @@
 
         <div class="stat-card" onclick="toggleStatCard(this)">
           <div class="stat-card-header">
-            <div class="stat-card-title">Próximos Estrenos (${anioActual})</div>
+            <div class="stat-card-title">${t('st.upcoming')} (${anioActual})</div>
             ${toggleHdr}
           </div>
           <div class="stat-card-value">${proximos35.length}</div>
-          <div class="stat-card-sub"><span>Wishlist con fecha ≤ 90 días</span><span>${escaparHTML(profTitulo)}</span></div>
+          <div class="stat-card-sub"><span>${t('st.upcomingdesc')}</span><span>${escaparHTML(profTitulo)}</span></div>
           <div class="stat-accordion-content">
             ${listaEstrenos}
           </div>
@@ -4906,19 +5099,19 @@
 
         <div class="stat-card stat-card-wide" onclick="toggleStatCard(this)">
           <div class="stat-card-header">
-            <div class="stat-card-title">Balance y Retos (${anioActual})</div>
+            <div class="stat-card-title">${t('st.balance')} (${anioActual})</div>
             ${toggleHdr}
           </div>
           <div class="stat-card-value">${agg('comp')}</div>
-          <div class="stat-card-sub"><span>Completados acumulados</span><span>${escaparHTML(profTitulo)}</span></div>
+          <div class="stat-card-sub"><span>${t('st.compacc')}</span><span>${escaparHTML(profTitulo)}</span></div>
           <div class="stat-accordion-content">
             <div class="br-cols">
               <div>
-                <div class="br-h">Balance por persona</div>
+                <div class="br-h">${t('st.balperson')}</div>
                 <div class="br-col-lines">${lineasBalance}</div>
               </div>
               <div>
-                <div class="br-h">Retos automáticos</div>
+                <div class="br-h">${t('st.retos')}</div>
                 <div class="br-col-lines">${retosAuto}</div>
               </div>
             </div>
@@ -4978,7 +5171,7 @@
       });
 
       if (matches.length === 0) {
-        gridEl.innerHTML = '<p style="text-align:center;color:#8f98a0;grid-column:1/-1;padding:20px;">No hay coincidencias en esta categoría.</p>';
+        gridEl.innerHTML = '<p style="text-align:center;color:#8f98a0;grid-column:1/-1;padding:20px;">' + t('match.none') + '</p>';
         return;
       }
 
@@ -4987,7 +5180,7 @@
           <img src="${escaparHTML(it.portada)}" srcset="${nexusCoverSrcset(it.portada)}" sizes="(max-width:600px) 50vw, 300px" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src=FALLBACK_SVG;">
           <div class="match-card-body">
             <div class="match-card-title">${escaparHTML(it.titulo)}</div>
-            <div style="font-size:10px;color:var(--accent);margin-top:auto;display:inline-flex;align-items:center;gap:4px;">${svgIcon('i-heart-fill', 'ico-sm ico-wish')} Coincidencia</div>
+            <div style="font-size:10px;color:var(--accent);margin-top:auto;display:inline-flex;align-items:center;gap:4px;">${svgIcon('i-heart-fill', 'ico-sm ico-wish')}${t('match.coinc')}</div>
           </div>
         </div>
       `).join('');
@@ -5004,7 +5197,7 @@
       RUN
         .withSuccessHandler(function(items) {
           if (!items || items.length === 0) {
-            l.innerHTML = nexusStateBox('empty', 'i-trash', 'Papelera vacía', 'Los elementos que elimines aparecerán aquí por 30 días.');
+            l.innerHTML = nexusStateBox('empty', 'i-trash', t('pb.empty'), t('pb.desc'));
             return;
           }
           l.innerHTML = items.map(it => `
@@ -5013,12 +5206,12 @@
                 <div class="papelera-item-title">${escaparHTML(it.titulo)}</div>
                 <div style="font-size:11px;color:#8f98a0;">${escaparHTML(it.categoria)}</div>
               </div>
-              <button class="btn btn-primary" style="width:auto;padding:5px 12px;border-radius:20px;font-size:11px;" onclick="restaurarDesdePapelera('${escaparHTML(it.categoria)}','${escaparHTML(it.id)}')">Restaurar</button>
+              <button class="btn btn-primary" style="width:auto;padding:5px 12px;border-radius:20px;font-size:11px;" onclick="restaurarDesdePapelera('${escaparHTML(it.categoria)}','${escaparHTML(it.id)}')">${t('pb.restore')}</button>
             </div>
           `).join('');
         })
         .withFailureHandler(function(err) {
-          l.innerHTML = nexusStateBox('err', 'i-x', 'No se pudo cargar la papelera', err.message || '', '<button class="sb-action" onclick="abrirPapelera()">Reintentar</button>');
+          l.innerHTML = nexusStateBox('err', 'i-x', t('pb.errload'), err.message || '', '<button class="sb-action" onclick="abrirPapelera()">' + t('toast.reintentar') + '</button>');
         })
         .getItemsEliminados();
     }
@@ -5033,24 +5226,24 @@
       RUN
         .withSuccessHandler(function(res) {
           if (res.success) {
-            showToast('Restaurado en ' + cat, 'success');
+            showToast(tf('pb.restored', { c: cat }), 'success');
             cerrarPapelera();
             cargarCategoria(cat, true);
           } else {
-            showToast('No se pudo restaurar el elemento.', 'error');
+            showToast(t('pb.errrestore'), 'error');
           }
         })
         .withFailureHandler(function(err) {
-          showToast('Error: ' + err.message, 'error');
+          showToast(t('err.prefix') + err.message, 'error');
         })
         .restaurarItem(cat, id);
     }
 
     function elegirAleatorio() {
       var pool = filteredItems.length > 0 ? filteredItems : (itemsByCategory[currentCategory] || []);
-      if (pool.length === 0) return showToast('No hay elementos para elegir.', 'warning');
+      if (pool.length === 0) return showToast(t('pb.none'), 'warning');
       var el = pool[Math.floor(Math.random() * pool.length)];
-      showToast('Elegido: ' + el.titulo, 'success');
+      showToast(tf('pb.picked', { t: el.titulo }), 'success');
       abrirModal(el.id);
     }
 
@@ -5174,11 +5367,11 @@
     }
     window.addEventListener('online', function() {
       nexusSyncOffline();
-      showToast && showToast('Conexión restablecida.', 'success');
+      showToast && showToast(t('toast.conn'), 'success');
     });
     window.addEventListener('offline', function() {
       nexusSyncOffline();
-      showToast && showToast('Sin conexión — modo solo lectura.', 'warning');
+      showToast && showToast(t('toast.offline'), 'warning');
     });
     nexusSyncOffline();
 
@@ -5198,7 +5391,7 @@
       if (box.style.display === 'block') { detenerUpdates(); return; }
       box.style.display = 'block';
       btn.classList.add('active');
-      btn.innerHTML = `${svgIcon('i-x', 'ico-sm')} Ocultar Updates`;
+      btn.innerHTML = `${svgIcon('i-x', 'ico-sm')} ${t('upd.hide')}`;
       if (!_updatesLoaded) await nexusFetchUpdates();
     }
 
@@ -5211,7 +5404,7 @@
 
     async function nexusFetchUpdates() {
       var box = document.getElementById('m-updates-box');
-      box.innerHTML = '<div class="upd-empty">Cargando updates...</div>';
+      box.innerHTML = '<div class="upd-empty">' + t('upd.load') + '</div>';
       try {
         var sb = await nexusSb();
         var it = (itemsByCategory[currentCategory] || []).find(function(x) { return String(x.id) === String(currentItemId); });
@@ -5220,7 +5413,7 @@
         if (r.error) throw new Error(r.error.message || 'Error en steam-updates');
         var items = (r.data && r.data.items) || [];
         _updatesLoaded = true;
-        if (!items.length) { box.innerHTML = '<div class="upd-empty">Sin noticias en Steam para este juego.</div>'; return; }
+        if (!items.length) { box.innerHTML = '<div class="upd-empty">' + t('upd.none') + '</div>'; return; }
         box.innerHTML = items.map(function(u) {
           return '<div class="upd-item">'
             + '<div class="upd-title">' + (u.url
@@ -5231,7 +5424,7 @@
             + '</div>';
         }).join('');
       } catch (e) {
-        box.innerHTML = '<div class="upd-empty">' + escaparHTML('Error: ' + (e.message || '')) + '</div>';
+        box.innerHTML = '<div class="upd-empty">' + escaparHTML(t('err.prefix') + (e.message || '')) + '</div>';
       }
     }
 
@@ -5251,13 +5444,13 @@
       if (box.style.display === 'block') { detenerEditions(); return; }
       box.style.display = 'block';
       btn.classList.add('active');
-      btn.innerHTML = `${svgIcon('i-x', 'ico-sm')} Ocultar Ediciones`;
+      btn.innerHTML = `${svgIcon('i-x', 'ico-sm')} ${t('ed.hide')}`;
       if (!_editionsLoaded) await nexusFetchEditions();
     }
 
     async function nexusFetchEditions() {
       var box = document.getElementById('m-editions-box');
-      box.innerHTML = '<div class="upd-empty">Cargando ediciones...</div>';
+      box.innerHTML = '<div class="upd-empty">' + t('ed.load') + '</div>';
       try {
         var sb = await nexusSb();
         var it = (itemsByCategory[currentCategory] || []).find(function(x) { return String(x.id) === String(currentItemId); });
@@ -5268,7 +5461,7 @@
         if (!editions.length) { box.innerHTML = '<div class="upd-empty">' + escaparHTML((r.data && r.data.error) || 'Sin ediciones en OpenLibrary.') + '</div>'; return; }
         box.innerHTML = editions.map(function(e) {
           var meta = [];
-          if (e.translators && e.translators.length) meta.push('Trad: ' + e.translators.join(', '));
+          if (e.translators && e.translators.length) meta.push(t('ed.transl') + e.translators.join(', '));
           if (e.publishers && e.publishers.length) meta.push(e.publishers[0]);
           if (e.publish_date) meta.push(e.publish_date);
           if (e.languages && e.languages.length) meta.push(e.languages.join(', '));
@@ -5276,13 +5469,13 @@
           if (e.isbn) links.push('<a href="https://openlibrary.org/isbn/' + encodeURIComponent(e.isbn) + '" target="_blank" rel="noopener noreferrer">ISBN ' + escaparHTML(e.isbn) + '</a>');
           if (e.ocaid) links.push('<a href="https://archive.org/details/' + encodeURIComponent(e.ocaid) + '" target="_blank" rel="noopener noreferrer">Leer ↗</a>');
           return '<div class="ed-row">'
-            + '<div class="ed-title">' + escaparHTML(e.title || 'Edición') + '</div>'
+            + '<div class="ed-title">' + escaparHTML(e.title || t('ed.edition')) + '</div>'
             + '<div class="ed-meta">' + meta.map(escaparHTML).join(' · ') + (e.languages && e.languages.indexOf('Español') !== -1 ? ' <span class="ed-tag">ES</span>' : '') + '</div>'
             + (links.length ? '<div class="ed-actions">' + links.join('') + '</div>' : '')
             + '</div>';
         }).join('');
       } catch (e) {
-        box.innerHTML = '<div class="upd-empty">' + escaparHTML('Error: ' + (e.message || '')) + '</div>';
+        box.innerHTML = '<div class="upd-empty">' + escaparHTML(t('err.prefix') + (e.message || '')) + '</div>';
       }
     }
 
@@ -5302,7 +5495,7 @@
       if (box.style.display === 'block') { detenerResenas(); return; }
       box.style.display = 'block';
       btn.classList.add('active');
-      btn.innerHTML = `${svgIcon('i-x', 'ico-sm')} Ocultar Reseñas`;
+      btn.innerHTML = `${svgIcon('i-x', 'ico-sm')} ${t('rv.hide')}`;
       if (!_resenasLoaded) await nexusFetchResenas();
     }
 
@@ -5322,19 +5515,19 @@
         var diff = pct - Number(d.pct30);
         var cls = diff > 2 ? 'up' : diff < -2 ? 'down' : 'flat';
         var arrow = diff > 2 ? '▲' : diff < -2 ? '▼' : '→';
-        trend = '<span class="rev-trend ' + cls + '">' + arrow + ' ' + Math.abs(Math.round(diff)) + '% vs 30d</span>';
+        trend = '<span class="rev-trend ' + cls + '">' + arrow + ' ' + Math.abs(Math.round(diff)) + '% ' + t('rv.vs30d') + '</span>';
       }
       return '<div class="rev-wrap">'
         + '<div class="rev-top"><span class="rev-big">' + pct + '%</span>'
         + '<span class="rev-tier" style="color:' + tierColor + '">' + escaparHTML(d.tier || '') + '</span>' + trend + '</div>'
         + bar
-        + '<div class="rev-meta"><span>' + fmt(pos) + ' positivas</span><span>' + fmt(neg) + ' negativas</span><span>' + fmt(total) + ' total' + (d.total30 ? ' · ' + fmt(d.total30) + ' en 30d' : '') + '</span></div>'
+        + '<div class="rev-meta"><span>' + fmt(pos) + ' ' + t('rv.pos') + '</span><span>' + fmt(neg) + ' ' + t('rv.neg') + '</span><span>' + fmt(total) + ' ' + t('rv.total') + (d.total30 ? ' · ' + fmt(d.total30) + ' ' + t('rv.30d') : '') + '</span></div>'
         + '</div>';
     }
 
     async function nexusFetchResenas() {
       var box = document.getElementById('m-resenas-box');
-      box.innerHTML = '<div class="upd-empty">Cargando reseñas...</div>';
+      box.innerHTML = '<div class="upd-empty">' + t('rv.load') + '</div>';
       try {
         var sb = await nexusSb();
         var it = (itemsByCategory[currentCategory] || []).find(function(x) { return String(x.id) === String(currentItemId); });
@@ -5342,10 +5535,10 @@
         var r = await sb.functions.invoke('steam-reviews', { body: { appid: appid } });
         if (r.error) throw new Error(r.error.message || 'Error en steam-reviews');
         _resenasLoaded = true;
-        if (!r.data || r.data.pct == null) { box.innerHTML = '<div class="upd-empty">Sin datos de reseñas.</div>'; return; }
+        if (!r.data || r.data.pct == null) { box.innerHTML = '<div class="upd-empty">' + t('rv.none') + '</div>'; return; }
         box.innerHTML = nexusRenderResenas(r.data);
       } catch (e) {
-        box.innerHTML = '<div class="upd-empty">' + escaparHTML('Error: ' + (e.message || '')) + '</div>';
+        box.innerHTML = '<div class="upd-empty">' + escaparHTML(t('err.prefix') + (e.message || '')) + '</div>';
       }
     }
 
@@ -5425,7 +5618,7 @@
       detenerTrailer();
       box.style.display = 'block';
       btn.classList.add('active');
-      btn.innerHTML = `${svgIcon('i-x', 'ico-sm')} Ocultar Tráiler`;
+      btn.innerHTML = `${svgIcon('i-x', 'ico-sm')} ${t('trail.hide')}`;
 
       var ytId = extraerYouTubeId(currentTrailerUrl);
       if (ytId) {
@@ -5463,7 +5656,7 @@
       var btn = document.getElementById('btn-toggle-trailer');
       if (hlsInstance) { try { hlsInstance.destroy(); } catch (e) {} hlsInstance = null; }
       if (box) { box.innerHTML = ''; box.style.display = 'none'; }
-      if (btn) { btn.classList.remove('active'); btn.innerHTML = `${svgIcon('i-play', 'ico-sm')} Ver Tráiler`; }
+      if (btn) { btn.classList.remove('active'); btn.innerHTML = `${svgIcon('i-play', 'ico-sm')} ${t('trail.show')}`; }
     }
   </script>
 
