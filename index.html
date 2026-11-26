@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>NexusLib</title>
   <link rel="preconnect" href="https://image.tmdb.org" crossorigin>
   <link rel="preconnect" href="https://cdn.cloudflare.steamstatic.com" crossorigin>
@@ -3052,8 +3052,24 @@
           shared_with: (isPrivate || sw.length === 0) ? null : sw
         });
         var ctx = _shareCtx;
+        // actualizar el modelo en memoria + persistencia ANTES de refrescar la UI
+        // (nexusSyncShareUI necesita las personas reales del item para ubicar las secciones)
+        var arr = itemsByCategory[ctx.cat] || [];
+        var realIt = arr.filter(function(x) { return String(x.id) === String(ctx.id); })[0];
+        if (realIt) {
+          realIt.is_private = isPrivate;
+          realIt.shared_with = (isPrivate || sw.length === 0) ? null : sw;
+          // el upsert solo afecta MI tracking row -> solo mi sufijo cambia
+          nexusItemPersonas(realIt).forEach(function(p) {
+            if (p.mine) realIt['privado' + p.suffix] = isPrivate;
+          });
+          try {
+            localStorage.setItem('media_lib_' + CACHE_VERSION + '_' + ctx.cat, JSON.stringify(arr));
+          } catch (e) {}
+        }
         nexusSharePanel(k).style.display = 'none';
-        nexusSyncShareUI({ id: ctx.id });
+        nexusSyncShareUI(realIt || { id: ctx.id });
+        if (typeof filtrarItems === 'function') filtrarItems();
         showToast && showToast(t('toast.privupd'), 'success');
       } catch (e) {
         showToast && showToast(t('err.prefix') + (e.message || ''), 'error');
@@ -3088,7 +3104,8 @@
       var set = {}, labels = {};
       Object.keys(itemsByCategory).forEach(function(c) {
         var arr = itemsByCategory[c] || [];
-        for (var i = 0; i < Math.min(arr.length, 3); i++) {
+        // escaneo íntegro: una persona puede aparecer solo en items tardíos
+        for (var i = 0; i < arr.length; i++) {
           var it = arr[i];
           nexusScanItemPersonas(it, set);
           Object.keys(it || {}).forEach(function(k) {
@@ -3326,6 +3343,8 @@
         'mods.nameph': 'Nombre del mod', 'mods.verph': 'Versión del juego (ej. v1.7.9b)', 'mods.urlph': 'URL del mod',
         'mods.notesph': 'Notas (load order, dependencias...)', 'mods.save': 'Guardar mod', 'mods.noversion': 'Sin versión',
         'mods.noname': 'Ponle nombre al mod.', 'btn.cerrar': 'Cerrar', 'btn.guardar': 'Guardar',
+        'mods.saved': 'Mod guardado.', 'chap.autoapi': 'Auto API (semanal)', 'chap.auto': 'Auto',
+        'chap.unknown': 'Desconocido', 'chap.manual': 'Total editable',
         'sh.withn': 'Con {n} {w}', 'upd.hist': 'Historial de Updates', 'ed.btn': 'Ediciones', 'rv.btn': 'Reseñas Steam',
         'fl.nota_min': 'Nota Mínima', 'st.comp_lc': 'completados', 'st.proc_lc': 'en proceso',
         'st.showing': 'Mostrando', 'st.deseados': 'Deseados',
@@ -3454,6 +3473,8 @@
         'mods.nameph': 'Mod name', 'mods.verph': 'Game version (e.g. v1.7.9b)', 'mods.urlph': 'Mod URL',
         'mods.notesph': 'Notes (load order, dependencies...)', 'mods.save': 'Save mod', 'mods.noversion': 'No version',
         'mods.noname': 'Name the mod.', 'btn.cerrar': 'Close', 'btn.guardar': 'Save',
+        'mods.saved': 'Mod saved.', 'chap.autoapi': 'Auto API (weekly)', 'chap.auto': 'Auto',
+        'chap.unknown': 'Unknown', 'chap.manual': 'Editable total',
         'sh.withn': 'With {n} {w}', 'upd.hist': 'Update History', 'ed.btn': 'Editions', 'rv.btn': 'Steam Reviews',
         'fl.nota_min': 'Min rating', 'st.comp_lc': 'completed', 'st.proc_lc': 'in progress',
         'st.showing': 'Showing', 'st.deseados': 'Wishlisted',
@@ -3634,35 +3655,6 @@
         });
         inputBuscarEl.addEventListener('click', function() { cerrarBusquedaAgregar(); });
       }
-      var lastScrollY = window.scrollY || window.pageYOffset || 0;
-      window.addEventListener('scroll', function() {
-        var curY = window.scrollY || window.pageYOffset || 0;
-        if (Math.abs(curY - lastScrollY) > 6 && document.getElementById('add-wrapper-box').classList.contains('expanded')) {
-          cerrarBusquedaAgregar();
-        }
-        lastScrollY = curY;
-      }, { passive: true });
-      var swipeStartX = 0, swipeStartY = 0;
-      document.addEventListener('touchstart', function(e) {
-        if (e.touches.length === 1) {
-          swipeStartX = e.touches[0].clientX;
-          swipeStartY = e.touches[0].clientY;
-        }
-      }, { passive: true });
-      document.addEventListener('touchmove', function(e) {
-        if (e.touches.length !== 1) return;
-        if (!document.getElementById('add-wrapper-box').classList.contains('expanded')) return;
-        
-        // No cerrar si el toque se origina dentro del dropdown de resultados
-        if (e.target.closest('#search-dropdown')) return;
-
-        var dx = Math.abs(e.touches[0].clientX - swipeStartX);
-        var dy = Math.abs(e.touches[0].clientY - swipeStartY);
-        if (dx > 18 || dy > 18) {
-          cerrarBusquedaAgregar();
-        }
-      }, { passive: true });
-
       window.addEventListener('popstate', function(event) {
         var dropdown = document.getElementById('search-dropdown');
         var panelFiltros = document.getElementById('panel-filtros');
@@ -3694,7 +3686,7 @@
       });
       history.pushState(null, '', window.location.href);
 
-      document.addEventListener('click', function(e) {
+      document.addEventListener('pointerdown', function(e) {
         var panel = document.getElementById('panel-filtros');
         var btn = document.getElementById('btn-toggle-filtros');
         if (panel.classList.contains('open') && !panel.contains(e.target) && !btn.contains(e.target)) {
@@ -3712,6 +3704,11 @@
         if (addBox && addBox.classList.contains('expanded') && !addWrap.contains(e.target)) {
           cerrarBusquedaAgregar();
         } else if (dd && dd.classList.contains('open') && !addWrap.contains(e.target)) {
+          cerrarBusquedaAgregar();
+        }
+      });
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && document.getElementById('add-wrapper-box').classList.contains('expanded')) {
           cerrarBusquedaAgregar();
         }
       });
@@ -3746,7 +3743,6 @@
       if (activar && !box.classList.contains('expanded')) {
         cerrarMenuPanel();
         box.classList.add('expanded');
-        history.pushState(null, '', window.location.href);
       }
     }
 
@@ -4111,6 +4107,25 @@
 
     var fSubcat = 'todos'; // sub-filtro Cine y Series: todos|pelicula|serie|anime
 
+    // mapa canónico de estadoEmision: variantes ES/EN -> clave interna estable
+    var NEXUS_EMISION_MAP = {
+      'en emision': 'airing', 'emision': 'airing', 'airing': 'airing', 'ongoing': 'airing',
+      'finalizado': 'finished', 'finalizada': 'finished', 'finished': 'finished',
+      'completed': 'finished', 'complete': 'finished',
+      'hiato': 'hiatus', 'pausado': 'hiatus', 'pausada': 'hiatus', 'hiatus': 'hiatus',
+      'proximo': 'upcoming', 'proxima': 'upcoming', 'upcoming': 'upcoming'
+    };
+    function nexusCanonEmision(v) {
+      var norm = String(v || '').toLowerCase().normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim();
+      return NEXUS_EMISION_MAP[norm] || norm;
+    }
+    function nexusEmisionMatch(itemVal, filterVal) {
+      var a = nexusCanonEmision(itemVal), b = nexusCanonEmision(filterVal);
+      if (!a || !b) return false;
+      return a === b || a.indexOf(b) !== -1 || b.indexOf(a) !== -1;
+    }
+
     function filtrarItems() {
       paginaActual = 1;
       var lista = itemsByCategory[currentCategory] || [];
@@ -4190,14 +4205,14 @@
         } else if (currentCategory === 'Peliculas_Series') {
           // e1 (Tipo) lo maneja el sub-filtro fSubcat — evita doble filtro
           if (e2 !== 'todos' && !String(it.plataformas || '').toLowerCase().includes(e2.toLowerCase())) return false;
-          if (e3 !== 'todos' && !String(it.estadoEmision || '').toLowerCase().includes(e3.toLowerCase())) return false;
+          if (e3 !== 'todos' && !nexusEmisionMatch(it.estadoEmision, e3)) return false;
         } else if (currentCategory === 'Libros') {
           var pags = parseInt(String(it.extension || '').replace(/\D/g, ''), 10) || 0;
           if (e1 === 'corto' && (pags === 0 || pags >= 250)) return false;
           if (e1 === 'medio' && (pags < 250 || pags > 500)) return false;
           if (e1 === 'largo' && pags <= 500) return false;
         } else if (currentCategory === 'Mangas') {
-          if (e1 !== 'todos' && !String(it.estadoEmision || '').toLowerCase().includes(e1.toLowerCase())) return false;
+          if (e1 !== 'todos' && !nexusEmisionMatch(it.estadoEmision, e1)) return false;
           if (e2 !== 'todos' && !String(it.demografia || '').toLowerCase().includes(e2.toLowerCase())) return false;
         }
 
@@ -4640,10 +4655,10 @@
         var buildTexto = /^estable:/i.test(rawBuild) ? rawBuild : ('Build: ' + rawBuild);
         var badgeBuild = `<div class="badge-ver badge-estable">${escaparHTML(buildTexto)}</div>`;
         var badgeFecha = (it.fechaEstable && it.fechaEstable !== 'N/A' && it.fechaEstable !== '-')
-          ? `<div class="badge-ver badge-patch">Fecha Build: ${escaparHTML(it.fechaEstable)}</div>`
+          ? `<div class="badge-ver badge-patch">${t('md.fechabuild')}: ${escaparHTML(it.fechaEstable)}</div>`
           : '';
         var badgeBeta = (it.beta && it.beta !== 'N/A' && it.beta !== '-')
-          ? `<div class="badge-ver badge-beta">Beta: ${escaparHTML(it.beta)}</div>`
+          ? `<div class="badge-ver badge-beta">${t('md.beta')}: ${escaparHTML(it.beta)}</div>`
           : '';
         badges.innerHTML = badgeBuild + badgeFecha + badgeBeta;
       } else if (currentCategory === 'Libros') {
@@ -4919,7 +4934,7 @@
         });
         if (r.error) throw new Error(r.error.message);
         ['mod-nombre', 'mod-url', 'mod-version', 'mod-notas'].forEach(function(id) { document.getElementById(id).value = ''; });
-        showToast && showToast('Mod guardado.', 'success');
+        showToast && showToast(t('mods.saved'), 'success');
         _modsOpenVersion = version || t('mods.noversion');
         await nexusLoadMods();
       } catch (e) {
@@ -5051,12 +5066,12 @@
 
       if (currentCategory === 'Mangas') {
         totEl.disabled = true;
-        totEl.placeholder = 'Auto';
-        hintEl.innerText = 'Auto API (semanal)';
+        totEl.placeholder = t('chap.auto');
+        hintEl.innerText = t('chap.autoapi');
       } else {
         totEl.disabled = false;
-        totEl.placeholder = 'Desconocido';
-        hintEl.innerText = 'Total editable';
+        totEl.placeholder = t('chap.unknown');
+        hintEl.innerText = t('chap.manual');
       }
       refrescarPorcentajeUI(k, actual, total);
     }
