@@ -1049,11 +1049,15 @@
       color: var(--text); font-size: 12px; font-weight: 700; cursor: pointer;
       display: inline-flex; align-items: center; justify-content: center; gap: 6px;
     }
+    /* wish + estado en una fila: menos alto, controles relacionados juntos */
+    .pa-controls-row { display: flex; gap: 6px; margin-bottom: 6px; }
+    .pa-controls-row .wish-toggle { flex: 0 0 auto; width: auto; margin-bottom: 0; padding: 7px 9px; font-size: 11px; white-space: nowrap; }
+    .pa-controls-row .status-select { flex: 1; min-width: 0; margin-bottom: 0; }
      .wish-toggle.active { background: rgba(255, 77, 109, 0.16); border-color: rgba(255, 77, 109, 0.55); color: #ff8fa3; }
 
     .status-select, .progress-input {
-      width: 100%; padding: 8px 10px; border-radius: 8px; background: rgba(0,0,0,0.35);
-      color: white; border: 1px solid var(--border); margin-bottom: 8px; font-size: 12px; outline: none;
+      width: 100%; padding: 7px 10px; border-radius: 8px; background: rgba(0,0,0,0.35);
+      color: white; border: 1px solid var(--border); margin-bottom: 6px; font-size: 12px; outline: none;
     }
     .progress-input:focus, .status-select:focus { border-color: var(--accent); }
 
@@ -1118,21 +1122,23 @@
     .mods-count { font-size: 11px; color: var(--muted); }
     .mods-search-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
     .mods-search-btn {
-      flex: 1 1 auto; min-width: 70px;
+      flex: 1 1 auto; min-width: 64px;
       display: inline-flex; align-items: center; justify-content: center; gap: 5px;
-      padding: 7px 8px; border-radius: 8px; font-size: 11px; font-weight: 600;
+      padding: 6px 8px; border-radius: 8px; font-size: 12px; font-weight: 600;
       background: rgba(102,192,244,0.08); color: var(--accent);
       border: 1px solid rgba(102,192,244,0.25); text-decoration: none;
+      white-space: nowrap;
     }
-    .mods-form { display: grid; gap: 8px; margin-bottom: 14px; }
+    .mods-form { display: grid; gap: 6px; margin-bottom: 12px; }
     .mods-form input, .mods-form select, .mods-form textarea {
-      width: 100%; padding: 11px 12px; border-radius: 10px; font-size: 13px;
+      width: 100%; min-width: 0; padding: 8px 10px; border-radius: 8px; font-size: 13px;
       background: rgba(0,0,0,0.25); color: var(--text);
       border: 1px solid var(--border); font-family: inherit;
     }
-    .mods-form textarea { resize: vertical; min-height: 44px; }
+    .mods-form textarea { resize: vertical; min-height: 40px; }
     .mods-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-    .mods-form .btn-save { justify-content: center; padding: 14px; font-size: 14px; border-radius: 10px; margin-top: 4px; }
+    .mods-form-row > * { min-width: 0; }
+    .mods-form .btn-save { justify-content: center; padding: 10px; font-size: 13px; border-radius: 8px; margin-top: 2px; }
     .mods-empty { font-size: 12px; color: var(--muted); text-align: center; padding: 10px 0; }
     .mods-group { margin-bottom: 8px; }
     .mods-group summary {
@@ -1250,10 +1256,8 @@
       #inputBuscar, #inputAgregar { font-size: 16px; }
       .perfil-edit-inner .na-in, .mods-form input, .mods-form select, .mods-form textarea { font-size: 16px; }
     }
-    @media (max-width: 480px) {
-      .mods-form-row { grid-template-columns: 1fr; }
-    }
     @media (max-width: 600px) {
+      .mods-form-row { grid-template-columns: 1fr; }
       .modal-content { padding: 14px; border-radius: 16px 16px 0 0; }
       .modal-title { font-size: 17px; padding-right: 36px; }
       .stats-cards-grid { grid-template-columns: minmax(0, 1fr); gap: 10px; }
@@ -4263,9 +4267,11 @@
           '</div>' +
         '</div>' +
         '<div class="player-details">' +
-          '<button type="button" id="btn-wish-' + k + '" class="wish-toggle" onclick="toggleDeseado(\'' + jsN + '\')"><svg class="ico ico-sm"><use href="#i-heart"/></svg> ' + t('pa.wish') + '</button>' +
-          '<select id="select-estado-' + k + '" class="status-select" onchange="guardarTracking(\'' + jsN + '\')">' +
-            '<option value="No jugado">' + t('st.nojugado') + '</option><option value="En proceso">' + t('st.enproceso') + '</option><option value="Completado">' + t('st.completado') + '</option></select>' +
+          '<div class="pa-controls-row">' +
+            '<button type="button" id="btn-wish-' + k + '" class="wish-toggle" onclick="toggleDeseado(\'' + jsN + '\')"><svg class="ico ico-sm"><use href="#i-heart"/></svg> ' + t('pa.wish') + '</button>' +
+            '<select id="select-estado-' + k + '" class="status-select" onchange="guardarTracking(\'' + jsN + '\')">' +
+              '<option value="No jugado">' + t('st.nojugado') + '</option><option value="En proceso">' + t('st.enproceso') + '</option><option value="Completado">' + t('st.completado') + '</option></select>' +
+          '</div>' +
           '<input type="text" id="prog-' + k + '" class="progress-input" placeholder="' + t('pa.progph') + '" style="display:' + progDisp + ';" onchange="guardarTracking(\'' + jsN + '\')">' +
           '<div id="chap-box-' + k + '" class="chapter-tracker-box" style="display:' + chapDisp + ';">' +
             '<div style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:5px;display:flex;justify-content:space-between;align-items:center;gap:6px;">' +
