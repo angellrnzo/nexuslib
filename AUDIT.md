@@ -150,7 +150,9 @@ Revisar manualmente cada hit en contexto de stats/match/share.
 
 Áreas auditadas al 2026-11-27: i18n dict + refs, XSS/escapes, chaining RPC,
 privacidad stats/match, visual/responsive, Edge Functions (7/7), RLS completo,
-RPC drift, auth flows, SW/manifest, backup workflow, share/send flow.
+RPC drift, auth flows, SW/manifest, backup workflow, share/send flow,
+verificaciones web (OL UA/rate limits, AniList 30rpm, Steam appdetails,
+pg_cron free tier), espejo standby verificado en vivo (datos + schema).
 
 No auditado aún: `database/etl/` (scripts ETL), `database/legacy/`,
 `AppScript/` (congelado, no aplica), `sync_auth_users.py`,
