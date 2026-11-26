@@ -1707,6 +1707,7 @@
         '.na-btn:disabled{opacity:.6;cursor:default;}' +
         '.na-alt{width:100%;padding:10px;margin-top:8px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--text);font-size:13px;cursor:pointer;font-family:inherit;}' +
         '.na-msg{margin-top:12px;font-size:12px;text-align:center;min-height:16px;}' +
+        '.na-msg:empty{display:none;}' +
         '.na-feats{text-align:center;margin-top:20px;}' +
         '.na-feat{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:#8f98a0;margin:0 8px;}' +
         '.na-feat .ico{color:var(--accent,#66c0f4);}' +
@@ -1729,19 +1730,19 @@
         '<button class="na-tab" data-na="signup">Crear cuenta</button>' +
         '<button class="na-tab" data-na="recover">Recuperar</button>' +
         '</div>' +
-        '<div id="na-pane-login">' +
+        '<div class="na-pane" id="na-pane-login">' +
         '<input class="na-in" id="na-email" type="email" placeholder="Email" autocomplete="username">' +
         '<input class="na-in" id="na-pass" type="password" placeholder="Contraseña" autocomplete="current-password">' +
         '<button class="na-btn" id="na-btn-login">Entrar</button>' +
         '<button class="na-alt" id="na-btn-magic">Enviar enlace mágico</button>' +
         '</div>' +
-        '<div id="na-pane-signup" style="display:none;">' +
+        '<div class="na-pane" id="na-pane-signup" style="display:none;">' +
         '<input class="na-in" id="na-sname" type="text" placeholder="Tu nombre" autocomplete="name" maxlength="60">' +
         '<input class="na-in" id="na-sem" type="email" placeholder="Email" autocomplete="email">' +
         '<input class="na-in" id="na-spass" type="password" placeholder="Contraseña (mín. 6)" autocomplete="new-password">' +
         '<button class="na-btn" id="na-btn-signup">Crear cuenta</button>' +
         '</div>' +
-        '<div id="na-pane-recover" style="display:none;">' +
+        '<div class="na-pane" id="na-pane-recover" style="display:none;">' +
         '<div style="font-size:12px;color:#8f98a0;margin-bottom:12px;">Te enviaremos un enlace para restablecer tu contraseña.</div>' +
         '<input class="na-in" id="na-rem" type="email" placeholder="Email" autocomplete="email">' +
         '<button class="na-btn" id="na-btn-recover">Enviar enlace</button>' +
