@@ -133,6 +133,16 @@ grep -o "functions.invoke('[a-z-]*'" index.html | sort -u
 - `urlsToCache` solo assets estáticos; nunca meter respuestas de API
 - `manifest.json` icons existen en `icons/`
 
+### 4b. CSS vars (check mecanico — bug real 2026-11-27)
+
+```bash
+# self-references y aliases a tokens inexistentes (debe dar vacio)
+python -c "import re,glob; pat=re.compile(r'(--[a-zA-Z0-9-]+)\s*:\s*var\(\s*\s*\)'); print([ (f,m.group(1)) for f in glob.glob('**/*.html',recursive=True) for m in pat.finditer(open(f,encoding='utf-8',errors='ignore').read()) ])"
+```
+
+Verificar ademas que todo `var(--x)` usado en CSS exista en `:root` y que
+cada `--token:` tenga valor literal o alias a otro token definido.
+
 ### 7. Visual / responsive
 
 - grids `minmax(Xpx,1fr)`: ¿cabe 1 item solo? (caso `.tracking-container.single`)
