@@ -7,7 +7,7 @@ Estado actual para la próxima sesión. Último commit: `8383b87` (SW v78, rama 
 **Rama:** `beta` — working tree limpio, commits pusheados.
 **Producción:** `main` — no tocar sin `Confirmar deploy` literal.
 **DB:** prod + standby en espejo (datos idénticos, schema sincronizado tras delta 07).
-**Último commit:** `89b078c` (SW v89).
+**Último commit:** `9372dfa` (SW v90).
 
 ## Trabajo realizado en esta sesión
 
