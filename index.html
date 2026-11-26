@@ -253,19 +253,28 @@
     .search-results-dropdown {
       display: none;
       position: absolute;
-      top: 42px;
+      top: calc(100% + 4px);
       left: 0;
+      right: 0;
       width: 100%;
       max-height: 280px;
       overflow-y: auto;
-      background: rgba(20, 30, 45, 0.99);
+      background: #0d1322;
       border: 1px solid rgba(102, 192, 244, 0.45);
       border-radius: 12px;
       box-shadow: 0 18px 45px rgba(0, 0, 0, 0.9);
       z-index: 10001;
       padding: 6px;
+      transform-origin: top center;
     }
-    .search-results-dropdown.open { display: block; }
+    .search-results-dropdown.open {
+      display: block;
+      animation: nexusDdDrop 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes nexusDdDrop {
+      from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
     .search-result-item {
       display: flex;
       align-items: center;
@@ -3728,7 +3737,7 @@
       }
       var esUrlOId = /^\d+$/.test(val) || val.includes('http://') || val.includes('https://') || /^(movie|tv|al)-\d+$/i.test(val);
       if (!esUrlOId) manejarAgregar(true);
-    }, 500);
+    }, 350);
 
     function cambiarCategoria(cat) {
       if (cat === currentCategory) return;
