@@ -378,8 +378,12 @@
     .stats-profile-name { font-size: 17px; font-weight: 800; color: var(--text); }
     .stats-profile-user { font-size: 12px; color: var(--accent); font-weight: 600; }
     .stats-profile-email { font-size: 11px; color: #8f98a0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .stats-profile-actions { display: flex; gap: 8px; flex-shrink: 0; }
-    .stats-profile-actions .btn { padding: 8px 12px; font-size: 11px; }
+    .stats-profile-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .stats-profile-actions .btn {
+      height: 36px; padding: 0 16px; font-size: 12px; font-weight: 700;
+      border-radius: 10px; display: inline-flex; align-items: center; justify-content: center;
+      white-space: nowrap;
+    }
 
     .filter-panel {
       position: fixed;
