@@ -3563,16 +3563,25 @@
 
     const FALLBACK_SVG = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='450'><rect width='100%25' height='100%25' fill='%23171a21'/><text x='50%25' y='50%25' fill='%2366c0f4' font-family='sans-serif' font-size='16' font-weight='bold' text-anchor='middle' dominant-baseline='middle'>Sin Imagen</text></svg>";
 
-    // Open Library sirve el mismo cover en -S(128px)/-M(250px)/-L(500px).
-    // srcset deja que el browser baje solo el tamaño que necesita (grid/modal/lightbox).
-    function nexusOlSrcset(url) {
-      var m = String(url || '').match(/^(https:\/\/covers\.openlibrary\.org\/b\/id\/\d+)-(?:S|M|L)\.jpg$/);
-      if (!m) return '';
-      var b = m[1];
-      return b + '-S.jpg 128w, ' + b + '-M.jpg 250w, ' + b + '-L.jpg 500w';
+    // srcset por proveedor — el browser baja solo el peso que necesita:
+    //   OpenLibrary: -S(128)/-M(250)/-L(500) · TMDB: w342/w500/w780 · Steam: header/capsule616
+    function nexusCoverSrcset(url) {
+      var u = String(url || '');
+      var m = u.match(/^(https:\/\/covers\.openlibrary\.org\/b\/id\/\d+)-(?:S|M|L)\.jpg$/);
+      if (m) { var b = m[1]; return b + '-S.jpg 128w, ' + b + '-M.jpg 250w, ' + b + '-L.jpg 500w'; }
+      m = u.match(/^(https:\/\/image\.tmdb\.org\/t\/p\/)(?:w\d+|original)(\/.*)$/);
+      if (m) return m[1] + 'w342' + m[2] + ' 342w, ' + m[1] + 'w500' + m[2] + ' 500w, ' + m[1] + 'w780' + m[2] + ' 780w';
+      m = u.match(/^(https:\/\/cdn\.cloudflare\.steamstatic\.com\/steam\/apps\/\d+\/)header\.jpg$/);
+      if (m) return m[1] + 'header.jpg 460w, ' + m[1] + 'capsule_616x353.jpg 616w';
+      return '';
     }
-    function nexusOlFull(url) {
-      return String(url || '').replace(/-(S|M)\.jpg$/, '-L.jpg');
+    // version grande para lightbox (OL -L, TMDB original, Steam capsule 616)
+    function nexusCoverFull(url) {
+      var u = String(url || '');
+      u = u.replace(/-(S|M)\.jpg$/, '-L.jpg');
+      u = u.replace(/(\/t\/p\/)(?:w\d+|original)(\/)/, '$1original$2');
+      u = u.replace(/(\/steam\/apps\/\d+\/)header\.jpg$/, '$1capsule_616x353.jpg');
+      return u;
     }
 
     var _nexusLastTouchTs = 0;
@@ -3672,7 +3681,7 @@
         card.innerHTML = `
           <div class="img-container">
             ${topBadgeHTML} ${wishBadgeHTML}
-            <img src="${escaparHTML(it.portada)}" srcset="${nexusOlSrcset(it.portada)}" sizes="(max-width:600px) 50vw, 300px" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src=FALLBACK_SVG;">
+            <img src="${escaparHTML(it.portada)}" srcset="${nexusCoverSrcset(it.portada)}" sizes="(max-width:600px) 50vw, 300px" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src=FALLBACK_SVG;">
           </div>
           <div class="card-content">
             <div class="card-title">${escaparHTML(it.titulo)}</div>
@@ -3745,7 +3754,7 @@
           }
           dd.innerHTML = resultados.map(r => `
             <div class="search-result-item" onclick="ejecutarAgregarDirecto('${escaparHTML(r.id)}')">
-              <img src="${escaparHTML(r.portada)}" srcset="${nexusOlSrcset(r.portada)}" sizes="(max-width:600px) 80vw, 340px" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src=FALLBACK_SVG;">
+              <img src="${escaparHTML(r.portada)}" srcset="${nexusCoverSrcset(r.portada)}" sizes="(max-width:600px) 80vw, 340px" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src=FALLBACK_SVG;">
               <div class="search-result-info">
                 <div class="search-result-title">${escaparHTML(r.titulo)}</div>
                 <div class="search-result-sub">${escaparHTML(r.subtitulo)}</div>
@@ -3896,18 +3905,18 @@
 
       var mImg = document.getElementById('m-img');
       mImg.onerror = function() { this.onerror = null; this.src = FALLBACK_SVG; };
-      var _olss = nexusOlSrcset(it.portada);
+      var _olss = nexusCoverSrcset(it.portada);
       mImg.srcset = _olss;
       mImg.sizes = _olss ? '(max-width:600px) 80vw, 340px' : '';
       mImg.src = it.portada || FALLBACK_SVG;
       mImg.style.cursor = 'zoom-in';
       mImg.onclick = function() {
         var urls = [];
-        if (it.portada && String(it.portada).startsWith('http')) urls.push(nexusOlFull(it.portada));
+        if (it.portada && String(it.portada).startsWith('http')) urls.push(nexusCoverFull(it.portada));
         if (it.capturas) {
           it.capturas.split(',').forEach(function(u) {
             u = u.trim();
-            if (u.startsWith('http')) { u = nexusOlFull(u); if (urls.indexOf(u) === -1) urls.push(u); }
+            if (u.startsWith('http')) { u = nexusCoverFull(u); if (urls.indexOf(u) === -1) urls.push(u); }
           });
         }
         if (urls.length) nexusOpenLightbox(urls, 0);
@@ -4801,7 +4810,7 @@
 
       gridEl.innerHTML = matches.map(it => `
         <div class="match-card" onclick="seleccionarMatchItem('${escaparHTML(cat)}', '${escaparHTML(it.id)}')">
-          <img src="${escaparHTML(it.portada)}" srcset="${nexusOlSrcset(it.portada)}" sizes="(max-width:600px) 50vw, 300px" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src=FALLBACK_SVG;">
+          <img src="${escaparHTML(it.portada)}" srcset="${nexusCoverSrcset(it.portada)}" sizes="(max-width:600px) 50vw, 300px" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src=FALLBACK_SVG;">
           <div class="match-card-body">
             <div class="match-card-title">${escaparHTML(it.titulo)}</div>
             <div style="font-size:10px;color:var(--accent);margin-top:auto;display:inline-flex;align-items:center;gap:4px;">${svgIcon('i-heart-fill', 'ico-sm ico-wish')} Coincidencia</div>
