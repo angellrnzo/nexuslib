@@ -394,12 +394,12 @@
       background: linear-gradient(135deg, rgba(102,192,244,.12), rgba(187,134,252,.10));
       border: 1px solid rgba(102,192,244,.3); border-top: none;
       border-radius: 0 0 16px 16px;
-      padding: 14px 16px 16px; margin-top: -1px;
-      display: grid; gap: 12px;
+      padding: 12px 14px 14px; margin-top: -1px;
+      display: grid; gap: 10px;
     }
     .perfil-edit-inner label { font-size: 11px; color: #8f98a0; font-weight: 700; display: block; margin-bottom: 5px; }
     .perfil-edit-inner .na-in {
-      height: 40px; background: #0d1117; border: 1px solid rgba(255,255,255,.09);
+      height: 36px; background: #0d1117; border: 1px solid rgba(255,255,255,.09);
       border-radius: 10px; padding: 0 12px; font-size: 13px; color: #fff;
       width: 100%; box-sizing: border-box; font-family: inherit;
     }
@@ -409,18 +409,18 @@
     .pf-sub { font-size: 11px; color: #8f98a0; font-weight: 700; }
     .pf-invite-row { display: flex; gap: 8px; align-items: center; }
     .pf-invite-row .na-in {
-      flex: 1; height: 40px; text-align: center;
+      flex: 1; height: 36px; text-align: center;
       font-family: monospace; letter-spacing: 1px; text-transform: uppercase;
     }
-    .pf-invite-row .btn-circle { width: 40px; height: 40px; flex-shrink: 0; align-self: center; }
-    .pf-actions-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-top: 4px; }
+    .pf-invite-row .btn-circle { width: 36px; height: 36px; flex-shrink: 0; align-self: center; }
+    .pf-actions-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-top: 2px; }
     .pf-btn {
-      height: 42px; border-radius: 10px; font-size: 13px; font-weight: 700;
+      height: 40px; border-radius: 10px; font-size: 13px; font-weight: 700;
       display: inline-flex; align-items: center; justify-content: center; gap: 7px;
       cursor: pointer; border: none; font-family: inherit;
       transition: filter var(--t-fast) var(--ease-out);
     }
-    .pf-btn-save { background: var(--accent); color: #0b0e14; }
+    .pf-btn-save { background: linear-gradient(135deg, #66c0f4, #bb86fc); color: #0b0e14; }
     .pf-btn-danger { background: #ff6b6b; color: #0b0e14; }
     .pf-btn:hover { filter: brightness(1.08); }
     @media (max-width: 560px) {
@@ -1046,12 +1046,14 @@
     /* ---- MODS TRACKER ---- */
     .mods-panel {
       grid-column: 1 / -1;
-      margin-top: 4px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
-      border-radius: 12px;
+      margin-top: -9px; /* cancela el gap de .action-buttons: pegado al boton Mods */
+      background: rgba(155,89,182,0.07);
+      border: 1px solid rgba(155,89,182,0.35);
+      border-top: none;
+      border-radius: 0 0 12px 12px;
       padding: 12px;
     }
+    #btn-mods.open { border-bottom-left-radius: 4px; border-bottom-right-radius: 4px; }
     .mods-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
     .mods-title { font-size: 13px; font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 6px; }
     .mods-count { font-size: 11px; color: #8f98a0; }
@@ -3344,10 +3346,13 @@
     // el header fijo puede cambiar de alto — el padding-top del body
     // debe seguir su borde real o el grid queda tapado por el header
     function nexusSyncHeaderSpace() {
-      var h = document.querySelector('.top-header');
+      // en vista Perfil el unico elemento común es la barra de categorias —
+      // el espacio se mide desde ella, no desde todo el header
+      var isStats = document.body.classList.contains('view-stats');
+      var h = isStats ? document.querySelector('.category-tabs') : document.querySelector('.top-header');
       if (!h) return;
       var bottom = h.getBoundingClientRect().bottom;
-      document.body.style.paddingTop = Math.max(120, bottom + 6) + 'px';
+      document.body.style.paddingTop = Math.max(120, bottom + (isStats ? 10 : 6)) + 'px';
     }
 
     // ---- menu hamburguesa ----
@@ -4065,6 +4070,7 @@
       var btnMods = document.getElementById('btn-mods');
       var modsPanel = document.getElementById('m-mods-panel');
       btnMods.style.display = (NEXUS_MODE && currentCategory === 'Juegos') ? '' : 'none';
+      btnMods.classList.remove('open');
       modsPanel.style.display = 'none';
       _modsCtx = null;
       _modsList = [];
@@ -4093,9 +4099,11 @@
 
     async function toggleModsPanel() {
       if (!NEXUS_MODE || currentCategory !== 'Juegos') return;
+      var btn = document.getElementById('btn-mods');
       var panel = document.getElementById('m-mods-panel');
       var showing = panel.style.display === 'none';
       panel.style.display = showing ? 'block' : 'none';
+      if (btn) btn.classList.toggle('open', showing);
       if (showing) await nexusLoadMods();
     }
 
