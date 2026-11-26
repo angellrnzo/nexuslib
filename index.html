@@ -1926,7 +1926,7 @@
         var r = await sb.from('profiles').update({ display_name: nombre, username: uname }).eq('id', _nexusUser.id);
         if (r.error) {
           if (/duplicate|unique|already/i.test(r.error.message || '')) {
-            showToast && showToast('Ese usuario ya está en uso.', 'error'); return;
+            showToast && showToast(t('prof.userused'), 'error'); return;
           }
           throw new Error(r.error.message);
         }
@@ -2382,7 +2382,7 @@
     function vinculosCopiar() {
       var code = document.querySelector('#vinculos-body code');
       if (code && navigator.clipboard) navigator.clipboard.writeText(code.textContent.trim());
-      showToast && showToast('Código copiado.', 'success');
+      showToast && showToast(t('toast.copied'), 'success');
     }
 
     function vinculosToggleLabel() {
@@ -3036,7 +3036,10 @@
         'toast.noresults': 'Sin resultados.', 'toast.addbtn': '+ Añadir', 'toast.noadd': 'No se pudo añadir',
         'toast.vincacept': 'Vínculo aceptado.', 'toast.rechazada': 'Solicitud rechazada.',
         'toast.itemadded': 'Elemento añadido a tu biblioteca.', 'toast.visupd': 'Visibilidad actualizada.',
-        'toast.privupd': 'Privacidad actualizada.',
+        'toast.privupd': 'Privacidad actualizada.', 'prof.userused': 'Ese usuario ya está en uso.',
+        'cat.collectdesc': 'Figuras, juegos de mesa, rompecabezas, LEGO y más. Esta sección llega en una fase posterior del roadmap.',
+        'ext.steam': 'Ver en Steam', 'ext.tmdb': 'Ver en TMDB', 'ext.anilist': 'Ver en AniList',
+        'ext.anisearch': 'Buscar en AniList',
         'vinc.loading': 'Cargando…', 'vinc.mycode': 'Mi código de invitación',
         'vinc.mycodedesc': 'Comparte este código — la otra persona lo introduce en su perfil.', 'vinc.nodisp': 'No disponible.',
         'vinc.addlink': 'Añadir vínculo', 'vinc.codeph': 'Código',
@@ -3158,7 +3161,10 @@
         'toast.noresults': 'No results.', 'toast.addbtn': '+ Add', 'toast.noadd': 'Could not add',
         'toast.vincacept': 'Link accepted.', 'toast.rechazada': 'Request declined.',
         'toast.itemadded': 'Item added to your library.', 'toast.visupd': 'Visibility updated.',
-        'toast.privupd': 'Privacy updated.',
+        'toast.privupd': 'Privacy updated.', 'prof.userused': 'That username is taken.',
+        'cat.collectdesc': 'Figures, board games, puzzles, LEGO and more. This section lands in a later roadmap phase.',
+        'ext.steam': 'View on Steam', 'ext.tmdb': 'View on TMDB', 'ext.anilist': 'View on AniList',
+        'ext.anisearch': 'Search AniList',
         'vinc.loading': 'Loading…', 'vinc.mycode': 'My invite code',
         'vinc.mycodedesc': 'Share this code — the other person enters it in their profile.', 'vinc.nodisp': 'Not available.',
         'vinc.addlink': 'Add link', 'vinc.codeph': 'Code',
@@ -3612,8 +3618,8 @@
       if (cat === 'Coleccionables') {
         if (currentCategory === cat) {
           document.getElementById('grid').innerHTML = nexusStateBox('empty', 'i-star',
-            'Coleccionables — próximamente',
-            'Figuras, juegos de mesa, rompecabezas, LEGO y más. Esta sección llega en una fase posterior del roadmap.');
+            t('toast.coming'),
+            t('cat.collectdesc'));
         }
         return;
       }
@@ -4427,12 +4433,12 @@
       var b1El = document.getElementById('btn-ext-1');
       var b2El = document.getElementById('btn-ext-2');
       if (currentCategory === 'Juegos') {
-        b1El.innerText = 'Ver en Steam'; b1El.href = `https://store.steampowered.com/app/${it.id}/?l=spanish`;
+        b1El.innerText = t('ext.steam'); b1El.href = `https://store.steampowered.com/app/${it.id}/?l=spanish`;
         b2El.innerText = 'SteamDB'; b2El.href = `https://steamdb.info/app/${it.id}/`;
       } else if (currentCategory === 'Peliculas_Series') {
         var p = String(it.id).split('-');
-        b1El.innerText = 'Ver en TMDB'; b1El.href = `https://www.themoviedb.org/${p[0]}/${p[1] || p[0]}`;
-        b2El.innerText = 'JustWatch'; b2El.href = `https://www.justwatch.com/es/buscar?q=${encodeURIComponent(it.titulo)}`;
+        b1El.innerText = t('ext.tmdb'); b1El.href = `https://www.themoviedb.org/${p[0]}/${p[1] || p[0]}`;
+        b2El.innerText = 'JustWatch'; b2El.href = `'https://www.justwatch.com/' + (NEXUS_LANG === 'en' ? 'en' : 'es') + '/buscar?q='${encodeURIComponent(it.titulo)}`;
       } else if (currentCategory === 'Libros') {
         var bookId = String(it.id || '').trim();
         b1El.innerText = 'Open Library';
@@ -4446,9 +4452,9 @@
         b2El.innerText = 'Goodreads'; b2El.href = `https://www.goodreads.com/search?q=${encodeURIComponent(it.titulo)}`;
       } else if (currentCategory === 'Mangas') {
         var isAL = String(it.id).startsWith('al-');
-        b1El.innerText = isAL ? 'Ver en AniList' : 'MyAnimeList';
+        b1El.innerText = isAL ? t('ext.anilist') : 'MyAnimeList';
         b1El.href = isAL ? `https://anilist.co/manga/${String(it.id).replace('al-', '')}` : `https://myanimelist.net/manga/${it.id}`;
-        b2El.innerText = 'Buscar en AniList'; b2El.href = `https://anilist.co/search/manga?search=${encodeURIComponent(it.titulo)}`;
+        b2El.innerText = t('ext.anisearch'); b2El.href = `https://anilist.co/search/manga?search=${encodeURIComponent(it.titulo)}`;
       }
 
       var esLectura = (currentCategory === 'Libros' || currentCategory === 'Mangas');
@@ -4762,7 +4768,7 @@
         try { localStorage.setItem(`media_lib_${CACHE_VERSION}_${currentCategory}`, JSON.stringify(itemsByCategory[currentCategory])); } catch (e) {}
         filtrarItems();
       }
-      RUN.guardarTotalCapitulos(currentCategory, currentItemId, total).withFailureHandler(function(){ showToast('No se pudo guardar el cambio.', 'error'); });
+      RUN.guardarTotalCapitulos(currentCategory, currentItemId, total).withFailureHandler(function(){ showToast(t('toast.savefail'), 'error'); });
     }
 
     function guardarTracking(persona, estrellasOverride) {
