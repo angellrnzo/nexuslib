@@ -677,6 +677,15 @@
       margin-top: 4px;
     }
     .stat-detail-line { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+    /* Balance y Retos: ocupa todo el ancho del grid con 2 columnas */
+    .stat-card-wide { grid-column: 1 / -1; }
+    .stat-card-wide.open .stat-accordion-content { max-height: 560px; }
+    .br-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .br-h { font-size: 11px; color: #8f98a0; margin-bottom: 5px; font-weight: 800; text-transform: uppercase; letter-spacing: .4px; }
+    .br-col-lines { display: flex; flex-direction: column; gap: 8px; }
+    .br-line { font-size: 12px; color: #c7d5e0; line-height: 1.45; }
+    .br-line strong { color: #fff; }
+    @media (max-width: 640px) { .br-cols { grid-template-columns: 1fr; } }
     .stat-bar-row { display: flex; flex-direction: column; gap: 3px; font-size: 11px; }
     .stat-bar-labels { display: flex; justify-content: space-between; align-items: center; font-weight: 700; color: #8f98a0; }
     .stat-bar-labels span:first-child { display: inline-flex; align-items: center; gap: 5px; }
@@ -4680,7 +4689,7 @@
       var lineasBalance = selPers.map(function(p) {
         var st = stats[p.suffix];
         var pctWish = (st.comp + st.wish) > 0 ? Math.round((st.comp / (st.comp + st.wish)) * 100) : 0;
-        return '<div class="stat-detail-line">' + nexusPersonaDot(p, 14) + ' <strong>' + vinculosEsc(p.label || p.suffix) + '</strong>: ' +
+        return '<div class="br-line">' + nexusPersonaDot(p, 14) + ' <strong>' + vinculosEsc(p.label || p.suffix) + '</strong>: ' +
           st.comp + ' completados · ' + st.proc + ' en proceso · ' + st.wish + ' en wishlist · ' +
           'nota media <strong>' + (st.cuenta > 0 ? (st.suma / st.cuenta).toFixed(1) : '0.0') + '</strong>' +
           ' · <span style="color:#8f98a0;">' + pctWish + '% de tu backlog+cosechados resueltos</span></div>';
@@ -4692,7 +4701,7 @@
         if (st.comp < 10) metas.push('Meta ' + anioActual + ': llegar a 10 completados');
         if (st.cuenta > 0 && st.suma / st.cuenta < 7) metas.push('Subir tu nota media por encima de 7');
         if (!metas.length) metas.push('¡Vas sobrado! Mantén el ritmo.');
-        return '<div class="stat-detail-line" style="margin-top:3px;">' + nexusPersonaDot(p, 14) + ' ' + metas.join(' · ') + '</div>';
+        return '<div class="br-line" style="margin-top:3px;">' + nexusPersonaDot(p, 14) + ' ' + metas.join(' · ') + '</div>';
       }).join('');
 
       const toggleHdr = `<span class="stat-toggle-lbl">Desplegar ${svgIcon('i-chevron-down', 'ico-sm')}</span>`;
@@ -4774,7 +4783,7 @@
           </div>
         </div>
 
-        <div class="stat-card" onclick="toggleStatCard(this)">
+        <div class="stat-card stat-card-wide" onclick="toggleStatCard(this)">
           <div class="stat-card-header">
             <div class="stat-card-title">Balance y Retos (${anioActual})</div>
             ${toggleHdr}
@@ -4782,9 +4791,16 @@
           <div class="stat-card-value">${agg('comp')}</div>
           <div class="stat-card-sub"><span>Completados acumulados</span><span>${escaparHTML(profTitulo)}</span></div>
           <div class="stat-accordion-content">
-            ${lineasBalance}
-            <div style="font-size:11px;color:#8f98a0;margin:8px 0 2px;font-weight:700;">Retos automáticos:</div>
-            ${retosAuto}
+            <div class="br-cols">
+              <div>
+                <div class="br-h">Balance por persona</div>
+                <div class="br-col-lines">${lineasBalance}</div>
+              </div>
+              <div>
+                <div class="br-h">Retos automáticos</div>
+                <div class="br-col-lines">${retosAuto}</div>
+              </div>
+            </div>
           </div>
         </div>
       `;
