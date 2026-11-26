@@ -1,0 +1,58 @@
+name: Backup Supabase DB
+
+on:
+  schedule:
+    - cron: '0 5 * * 1' # Lunes 5:00 AM UTC (domingo noche en US-East)
+  workflow_dispatch:    # Ejecucion manual desde Actions
+
+permissions:
+  contents: read
+
+jobs:
+  dump:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install PostgreSQL 17 client
+        run: |
+          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/pgdg.gpg
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client-17
+
+      - name: pg_dump schema public
+        env:
+          PGPASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          pg_dump "$DB_URL" \
+            --schema=public --no-owner --no-privileges \
+            --format=custom --compress=9 \
+            --file="nexuslib_$(date +%Y%m%d_%H%M).dump"
+          ls -lh nexuslib_*.dump
+
+      - name: Upload artifact (90 dias)
+        uses: actions/upload-artifact@v4
+        with:
+          name: supabase-backup-${{ github.run_id }}
+          path: nexuslib_*.dump
+          retention-days: 90
+          if-no-files-found: error
+
+      # --- STANDBY (opcional) -------------------------------------------
+      # Para activar: crear 2do proyecto Supabase free, aplicar schema.sql
+      # + phase*.sql, y definir estos secrets:
+      #   SUPABASE_STANDBY_DB_URL  -> postgres://...pooler.../postgres del proyecto B
+#   (standby real: ref uxixiwrvobkulkjkicjm, region us-west-2 ->
+#    host aws-0-us-west-2.pooler.supabase.com, MISMA DB password)
+      # El dump se restaura completo en el standby (reemplaza datos public).
+      # auth.users NO viaja en el dump -> recrear usuarios via admin API
+      # (ver database/RESTORE.md). Switch = cambiar SUPABASE_URL + anon key.
+      - name: Restore to standby project
+        if: ${{ vars.SUPABASE_STANDBY_ENABLED == 'true' }}
+        env:
+          PGPASSWORD: ${{ secrets.SUPABASE_STANDBY_DB_PASSWORD }}
+          STANDBY_URL: ${{ secrets.SUPABASE_STANDBY_DB_URL }}
+        run: |
+          DUMP=$(ls nexuslib_*.dump | head -1)
+          # Restaura solo datos (schema ya aplicado manualmente en standby)
+          pg_restore "$STANDBY_URL" --data-only --disable-triggers --no-owner "$DUMP"
