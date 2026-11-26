@@ -434,6 +434,7 @@ See [AppScript/BETA.md](BETA.md) — one entry per working session: what was don
 - [x] Infra + chrome batch: `t()`, `catText()`, `applyStaticI18n()` (`data-i18n`/`data-i18n-ph`/`data-i18n-title`), toggle English/Español en menú hamburguesa, tabs/placeholders/filtros/menú traducidos, `cambiarCategoria` placeholders por idioma.
 - [x] Lote 3: vinculos/share/send/vis panels, stats cards, papelera, match, filtros dinamicos por categoria/persona, estados vacios, busqueda/agregar, updates/ediciones/resenas, toasts, metaTr() para vocabulario de metadata (generos/plataformas/estados) + param `lang` en catalog-search/catalog-add/item-refresh (ES/EN en fetchers; requiere `supabase functions deploy`).
 - [x] Lote 2: auth overlay completo (login/signup/recover/reset), títulos de modales estáticos, acordeón de persona (estado/nota/progreso/capítulos/deseado/enviar) + helper `tf()` para interpolación `{n}`.
+- [x] Lote 4 (cierre): ficha técnica por categoría (labels + metaTr en valores), panel de mods (sources, vacío, contadores, titles), offline banner, err.generic. Fix: replaces globales habian envenenado valores del dict STR con auto-referencia `t()` — restaurados.
 - [ ] Resto del inventario (~240 strings JS-generados: modales, toasts, stats, estados, filtros dinámicos) — migrar por lotes envolviendo en `t()`/`catText()`.
 - [ ] EN translations review por usuario.
 - [ ] No APIs/SQL.

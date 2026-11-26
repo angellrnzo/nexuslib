@@ -1318,7 +1318,7 @@
   </style>
 </head>
 <body>
-  <div id="offline-banner">Sin conexión — modo solo lectura</div>
+  <div id="offline-banner" data-i18n="toast.offline">Sin conexión — modo solo lectura</div>
 <!-- LIBRERÍA DE ICONOS SVG PLANOS -->
   <svg xmlns="http://www.w3.org/2000/svg" style="display:none;" aria-hidden="true">
     <symbol id="i-gamepad" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="4"/><path d="M6 12h4M8 10v4"/><circle cx="15.5" cy="11" r="1" fill="currentColor" stroke="none"/><circle cx="17.5" cy="13" r="1" fill="currentColor" stroke="none"/></symbol>
@@ -1613,7 +1613,7 @@
               <option value="nexus_mods">Nexus Mods</option>
               <option value="steam_workshop">Steam Workshop</option>
               <option value="curseforge">CurseForge</option>
-              <option value="otra_url">Otra URL</option>
+              <option value="otra_url" data-i18n="mods.src_otra">Otra URL</option>
             </select>
             <input type="text" id="mod-version" placeholder="Versión del juego (ej. v1.7.9b)" data-i18n-ph="mods.verph" maxlength="60">
           </div>
@@ -1651,7 +1651,7 @@
     <div class="modal-content" role="dialog" aria-modal="true" onclick="event.stopPropagation()" style="max-width:650px;">
       <button class="modal-close" onclick="cerrarMatchModal()"><svg class="ico"><use href="#i-x"/></svg></button>
       <h2 class="modal-title"><svg class="ico ico-lg ico-wish"><use href="#i-heart-fill"/></svg> <span data-i18n="modal.match">Match de Pareja</span></h2>
-      <p style="font-size:12px;color:#8f98a0;margin-top:0;">Elementos que ambos tienen en estado Pendiente o en su Lista de Deseados:</p>
+      <p style="font-size:12px;color:#8f98a0;margin-top:0;" data-i18n="match.desc">Elementos que ambos tienen en estado Pendiente o en su Lista de Deseados:</p>
       <div class="match-container">
         <div class="match-tabs">
           <button class="match-tab active" data-matchcat="Juegos" onclick="cambiarMatchCat('Juegos')">
@@ -2411,7 +2411,7 @@
         inp.value = '';
         setTimeout(function() { abrirVinculosModal(); }, 800);
       } catch (e) {
-        msg.textContent = e.message || 'Error'; msg.style.color = '#ff8585';
+        msg.textContent = e.message || t('err.generic'); msg.style.color = '#ff8585';
       }
     }
 
@@ -2441,7 +2441,7 @@
 
     // ---- editor matriz visibility por vínculo (Phase 5A) ----
     var VINCULOS_CATS = [
-      ['Juegos', 'cfg.Juegos.label'], ['Peliculas_Series', 'Películas/Series'],
+      ['Juegos', 'cfg.Juegos.label'], ['Peliculas_Series', 'cfg.Peliculas_Series.label'],
       ['Libros', 'cfg.Libros.label'], ['Mangas', 'cfg.Mangas.label']
     ];
     var VINCULOS_FIELDS = [
@@ -2808,7 +2808,7 @@
         if (msg) { msg.textContent = tf('send.sent', { n: nombre }); msg.style.color = '#7ee0a3'; }
         showToast && showToast(tf('send.toast', { n: nombre }), 'success');
       } catch (e) {
-        if (msg) { msg.textContent = e.message || 'Error'; msg.style.color = '#ff8585'; }
+        if (msg) { msg.textContent = e.message || t('err.generic'); msg.style.color = '#ff8585'; }
       }
     }
 
@@ -3021,8 +3021,8 @@
         'st.nojugado': 'Pendiente / No jugado', 'st.enproceso': 'En proceso', 'st.completado': 'Completado',
         'pa.progph': 'Progreso (ej. T2 E04)...', 'pa.chaps': 'Capítulos leídos', 'pa.chapstotal': 'Total manual',
         'pa.leidos': 'Leídos', 'pa.total': 'Total', 'pa.noteph': 'Apunte rápido de {n}...', 'btn.send': 'Enviar',
-        'err.prefix': 'Error: ', 'err.itemnf': t('err.itemnf'), 'err.itemnf2': t('err.itemnf2'),
-        'err.elemnf': 'No se encontró el elemento.', 'err.owntrack': t('err.owntrack'),
+        'err.prefix': 'Error: ', 'err.generic': 'Error', 'err.itemnf': 'Item no encontrado en el catálogo.', 'err.itemnf2': 'Item no encontrado.',
+        'err.elemnf': 'No se encontró el elemento.', 'err.owntrack': 'Solo puedes editar tu propio tracking.',
         'err.noname': 'El nombre no puede estar vacío.', 'err.nouser': 'El usuario no puede estar vacío (solo a-z, 0-9 y _).',
         'toast.copied': 'Código copiado.', 'toast.profile': 'Perfil guardado.', 'toast.savefail': 'No se pudo guardar el cambio.',
         'toast.movido': 'Movido a la papelera.', 'toast.noelim': 'No se pudo eliminar', 'confirm.papelera': '¿Mover a la Papelera?',
@@ -3074,12 +3074,12 @@
         'pb.restore': 'Restaurar', 'pb.errload': 'No se pudo cargar la papelera', 'pb.restored': 'Restaurado en {c}',
         'pb.errrestore': 'No se pudo restaurar el elemento.', 'pb.none': 'No hay elementos para elegir.', 'pb.picked': 'Elegido: {t}',
         'grid.empty': 'Nada por aquí todavía', 'grid.emptydesc': 'Prueba ajustando los filtros o añade tu primer elemento desde el buscador.',
-        'grid.more': 'Cargando más...', 'grid.author': t('grid.author'), 'grid.pend': 'Pendiente',
+        'grid.more': 'Cargando más...', 'grid.author': 'Autor por definir', 'grid.pend': 'Pendiente',
         'grid.serie': 'Serie', 'grid.pelicula': 'Película',
-        'upd.load': 'Cargando updates...', 'upd.none': 'Sin noticias en Steam para este juego.', 'upd.err': t('upd.err'),
-        'ed.load': 'Cargando ediciones...', 'ed.none': t('ed.none'), 'ed.err': t('ed.err'),
-        'ed.edition': 'Edición', 'ed.transl': 'Trad: ', 'ed.read': t('ed.read'),
-        'rv.load': 'Cargando reseñas...', 'rv.none': 'Sin datos de reseñas.', 'rv.err': t('rv.err'),
+        'upd.load': 'Cargando updates...', 'upd.none': 'Sin noticias en Steam para este juego.', 'upd.err': 'Error en steam-updates',
+        'ed.load': 'Cargando ediciones...', 'ed.none': 'Sin ediciones en OpenLibrary.', 'ed.err': 'Error en book-editions',
+        'ed.edition': 'Edición', 'ed.transl': 'Trad: ', 'ed.read': 'Leer ↗',
+        'rv.load': 'Cargando reseñas...', 'rv.none': 'Sin datos de reseñas.', 'rv.err': 'Error en steam-reviews',
         'rv.pos': 'positivas', 'rv.neg': 'negativas', 'rv.total': 'total', 'rv.30d': 'en 30d', 'rv.vs30d': 'vs 30d',
         'trail.show': 'Ver Tráiler', 'trail.hide': 'Ocultar Tráiler', 'ficha.ver': 'Ver ficha', 'ficha.more': 'Más info',
         'ficha.tech': 'Ver ficha técnica completa', 'cap.title': 'Capturas',
@@ -3101,7 +3101,15 @@
         'fl.nota_min': 'Nota Mínima', 'st.comp_lc': 'completados', 'st.proc_lc': 'en proceso',
         'upd.hide': 'Ocultar Updates', 'ed.hide': 'Ocultar Ediciones', 'rv.hide': 'Ocultar Reseñas',
         'md.singenres': 'Sin géneros', 'md.sindesc': 'Sin descripción.', 'md.sintitulo': 'Sin título',
-        'md.tipo': 'Tipo', 'md.duracion': 'Duración / Temporadas', 'md.plataformas': 'Plataformas'
+        'md.tipo': 'Tipo', 'md.duracion': 'Duración / Temporadas', 'md.plataformas': 'Plataformas',
+        'md.autor': 'Autor', 'md.lanz': 'Lanzamiento / Fecha', 'md.editorial': 'Editorial / Estudio',
+        'md.build': 'Build Estable', 'md.fechabuild': 'Fecha Build', 'md.beta': 'Beta',
+        'md.notap': 'Nota Parche', 'md.modos': 'Modos', 'md.steamdeck': 'Steam Deck', 'md.dlcs': 'DLCs',
+        'md.tags': 'Tags', 'md.paginas': 'Páginas', 'md.capstot': 'Capítulos Totales',
+        'md.puntuacion': 'Puntuación', 'md.tomos': 'Tomos / Capítulos', 'md.demografia': 'Demografía', 'md.id': 'ID',
+        'mods.loading': 'Cargando...', 'mods.empty': 'Sin mods guardados todavía.', 'mods.unit': ' mod',
+        'mods.unitp': ' mods', 'mods.src_otra': 'Otra URL', 'btn.open': 'Abrir', 'btn.del': 'Eliminar',
+        'match.desc': 'Elementos que ambos tienen en estado Pendiente o en su Lista de Deseados:'
       },
       en: {
         'cat.Juegos': 'Games', 'cat.Peliculas_Series': 'Movies & TV', 'cat.Libros': 'Books',
@@ -3135,7 +3143,7 @@
         'st.nojugado': 'Pending / Not started', 'st.enproceso': 'In progress', 'st.completado': 'Completed',
         'pa.progph': 'Progress (e.g. S2 E04)...', 'pa.chaps': 'Chapters read', 'pa.chapstotal': 'Manual total',
         'pa.leidos': 'Read', 'pa.total': 'Total', 'pa.noteph': 'Quick note for {n}...', 'btn.send': 'Send',
-        'err.prefix': 'Error: ', 'err.itemnf': 'Item not found in catalog.', 'err.itemnf2': 'Item not found.',
+        'err.prefix': 'Error: ', 'err.generic': 'Error', 'err.itemnf': 'Item not found in catalog.', 'err.itemnf2': 'Item not found.',
         'err.elemnf': 'Item not found.', 'err.owntrack': 'You can only edit your own tracking.',
         'err.noname': 'Name cannot be empty.', 'err.nouser': 'Username cannot be empty (a-z, 0-9 and _ only).',
         'toast.copied': 'Code copied.', 'toast.profile': 'Profile saved.', 'toast.savefail': 'Could not save the change.',
@@ -3215,7 +3223,15 @@
         'fl.nota_min': 'Min rating', 'st.comp_lc': 'completed', 'st.proc_lc': 'in progress',
         'upd.hide': 'Hide Updates', 'ed.hide': 'Hide Editions', 'rv.hide': 'Hide Reviews',
         'md.singenres': 'No genres', 'md.sindesc': 'No description.', 'md.sintitulo': 'Untitled',
-        'md.tipo': 'Type', 'md.duracion': 'Runtime / Seasons', 'md.plataformas': 'Platforms'
+        'md.tipo': 'Type', 'md.duracion': 'Runtime / Seasons', 'md.plataformas': 'Platforms',
+        'md.autor': 'Author', 'md.lanz': 'Release / Date', 'md.editorial': 'Publisher / Studio',
+        'md.build': 'Stable Build', 'md.fechabuild': 'Build Date', 'md.beta': 'Beta',
+        'md.notap': 'Patch Note', 'md.modos': 'Modes', 'md.steamdeck': 'Steam Deck', 'md.dlcs': 'DLCs',
+        'md.tags': 'Tags', 'md.paginas': 'Pages', 'md.capstot': 'Total Chapters',
+        'md.puntuacion': 'Rating', 'md.tomos': 'Volumes / Chapters', 'md.demografia': 'Demographics', 'md.id': 'ID',
+        'mods.loading': 'Loading...', 'mods.empty': 'No saved mods yet.', 'mods.unit': ' mod',
+        'mods.unitp': ' mods', 'mods.src_otra': 'Other URL', 'btn.open': 'Open', 'btn.del': 'Delete',
+        'match.desc': 'Items both of you have as Pending or in your Wishlist:'
       }
     };
     function t(k) {
@@ -4366,25 +4382,25 @@
         _updatesLoaded = false;
       }
 
-      var rows = [['ID', it.id], ['Autor', autorTexto], ['Lanzamiento / Fecha', it.fecha], ['Editorial / Estudio', it.editorial]];
+      var rows = [[t('md.id'), it.id], [t('md.autor'), autorTexto], [t('md.lanz'), it.fecha], [t('md.editorial'), it.editorial]];
       if (currentCategory === 'Juegos') {
         rows.push(
-          ['Build Estable', it.buildEstable],
-          ['Fecha Build', it.fechaEstable],
-          ['Beta', it.beta],
-          ['Nota Parche', String(it.notaParche || '').replace(/^\[\d{4}-\d{2}-\d{2}\]\s*/, '')],
-          ['Modos', it.modos],
-          ['Steam Deck', it.steamdeck],
-          ['DLCs', it.dlcs],
-          ['Tags', it.tags]
+          [t('md.build'), it.buildEstable],
+          [t('md.fechabuild'), it.fechaEstable],
+          [t('md.beta'), it.beta],
+          [t('md.notap'), String(it.notaParche || '').replace(/^\[\d{4}-\d{2}-\d{2}\]\s*/, '')],
+          [t('md.modos'), metaTrList(it.modos)],
+          [t('md.steamdeck'), it.steamdeck],
+          [t('md.dlcs'), it.dlcs],
+          [t('md.tags'), metaTrList(it.tags)]
         );
       }
       else if (currentCategory === 'Peliculas_Series') { rows.push([t('md.tipo'), metaTr(it.tipo)], [t('md.duracion'), metaTr(it.extension)], [t('md.plataformas'), metaTrList(it.plataformas)]); }
       else if (currentCategory === 'Libros') {
         var capsTotal = obtenerTotalCapitulosItem(it);
-        rows.push(['Páginas', it.extension], ['ISBN', it.isbn], ['Capítulos Totales', capsTotal > 0 ? capsTotal : 'N/A'], ['Puntuación', puntLimpia || 'N/A']);
+        rows.push([t('md.paginas'), it.extension], ['ISBN', it.isbn], [t('md.capstot'), capsTotal > 0 ? capsTotal : 'N/A'], [t('md.puntuacion'), puntLimpia || 'N/A']);
       }
-      else if (currentCategory === 'Mangas') { rows.push(['Tomos / Capítulos', it.extension], ['Demografía', it.demografia]); }
+      else if (currentCategory === 'Mangas') { rows.push([t('md.tomos'), it.extension], [t('md.demografia'), metaTr(it.demografia)]); }
 
       document.getElementById('m-details-list').innerHTML = rows
         .filter(r => r[1] && r[1] !== 'N/A')
@@ -4458,7 +4474,7 @@
     // ---- MODS TRACKER (per-user, tabla mods + RLS mods_self) ----
     var _modsCtx = null;   // {cat, extId, mediaId}
     var _modsList = [];
-    var MODS_SOURCE_LABEL = { nexus_mods: 'Nexus Mods', steam_workshop: 'Steam Workshop', curseforge: 'CurseForge', otra_url: 'Otra URL' };
+    var MODS_SOURCE_LABEL = { nexus_mods: 'Nexus Mods', steam_workshop: 'Steam Workshop', curseforge: 'CurseForge', otra_url: 'mods.src_otra' };
 
     async function nexusModsMediaId() {
       if (_modsCtx && _modsCtx.cat === currentCategory && String(_modsCtx.extId) === String(currentItemId)) {
@@ -4479,7 +4495,7 @@
 
     async function nexusLoadMods() {
       var list = document.getElementById('mods-list');
-      list.innerHTML = '<div class="mods-empty">Cargando...</div>';
+      list.innerHTML = '<div class="mods-empty">' + t('vinc.loading') + '</div>';
       try {
         await nexusEnsureProfile();
         var mediaId = await nexusModsMediaId();
@@ -4492,24 +4508,24 @@
         nexusRenderMods();
         nexusRenderModsSearch();
       } catch (e) {
-        list.innerHTML = '<div class="mods-empty">Error: ' + escaparHTML(e.message || '') + '</div>';
+        list.innerHTML = '<div class="mods-empty">' + t('err.prefix') + escaparHTML(e.message || '') + '</div>';
       }
     }
 
     function nexusRenderMods() {
       var list = document.getElementById('mods-list');
       var count = document.getElementById('mods-count');
-      count.textContent = _modsList.length ? (_modsList.length + (_modsList.length === 1 ? ' mod' : ' mods')) : '';
-      if (!_modsList.length) { list.innerHTML = '<div class="mods-empty">Sin mods guardados todavía.</div>'; return; }
+      count.textContent = _modsList.length ? (_modsList.length + (_modsList.length === 1 ? t('mods.unit') : t('mods.unitp'))) : '';
+      if (!_modsList.length) { list.innerHTML = '<div class="mods-empty">' + t('mods.empty') + '</div>'; return; }
       var groups = {}, order = [];
       _modsList.forEach(function(m) {
-        var v = (m.version_juego && String(m.version_juego).trim()) ? String(m.version_juego).trim() : 'Sin versión';
+        var v = (m.version_juego && String(m.version_juego).trim()) ? String(m.version_juego).trim() : t('mods.noversion');
         if (!groups[v]) { groups[v] = []; order.push(v); }
         groups[v].push(m);
       });
       list.innerHTML = order.map(function(v) {
         var rows = groups[v].map(function(m) {
-          var src = MODS_SOURCE_LABEL[m.source] || m.source;
+          var src = MODS_SOURCE_LABEL[m.source] ? t(MODS_SOURCE_LABEL[m.source]) : m.source;
           return '<div class="mod-row">'
             + '<div class="mod-row-main">'
             +   '<div class="mod-name">' + (m.url
@@ -4519,8 +4535,8 @@
             +   (m.notes ? '<div class="mod-notes">' + escaparHTML(m.notes) + '</div>' : '')
             + '</div>'
             + '<div class="mod-actions">'
-            +   (m.url ? '<a class="mod-act" href="' + escaparHTML(m.url) + '" target="_blank" rel="noopener noreferrer" title="Abrir"><svg class="ico ico-sm"><use href="#i-globe"/></svg></a>' : '')
-            +   '<button class="mod-act del" onclick="nexusModBorrar(\'' + m.id + '\')" title="Eliminar"><svg class="ico ico-sm"><use href="#i-trash"/></svg></button>'
+            +   (m.url ? '<a class="mod-act" href="' + escaparHTML(m.url) + '" target="_blank" rel="noopener noreferrer" title="' + t('btn.open') + '"><svg class="ico ico-sm"><use href="#i-globe"/></svg></a>' : '')
+            +   '<button class="mod-act del" onclick="nexusModBorrar(\'' + m.id + '\')" title="' + t('btn.del') + '"><svg class="ico ico-sm"><use href="#i-trash"/></svg></button>'
             + '</div></div>';
         }).join('');
         return '<details class="mods-group" open><summary><svg class="ico ico-sm"><use href="#i-chevron-down"/></svg> ' + escaparHTML(v)
@@ -4619,7 +4635,7 @@
       stEl.className = 'status-chip ' + (est === 'Completado' ? 'status-done' : (est === 'En proceso' ? 'status-playing' : 'status-none'));
 
       var ptsEl = document.getElementById('sum-stars-' + k);
-      ptsEl.innerHTML = pts > 0 ? `${svgIcon('i-star', 'ico-sm ico-gold')} ${pts}/10` : 'Sin nota';
+      ptsEl.innerHTML = pts > 0 ? `${svgIcon('i-star', 'ico-sm ico-gold')} ${pts}/10` : t('pa.sinnota');
       ptsEl.classList.toggle('no-stars', !(pts > 0));
 
       document.getElementById('sum-wish-' + k).style.display = wish ? 'inline-flex' : 'none';
@@ -5458,7 +5474,7 @@
         if (r.error) throw new Error(r.error.message || 'Error en book-editions');
         var editions = (r.data && r.data.editions) || [];
         _editionsLoaded = true;
-        if (!editions.length) { box.innerHTML = '<div class="upd-empty">' + escaparHTML((r.data && r.data.error) || 'Sin ediciones en OpenLibrary.') + '</div>'; return; }
+        if (!editions.length) { box.innerHTML = '<div class="upd-empty">' + escaparHTML((r.data && r.data.error) || t('ed.none')) + '</div>'; return; }
         box.innerHTML = editions.map(function(e) {
           var meta = [];
           if (e.translators && e.translators.length) meta.push(t('ed.transl') + e.translators.join(', '));
