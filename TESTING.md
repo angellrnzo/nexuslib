@@ -52,6 +52,21 @@ Repetir para **Juegos, Películas/Series, Libros, Mangas**:
 - [ ] Sección remota de vinculado: "Solo lectura", atenuada, `pointer-events:none`
 - [ ] Item privado del vinculado → su sección **no aparece** (`visible{Persona}=false`)
 
+## 3.1 Mods Tracker (Juegos — Phase 3)
+
+- [ ] Acordeón Mods (botón en action-buttons): abre/cierra con animación, glow morado al abrir
+- [ ] Buscadores web (Nexus Mods / Workshop / CurseForge / Google): links correctos con título del juego
+- [ ] Formulario layout: Nombre/Fuente/Versión en 3 columnas (2fr 1.2fr 1fr), URL full-width debajo, Notas full-width debajo
+- [ ] Responsive móvil (≤600px): todos los campos se apilan en 1 columna
+- [ ] Espaciado uniforme: gap 10px vertical/horizontal, inputs padding 10px 12px
+- [ ] Validación: botón Guardar deshabilitado hasta Nombre+URL llenos (Nota opcional)
+- [ ] Botón Guardar: estado apagado (opacity 0.4) cuando deshabilitado, hover glow morado + borde visible cuando habilitado
+- [ ] Guardar mod: limpia los 4 campos (Nombre, Fuente, Versión, URL, Notas)
+- [ ] Guardar mod abre automáticamente el grupo de su versión (acordeón interno)
+- [ ] Lista mods guardados: agrupados por versión, acordeones cerrados por defecto
+- [ ] Icono papelera en mod: hover con fondo rojo y texto rojo
+- [ ] Borrar mod: desaparece de la lista, persiste tras F5
+
 ## 4. Modal de item — ficha y paneles
 
 - [ ] Modal abre con snap/dots + backdrop, cierra con X/Esc/backdrop

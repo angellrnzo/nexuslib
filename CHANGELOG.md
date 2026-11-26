@@ -48,6 +48,15 @@ Deploy versions for the Apps Script web app are noted per entry.
 - Profile editing is now an inline accordion (`.perfil-accordion`) instead of a modal: public name + editable unique username, centered invite-code field with copy button, sign-out/save actions.
 - Unified "accordion-unit" pattern for expandable sections: `.player-accordion` (per-persona, accent = persona color), `.mods-accordion` and `.perfil-accordion` (single bordered container, section-colored ring+glow when open). Trailer/updates/reviews bars unchanged.
 - Stats: "Balance y Retos" card spans full grid width with two columns; card details respect the persona selector and hide redundant persona names when a single persona is selected.
+
+### Changed (Mods Tracker UI refinement — 2026-11-26)
+
+- Layout reorganizado: Nombre/Fuente/Versión en fila de 3 columnas proporcional (2fr 1.2fr 1fr), URL full-width debajo, Notas full-width debajo. Responsive: apilar en 1 columna bajo 600px.
+- Espaciado uniforme: gap 10px vertical/horizontal, padding inputs 10px 12px, notas min-height 80px (expandible).
+- Botón Guardar mod: validación en tiempo real (deshabilitado hasta Nombre+URL llenos, Nota opcional), estado apagado (opacity 0.4), hover funcional con glow morado y borde visible.
+- Acordeón Mods: animación reforzada al abrir (box-shadow glow), botón "Mods" del acordeón con estilo morado consistente.
+- Bordes/buttons: uniformidad con acordeón (border-radius 12px, borde sutil, hover glow sin ring 0 0 0 1px para evitar doble borde).
+- Icono papelera en mods: hover con fondo rojo y texto rojo (ya implementado).
 - Share button renamed to "Vínculos" with green accent matching the menu.
 - Responsive hardening: dynamic header spacing (`nexusSyncHeaderSpace`), 16px inputs on mobile (iOS zoom fix), larger touch targets, bottom-sheet modals with scroll-lock.
 - Multi-provider cover `srcset`/`sizes` (OpenLibrary `-S/-M/-L`, TMDB `w342–w780`, Steam header/capsule) via `nexusCoverSrcset`/`nexusCoverFull`; Cine/Series sub-filter moved into the filter panel ("Tipo" group).
