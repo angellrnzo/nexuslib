@@ -296,10 +296,15 @@
     .btn-circle {
       width: 34px; height: 34px; border-radius: 50%; padding: 0;
       background: var(--btn-primary); color: var(--on-accent); border: 1px solid rgba(255, 255, 255, 0.15);
-      position: relative; opacity: 0.7; transition: opacity var(--t-base) var(--ease-out), filter var(--t-base) var(--ease-out);
+      position: relative; opacity: 0.7; transition: opacity var(--t-base) var(--ease-out), filter var(--t-base) var(--ease-out), transform var(--t-base) var(--ease-out), border-color var(--t-base) var(--ease-out);
     }
-    .btn-circle:hover { opacity: 1; filter: brightness(1.1); }
-    .btn-circle.active { background: var(--accent); color: var(--on-accent); border-color: var(--accent); opacity: 1; }
+    .btn-circle:hover { opacity: 1; filter: brightness(1.1); transform: scale(1.05); border-color: rgba(255, 255, 255, 0.25); }
+    .btn-circle:active { transform: scale(0.95); }
+    .btn-circle.active { background: var(--accent); color: var(--on-accent); border-color: var(--accent); opacity: 1; transform: scale(1.05); }
+    #btn-menu { transition: opacity var(--t-base) var(--ease-out), filter var(--t-base) var(--ease-out), transform var(--t-base) var(--ease-out), border-color var(--t-base) var(--ease-out); }
+    #btn-menu:hover { opacity: 1; filter: brightness(1.1); transform: scale(1.05); border-color: rgba(255, 255, 255, 0.25); }
+    #btn-menu:active { transform: scale(0.95); }
+    #btn-menu.active { background: var(--accent); color: var(--on-accent); border-color: var(--accent); opacity: 1; transform: scale(1.05); }
     .btn-circle.has-filters { border-color: var(--accent); box-shadow: 0 0 0 1px rgba(102, 192, 244, 0.5); }
     .btn-circle.has-filters::after {
       content: ''; position: absolute; top: 4px; right: 4px; width: 6px; height: 6px;
@@ -320,8 +325,8 @@
     .custom-select.open .custom-select-chevron { transform: rotate(180deg); color: var(--accent); }
     .custom-select-menu {
       position: absolute; top: calc(100% + 6px); left: 0; right: 0; min-width: 170px; margin: 0;
-      padding: 5px; list-style: none; background: rgba(0,0,0,0.35); border: 1px solid var(--border);
-      border-radius: 9px; box-shadow: 0 14px 30px rgba(0,0,0,0.6); z-index: 100;
+      padding: 5px; list-style: none; background: var(--bg-solid, #0b0e14); border: 1px solid var(--border);
+      border-radius: 9px; box-shadow: 0 14px 30px rgba(0,0,0,0.8); z-index: 100;
       opacity: 0; visibility: hidden; transform: translateY(-6px) scale(0.98);
       transform-origin: top center; transition: opacity 0.16s ease, transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.16s;
     }
@@ -1542,6 +1547,32 @@
             </li>
             <li role="option" data-value="ninguno">
               <span>Sin desear</span>
+              <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="filter-group">
+        <label><svg class="ico ico-sm"><use href="#i-sort"/></svg> <span data-i18n="filter.orden">Orden</span></label>
+        <div class="custom-select" id="filter-orden-dropdown">
+          <input type="hidden" id="filter-orden" value="az">
+          <button type="button" class="custom-select-trigger" aria-haspopup="listbox" aria-expanded="false">
+            <span class="custom-select-label">A-Z</span>
+            <svg class="custom-select-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m6 9 6 6 6-6"/>
+            </svg>
+          </button>
+          <ul class="custom-select-menu" role="listbox">
+            <li role="option" data-value="az" aria-selected="true">
+              <span>A-Z</span>
+              <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </li>
+            <li role="option" data-value="za">
+              <span>Z-A</span>
+              <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </li>
+            <li role="option" data-value="recent">
+              <span>Recientes</span>
               <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
             </li>
           </ul>
