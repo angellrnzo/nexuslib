@@ -167,3 +167,12 @@ Generado 2026-11-26. Último commit: `8383b87`.
 - Eliminado `.right-controls`/`#right-ctrls`; `activarModoBusquedaAgregar`
   ya no lo referencia y llama `cerrarMenuPanel()` al activar.
 - Verificado: colapso 30px->0 con opacity, regresa al cerrar, ring visible.
+
+### Sesión UI — barras unificadas geometria muestra (commit `f5a6729`, SW v98)
+
+- Ambas barras (`.search-wrapper` filtro + `.add-wrapper` agregar) con la
+  geometria de la muestra: border-radius 14px, border 1.5px, anillo
+  `0 0 0 3px rgba(102,192,244,.16)` al estar activas.
+- Barra superior de busqueda: nuevo `btn-clear-search` (visible solo con
+  texto via `.has-text`), `syncSearchClearBtn()` y `limpiarBusquedaFiltro()`
+  (limpia input + filtrarItems + refocus). `cambiarCategoria` sincroniza.
