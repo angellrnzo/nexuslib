@@ -661,6 +661,18 @@
     .upd-badge { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; padding: 1px 6px; border-radius: 20px; background: rgba(91,163,43,0.15); color: #7ec850; border: 1px solid rgba(91,163,43,0.35); }
     .upd-summary { font-size: 11px; color: #8f98a0; margin-top: 3px; line-height: 1.4; }
     .upd-empty { font-size: 12px; color: #8f98a0; text-align: center; padding: 14px 0; }
+    .state-box {
+      grid-column: 1 / -1; text-align: center; padding: 48px 20px;
+      color: #8f98a0;
+    }
+    .state-box .ico { width: 40px; height: 40px; color: var(--accent); margin-bottom: 10px; opacity: .7; }
+    .state-box .sb-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .state-box .sb-desc { font-size: 12px; max-width: 320px; margin: 0 auto 14px; line-height: 1.5; }
+    .state-box .sb-action {
+      display: inline-block; padding: 9px 18px; border-radius: 8px; border: none;
+      background: var(--accent); color: #0b0e14; font-weight: 700; font-size: 12px; cursor: pointer;
+    }
+    .state-box.err .ico { color: #ff8585; }
     .lightbox {
       display: none; position: fixed; inset: 0; z-index: 10000;
       background: rgba(0,0,0,0.92); align-items: center; justify-content: center;
@@ -1165,6 +1177,9 @@
             <button class="btn btn-circle" onclick="abrirPapelera()" title="Papelera" style="color:#ff6b6b;">
               <svg class="ico"><use href="#i-trash"/></svg>
             </button>
+            <button class="btn btn-circle" id="btn-perfil" onclick="abrirPerfilModal()" title="Mi perfil" style="display:none;">
+              <svg class="ico"><use href="#i-user"/></svg>
+            </button>
             <button class="btn btn-circle" id="btn-vinculos" onclick="abrirVinculosModal()" title="Vínculos" style="display:none;color:#7ee0a3;position:relative;">
               <svg class="ico"><use href="#i-users"/></svg>
               <span id="vinc-badge" style="display:none;position:absolute;top:-5px;right:-5px;min-width:16px;height:16px;padding:0 4px;border-radius:99px;background:#ff4d6d;color:#fff;font-size:10px;font-weight:800;line-height:16px;text-align:center;pointer-events:none;">0</span>
@@ -1384,6 +1399,35 @@
 
   <!-- ==================== NEXUS PHASE 4 — adaptador Supabase ==================== -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- MODAL PERFIL -->
+  <div id="modal-perfil" onclick="cerrarPerfilModal()">
+    <div class="modal-content" role="dialog" aria-modal="true" onclick="event.stopPropagation()" style="max-width:420px;">
+      <button class="modal-close" onclick="cerrarPerfilModal()"><svg class="ico"><use href="#i-x"/></svg></button>
+      <div style="text-align:center;margin-bottom:18px;">
+        <div id="pf-avatar" style="width:72px;height:72px;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900;color:#fff;background:var(--accent);"></div>
+        <div id="pf-username" style="font-size:18px;font-weight:800;color:var(--text);"></div>
+        <div id="pf-email" style="font-size:12px;color:#8f98a0;margin-top:2px;"></div>
+      </div>
+      <div style="display:grid;gap:10px;">
+        <label style="font-size:11px;color:#8f98a0;font-weight:700;">NOMBRE PÚBLICO</label>
+        <input id="pf-display" class="na-in" type="text" maxlength="60" style="margin-bottom:0;">
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-primary" style="flex:1;justify-content:center;" onclick="guardarPerfil()">Guardar</button>
+        </div>
+        <div style="border-top:1px solid var(--border);margin-top:8px;padding-top:12px;">
+          <label style="font-size:11px;color:#8f98a0;font-weight:700;">TU CÓDIGO DE VÍNCULO</label>
+          <div style="display:flex;gap:8px;margin-top:6px;">
+            <input id="pf-invite" class="na-in" type="text" readonly style="margin-bottom:0;font-family:monospace;letter-spacing:1px;">
+            <button class="btn btn-circle" onclick="copiarInvitePerfil()" title="Copiar"><svg class="ico"><use href="#i-copy"/></svg></button>
+          </div>
+        </div>
+        <button class="btn btn-delete btn-full" onclick="nexusSignOut()" style="margin-top:10px;">
+          <svg class="ico ico-sm"><use href="#i-x"/></svg> Cerrar sesión
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const NEXUS_MODE = true; // false = Apps Script/Sheets (v1)
     const NEXUS_URL = 'https://vkmgnwnlceycauleluwl.supabase.co';
@@ -1583,53 +1627,264 @@
     var RUN = NEXUS_MODE ? nexusRun : google.script.run;
 
     // ---- auth gate ----
+    // ---- PERFIL (modal) ----
+    async function abrirPerfilModal() {
+      if (!NEXUS_MODE) return;
+      nexusAuthCSS();
+      await nexusEnsureProfile();
+      var p = _nexusProfile || {};
+      var user = _nexusUser || {};
+      var nombre = p.display_name || 'Usuario';
+      var ini = (nombre.trim()[0] || '?').toUpperCase();
+      document.getElementById('pf-avatar').textContent = ini;
+      document.getElementById('pf-avatar').style.background = 'linear-gradient(135deg,#66c0f4,#bb86fc)';
+      document.getElementById('pf-username').textContent = p.username ? '@' + p.username : nombre;
+      document.getElementById('pf-email').textContent = user.email || '';
+      document.getElementById('pf-display').value = p.display_name || '';
+      // invite_code de mi biblioteca personal
+      try {
+        var sb = await nexusSb();
+        var lib = await sb.from('libraries').select('invite_code').eq('created_by', user.id).eq('kind', 'personal').maybeSingle();
+        document.getElementById('pf-invite').value = (lib.data && lib.data.invite_code) || '';
+      } catch (e) { document.getElementById('pf-invite').value = ''; }
+      var modal = document.getElementById('modal-perfil');
+      modal.style.display = 'flex';
+      requestAnimationFrame(() => requestAnimationFrame(() => modal.style.opacity = '1'));
+      history.pushState(null, '', window.location.href);
+    }
+    function cerrarPerfilModal() {
+      var modal = document.getElementById('modal-perfil');
+      modal.style.opacity = '0';
+      setTimeout(() => modal.style.display = 'none', 220);
+    }
+    async function guardarPerfil() {
+      try {
+        var nombre = document.getElementById('pf-display').value.trim();
+        if (!nombre) { showToast && showToast('El nombre no puede estar vacío.', 'error'); return; }
+        var sb = await nexusSb();
+        var r = await sb.from('profiles').update({ display_name: nombre }).eq('id', _nexusUser.id);
+        if (r.error) throw new Error(r.error.message);
+        _nexusProfile.display_name = nombre;
+        showToast && showToast('Perfil guardado.', 'success');
+        cerrarPerfilModal();
+      } catch (e) {
+        showToast && showToast('Error: ' + (e.message || ''), 'error');
+      }
+    }
+    function copiarInvitePerfil() {
+      var v = document.getElementById('pf-invite').value;
+      if (!v) return;
+      navigator.clipboard.writeText(v).then(function() {
+        showToast && showToast('Código copiado.', 'success');
+      });
+    }
+    async function nexusSignOut() {
+      try {
+        var sb = await nexusSb();
+        await sb.auth.signOut();
+      } catch (e) {}
+      location.reload();
+    }
+
+    // ---- auth gate: landing + Entrar / Crear cuenta / Recuperar ----
+    function nexusAuthCSS() {
+      if (document.getElementById('nexus-auth-css')) return;
+      var st = document.createElement('style');
+      st.id = 'nexus-auth-css';
+      st.textContent =
+        '.na-wrap{width:100%;max-width:380px;text-align:center;}' +
+        '.na-hero{margin-bottom:22px;}' +
+        '.na-logo{font-size:34px;font-weight:900;color:var(--accent,#66c0f4);letter-spacing:-0.5px;}' +
+        '.na-tag{color:var(--text,#c7d5e0);font-size:13px;margin-top:6px;line-height:1.5;}' +
+        '.na-card{background:var(--panel,#1b2838);border:1px solid var(--border,rgba(255,255,255,.1));border-radius:16px;padding:22px 20px;text-align:left;}' +
+        '.na-tabs{display:flex;gap:4px;background:rgba(0,0,0,.25);border-radius:10px;padding:4px;margin-bottom:18px;}' +
+        '.na-tab{flex:1;padding:8px;border:none;border-radius:8px;background:transparent;color:#8f98a0;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all var(--t-fast) var(--ease-out);}' +
+        '.na-tab.active{background:var(--accent,#66c0f4);color:#0b0e14;}' +
+        '.na-in{width:100%;padding:12px;border-radius:8px;border:1px solid var(--border);background:#0b0e14;color:var(--text);margin-bottom:10px;font-size:14px;box-sizing:border-box;font-family:inherit;}' +
+        '.na-in:focus{outline:none;border-color:var(--accent,#66c0f4);}' +
+        '.na-btn{width:100%;padding:12px;border:none;border-radius:8px;background:var(--accent,#66c0f4);color:#0b0e14;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;}' +
+        '.na-btn:hover{filter:brightness(1.1);}' +
+        '.na-btn:disabled{opacity:.6;cursor:default;}' +
+        '.na-alt{width:100%;padding:10px;margin-top:8px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--text);font-size:13px;cursor:pointer;font-family:inherit;}' +
+        '.na-msg{margin-top:12px;font-size:12px;text-align:center;min-height:16px;}' +
+        '.na-feats{text-align:center;margin-top:20px;}' +
+        '.na-feat{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:#8f98a0;margin:0 8px;}' +
+        '.na-feat .ico{color:var(--accent,#66c0f4);}' +
+        '@media(max-width:420px){.na-logo{font-size:28px;}}';
+      document.head.appendChild(st);
+    }
+
     function nexusShowLogin(onReady) {
       if (document.getElementById('nexus-login')) return;
+      nexusAuthCSS();
       var ov = document.createElement('div');
       ov.id = 'nexus-login';
-      ov.style.cssText = 'position:fixed;inset:0;z-index:99999;background:var(--bg,#0b0e14);display:flex;align-items:center;justify-content:center;padding:20px;';
+      ov.style.cssText = 'position:fixed;inset:0;z-index:99999;background:var(--bg,#0b0e14);display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;';
       ov.innerHTML =
-        '<div style="width:100%;max-width:340px;background:var(--panel,#1b2838);border:1px solid var(--border,rgba(255,255,255,.1));border-radius:14px;padding:28px 24px;">' +
-        '<div style="text-align:center;margin-bottom:20px;"><div style="font-size:28px;font-weight:900;color:var(--accent,#66c0f4);">NexusLib</div>' +
-        '<div style="color:var(--text,#c7d5e0);font-size:13px;margin-top:4px;">Inicia sesión para continuar</div></div>' +
-        '<input id="nexus-email" type="email" placeholder="Email" autocomplete="username" style="width:100%;padding:12px;border-radius:8px;border:1px solid var(--border);background:#0b0e14;color:var(--text);margin-bottom:10px;font-size:14px;box-sizing:border-box;">' +
-        '<input id="nexus-pass" type="password" placeholder="Contraseña" autocomplete="current-password" style="width:100%;padding:12px;border-radius:8px;border:1px solid var(--border);background:#0b0e14;color:var(--text);margin-bottom:14px;font-size:14px;box-sizing:border-box;">' +
-        '<button id="nexus-btn-login" style="width:100%;padding:12px;border:none;border-radius:8px;background:var(--accent,#66c0f4);color:#0b0e14;font-weight:700;font-size:14px;cursor:pointer;">Entrar</button>' +
-        '<button id="nexus-btn-magic" style="width:100%;padding:10px;margin-top:8px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--text);font-size:13px;cursor:pointer;">Enviar enlace mágico</button>' +
-        '<div id="nexus-login-msg" style="margin-top:12px;font-size:12px;text-align:center;color:#ff8585;min-height:16px;"></div>' +
+        '<div class="na-wrap">' +
+        '<div class="na-hero"><div class="na-logo">NexusLib</div>' +
+        '<div class="na-tag">Tu biblioteca personal de juegos, cine, series, libros y mangas.<br>Comparte tu progreso con quienes quieras.</div></div>' +
+        '<div class="na-card">' +
+        '<div class="na-tabs">' +
+        '<button class="na-tab active" data-na="login">Entrar</button>' +
+        '<button class="na-tab" data-na="signup">Crear cuenta</button>' +
+        '<button class="na-tab" data-na="recover">Recuperar</button>' +
+        '</div>' +
+        '<div id="na-pane-login">' +
+        '<input class="na-in" id="na-email" type="email" placeholder="Email" autocomplete="username">' +
+        '<input class="na-in" id="na-pass" type="password" placeholder="Contraseña" autocomplete="current-password">' +
+        '<button class="na-btn" id="na-btn-login">Entrar</button>' +
+        '<button class="na-alt" id="na-btn-magic">Enviar enlace mágico</button>' +
+        '</div>' +
+        '<div id="na-pane-signup" style="display:none;">' +
+        '<input class="na-in" id="na-sname" type="text" placeholder="Tu nombre" autocomplete="name" maxlength="60">' +
+        '<input class="na-in" id="na-sem" type="email" placeholder="Email" autocomplete="email">' +
+        '<input class="na-in" id="na-spass" type="password" placeholder="Contraseña (mín. 6)" autocomplete="new-password">' +
+        '<button class="na-btn" id="na-btn-signup">Crear cuenta</button>' +
+        '</div>' +
+        '<div id="na-pane-recover" style="display:none;">' +
+        '<div style="font-size:12px;color:#8f98a0;margin-bottom:12px;">Te enviaremos un enlace para restablecer tu contraseña.</div>' +
+        '<input class="na-in" id="na-rem" type="email" placeholder="Email" autocomplete="email">' +
+        '<button class="na-btn" id="na-btn-recover">Enviar enlace</button>' +
+        '</div>' +
+        '<div class="na-msg" id="na-msg"></div>' +
+        '</div>' +
+        '<div class="na-feats">' +
+        '<span class="na-feat"><svg class="ico ico-sm"><use href="#i-gamepad"/></svg> Juegos</span>' +
+        '<span class="na-feat"><svg class="ico ico-sm"><use href="#i-film"/></svg> Cine y Series</span>' +
+        '<span class="na-feat"><svg class="ico ico-sm"><use href="#i-book"/></svg> Libros</span>' +
+        '<span class="na-feat"><svg class="ico ico-sm"><use href="#i-manga"/></svg> Mangas</span>' +
+        '<span class="na-feat"><svg class="ico ico-sm"><use href="#i-users"/></svg> Vínculos</span>' +
+        '</div>' +
         '</div>';
       document.body.appendChild(ov);
-      var msg = ov.querySelector('#nexus-login-msg');
-      async function doLogin() {
-        var email = ov.querySelector('#nexus-email').value.trim();
-        var pass = ov.querySelector('#nexus-pass').value;
-        msg.textContent = '';
-        if (!email) { msg.textContent = 'Escribe tu email.'; return; }
-        var sb = await nexusSb();
-        var r = await sb.auth.signInWithPassword({ email: email, password: pass });
-        if (r.error) { msg.textContent = r.error.message; return; }
-        _nexusUser = r.data.user;
+
+      var msg = ov.querySelector('#na-msg');
+      function setMsg(t, ok) { msg.textContent = t || ''; msg.style.color = ok ? '#7bd88f' : '#ff8585'; }
+      function val(id) { return ov.querySelector(id).value.trim(); }
+
+      ov.querySelectorAll('.na-tab').forEach(function(tab) {
+        tab.onclick = function() {
+          ov.querySelectorAll('.na-tab').forEach(function(t) { t.classList.toggle('active', t === tab); });
+          ['login', 'signup', 'recover'].forEach(function(k) {
+            ov.querySelector('#na-pane-' + k).style.display = (tab.dataset.na === k) ? 'block' : 'none';
+          });
+          setMsg('');
+        };
+      });
+
+      async function finishLogin(user) {
+        _nexusUser = user;
         ov.remove();
         if (onReady) onReady();
       }
+
+      async function doLogin() {
+        var email = val('#na-email'), pass = ov.querySelector('#na-pass').value;
+        setMsg('');
+        if (!email || !pass) { setMsg('Escribe email y contraseña.'); return; }
+        var sb = await nexusSb();
+        var r = await sb.auth.signInWithPassword({ email: email, password: pass });
+        if (r.error) { setMsg(r.error.message); return; }
+        await finishLogin(r.data.user);
+      }
+
+      async function doSignup() {
+        var name = val('#na-sname'), email = val('#na-sem'), pass = ov.querySelector('#na-spass').value;
+        setMsg('');
+        if (!email || !pass) { setMsg('Email y contraseña son obligatorios.'); return; }
+        if (pass.length < 6) { setMsg('La contraseña debe tener al menos 6 caracteres.'); return; }
+        var sb = await nexusSb();
+        var r = await sb.auth.signUp({
+          email: email, password: pass,
+          options: { data: { display_name: name || email.split('@')[0] } }
+        });
+        if (r.error) { setMsg(r.error.message); return; }
+        if (r.data.session && r.data.session.user) { await finishLogin(r.data.session.user); return; }
+        setMsg('Cuenta creada — revisa tu email para confirmarla y luego entra.', true);
+        ov.querySelector('.na-tab[data-na="login"]').click();
+      }
+
       async function doMagic() {
-        var email = ov.querySelector('#nexus-email').value.trim();
-        msg.textContent = '';
-        if (!email) { msg.textContent = 'Escribe tu email.'; return; }
+        var email = val('#na-email');
+        setMsg('');
+        if (!email) { setMsg('Escribe tu email.'); return; }
         var sb = await nexusSb();
         var r = await sb.auth.signInWithOtp({ email: email });
-        msg.textContent = r.error ? r.error.message : 'Revisa tu email — enlace enviado.';
-        msg.style.color = r.error ? '#ff8585' : '#7bd88f';
+        setMsg(r.error ? r.error.message : 'Revisa tu email — enlace enviado.', !r.error);
       }
-      ov.querySelector('#nexus-btn-login').onclick = doLogin;
-      ov.querySelector('#nexus-btn-magic').onclick = doMagic;
-      ov.querySelector('#nexus-pass').addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
+
+      async function doRecover() {
+        var email = val('#na-rem');
+        setMsg('');
+        if (!email) { setMsg('Escribe tu email.'); return; }
+        var sb = await nexusSb();
+        var r = await sb.auth.resetPasswordForEmail(email, {
+          redirectTo: window.location.origin + window.location.pathname
+        });
+        setMsg(r.error ? r.error.message : 'Enlace de recuperación enviado — revisa tu email.', !r.error);
+      }
+
+      ov.querySelector('#na-btn-login').onclick = doLogin;
+      ov.querySelector('#na-btn-signup').onclick = doSignup;
+      ov.querySelector('#na-btn-recover').onclick = doRecover;
+      ov.querySelector('#na-btn-magic').onclick = doMagic;
+      ov.querySelector('#na-pass').addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
+      ov.querySelector('#na-spass').addEventListener('keydown', function(e) { if (e.key === 'Enter') doSignup(); });
+    }
+
+    // ---- RECOVERY: el enlace de reset llega con #access_token&type=recovery ----
+    function nexusIsRecovery() {
+      return /type=recovery/.test(window.location.hash) || /type=recovery/.test(window.location.search);
+    }
+
+    function nexusShowPasswordReset(onDone) {
+      if (document.getElementById('nexus-reset')) return;
+      nexusAuthCSS();
+      var ov = document.createElement('div');
+      ov.id = 'nexus-reset';
+      ov.style.cssText = 'position:fixed;inset:0;z-index:99999;background:var(--bg,#0b0e14);display:flex;align-items:center;justify-content:center;padding:20px;';
+      ov.innerHTML =
+        '<div class="na-wrap"><div class="na-hero"><div class="na-logo">NexusLib</div>' +
+        '<div class="na-tag">Elige tu nueva contraseña</div></div>' +
+        '<div class="na-card">' +
+        '<input class="na-in" id="nr-pass1" type="password" placeholder="Nueva contraseña (mín. 6)" autocomplete="new-password">' +
+        '<input class="na-in" id="nr-pass2" type="password" placeholder="Repite la contraseña" autocomplete="new-password">' +
+        '<button class="na-btn" id="nr-btn">Guardar y entrar</button>' +
+        '<div class="na-msg" id="nr-msg"></div>' +
+        '</div></div>';
+      document.body.appendChild(ov);
+      var msg = ov.querySelector('#nr-msg');
+      ov.querySelector('#nr-btn').onclick = async function() {
+        var p1 = ov.querySelector('#nr-pass1').value, p2 = ov.querySelector('#nr-pass2').value;
+        msg.textContent = ''; msg.style.color = '#ff8585';
+        if (p1.length < 6) { msg.textContent = 'Mínimo 6 caracteres.'; return; }
+        if (p1 !== p2) { msg.textContent = 'Las contraseñas no coinciden.'; return; }
+        var sb = await nexusSb();
+        var r = await sb.auth.updateUser({ password: p1 });
+        if (r.error) { msg.textContent = r.error.message; return; }
+        history.replaceState(null, '', window.location.pathname);
+        ov.remove();
+        if (onDone) onDone();
+      };
     }
 
     async function nexusBoot(onReady) {
       try {
+        nexusAuthCSS();
         var sb = await nexusSb();
         var s = await sb.auth.getSession();
+        if (nexusIsRecovery()) {
+          nexusShowPasswordReset(function() {
+            if (s.data && s.data.session) {
+              _nexusUser = s.data.session.user;
+              onReady();
+            } else {
+              nexusShowLogin(onReady);
+            }
+          });
+          return;
+        }
         if (s.data && s.data.session) {
           _nexusUser = s.data.session.user;
           onReady();
@@ -2521,6 +2776,8 @@
         nexusRefreshVinculosBadge();
         setInterval(nexusRefreshVinculosBadge, 60000);
       }
+      var btnPerfil = document.getElementById('btn-perfil');
+      if (btnPerfil && NEXUS_MODE) btnPerfil.style.display = '';
       configurarFiltrosCategoria('Juegos');
       cargarCategoria('Juegos', false);
       ['Peliculas_Series', 'Libros', 'Mangas'].forEach(c => precargarCategoriaSilenciosa(c));
@@ -2755,7 +3012,7 @@
         })
         .withFailureHandler(function(err) {
           if (currentCategory === cat) {
-            grid.innerHTML = '<p style="text-align:center;grid-column:1/-1;color:#ff6b6b;">Error: ' + escaparHTML(err.message) + '</p>';
+            grid.innerHTML = nexusStateBox('err', 'i-x', 'No se pudieron cargar los elementos', err.message || '', '<button class="sb-action" onclick="cargarCategoria(\'' + cat + '\', true)">Reintentar</button>');
           }
         })
         .getItems(cat);
@@ -2957,7 +3214,7 @@
     function renderGrid(items) {
       var grid = document.getElementById('grid');
       if (!items || items.length === 0) {
-        grid.innerHTML = '<p style="text-align:center;grid-column:1/-1;color:#8f98a0;margin-top:30px;">No hay elementos en esta vista.</p>';
+        grid.innerHTML = nexusStateBox('empty', 'i-search', 'Nada por aquí todavía', 'Prueba ajustando los filtros o añade tu primer elemento desde el buscador.');
         return;
       }
       var itemsVisibles = items.slice(0, paginaActual * elementosPorPagina);
@@ -4169,8 +4426,36 @@
       return m ? m[1] : null;
     }
 
+    // ---- EMPTY/ERROR STATE BOX (componente compartido) ----
+    function nexusStateBox(kind, icon, title, desc, actionHtml) {
+      return '<div class="state-box' + (kind === 'err' ? ' err' : '') + '">'
+        + '<svg class="ico"><use href="#' + icon + '"/></svg>'
+        + '<div class="sb-title">' + escaparHTML(title) + '</div>'
+        + (desc ? '<div class="sb-desc">' + escaparHTML(desc) + '</div>' : '')
+        + (actionHtml || '')
+        + '</div>';
+    }
+
+    // focus trap: Tab cicla solo dentro del .modal-content visible
+    document.addEventListener('keydown', function(e) {
+      if (e.key !== 'Tab') return;
+      var open = null;
+      ['modal-perfil','modal-vinculos','modal-match','modal-papelera','modal'].forEach(function(mid) {
+        var el = document.getElementById(mid);
+        if (el && el.style.display === 'flex') open = el;
+      });
+      if (!open) return;
+      var items = open.querySelectorAll('.modal-content button, .modal-content input, .modal-content select, .modal-content textarea, .modal-content a[href], .modal-content summary, .modal-content [tabindex]');
+      var vis = Array.prototype.filter.call(items, function(el) { return el.offsetParent !== null && !el.disabled; });
+      if (!vis.length) return;
+      var first = vis[0], last = vis[vis.length - 1];
+      if (e.shiftKey && document.activeElement === first) { last.focus(); e.preventDefault(); }
+      else if (!e.shiftKey && document.activeElement === last) { first.focus(); e.preventDefault(); }
+    });
+
     // ---- MODAL A11Y: Escape cierra el modal superior + focus al abrir ----
     var _modalCloseMap = [
+      ['modal-perfil', cerrarPerfilModal],
       ['modal-vinculos', cerrarVinculosModal],
       ['modal-match', cerrarMatchModal],
       ['modal-papelera', cerrarPapelera],
@@ -4185,7 +4470,7 @@
       nexusCloseLightbox();
     });
     // focus trap ligero: al abrir un modal, foco al botón cerrar; Tab cicla dentro
-    ['modal-vinculos', 'modal-match', 'modal-papelera', 'modal'].forEach(function(mid) {
+    ['modal-vinculos', 'modal-match', 'modal-papelera', 'modal-perfil', 'modal'].forEach(function(mid) {
       var el = document.getElementById(mid);
       if (!el) return;
       new MutationObserver(function() {
