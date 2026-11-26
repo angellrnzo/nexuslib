@@ -6,6 +6,13 @@ Deploy versions for the Apps Script web app are noted per entry.
 
 ## [Unreleased]
 
+### Fixed (visual/responsive audit)
+
+- Tracking accordion: single-persona items now span full modal width (`.tracking-container.single`).
+- Match modal grid: `minmax(110px,1fr)` under 600px so phones get 2 columns instead of 1.
+- `.stat-detail-line`: `overflow-wrap:anywhere` prevents overflow with long unbroken titles.
+- Unified residual `#ff6b6b` rgba values to `--danger-text` (#ff8585).
+
 ### Added (i18n ES/EN — Phase 2.5 complete)
 
 - Full UI internationalization: `STR` dictionary (338 keys, ES/EN parity), `t()`/`tf()` interpolation, `data-i18n`/`data-i18n-ph`/`data-i18n-title` static pass, `catText()` per-category labels/placeholders.
