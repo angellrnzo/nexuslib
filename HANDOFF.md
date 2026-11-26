@@ -7,6 +7,7 @@ Estado actual para la próxima sesión. Último commit: `8383b87` (SW v78, rama 
 **Rama:** `beta` — working tree limpio, commits pusheados.
 **Producción:** `main` — no tocar sin `Confirmar deploy` literal.
 **DB:** prod + standby en espejo (datos idénticos, schema sincronizado tras delta 07).
+**Último commit:** `3ba20ce` (SW v79).
 
 ## Trabajo realizado en esta sesión
 
@@ -52,6 +53,10 @@ Estado actual para la próxima sesión. Último commit: `8383b87` (SW v78, rama 
 - Acordeón Mods: animación reforzada (box-shadow glow), estilo morado consistente
 - Bordes/buttons: uniformidad con acordeón (border-radius 12px, hover glow sin ring)
 - Icono papelera: hover rojo (ya implementado)
+
+### 8. Uniformidad visual general (último trabajo)
+- Gaps contenedores principales unificados a 10px: tracking-container, action-buttons, stats-bar, filter-group, stats-profile-actions, pf-grid-2, pf-invite-row, stats-view
+- Gaps internos compactos (4-6px) se mantienen para chips/iconos/labels — mejor densidad visual
 
 ## Documentación actualizada
 

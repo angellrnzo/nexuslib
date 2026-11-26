@@ -57,6 +57,11 @@ Deploy versions for the Apps Script web app are noted per entry.
 - Acordeón Mods: animación reforzada al abrir (box-shadow glow), botón "Mods" del acordeón con estilo morado consistente.
 - Bordes/buttons: uniformidad con acordeón (border-radius 12px, borde sutil, hover glow sin ring 0 0 0 1px para evitar doble borde).
 - Icono papelera en mods: hover con fondo rojo y texto rojo (ya implementado).
+
+### Changed (Uniformidad visual general — 2026-11-26)
+
+- Unificación de gaps en contenedores principales a 10px: `tracking-container`, `action-buttons`, `stats-bar`, `filter-group`, `stats-profile-actions`, `pf-grid-2`, `pf-invite-row`, `stats-view`.
+- Gaps internos compactos (4-6px) se mantienen para chips, iconos y labels compactos — mejor densidad visual en secciones densas.
 - Share button renamed to "Vínculos" with green accent matching the menu.
 - Responsive hardening: dynamic header spacing (`nexusSyncHeaderSpace`), 16px inputs on mobile (iOS zoom fix), larger touch targets, bottom-sheet modals with scroll-lock.
 - Multi-provider cover `srcset`/`sizes` (OpenLibrary `-S/-M/-L`, TMDB `w342–w780`, Steam header/capsule) via `nexusCoverSrcset`/`nexusCoverFull`; Cine/Series sub-filter moved into the filter panel ("Tipo" group).
