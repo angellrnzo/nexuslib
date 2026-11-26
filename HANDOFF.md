@@ -210,3 +210,13 @@ Generado 2026-11-26. Último commit: `8383b87`.
   data-*/onclick en TODAS las plantillas (refactor grande), agrupación
   visual por elemento común, STR duplicados=0 verificado, ~resto de
   literales hardcodeados.
+
+### Estándares por flujo (docs/standards/POR-FLUJO.md)
+
+- Nuevo índice operativo: reglas por flujo (barras, filtros/custom-
+  selects, grid/tarjetas, modal, share/privacidad, i18n/tema, motion)
+  + checklist rápido. Las 3 guías fuente quedan en docs/standards/.
+- NORMS.md del workspace suma §12 con las reglas transversales
+  (pointerdown+Escape, prohibido scroll/touchmove closers y pushState
+  en focus, orden backend→memoria→localStorage→UI, mapas canónicos,
+  custom-selects, reduced-motion).
