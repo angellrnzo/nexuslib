@@ -1139,14 +1139,15 @@
       border: 1px solid rgba(102,192,244,0.25); text-decoration: none;
       white-space: nowrap;
     }
-    .mods-form { display: grid; gap: 6px; margin-bottom: 12px; }
+    .mods-accordion, .mods-accordion * { box-sizing: border-box; }
+    .mods-form { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
     .mods-form input, .mods-form select, .mods-form textarea {
       width: 100%; min-width: 0; padding: 8px 10px; border-radius: 8px; font-size: 13px;
       background: rgba(0,0,0,0.25); color: var(--text);
       border: 1px solid var(--border); font-family: inherit;
     }
     .mods-form textarea { resize: vertical; min-height: 40px; }
-    .mods-form-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+    .mods-form-row { display: grid; grid-template-columns: 2fr 1.2fr 1fr; gap: 6px; width: 100%; }
     .mods-form-row > * { min-width: 0; }
     .mods-form .btn-save { justify-content: center; padding: 10px; font-size: 13px; border-radius: 8px; margin-top: 2px; }
     .mods-empty { font-size: 12px; color: var(--muted); text-align: center; padding: 10px 0; }
@@ -1266,10 +1267,8 @@
       #inputBuscar, #inputAgregar { font-size: 16px; }
       .perfil-edit-inner .na-in, .mods-form input, .mods-form select, .mods-form textarea { font-size: 16px; }
     }
-    @media (max-width: 560px) {
-      .mods-form-row { grid-template-columns: 1fr; }
-    }
     @media (max-width: 600px) {
+      .mods-form-row { grid-template-columns: 1fr; }
       .modal-content { padding: 14px; border-radius: 16px 16px 0 0; }
       .modal-title { font-size: 17px; padding-right: 36px; }
       .stats-cards-grid { grid-template-columns: minmax(0, 1fr); gap: 10px; }
