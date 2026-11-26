@@ -329,7 +329,7 @@
     /* PANEL DE FILTROS */
     .menu-wrap { position: relative; flex-shrink: 0; }
     .menu-panel {
-      position: absolute; top: calc(100% + 8px); right: 0; min-width: 210px;
+      position: fixed; top: 0; right: 0; min-width: 210px;
       background: linear-gradient(180deg, rgba(27,40,56,.99) 0%, rgba(18,27,40,.99) 100%);
       border: 1px solid rgba(102,192,244,.35); border-radius: 14px;
       padding: 6px; box-shadow: 0 14px 40px rgba(0,0,0,.85);
@@ -1826,6 +1826,7 @@
       async function finishLogin(user) {
         _nexusUser = user;
         ov.remove();
+        if (window.location.hash) history.replaceState(null, '', window.location.pathname + window.location.search);
         if (onReady) onReady();
       }
 
@@ -1937,6 +1938,7 @@
         }
         if (s.data && s.data.session) {
           _nexusUser = s.data.session.user;
+          if (window.location.hash) history.replaceState(null, '', window.location.pathname + window.location.search);
           onReady();
         } else {
           nexusShowLogin(onReady);
@@ -3140,6 +3142,9 @@
       var open = !panel.classList.contains('open');
       cerrarMenuPanel();
       if (open) {
+        var r = btn.getBoundingClientRect();
+        panel.style.top = (r.bottom + 8) + 'px';
+        panel.style.right = Math.max(8, window.innerWidth - r.right) + 'px';
         panel.classList.add('open');
         btn.classList.add('active');
         history.pushState(null, '', window.location.href);
@@ -4184,7 +4189,7 @@
             '<div class="stats-profile-email">' + escaparHTML(user.email || '') + '</div>' +
           '</div>' +
           '<div class="stats-profile-actions">' +
-            '<button class="btn btn-primary" onclick="abrirPerfilModal()">Editar perfil</button>' +
+            '<button class="btn btn-text" onclick="abrirPerfilModal()">Editar perfil</button>' +
           '</div>';
       } catch (e) { card.innerHTML = ''; }
     }
@@ -4584,6 +4589,7 @@
         var el = document.getElementById(_modalCloseMap[i][0]);
         if (el && el.style.display === 'flex') { _modalCloseMap[i][1](); return; }
       }
+      if (document.getElementById('menu-panel') && document.getElementById('menu-panel').classList.contains('open')) { cerrarMenuPanel(); return; }
       nexusCloseLightbox();
     });
     // focus trap ligero: al abrir un modal, foco al botón cerrar; Tab cicla dentro
