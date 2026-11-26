@@ -1933,6 +1933,7 @@
       try {
         var nombre = document.getElementById('pf-display').value.trim();
         if (!nombre) { showToast && showToast(t('err.noname'), 'error'); return; }
+        var oldUname = (_nexusProfile && _nexusProfile.username) || '';
         var uname = document.getElementById('pf-username').value.trim().toLowerCase()
           .replace(/[^a-z0-9_]/g, '').slice(0, 30);
         if (!uname) { showToast && showToast(t('err.nouser'), 'error'); return; }
@@ -1947,6 +1948,17 @@
         _nexusProfile.display_name = nombre;
         _nexusProfile.username = uname;
         nexusRenderProfileHeader();
+        // el username genera los sufijos persona{Sufijo} del RPC — si cambio,
+        // los items cacheados en localStorage llevan sufijos viejos: limpiar y recargar
+        if (uname !== oldUname) {
+          try {
+            Object.keys(localStorage).filter(function(k) { return k.indexOf('media_lib_') === 0; })
+              .forEach(function(k) { localStorage.removeItem(k); });
+          } catch (e) {}
+          showToast && showToast(t('prof.reload'), 'success');
+          setTimeout(function() { location.reload(); }, 1400);
+          return;
+        }
         showToast && showToast(t('toast.profile'), 'success');
         cerrarPerfilEdit();
       } catch (e) {
@@ -2638,7 +2650,7 @@
         var st = await nexusFetchMyPrivacy(_shareCtx.cat, _shareCtx.id);
         renderSharePanel(st, d.links || []);
       } catch (e) {
-        panel.innerHTML = '<div class="sp-empty" style="color:#ff8585;">Error: ' + vinculosEsc(e.message) + '</div>';
+        panel.innerHTML = '<div class="sp-empty" style="color:#ff8585;">' + t('err.prefix') + vinculosEsc(e.message) + '</div>';
       }
     }
 
@@ -2803,7 +2815,7 @@
         h += '<div id="send-msg-' + k + '" class="sp-msg"></div>';
         panel.innerHTML = h;
       } catch (e) {
-        panel.innerHTML = '<div class="sp-empty" style="color:#ff8585;">Error: ' + vinculosEsc(e.message) + '</div>';
+        panel.innerHTML = '<div class="sp-empty" style="color:#ff8585;">' + t('err.prefix') + vinculosEsc(e.message) + '</div>';
       }
     }
 
@@ -3110,7 +3122,7 @@
         'fl.ext': 'Extensión', 'fl.modo': 'Modo / Co-op', 'fl.deck': 'Steam Deck', 'fl.precio': 'Precio',
         'fl.tipo': 'Tipo', 'fl.plataforma': 'Plataforma', 'fl.estado': 'Estado', 'fl.demog': 'Demografía',
         'pf.display': 'Nombre público', 'pf.username': 'Usuario', 'pf.invite': 'Código de vinculación',
-        'pf.logout': 'Cerrar sesión', 'pf.save': 'Guardar cambios', 'pf.copy': 'Copiar',
+        'pf.logout': 'Cerrar sesión', 'pf.save': 'Guardar cambios', 'pf.copy': 'Copiar', 'prof.reload': 'Usuario actualizado — recargando…',
         'mods.nameph': 'Nombre del mod', 'mods.verph': 'Versión del juego (ej. v1.7.9b)', 'mods.urlph': 'URL del mod',
         'mods.notesph': 'Notas (load order, dependencias...)', 'mods.save': 'Guardar mod', 'mods.noversion': 'Sin versión',
         'mods.noname': 'Ponle nombre al mod.', 'btn.cerrar': 'Cerrar', 'btn.guardar': 'Guardar',
@@ -3236,7 +3248,7 @@
         'fl.ext': 'Length', 'fl.modo': 'Mode / Co-op', 'fl.deck': 'Steam Deck', 'fl.precio': 'Price',
         'fl.tipo': 'Type', 'fl.plataforma': 'Platform', 'fl.estado': 'Status', 'fl.demog': 'Demographics',
         'pf.display': 'Display name', 'pf.username': 'Username', 'pf.invite': 'Link code',
-        'pf.logout': 'Log out', 'pf.save': 'Save changes', 'pf.copy': 'Copy',
+        'pf.logout': 'Log out', 'pf.save': 'Save changes', 'pf.copy': 'Copy', 'prof.reload': 'Username updated — reloading…',
         'mods.nameph': 'Mod name', 'mods.verph': 'Game version (e.g. v1.7.9b)', 'mods.urlph': 'Mod URL',
         'mods.notesph': 'Notes (load order, dependencies...)', 'mods.save': 'Save mod', 'mods.noversion': 'No version',
         'mods.noname': 'Name the mod.', 'btn.cerrar': 'Close', 'btn.guardar': 'Save',
@@ -4971,6 +4983,7 @@
         lista.forEach(it => {
           pers.forEach(function(p) {
             var s = p.suffix, st = stats[s];
+            if (it['visible' + s] === false) return; // item privado para mi viewer: no contar
             var est = it['estado' + s] || 'No jugado';
             var nota = Number(it['estrellas' + s]) || 0;
             if (est === 'Completado') st.comp++;
@@ -5208,7 +5221,7 @@
       var matches = lista.filter(it => {
         var set = {};
         nexusScanItemPersonas(it, set);
-        var sufs = Object.keys(set);
+        var sufs = Object.keys(set).filter(function(s) { return it['visible' + s] !== false; });
         if (sufs.length === 0) return false;
         var allPend = true, allDeseado = true;
         sufs.forEach(s => {
