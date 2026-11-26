@@ -1523,7 +1523,29 @@
       <div id="filter-personas"></div>
       <div class="filter-group">
         <label><svg class="ico ico-sm ico-wish"><use href="#i-heart-fill"/></svg> <span data-i18n="filter.deseados">Lista de Deseados</span></label>
-        <select id="filter-deseado" onchange="filtrarItems()"></select>
+        <div class="custom-select" id="filter-deseado-dropdown">
+          <input type="hidden" id="filter-deseado" value="todos">
+          <button type="button" class="custom-select-trigger" aria-haspopup="listbox" aria-expanded="false">
+            <span class="custom-select-label">Todos</span>
+            <svg class="custom-select-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m6 9 6 6 6-6"/>
+            </svg>
+          </button>
+          <ul class="custom-select-menu" role="listbox">
+            <li role="option" data-value="todos" aria-selected="true">
+              <span>Todos</span>
+              <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </li>
+            <li role="option" data-value="deseado">
+              <span>Deseados</span>
+              <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </li>
+            <li role="option" data-value="ninguno">
+              <span>Sin desear</span>
+              <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </li>
+          </ul>
+        </div>
       </div>
       <div class="filter-group" id="extra-filter-1"></div>
       <div class="filter-group" id="extra-filter-2"></div>
@@ -3864,8 +3886,18 @@
       if (panel.classList.contains('open')) {
         posicionarPanelFiltros();
         history.pushState(null, '', window.location.href);
+        initCustomSelect('filter-deseado-dropdown');
+        initCustomSelect('filter-orden-dropdown');
       }
     }
+
+    document.addEventListener('click', function(e) {
+      var panel = document.getElementById('panel-filtros');
+      if (panel && panel.classList.contains('open') && !panel.contains(e.target) && !document.getElementById('btn-toggle-filtros').contains(e.target)) {
+        panel.classList.remove('open');
+        document.getElementById('btn-toggle-filtros').classList.remove('active');
+      }
+    });
 
     // el panel de filtros se ancla abajo de la caja de controles (no px fijos)
     function posicionarPanelFiltros() {
