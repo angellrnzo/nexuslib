@@ -430,9 +430,10 @@ See [AppScript/BETA.md](BETA.md) — one entry per working session: what was don
 
 ### Phase 2.5 — i18n ES/EN (v1.x)
 
-- [ ] String inventory: extract every hardcoded ES string from `index.html`/`Index.html` (buttons, labels, toasts, empty states).
-- [ ] Decision: hand-rolled `STR` dict + `?lang=` param (consistent with current vanilla SPA) vs tiny i18n lib — default: hand-rolled.
-- [ ] EN translations for the full inventory (bulk of the work — can be drafted by agent, reviewed by user).
+- [x] Decision: hand-rolled `STR` dict + `localStorage nexus_lang` (no `?lang=` — PWA-friendly) — implementado 2026-11-27.
+- [x] Infra + chrome batch: `t()`, `catText()`, `applyStaticI18n()` (`data-i18n`/`data-i18n-ph`/`data-i18n-title`), toggle English/Español en menú hamburguesa, tabs/placeholders/filtros/menú traducidos, `cambiarCategoria` placeholders por idioma.
+- [ ] Resto del inventario (~240 strings JS-generados: modales, toasts, stats, estados, filtros dinámicos) — migrar por lotes envolviendo en `t()`/`catText()`.
+- [ ] EN translations review por usuario.
 - [ ] No APIs/SQL.
 
 ### Phase 3 — Backend & offline (v1.x)

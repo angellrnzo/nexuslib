@@ -344,6 +344,7 @@
       cursor: pointer; text-align: left; transition: background var(--t-fast) var(--ease-out);
     }
     .menu-item:hover { background: rgba(102,192,244,.12); }
+    .menu-sep { height: 1px; background: var(--border); margin: 4px 6px; }
     .menu-badge {
       display: none; margin-left: auto; min-width: 18px; height: 18px; padding: 0 5px;
       border-radius: 99px; background: #ff4d6d; color: #fff; font-size: 10px;
@@ -1361,19 +1362,19 @@
     <div class="top-header">
       <div class="category-tabs">
         <button class="tab-btn active" data-cat="Juegos" title="Juegos" onclick="cambiarCategoria('Juegos')">
-          <svg class="ico"><use href="#i-gamepad"/></svg> <span class="tab-text">Juegos</span>
+          <svg class="ico"><use href="#i-gamepad"/></svg> <span class="tab-text" data-i18n="cat.Juegos">Juegos</span>
         </button>
         <button class="tab-btn" data-cat="Peliculas_Series" title="Cine y Series" onclick="cambiarCategoria('Peliculas_Series')">
-          <svg class="ico"><use href="#i-film"/></svg> <span class="tab-text">Cine y Series</span>
+          <svg class="ico"><use href="#i-film"/></svg> <span class="tab-text" data-i18n="cat.Peliculas_Series">Cine y Series</span>
         </button>
         <button class="tab-btn" data-cat="Libros" title="Libros" onclick="cambiarCategoria('Libros')">
-          <svg class="ico"><use href="#i-book"/></svg> <span class="tab-text">Libros</span>
+          <svg class="ico"><use href="#i-book"/></svg> <span class="tab-text" data-i18n="cat.Libros">Libros</span>
         </button>
         <button class="tab-btn" data-cat="Mangas" title="Mangas" onclick="cambiarCategoria('Mangas')">
-          <svg class="ico"><use href="#i-manga"/></svg> <span class="tab-text">Mangas</span>
+          <svg class="ico"><use href="#i-manga"/></svg> <span class="tab-text" data-i18n="cat.Mangas">Mangas</span>
         </button>
         <button class="tab-btn" data-cat="Coleccionables" title="Coleccionables" onclick="cambiarCategoria('Coleccionables')">
-          <svg class="ico"><use href="#i-star"/></svg> <span class="tab-text">Coleccionables</span>
+          <svg class="ico"><use href="#i-star"/></svg> <span class="tab-text" data-i18n="cat.Coleccionables">Coleccionables</span>
         </button>
 
       </div>
@@ -1382,50 +1383,54 @@
         <div class="controls-row">
           <div class="search-wrapper">
             <svg class="ico"><use href="#i-search"/></svg>
-            <input type="text" id="inputBuscar" placeholder="Filtrar juegos por título, dev, género o tag..." oninput="filtrarItemsDebounced()">
+            <input type="text" id="inputBuscar" data-i18n-ph="cfg.Juegos.search" placeholder="Filtrar juegos por título, dev, género o tag..." oninput="filtrarItemsDebounced()">
           </div>
         </div>
 
         <div class="controls-row">
           <div class="add-wrapper" id="add-wrapper-box">
             <svg class="ico ico-sm" style="color:#8f98a0; margin-right:6px;"><use href="#i-plus"/></svg>
-            <input type="text" id="inputAgregar" placeholder="AppID, URL o nombre..." onfocus="activarModoBusquedaAgregar(true)" oninput="syncAddClearBtn(); autocompletarAgregarDebounced()" onkeydown="if(event.key==='Enter') manejarAgregar()">
-            <button type="button" class="btn-clear-add" onclick="cerrarBusquedaAgregar(true)" title="Limpiar">
+            <input type="text" id="inputAgregar" data-i18n-ph="cfg.Juegos.add" placeholder="AppID, URL o nombre..." onfocus="activarModoBusquedaAgregar(true)" oninput="syncAddClearBtn(); autocompletarAgregarDebounced()" onkeydown="if(event.key==='Enter') manejarAgregar()">
+            <button type="button" class="btn-clear-add" onclick="cerrarBusquedaAgregar(true)" title="Limpiar" data-i18n-title="tip.limpiar">
               <svg class="ico ico-sm"><use href="#i-x"/></svg>
             </button>
-            <button id="btn-add" class="btn btn-primary" onclick="manejarAgregar()" title="Buscar o añadir" style="margin-left:3px;">
+            <button id="btn-add" class="btn btn-primary" onclick="manejarAgregar()" title="Buscar o añadir" data-i18n-title="tip.buscar" style="margin-left:3px;">
               <svg class="ico ico-sm"><use href="#i-plus"/></svg>
             </button>
             <div id="search-dropdown" class="search-results-dropdown"></div>
           </div>
 
           <div class="right-controls" id="right-ctrls">
-            <button id="btn-toggle-filtros" class="btn btn-circle" onclick="toggleFiltros(event)" title="Filtros y Orden">
+            <button id="btn-toggle-filtros" class="btn btn-circle" onclick="toggleFiltros(event)" title="Filtros y Orden" data-i18n-title="tip.filtros">
               <svg class="ico"><use href="#i-filter"/></svg>
             </button>
             <div class="menu-wrap">
-              <button class="btn btn-circle" id="btn-menu" onclick="toggleMenu(event)" title="Menú">
+              <button class="btn btn-circle" id="btn-menu" onclick="toggleMenu(event)" title="Menú" data-i18n-title="tip.menu">
                 <svg class="ico"><use href="#i-menu"/></svg>
               </button>
               <div id="menu-panel" class="menu-panel">
                 <button class="menu-item" onclick="menuRun(abrirMatchModal)">
-                  <svg class="ico ico-sm" style="color:#ff8fa3;"><use href="#i-heart-fill"/></svg> Match de Pareja
+                  <svg class="ico ico-sm" style="color:#ff8fa3;"><use href="#i-heart-fill"/></svg> <span data-i18n="menu.match">Match de Pareja</span>
                 </button>
                 <button class="menu-item" onclick="menuRun(elegirAleatorio)">
-                  <svg class="ico ico-sm"><use href="#i-dice"/></svg> Elección aleatoria
+                  <svg class="ico ico-sm"><use href="#i-dice"/></svg> <span data-i18n="menu.random">Elección aleatoria</span>
                 </button>
                 <button class="menu-item" onclick="menuRun(forzarSincronizacion)">
-                  <svg class="ico ico-sm"><use href="#i-sync"/></svg> Sincronizar
+                  <svg class="ico ico-sm"><use href="#i-sync"/></svg> <span data-i18n="menu.sync">Sincronizar</span>
                 </button>
                 <button class="menu-item" onclick="menuRun(abrirPapelera)">
-                  <svg class="ico ico-sm" style="color:#ff6b6b;"><use href="#i-trash"/></svg> Papelera
+                  <svg class="ico ico-sm" style="color:#ff6b6b;"><use href="#i-trash"/></svg> <span data-i18n="menu.papelera">Papelera</span>
                 </button>
                 <button class="menu-item" onclick="menuRun(abrirVinculosModal)">
-                  <svg class="ico ico-sm" style="color:#7ee0a3;"><use href="#i-users"/></svg> Vínculos
+                  <svg class="ico ico-sm" style="color:#7ee0a3;"><use href="#i-users"/></svg> <span data-i18n="menu.vinculos">Vínculos</span>
                   <span id="vinc-badge" class="menu-badge">0</span>
                 </button>
+                <div class="menu-sep"></div>
+                <button class="menu-item" onclick="menuRun(cambiarIdioma)">
+                  <svg class="ico ico-sm"><use href="#i-globe"/></svg> <span data-i18n="menu.lang">English</span>
+                </button>
                 <button class="menu-item" onclick="menuRun(function(){ cambiarCategoria('Estadisticas'); })">
-                  <svg class="ico ico-sm"><use href="#i-user"/></svg> Mi perfil
+                  <svg class="ico ico-sm"><use href="#i-user"/></svg> <span data-i18n="menu.perfil">Mi perfil</span>
                 </button>
               </div>
             </div>
@@ -1434,7 +1439,7 @@
 
         <div id="progress-container">
           <div id="progress-bar"></div>
-          <div id="progress-text">Iniciando...</div>
+          <div id="progress-text" data-i18n="progress.init">Iniciando...</div>
         </div>
       </div>
     </div>
@@ -1443,7 +1448,7 @@
     <div id="panel-filtros" class="filter-panel" onclick="event.stopPropagation()">
       <div id="filter-personas"></div>
       <div class="filter-group">
-        <label><svg class="ico ico-sm ico-wish"><use href="#i-heart-fill"/></svg> Lista de Deseados</label>
+        <label><svg class="ico ico-sm ico-wish"><use href="#i-heart-fill"/></svg> <span data-i18n="filter.deseados">Lista de Deseados</span></label>
         <select id="filter-deseado" onchange="filtrarItems()"></select>
       </div>
       <div class="filter-group" id="extra-filter-1"></div>
@@ -1451,15 +1456,15 @@
       <div class="filter-group" id="extra-filter-3"></div>
 
       <div class="filter-group">
-        <label>Ordenar por</label>
+        <label><span data-i18n="filter.ordenar">Ordenar por</span></label>
         <select id="filter-orden" onchange="filtrarItems()">
-          <option value="az">Alfabético (A - Z)</option>
-          <option value="za">Alfabético (Z - A)</option>
-          <option value="recientes">Últimos añadidos</option>
-          <option value="puntuacion">Puntuación</option>
+          <option value="az" data-i18n="sort.az">Alfabético (A - Z)</option>
+          <option value="za" data-i18n="sort.za">Alfabético (Z - A)</option>
+          <option value="recientes" data-i18n="sort.recientes">Últimos añadidos</option>
+          <option value="puntuacion" data-i18n="sort.puntuacion">Puntuación</option>
         </select>
       </div>
-      <button class="filter-reset" onclick="resetFiltros()">Limpiar Filtros</button>
+      <button class="filter-reset" onclick="resetFiltros()"><span data-i18n="filter.limpiar">Limpiar Filtros</span></button>
     </div>
 
     <div id="stats-bar" class="stats-bar" style="display:none;"></div>
@@ -2979,6 +2984,74 @@
     var currentStatsProfile = 'ambos';
     var currentStatsCategory = 'todas';
 
+    // ---- i18n (Phase 2.5): ES por defecto, EN opcional — diccionario manual ----
+    var NEXUS_LANG = (function () {
+      try { return localStorage.getItem('nexus_lang') === 'en' ? 'en' : 'es'; } catch (e) { return 'es'; }
+    })();
+    var STR = {
+      es: {
+        'cat.Juegos': 'Juegos', 'cat.Peliculas_Series': 'Cine y Series', 'cat.Libros': 'Libros',
+        'cat.Mangas': 'Mangas', 'cat.Coleccionables': 'Coleccionables', 'cat.Estadisticas': 'Perfil',
+        'menu.match': 'Match de Pareja', 'menu.random': 'Elección aleatoria', 'menu.sync': 'Sincronizar',
+        'menu.papelera': 'Papelera', 'menu.vinculos': 'Vínculos', 'menu.perfil': 'Mi perfil',
+        'menu.lang': 'English',
+        'tip.filtros': 'Filtros y Orden', 'tip.menu': 'Menú', 'tip.limpiar': 'Limpiar', 'tip.buscar': 'Buscar o añadir',
+        'filter.deseados': 'Lista de Deseados', 'filter.ordenar': 'Ordenar por',
+        'sort.az': 'Alfabético (A - Z)', 'sort.za': 'Alfabético (Z - A)', 'sort.recientes': 'Últimos añadidos', 'sort.puntuacion': 'Puntuación',
+        'filter.limpiar': 'Limpiar Filtros', 'progress.init': 'Iniciando...',
+        'cfg.Juegos.label': 'Juegos', 'cfg.Peliculas_Series.label': 'Cine y Series', 'cfg.Libros.label': 'Libros',
+        'cfg.Mangas.label': 'Mangas', 'cfg.Coleccionables.label': 'Coleccionables', 'cfg.Estadisticas.label': 'Perfil',
+        'cfg.Juegos.search': 'Filtrar juegos por título, dev, género o tag...', 'cfg.Juegos.add': 'AppID, URL o nombre...',
+        'cfg.Peliculas_Series.search': 'Filtrar películas, series y animes...', 'cfg.Peliculas_Series.add': 'Buscar película, serie o URL...',
+        'cfg.Libros.search': 'Filtrar libros por título, autor o género...', 'cfg.Libros.add': 'Buscar libro, autor o ISBN...',
+        'cfg.Mangas.search': 'Filtrar mangas por título, mangaka o género...', 'cfg.Mangas.add': 'Buscar manga o URL...'
+      },
+      en: {
+        'cat.Juegos': 'Games', 'cat.Peliculas_Series': 'Movies & TV', 'cat.Libros': 'Books',
+        'cat.Mangas': 'Manga', 'cat.Coleccionables': 'Collectibles', 'cat.Estadisticas': 'Profile',
+        'menu.match': "Couple's Match", 'menu.random': 'Random pick', 'menu.sync': 'Sync',
+        'menu.papelera': 'Trash', 'menu.vinculos': 'Links', 'menu.perfil': 'My profile',
+        'menu.lang': 'Español',
+        'tip.filtros': 'Filters & Sort', 'tip.menu': 'Menu', 'tip.limpiar': 'Clear', 'tip.buscar': 'Search or add',
+        'filter.deseados': 'Wishlist', 'filter.ordenar': 'Sort by',
+        'sort.az': 'Alphabetical (A - Z)', 'sort.za': 'Alphabetical (Z - A)', 'sort.recientes': 'Recently added', 'sort.puntuacion': 'Rating',
+        'filter.limpiar': 'Clear Filters', 'progress.init': 'Starting...',
+        'cfg.Juegos.label': 'Games', 'cfg.Peliculas_Series.label': 'Movies & TV', 'cfg.Libros.label': 'Books',
+        'cfg.Mangas.label': 'Manga', 'cfg.Coleccionables.label': 'Collectibles', 'cfg.Estadisticas.label': 'Profile',
+        'cfg.Juegos.search': 'Filter games by title, dev, genre or tag...', 'cfg.Juegos.add': 'AppID, URL or name...',
+        'cfg.Peliculas_Series.search': 'Filter movies, shows and anime...', 'cfg.Peliculas_Series.add': 'Search movie, show or URL...',
+        'cfg.Libros.search': 'Filter books by title, author or genre...', 'cfg.Libros.add': 'Search book, author or ISBN...',
+        'cfg.Mangas.search': 'Filter manga by title, mangaka or genre...', 'cfg.Mangas.add': 'Search manga or URL...'
+      }
+    };
+    function t(k) {
+      var d = STR[NEXUS_LANG] || STR.es;
+      if (d[k] !== undefined) return d[k];
+      return STR.es[k] !== undefined ? STR.es[k] : k;
+    }
+    function catText(cat, field) { // label/searchPlaceholder/addPlaceholder por idioma
+      if (NEXUS_LANG === 'en') {
+        var k = 'cfg.' + cat + '.' + ({ label: 'label', searchPlaceholder: 'search', addPlaceholder: 'add' }[field] || field);
+        if (STR.en[k] !== undefined) return STR.en[k];
+      }
+      var cfg = CAT_CONFIG[cat];
+      return cfg ? (cfg[field] || '') : '';
+    }
+    function cambiarIdioma() {
+      NEXUS_LANG = NEXUS_LANG === 'en' ? 'es' : 'en';
+      try { localStorage.setItem('nexus_lang', NEXUS_LANG); } catch (e) {}
+      location.reload();
+    }
+    function applyStaticI18nTitles() {
+      document.querySelectorAll('[data-i18n-title]').forEach(function(el) { el.setAttribute('title', t(el.getAttribute('data-i18n-title'))); });
+    }
+    function applyStaticI18n() {
+      document.documentElement.lang = NEXUS_LANG;
+      document.querySelectorAll('[data-i18n]').forEach(function(el) { el.textContent = t(el.getAttribute('data-i18n')); });
+      document.querySelectorAll('[data-i18n-ph]').forEach(function(el) { el.setAttribute('placeholder', t(el.getAttribute('data-i18n-ph'))); });
+      applyStaticI18nTitles();
+    }
+
     const CAT_CONFIG = {
       Juegos: { label: 'Juegos', icon: 'i-gamepad', searchPlaceholder: 'Filtrar juegos por título, dev, género o tag...', addPlaceholder: 'AppID, URL o nombre...', poster: false },
       Peliculas_Series: { label: 'Cine y Series', icon: 'i-film', searchPlaceholder: 'Filtrar películas, series y animes...', addPlaceholder: 'Buscar película, serie o URL...', poster: true },
@@ -3063,6 +3136,7 @@
         setInterval(nexusRefreshVinculosBadge, 60000);
       }
       configurarFiltrosCategoria('Juegos');
+      applyStaticI18n();
       cargarCategoria('Juegos', false);
       setTimeout(nexusSyncHeaderSpace, 50);
       ['Peliculas_Series', 'Libros', 'Mangas'].forEach(c => precargarCategoriaSilenciosa(c));
@@ -3267,9 +3341,9 @@
 
       var cfg = CAT_CONFIG[cat];
       document.getElementById('inputBuscar').value = '';
-      document.getElementById('inputBuscar').placeholder = cfg.searchPlaceholder;
+      document.getElementById('inputBuscar').placeholder = catText(cat, 'searchPlaceholder');
       document.getElementById('inputAgregar').value = '';
-      document.getElementById('inputAgregar').placeholder = cfg.addPlaceholder;
+      document.getElementById('inputAgregar').placeholder = catText(cat, 'addPlaceholder');
       cerrarBusquedaAgregar();
 
       grid.classList.toggle('poster-mode', cfg.poster);
@@ -4599,7 +4673,7 @@
         (selPers[0] ? selPers[0].suffix : 'Todos');
 
       var catsToProcess = currentStatsCategory === 'todas' ? ['Juegos', 'Peliculas_Series', 'Libros', 'Mangas'] : [currentStatsCategory];
-      var catTitulo = currentStatsCategory === 'todas' ? 'Global' : (CAT_CONFIG[currentStatsCategory]?.label || currentStatsCategory);
+      var catTitulo = currentStatsCategory === 'todas' ? 'Global' : catText(currentStatsCategory, 'label');
 
       let totalElementos = 0;
       var stats = {};
