@@ -44,8 +44,20 @@ jobs:
       # Espejo vivo via database/mirror_to_standby.py: vuelca tablas public
       # del principal al standby con TRUNCATE+INSERT y remap de profile ids
       # por username (auth.users tiene UUIDs distintos por proyecto).
+      # Antes del mirror se sincroniza el SCHEMA: apply_schema.py --deltas
+      # corre solo los archivos 02+ (idempotentes: create or replace,
+      # if not exists, drop if exists) para que el standby reciba
+      # funciones/tablas nuevas sin tocar bootstrap 00/01.
       # Requiere var SUPABASE_STANDBY_ENABLED=true + secrets standby.
       # Standby real: uxixiwrvobkulkjkicjm (us-west-2).
+      - name: Sync schema deltas to standby
+        if: ${{ vars.SUPABASE_STANDBY_ENABLED == 'true' }}
+        env:
+          TARGET_URL: ${{ secrets.SUPABASE_STANDBY_DB_URL }}
+        run: |
+          pip install -q psycopg2-binary
+          python database/apply_schema.py --url "$TARGET_URL" --deltas
+
       - name: Mirror data to standby
         if: ${{ vars.SUPABASE_STANDBY_ENABLED == 'true' }}
         env:

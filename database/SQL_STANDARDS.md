@@ -39,6 +39,12 @@ VoltAgent sql-pro) adaptadas a **PostgreSQL 17 + Supabase + RLS**.
 - **Idempotente**: `create or replace function`, `create index if not exists`,
   `drop ... if exists` antes de recrear. Todo archivo debe poder correrse
   dos veces sin romper.
+- **Deltas = 02+ (OBLIGATORIO idempotente)**: `apply_schema.py --deltas`
+  corre solo 02→ultimo contra el standby cada semana (Action
+  `backup-supabase.yml`). Si un delta futuro necesita un `create table`
+  o `create policy`, usar `if not exists` / `drop ... if exists` +
+  `create` — nunca `create` pelado en archivos 02+. Los archivos
+  `00_`/`01_` son bootstrap y NO se re-corren en sync.
 - **`begin; ... commit;`** envolviendo DDL cuando el archivo lo amerite
   (los phase*.sql ya lo hacen).
 - **RLS en toda tabla nueva** — `enable row level security` + policies.

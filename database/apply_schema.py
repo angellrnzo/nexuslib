@@ -34,6 +34,10 @@ FILES = [
     "06_get_items_merged_perf.sql",
 ]
 
+# Deltas idempotentes (02+): seguros de re-correr — create or replace,
+# if not exists, drop if exists. 00/01 son bootstrap, NO re-correr.
+FILES_DELTAS = FILES[2:]
+
 
 def load_env():
     env = {}
@@ -48,18 +52,23 @@ def load_env():
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--project-ref", required=True)
+    ap.add_argument("--project-ref", default=None)
     ap.add_argument("--password", default=None)
     ap.add_argument("--host", default="aws-0-us-east-2.pooler.supabase.com")
     ap.add_argument("--port", type=int, default=5432)
+    ap.add_argument("--url", default=None, help="connstring postgres:// completa (tiene prioridad)")
+    ap.add_argument("--deltas", action="store_true",
+                    help="solo archivos 02+ (idempotentes) — para sync de standby")
     args = ap.parse_args()
+    if not args.url and not args.project_ref:
+        ap.error("se requiere --project-ref o --url")
 
     env = load_env()
     password = args.password or env.get("SUPABASE_STANDBY_DB_PASSWORD") or env.get("SUPABASE_DB_PASSWORD")
     if not password:
         sys.exit("Falta password: --password o SUPABASE_*_DB_PASSWORD en _local")
 
-    dsn = (
+    dsn = args.url or (
         f"host={args.host} port={args.port} dbname=postgres "
         f"user=postgres.{args.project_ref} password={password} sslmode=require"
     )
@@ -67,7 +76,8 @@ def main():
     conn.autocommit = True
     cur = conn.cursor()
 
-    for name in FILES:
+    files = FILES_DELTAS if args.deltas else FILES
+    for name in files:
         path = os.path.join(DB_DIR, name)
         sql = open(path, encoding="utf-8").read()
         print(f"Aplicando {name} ({len(sql)} chars)...")

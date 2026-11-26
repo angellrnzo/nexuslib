@@ -38,6 +38,7 @@ create index if not exists item_share_requests_to_idx
   on public.item_share_requests (to_profile_id, status, created_at desc);
 
 -- lectura: origen y destino ven sus solicitudes
+drop policy if exists "shares_participants" on public.item_share_requests;
 create policy "shares_participants" on public.item_share_requests
   for select using (
     from_profile_id = auth.uid() or to_profile_id = auth.uid()
