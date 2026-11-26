@@ -7,7 +7,7 @@ Como reconstruir la base de datos completa desde cero o desde un respaldo.
 | Capa | Que | Frecuencia | Donde |
 |---|---|---|---|
 | GitHub Action | `pg_dump` schema `public` (custom format) | Semanal (lunes 5AM UTC) + manual | Artifacts del repo (90 dias) |
-| Standby Supabase | Restore automatico del dump | Semanal (mismo workflow) | `uxixiwrvobkulkjkicjm` (us-west-2) — **REPLICA 100% FUNCIONAL 2026-11-25**: schema + 1093 filas + 2 auth users + 3 Edge Functions + secrets + auth URLs. E2E verificado. Switch = cambiar NEXUS_URL/KEY en Index.html |
+| Standby Supabase | Espejo vivo automatico | Semanal (mismo workflow) | `uxixiwrvobkulkjkicjm` (us-west-2) — **REPLICA 100% FUNCIONAL**: schema + datos (mirror vivo via `mirror_to_standby.py`, NO pg_restore — auth UUIDs difieren) + 2 auth users + 3 Edge Functions + secrets + auth URLs. Workflow verificado E2E 2026-11-26 (run 45730023321 todo verde). Switch = cambiar NEXUS_URL/KEY en Index.html |
 | Local cifrado | JSON.gz + Fernet de todas las tablas | Manual (`backup_local.py`) | `_local/backups/` (NO commitear) |
 
 ## Secrets de GitHub Actions (Settings -> Secrets and variables -> Actions)
@@ -32,7 +32,8 @@ Como reconstruir la base de datos completa desde cero o desde un respaldo.
 
 3. **Datos** — caminos automatizados:
 
-   - `python database/restore_backup.py --project-ref <ref> --host <pooler>` — restaura el ultimo `.enc` local (descifra con `_local/backup_key.key`, remapea profile ids por username, INSERT ON CONFLICT). **Probado en standby 2026-11-25: 1093 filas**
+   - `python database/restore_backup.py --project-ref <ref> --host <pooler>` — restaura el ultimo `.enc` local (descifra con `_local/backup_key.key`, remapea profile ids por username, INSERT ON CONFLICT). **Probado: 1093 filas**
+   - `python database/mirror_to_standby.py --source-url <url> --target-url <url>` — espejo vivo source→target (TRUNCATE+INSERT con remap). Es lo que corre el Action semanal
    - Desde dump del Action: `pg_restore <url> --data-only --disable-triggers dump.dump`
    - Catalogo (`media_items`/`library_items`): re-ETL desde `database/etl/*.py` si el dump falla
 
