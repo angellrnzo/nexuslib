@@ -296,9 +296,10 @@
     .btn-circle {
       width: 32px; height: 32px; border-radius: 50%; padding: 0;
       background: rgba(42, 71, 94, 0.85); color: var(--bright); border: 1px solid rgba(255, 255, 255, 0.1);
-      position: relative;
+      position: relative; opacity: 0.7; transition: opacity var(--t-base) var(--ease-out), background var(--t-base) var(--ease-out), border-color var(--t-base) var(--ease-out);
     }
-    .btn-circle.active { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+    .btn-circle:hover { opacity: 1; background: rgba(42, 71, 94, 0.95); }
+    .btn-circle.active { background: var(--accent); color: var(--on-accent); border-color: var(--accent); opacity: 1; }
     .btn-circle.has-filters { border-color: var(--accent); box-shadow: 0 0 0 1px rgba(102, 192, 244, 0.5); }
     .btn-circle.has-filters::after {
       content: ''; position: absolute; top: 4px; right: 4px; width: 6px; height: 6px;
@@ -448,7 +449,7 @@
 
     .filter-panel {
       position: fixed;
-      top: calc(165px + env(safe-area-inset-top, 0px));
+      top: calc(185px + env(safe-area-inset-top, 0px));
       left: 12px;
       right: 12px;
       max-width: 350px;
@@ -456,13 +457,13 @@
       background: linear-gradient(180deg, rgba(27, 40, 56, 0.99) 0%, rgba(18, 27, 40, 0.99) 100%);
       border: 1px solid rgba(102, 192, 244, 0.35);
       border-radius: 14px;
-      padding: 14px;
+      padding: 16px;
       box-shadow: 0 14px 40px rgba(0,0,0,0.85);
       z-index: 9998;
       display: flex;
       flex-direction: column;
       gap: 10px;
-      max-height: calc(100dvh - 185px);
+      max-height: calc(100dvh - 205px);
       overflow-y: auto;
       opacity: 0;
       visibility: hidden;
