@@ -380,27 +380,40 @@
       max-height: 0; opacity: 0; overflow: hidden; margin-top: 0;
       transition: max-height .32s var(--ease-out), opacity .22s var(--ease-out), margin .32s var(--ease-out);
     }
-    .perfil-edit.open { max-height: 640px; opacity: 1; margin-top: 8px; }
-    .perfil-edit-inner { display: grid; gap: 12px; }
-    .pf-card {
-      background: #21262d; border: 1px solid rgba(255,255,255,.08);
-      border-radius: 14px; padding: 14px 16px; display: grid; gap: 12px;
+    .perfil-edit.open { max-height: 640px; opacity: 1; margin-top: 0; }
+    /* panel de edicion: extension visual del recuadro de perfil —
+       comparte borde/fondo, esquinas superiores cuadradas al abrir */
+    .stats-profile-card { margin-bottom: 0; }
+    .stats-profile-card:has(+ .perfil-edit.open) {
+      border-bottom-left-radius: 4px; border-bottom-right-radius: 4px;
     }
-    .pf-card-title { font-size: 13px; font-weight: 800; color: #fff; }
-    .pf-card label { font-size: 11px; color: #8f98a0; font-weight: 700; display: block; margin-bottom: 5px; }
-    .pf-card .na-in {
+    .perfil-edit.open .perfil-edit-inner {
+      border-top-left-radius: 4px; border-top-right-radius: 4px;
+    }
+    .perfil-edit-inner {
+      background: linear-gradient(135deg, rgba(102,192,244,.12), rgba(187,134,252,.10));
+      border: 1px solid rgba(102,192,244,.3); border-top: none;
+      border-radius: 0 0 16px 16px;
+      padding: 14px 16px 16px; margin-top: -1px;
+      display: grid; gap: 12px;
+    }
+    .perfil-edit-inner label { font-size: 11px; color: #8f98a0; font-weight: 700; display: block; margin-bottom: 5px; }
+    .perfil-edit-inner .na-in {
       height: 40px; background: #0d1117; border: 1px solid rgba(255,255,255,.09);
       border-radius: 10px; padding: 0 12px; font-size: 13px; color: #fff;
       width: 100%; box-sizing: border-box; font-family: inherit;
     }
-    .pf-card .na-in:focus { border-color: var(--accent); outline: none; }
+    .perfil-edit-inner .na-in:focus { border-color: var(--accent); outline: none; }
     .pf-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .pf-sep { border-top: 1px solid rgba(255,255,255,.08); }
+    .pf-sub { font-size: 11px; color: #8f98a0; font-weight: 700; }
     .pf-invite-row { display: flex; gap: 8px; align-items: center; }
     .pf-invite-row .na-in {
       flex: 1; height: 40px; text-align: center;
       font-family: monospace; letter-spacing: 1px; text-transform: uppercase;
     }
-    .pf-actions-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .pf-invite-row .btn-circle { width: 40px; height: 40px; flex-shrink: 0; align-self: center; }
+    .pf-actions-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-top: 4px; }
     .pf-btn {
       height: 42px; border-radius: 10px; font-size: 13px; font-weight: 700;
       display: inline-flex; align-items: center; justify-content: center; gap: 7px;
@@ -1401,21 +1414,20 @@
       <div class="stats-profile-card" id="stats-profile-card"></div>
       <div class="perfil-edit" id="perfil-edit">
         <div class="perfil-edit-inner">
-          <div class="pf-card">
-            <div class="pf-grid-2">
-              <div>
-                <label for="pf-display">Nombre público</label>
-                <input id="pf-display" class="na-in" type="text" maxlength="60">
-              </div>
-              <div>
-                <label for="pf-username">Usuario</label>
-                <input id="pf-username" class="na-in" type="text" maxlength="30">
-              </div>
+          <div class="pf-grid-2">
+            <div>
+              <label for="pf-display">Nombre público</label>
+              <input id="pf-display" class="na-in" type="text" maxlength="60">
+            </div>
+            <div>
+              <label for="pf-username">Usuario</label>
+              <input id="pf-username" class="na-in" type="text" maxlength="30">
             </div>
           </div>
-          <div class="pf-card">
-            <div class="pf-card-title">Código de vinculación</div>
-            <div class="pf-invite-row">
+          <div class="pf-sep"></div>
+          <div>
+            <div class="pf-sub">Código de vinculación</div>
+            <div class="pf-invite-row" style="margin-top:6px;">
               <input id="pf-invite" class="na-in" type="text" readonly>
               <button class="btn btn-circle" onclick="copiarInvitePerfil()" title="Copiar"><svg class="ico"><use href="#i-copy"/></svg></button>
             </div>
@@ -3335,7 +3347,7 @@
       var h = document.querySelector('.top-header');
       if (!h) return;
       var bottom = h.getBoundingClientRect().bottom;
-      document.body.style.paddingTop = Math.max(120, bottom + 10) + 'px';
+      document.body.style.paddingTop = Math.max(120, bottom + 6) + 'px';
     }
 
     // ---- menu hamburguesa ----
