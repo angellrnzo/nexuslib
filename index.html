@@ -384,6 +384,20 @@
       border-radius: 10px; display: inline-flex; align-items: center; justify-content: center;
       white-space: nowrap;
     }
+    .stats-profile-actions .btn.open { background: rgba(255,255,255,.14); color: var(--text); }
+    .perfil-edit {
+      max-height: 0; opacity: 0; overflow: hidden; margin-top: 0;
+      transition: max-height .32s var(--ease-out), opacity .22s var(--ease-out), margin .32s var(--ease-out);
+    }
+    .perfil-edit.open { max-height: 640px; opacity: 1; margin-top: 10px; }
+    .perfil-edit-inner {
+      background: linear-gradient(135deg, rgba(102,192,244,.10), rgba(187,134,252,.08));
+      border: 1px solid rgba(102,192,244,.25); border-radius: 16px;
+      padding: 16px 18px; display: grid; gap: 10px;
+    }
+    .perfil-edit-inner label { font-size: 11px; color: #8f98a0; font-weight: 700; }
+    .perfil-edit-row { display: flex; gap: 8px; align-items: center; }
+    .perfil-edit-row .btn-text { flex: 1; justify-content: center; }
 
     .filter-panel {
       position: fixed;
@@ -634,7 +648,7 @@
     .stat-bar-fill-talmai { height: 100%; background: var(--talmai-color); transition: width var(--t-slow) var(--ease-out); }
 
     /* MODALES GENERALES */
-    #modal, #modal-papelera, #modal-match, #modal-vinculos, #modal-share, #modal-perfil {
+    #modal, #modal-papelera, #modal-match, #modal-vinculos, #modal-share {
       display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(6, 9, 14, 0.88); z-index: 10000;
       justify-content: center; align-items: center; opacity: 0;
@@ -653,8 +667,7 @@
     #modal-papelera[style*="opacity: 1"] .modal-content,
     #modal-match[style*="opacity: 1"] .modal-content,
     #modal-vinculos[style*="opacity: 1"] .modal-content,
-    #modal-share[style*="opacity: 1"] .modal-content,
-    #modal-perfil[style*="opacity: 1"] .modal-content {
+    #modal-share[style*="opacity: 1"] .modal-content {
       transform: translateY(0) scale(1);
     }
     /* boton cerrar: sticky arriba-derecha — sigue visible al hacer scroll
@@ -1117,7 +1130,7 @@
     }
 
     @media (max-width: 768px) {
-      #modal, #modal-papelera, #modal-match, #modal-vinculos, #modal-share, #modal-perfil {
+      #modal, #modal-papelera, #modal-match, #modal-vinculos, #modal-share {
         align-items: flex-end; padding: 0;
       }
       .modal-content {
@@ -1359,6 +1372,23 @@
     <!-- VISTA DE ESTADÍSTICAS REORGANIZADA Y COMPACTA -->
     <div id="stats-view">
       <div class="stats-profile-card" id="stats-profile-card"></div>
+      <div class="perfil-edit" id="perfil-edit">
+        <div class="perfil-edit-inner">
+          <label for="pf-display">NOMBRE PÚBLICO</label>
+          <input id="pf-display" class="na-in" type="text" maxlength="60" style="margin-bottom:0;">
+          <button class="btn btn-text" onclick="guardarPerfil()">Guardar cambios</button>
+          <div style="border-top:1px solid var(--border);padding-top:12px;">
+            <label for="pf-invite">TU CÓDIGO DE VÍNCULO</label>
+            <div class="perfil-edit-row" style="margin-top:6px;">
+              <input id="pf-invite" class="na-in" type="text" readonly style="margin-bottom:0;font-family:monospace;letter-spacing:1px;">
+              <button class="btn btn-circle" onclick="copiarInvitePerfil()" title="Copiar"><svg class="ico"><use href="#i-copy"/></svg></button>
+            </div>
+          </div>
+          <button class="btn btn-delete btn-full" onclick="nexusSignOut()" style="margin-top:4px;">
+            <svg class="ico ico-sm"><use href="#i-x"/></svg> Cerrar sesión
+          </button>
+        </div>
+      </div>
       <div class="stats-selectors-row" id="stats-prof-buttons"></div>
       <div class="stats-selectors-row">
         <button class="stats-cat-btn active" data-statcat="todas" onclick="cambiarCategoriaStats('todas')">
@@ -1537,33 +1567,6 @@
   <!-- ==================== NEXUS PHASE 4 — adaptador Supabase ==================== -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- MODAL PERFIL -->
-  <div id="modal-perfil" onclick="cerrarPerfilModal()">
-    <div class="modal-content" role="dialog" aria-modal="true" onclick="event.stopPropagation()" style="max-width:420px;">
-      <button class="modal-close" onclick="cerrarPerfilModal()"><svg class="ico"><use href="#i-x"/></svg></button>
-      <div style="text-align:center;margin-bottom:18px;">
-        <div id="pf-avatar" style="width:72px;height:72px;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900;color:#fff;background:var(--accent);"></div>
-        <div id="pf-username" style="font-size:18px;font-weight:800;color:var(--text);"></div>
-        <div id="pf-email" style="font-size:12px;color:#8f98a0;margin-top:2px;"></div>
-      </div>
-      <div style="display:grid;gap:10px;">
-        <label style="font-size:11px;color:#8f98a0;font-weight:700;">NOMBRE PÚBLICO</label>
-        <input id="pf-display" class="na-in" type="text" maxlength="60" style="margin-bottom:0;">
-        <div style="display:flex;gap:8px;">
-          <button class="btn btn-text" style="flex:1;justify-content:center;" onclick="guardarPerfil()">Guardar</button>
-        </div>
-        <div style="border-top:1px solid var(--border);margin-top:8px;padding-top:12px;">
-          <label style="font-size:11px;color:#8f98a0;font-weight:700;">TU CÓDIGO DE VÍNCULO</label>
-          <div style="display:flex;gap:8px;margin-top:6px;">
-            <input id="pf-invite" class="na-in" type="text" readonly style="margin-bottom:0;font-family:monospace;letter-spacing:1px;">
-            <button class="btn btn-circle" onclick="copiarInvitePerfil()" title="Copiar"><svg class="ico"><use href="#i-copy"/></svg></button>
-          </div>
-        </div>
-        <button class="btn btn-delete btn-full" onclick="nexusSignOut()" style="margin-top:10px;">
-          <svg class="ico ico-sm"><use href="#i-x"/></svg> Cerrar sesión
-        </button>
-      </div>
-    </div>
-  </div>
 
   <script>
     const NEXUS_MODE = true; // false = Apps Script/Sheets (v1)
@@ -1765,18 +1768,14 @@
 
     // ---- auth gate ----
     // ---- PERFIL (modal) ----
-    async function abrirPerfilModal() {
+    async function togglePerfilEdit(btn) {
       if (!NEXUS_MODE) return;
-      nexusAuthCSS();
+      var panel = document.getElementById('perfil-edit');
+      if (!panel) return;
+      if (panel.classList.contains('open')) { panel.classList.remove('open'); if (btn) btn.classList.remove('open'); return; }
       await nexusEnsureProfile();
       var p = _nexusProfile || {};
       var user = _nexusUser || {};
-      var nombre = p.display_name || 'Usuario';
-      var ini = (nombre.trim()[0] || '?').toUpperCase();
-      document.getElementById('pf-avatar').textContent = ini;
-      document.getElementById('pf-avatar').style.background = 'linear-gradient(135deg,#66c0f4,#bb86fc)';
-      document.getElementById('pf-username').textContent = p.username ? '@' + p.username : nombre;
-      document.getElementById('pf-email').textContent = user.email || '';
       document.getElementById('pf-display').value = p.display_name || '';
       // invite_code de mi biblioteca personal
       try {
@@ -1784,15 +1783,13 @@
         var lib = await sb.from('libraries').select('invite_code').eq('created_by', user.id).eq('kind', 'personal').maybeSingle();
         document.getElementById('pf-invite').value = (lib.data && lib.data.invite_code) || '';
       } catch (e) { document.getElementById('pf-invite').value = ''; }
-      var modal = document.getElementById('modal-perfil');
-      modal.style.display = 'flex';
-      requestAnimationFrame(() => requestAnimationFrame(() => modal.style.opacity = '1'));
-      history.pushState(null, '', window.location.href);
+      panel.classList.add('open');
+      if (btn) btn.classList.add('open');
     }
-    function cerrarPerfilModal() {
-      var modal = document.getElementById('modal-perfil');
-      modal.style.opacity = '0';
-      setTimeout(() => modal.style.display = 'none', 220);
+    function cerrarPerfilEdit(btn) {
+      var panel = document.getElementById('perfil-edit');
+      if (panel) panel.classList.remove('open');
+      document.querySelectorAll('.stats-profile-actions .btn.open').forEach(function(b){ b.classList.remove('open'); });
     }
     async function guardarPerfil() {
       try {
@@ -1803,7 +1800,7 @@
         if (r.error) throw new Error(r.error.message);
         _nexusProfile.display_name = nombre;
         showToast && showToast('Perfil guardado.', 'success');
-        cerrarPerfilModal();
+        cerrarPerfilEdit();
       } catch (e) {
         showToast && showToast('Error: ' + (e.message || ''), 'error');
       }
@@ -4420,7 +4417,7 @@
             '<div class="stats-profile-email">' + escaparHTML(user.email || '') + '</div>' +
           '</div>' +
           '<div class="stats-profile-actions">' +
-            '<button class="btn btn-text" onclick="abrirPerfilModal()">Editar perfil</button>' +
+            '<button class="btn btn-text" onclick="togglePerfilEdit(this)">Editar perfil</button>' +
           '</div>';
       } catch (e) { card.innerHTML = ''; }
     }
@@ -4793,7 +4790,7 @@
     document.addEventListener('keydown', function(e) {
       if (e.key !== 'Tab') return;
       var open = null;
-      ['modal-perfil','modal-vinculos','modal-match','modal-papelera','modal'].forEach(function(mid) {
+      ['modal-vinculos','modal-match','modal-papelera','modal'].forEach(function(mid) {
         var el = document.getElementById(mid);
         if (el && el.style.display === 'flex') open = el;
       });
@@ -4818,7 +4815,7 @@
 
     // ---- MODAL A11Y: Escape cierra el modal superior + focus al abrir ----
     var _modalCloseMap = [
-      ['modal-perfil', cerrarPerfilModal],
+      ['perfil-edit', cerrarPerfilEdit],
       ['modal-vinculos', cerrarVinculosModal],
       ['modal-match', cerrarMatchModal],
       ['modal-papelera', cerrarPapelera],
@@ -4828,13 +4825,13 @@
       if (e.key !== 'Escape') return;
       for (var i = 0; i < _modalCloseMap.length; i++) {
         var el = document.getElementById(_modalCloseMap[i][0]);
-        if (el && el.style.display === 'flex') { _modalCloseMap[i][1](); return; }
+        if (el && (el.style.display === 'flex' || el.classList.contains('open'))) { _modalCloseMap[i][1](); return; }
       }
       if (document.getElementById('menu-panel') && document.getElementById('menu-panel').classList.contains('open')) { cerrarMenuPanel(); return; }
       nexusCloseLightbox();
     });
     // focus trap ligero: al abrir un modal, foco al botón cerrar; Tab cicla dentro
-    ['modal-vinculos', 'modal-match', 'modal-papelera', 'modal-perfil', 'modal'].forEach(function(mid) {
+    ['modal-vinculos', 'modal-match', 'modal-papelera', 'modal'].forEach(function(mid) {
       var el = document.getElementById(mid);
       if (!el) return;
       new MutationObserver(function() {
@@ -4845,7 +4842,7 @@
           }, 60);
         }
         // bloquear scroll del fondo cuando hay algun modal/lightbox abierto
-        var anyOpen = ['modal-vinculos', 'modal-match', 'modal-papelera', 'modal-perfil', 'modal']
+        var anyOpen = ['modal-vinculos', 'modal-match', 'modal-papelera', 'modal']
           .some(function(id) { var m = document.getElementById(id); return m && m.style.display === 'flex'; });
         var lb = document.getElementById('nexus-lightbox');
         if (lb && lb.style.display === 'flex') anyOpen = true;
@@ -4859,7 +4856,7 @@
       if (!mq.matches) return;
       var CLOSERS = {
         'modal': cerrarModal, 'modal-papelera': cerrarPapelera, 'modal-match': cerrarMatchModal,
-        'modal-vinculos': cerrarVinculosModal, 'modal-share': function() {}, 'modal-perfil': cerrarPerfilModal
+        'modal-vinculos': cerrarVinculosModal, 'modal-share': function() {}, 'perfil-edit': cerrarPerfilEdit
       };
       document.querySelectorAll('.modal-content').forEach(function(mc) {
         var sy = 0, dragging = false;
@@ -5132,7 +5129,7 @@
     function nexusCloseLightbox() {
       var lb = document.getElementById('nexus-lightbox');
       if (lb) lb.style.display = 'none';
-      var anyModal = ['modal-vinculos', 'modal-match', 'modal-papelera', 'modal-perfil', 'modal']
+      var anyModal = ['modal-vinculos', 'modal-match', 'modal-papelera', 'modal']
         .some(function(id) { var m = document.getElementById(id); return m && m.style.display === 'flex'; });
       document.body.classList.toggle('modal-open', anyModal);
     }
