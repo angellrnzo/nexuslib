@@ -176,3 +176,13 @@ Generado 2026-11-26. Último commit: `8383b87`.
 - Barra superior de busqueda: nuevo `btn-clear-search` (visible solo con
   texto via `.has-text`), `syncSearchClearBtn()` y `limpiarBusquedaFiltro()`
   (limpia input + filtrarItems + refocus). `cambiarCategoria` sincroniza.
+
+### Sesión UI — fix click-fuera + animaciones nav (commit `cba3e3e`, SW v99)
+
+- BUG FIX: el click global solo cerraba la barra de agregar si
+  `#search-dropdown` tenia `.open` — si la barra estaba `expanded` sin
+  dropdown abierto (foco sin resultados), el click fuera no hacia nada.
+  Ahora cierra cuando `add-wrapper-box.expanded` y el click cae fuera.
+- Botones nav: transiciones opacity 180ms / transform 240ms spring
+  (mismo ease-out de la muestra), `:active scale(0.94)`, y bloque
+  `prefers-reduced-motion` para toda la familia de controles.
