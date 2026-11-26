@@ -1,9 +1,9 @@
 # NexusLib — DESIGN.md
 
 > Visual design system for the PWA. Single source of truth for agents and
-> implementers. Values reflect `AppScript/Index.html` (current v1); items
-> marked **[Phase 2]** are roadmap specs, not yet implemented.
-> Full motion spec: `AppScript/road.md` → Phase 2.
+> implementers. Values reflect `index.html` (Supabase PWA, rama `beta`);
+> items marked **[roadmap]** are specs, not yet implemented.
+> Auditorías de código: `AUDIT.md`. Testing E2E: `TESTING.md`.
 
 ## 1. Product and tone
 
@@ -29,6 +29,13 @@
 | `--warning` | `#d6a918` | Warnings |
 | `--danger` | `#c93b3b` | Errors/destructive |
 | `--wish` | `#ff4d6d` | Wishlist — pink |
+| `--muted` | `#8f98a0` | Texto secundario/subtítulos (antes ~67 hardcodes) |
+| `--bright` | `#ffffff` | Blanco puro (títulos, valores fuertes) |
+| `--danger-text` | `#ff8585` | Texto/borde de error (unifica `#ff8585`+`#ff6b6b`) |
+| `--links` | `#7ee0a3` | Verde vínculos/compartir/éxito social |
+| `--mods` | `#bb86fc` | Morado mods/ediciones/perfil |
+| `--on-accent` | `#0b0e14` | Texto sobre fondos accent |
+| `--positive` | `#7ec850` | Confirmaciones verdes (unifica `#7ec850`/`#7bd88f`) |
 | `--angel-color` | `#66c0f4` | Angel identity (= accent) |
 | `--talmai-color` | `#ff4d6d` | Talmai identity (= wish) |
 
@@ -184,7 +191,25 @@
 - No emojis in UI — sprite SVG only
 - `user-select:none` on stars/touch controls
 
-## 9. External references
+## 9. Normas específicas del proyecto (codificadas 2026-11)
+
+Normas globales del workspace: `../NORMS.md`. Las de este repo:
+
+- **i18n**: todo texto visible por `t()`/`tf()` + dict `STR` (paridad
+  ES/EN obligatoria); metadata de APIs por `metaTr`/`metaTrList`;
+  functions reciben `lang` (`'es'`/`'en'`); vocabulario cerrado del
+  backend viaja como índice neutro (`tier_idx`) y se traduce en frontend.
+- **Colores**: solo tokens `var(--*)` en CSS/inline styles; hex solo en
+  datos JS con alpha-suffix o paletas de identidad (`PERSONA_PALETTE`).
+- **Responsive**: breakpoints 560/480/768/600/640px; grids `minmax`
+  verificados con 1 item; `overflow-wrap:anywhere` en líneas con texto
+  externo; modales `90dvh` + safe-area.
+- **Privacidad**: `visible{Sufijo}===false`, `is_private`, `shared_with`
+  se respetan en TODA superficie (stats, match, listas, badges).
+- **Changelog de convenciones**: auditorías → `AUDIT.md`; E2E →
+  `TESTING.md`; bugs de diseño → esta sección.
+
+## 10. External references
 
 Design/animation skills installed in the workspace `.devin/skills/`:
 
