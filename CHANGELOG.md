@@ -12,6 +12,10 @@ Deploy versions for the Apps Script web app are noted per entry.
 - OpenLibrary: User-Agent identificado (app + repo URL) en TODOS los fetchers de providers.ts y book-editions — antes iban sin UA (rate limit base 1 req/s, riesgo de block). Email de contacto incluido (angellrnzo@gmail.com) -> rate limit OL 3x activo.
 - Verificado sin cambios: Steam appdetails sigue keyless/vivo; AniList en rate limit degradado 30 req/min (uso actual muy por debajo); pg_cron+pg_net disponibles en Supabase free tier (scheduler TTL refresh ya no esta bloqueado por plataforma).
 
+### Fixed (critical visual regression)
+
+- `:root` CSS vars quedaron auto-referenciadas (`--text: var(--text)`) tras el sweep de tokens -> todo el texto invisible (negro sobre fondo oscuro). Valores literales restaurados; SW v61.
+
 ### Security (RLS hardening)
 
 - library_links: la policy 'for all' permitia al lado invitado UPDATE/DELETE sobre la fila del owner (auto-aceptar links, exponer visibility/tracking ajeno). Nueva migracion 07_links_rls_fix.sql con policies granulares: SELECT ambos lados, UPDATE/DELETE solo owner_library_id, INSERT denegado (solo RPCs security definer). Aplicada a prod.

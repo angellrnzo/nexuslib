@@ -19,6 +19,7 @@ revisiones. Complementa `TESTING.md` (E2E manual) — esto es revisión estátic
 | `812d135` | bajo | `.tracking-container` 1fr 1fr fijo → 1 persona ocupaba media columna | auditoría responsive | clase `.single` dinámica |
 | `812d135` | bajo | `.match-grid` minmax(150px) → 1 columna en móvil | idem | minmax(110px) bajo 600px |
 | `812d135` | bajo | `.stat-detail-line` sin `overflow-wrap` → overflow con títulos largos | idem | `overflow-wrap:anywhere` |
+| fix `:root` | **crítico** | vars auto-referenciadas en `:root` tras sweep de tokens (--text: var(--text)) -> TODO el texto invisible | reporte visual usuario | valores literales restaurados en `:root` |
 | `1e27dc5` | **crítico** | Policy `links_owner for all` → lado invitado podía UPDATE/DELETE la fila del owner: auto-aceptar vínculos, exponer `visibility`/tracking ajeno | auditoría RLS cruzada | `07_links_rls_fix.sql` aplicada a prod; editor 'in' read-only |
 
 ## Patrones que ya nos mordieron (lecciones)
@@ -32,6 +33,10 @@ revisiones. Complementa `TESTING.md` (E2E manual) — esto es revisión estátic
   explícito o el chain muere en silencio.
 - **`for all` en RLS**: revisar siempre qué lado de una relación puede mutar.
   SELECT amplio + UPDATE/DELETE por rol, nunca ambos lados.
+- **Vars CSS auto-referenciadas**: una custom property que se referencia a si misma
+  (--x: var(--x)) es circular = invalida -> el color cae a unset (texto negro
+  invisible). Nacio del sweep de tokens que reemplazo hex DENTRO de las
+  definiciones :root. Verificar siempre que cada --token: tenga valor literal.
 - **Checks de duplicados con ID crudo**: normalizar al formato canónico de
   almacenamiento ANTES de comparar (`isbn:`/`mal-`/`OL`/`al-` prefixes).
 - **Datos de privacidad en agregados**: cualquier `stats{}`/`match`/lista que
