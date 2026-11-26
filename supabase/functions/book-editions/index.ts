@@ -9,7 +9,7 @@ const OL = 'https://openlibrary.org';
 
 async function olFetch(path: string): Promise<any | null> {
   try {
-    const r = await fetch(OL + path, { headers: { 'User-Agent': 'NexusLib/1.0' } });
+    const r = await fetch(OL + path, { headers: { 'User-Agent': 'NexusLib/1.0 (+https://github.com/angellrnzo/nexuslib)' } });
     if (!r.ok) return null;
     return await r.json();
   } catch { return null; }

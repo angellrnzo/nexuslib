@@ -20,6 +20,10 @@ export interface FlatMeta {
 const STEAMGRIDDB_API_KEY = (Deno.env.get('STEAMGRIDDB_API_KEY') || '').trim();
 const TMDB_API_KEY = (Deno.env.get('TMDB_API_KEY') || '').trim();
 
+// OpenLibrary pide UA identificado (app + contacto) para rate limit 3x.
+// TODO: agregar email de contacto cuando el usuario lo defina (sube a 3 req/s).
+const OL_UA = 'NexusLib/1.0 (+https://github.com/angellrnzo/nexuslib)';
+
 export type Lang = 'es' | 'en';
 const steamL = (l: Lang) => l === 'en' ? 'english' : 'spanish';
 const tmdbL = (l: Lang) => l === 'en' ? 'en-US' : 'es-ES';
@@ -144,7 +148,7 @@ async function buscarLibros(query: string, lang: Lang = 'es'): Promise<SearchRes
   if (!q) return [];
   const url = 'https://openlibrary.org/search.json?q=' + encodeURIComponent(q) +
     '&fields=key,title,author_name,first_publish_year,cover_i,isbn&limit=8';
-  const res = await fetch(url);
+  const res = await fetch(url, { headers: { 'User-Agent': OL_UA } });
   if (!res.ok) return [];
   const json: any = await res.json();
   const docs = (json && json.docs) ? json.docs : [];
@@ -542,7 +546,7 @@ async function resolverAutoresOpenLibrary(authorsArr: any, fallbackTitulo?: stri
       const pathKey = aKey.indexOf('/') === 0 ? aKey : ('/authors/' + aKey);
       fetches.push((async () => {
         try {
-          const aRes = await fetch('https://openlibrary.org' + pathKey + '.json');
+          const aRes = await fetch('https://openlibrary.org' + pathKey + '.json', { headers: { 'User-Agent': OL_UA } });
           if (!aRes.ok) return '';
           const aJson: any = await aRes.json();
           return (aJson && (aJson.name || aJson.personal_name)) ? String(aJson.name || aJson.personal_name).trim() : '';
@@ -565,7 +569,7 @@ async function resolverAutoresOpenLibrary(authorsArr: any, fallbackTitulo?: stri
   if (fallbackTitulo) {
     try {
       const sUrl = 'https://openlibrary.org/search.json?title=' + encodeURIComponent(fallbackTitulo) + '&fields=author_name&limit=3';
-      const sRes = await fetch(sUrl);
+      const sRes = await fetch(sUrl, { headers: { 'User-Agent': OL_UA } });
       if (sRes.ok) {
         const sJson: any = await sRes.json();
         const docs = (sJson && sJson.docs) ? sJson.docs : [];
@@ -598,7 +602,7 @@ export async function obtenerMetadataLibro(idOIsbn: string, _lang: Lang = 'es'):
     endpoint = 'https://openlibrary.org/works/' + encodeURIComponent(workClean) + '.json';
   }
 
-  const res = await fetch(endpoint);
+  const res = await fetch(endpoint, { headers: { 'User-Agent': OL_UA } });
   if (!res.ok) return null;
   const d: any = await res.json();
   if (!d) return null;
@@ -606,7 +610,7 @@ export async function obtenerMetadataLibro(idOIsbn: string, _lang: Lang = 'es'):
   let workData: any = null;
   if (Array.isArray(d.works) && d.works.length > 0 && d.works[0].key) {
     try {
-      const wRes = await fetch('https://openlibrary.org' + d.works[0].key + '.json');
+      const wRes = await fetch('https://openlibrary.org' + d.works[0].key + '.json', { headers: { 'User-Agent': OL_UA } });
       if (wRes.ok) workData = await wRes.json();
     } catch { /* sin work data */ }
   }

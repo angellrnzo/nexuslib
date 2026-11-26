@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nexuslib-cache-v59';
+const CACHE_NAME = 'nexuslib-cache-v60';
 const urlsToCache = [
   './index.html',
   './manifest.json',
@@ -24,6 +24,24 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
+  // Navegaciones (HTML): network-first — el documento debe ser fresco tras
+  // un deploy; el cache queda como fallback offline y se refresca solo.
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request).then(response => {
+        if (response && response.ok) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+        }
+        return response;
+      }).catch(() => caches.match(event.request).then(cached =>
+        cached || caches.match('./index.html')
+      ))
+    );
+    return;
+  }
+  // Resto (assets, CDN, APIs): cache-first — solo lo precacheado responde
+  // desde cache; el resto va a red (nunca cacheamos respuestas de API).
   event.respondWith(
     caches.match(event.request)
       .then(response => response || fetch(event.request))
