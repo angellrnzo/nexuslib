@@ -54,5 +54,6 @@ jobs:
           STANDBY_URL: ${{ secrets.SUPABASE_STANDBY_DB_URL }}
         run: |
           DUMP=$(ls nexuslib_*.dump | head -1)
-          # Restaura solo datos (schema ya aplicado manualmente en standby)
-          pg_restore "$STANDBY_URL" --data-only --disable-triggers --no-owner "$DUMP"
+          # Restore completo con clean: el standby es espejo del principal.
+          # --clean --if-exists dropea y recrea objetos del schema public.
+          pg_restore --clean --if-exists --no-owner             --dbname="$STANDBY_URL" "$DUMP"
