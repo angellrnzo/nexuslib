@@ -71,7 +71,7 @@
     }
 
     body.view-stats {
-      padding-top: calc(85px + env(safe-area-inset-top, 0px));
+      padding-top: calc(62px + env(safe-area-inset-top, 0px));
     }
 
     /* ICONOS PLANOS VECTORIALES (SVG) */
@@ -230,10 +230,9 @@
       gap: 5px;
       flex-shrink: 0;
       opacity: 1;
-      transform: translateX(0);
       max-width: 250px;
       overflow: hidden;
-      transition: flex-grow var(--t-slow) var(--ease-inout), width var(--t-slow) var(--ease-inout), background-color var(--t-slow) var(--ease-inout), border-color var(--t-slow) var(--ease-inout), box-shadow var(--t-slow) var(--ease-inout);
+      transition: flex-grow var(--t-slow) var(--ease-inout), width var(--t-slow) var(--ease-inout), background-color var(--t-slow) var(--ease-inout), border-color var(--t-slow) var(--ease-inout), box-shadow var(--t-slow) var(--ease-inout), transform var(--t-slow) var(--ease-inout), opacity var(--t-slow) var(--ease-inout);
     }
     .right-controls.hidden {
       opacity: 0;
@@ -1462,7 +1461,7 @@
         <label style="font-size:11px;color:#8f98a0;font-weight:700;">NOMBRE PÚBLICO</label>
         <input id="pf-display" class="na-in" type="text" maxlength="60" style="margin-bottom:0;">
         <div style="display:flex;gap:8px;">
-          <button class="btn btn-primary" style="flex:1;justify-content:center;" onclick="guardarPerfil()">Guardar</button>
+          <button class="btn btn-text" style="flex:1;justify-content:center;" onclick="guardarPerfil()">Guardar</button>
         </div>
         <div style="border-top:1px solid var(--border);margin-top:8px;padding-top:12px;">
           <label style="font-size:11px;color:#8f98a0;font-weight:700;">TU CÓDIGO DE VÍNCULO</label>
@@ -1921,6 +1920,13 @@
     }
 
     async function nexusBoot(onReady) {
+      var readyOnce = false;
+      function boot() {
+        if (readyOnce) return;
+        readyOnce = true;
+        if (window.location.hash) history.replaceState(null, '', window.location.pathname + window.location.search);
+        onReady();
+      }
       try {
         nexusAuthCSS();
         var sb = await nexusSb();
@@ -1929,23 +1935,31 @@
           nexusShowPasswordReset(function() {
             if (s.data && s.data.session) {
               _nexusUser = s.data.session.user;
-              onReady();
+              boot();
             } else {
-              nexusShowLogin(onReady);
+              nexusShowLogin(boot);
             }
           });
           return;
         }
         if (s.data && s.data.session) {
           _nexusUser = s.data.session.user;
-          if (window.location.hash) history.replaceState(null, '', window.location.pathname + window.location.search);
-          onReady();
+          boot();
         } else {
-          nexusShowLogin(onReady);
+          nexusShowLogin(boot);
+          // race: magic link / session que llega despues del primer getSession
+          sb.auth.onAuthStateChange(function(ev, sess) {
+            if ((ev === 'SIGNED_IN' || ev === 'INITIAL_SESSION') && sess && sess.session) {
+              _nexusUser = sess.session.user;
+              var ov = document.getElementById('nexus-login');
+              if (ov) ov.remove();
+              boot();
+            }
+          });
         }
       } catch (e) {
         console.error('nexusBoot', e);
-        nexusShowLogin(onReady);
+        nexusShowLogin(boot);
       }
     }
 
@@ -3137,6 +3151,7 @@
     // ---- menu hamburguesa ----
     function toggleMenu(e) {
       e.stopPropagation();
+      cerrarBusquedaAgregar();
       var panel = document.getElementById('menu-panel');
       var btn = document.getElementById('btn-menu');
       var open = !panel.classList.contains('open');
