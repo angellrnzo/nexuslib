@@ -375,7 +375,10 @@
       transition: background var(--t-fast) var(--ease-out), border-color var(--t-fast) var(--ease-out);
     }
     .stats-profile-actions .btn:hover { background: rgba(102,192,244,.22); }
-    .stats-profile-actions .btn.open { background: rgba(102,192,244,.28); border-color: var(--accent); }
+    .stats-profile-actions .btn.open {
+      background: rgba(102,192,244,.28); border-color: var(--accent);
+      border-bottom-left-radius: 4px; border-bottom-right-radius: 4px;
+    }
     .perfil-edit {
       max-height: 0; opacity: 0; overflow: hidden; margin-top: 0;
       transition: max-height .32s var(--ease-out), opacity .22s var(--ease-out), margin .32s var(--ease-out);
@@ -3352,7 +3355,7 @@
       var h = isStats ? document.querySelector('.category-tabs') : document.querySelector('.top-header');
       if (!h) return;
       var bottom = h.getBoundingClientRect().bottom;
-      document.body.style.paddingTop = Math.max(120, bottom + (isStats ? 10 : 6)) + 'px';
+      document.body.style.paddingTop = Math.max(40, bottom + (isStats ? 10 : 6)) + 'px';
     }
 
     // ---- menu hamburguesa ----
