@@ -191,25 +191,38 @@
       min-width: 0;
       display: flex;
       align-items: center;
+      column-gap: 6px;
       background: rgba(0, 0, 0, 0.45);
-      border-radius: 20px;
+      border-radius: 14px;
       padding: 0 12px;
       height: 34px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      border: 1.5px solid rgba(255, 255, 255, 0.08);
+      transition: border-color var(--t-base) var(--ease-out), box-shadow var(--t-base) var(--ease-out);
     }
-    .search-wrapper:focus-within { border-color: var(--accent); }
-    .search-wrapper .ico { margin-right: 8px; color: var(--muted); }
+    .search-wrapper:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(102, 192, 244, 0.16), 0 0 18px rgba(102, 192, 244, 0.22);
+    }
+    .search-wrapper .ico { margin-right: 8px; color: var(--muted); flex-shrink: 0; }
     #inputBuscar { width: 100%; min-width: 0; border: none; background: transparent; color: white; outline: none; font-family: 'Inter', sans-serif; font-size: 13px; }
+    .btn-clear-search {
+      background: transparent; border: none; color: var(--muted); cursor: pointer;
+      width: 24px; height: 24px; border-radius: 50%; display: none; flex-shrink: 0; padding: 0;
+      align-items: center; justify-content: center;
+      transition: color var(--t-fast) var(--ease-out), background var(--t-fast) var(--ease-out);
+    }
+    .btn-clear-search:hover { color: var(--bright); background: rgba(255,255,255,0.1); }
+    #search-wrapper-box.has-text .btn-clear-search { display: inline-flex; }
 
     .add-wrapper {
       display: flex;
       align-items: center;
       column-gap: 6px;
       background: rgba(0, 0, 0, 0.45);
-      border-radius: 20px;
+      border-radius: 14px;
       padding: 0 4px 0 10px;
       height: 34px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      border: 1.5px solid rgba(255, 255, 255, 0.08);
       position: relative;
       flex-grow: 1;
       min-width: 0;
@@ -1482,9 +1495,12 @@
 
       <div class="controls" id="main-controls-box">
         <div class="controls-row">
-          <div class="search-wrapper">
+          <div class="search-wrapper" id="search-wrapper-box">
             <svg class="ico"><use href="#i-search"/></svg>
-            <input type="text" id="inputBuscar" data-i18n-ph="cfg.Juegos.search" placeholder="Filtrar juegos por título, dev, género o tag..." oninput="filtrarItemsDebounced()">
+            <input type="text" id="inputBuscar" data-i18n-ph="cfg.Juegos.search" placeholder="Filtrar juegos por título, dev, género o tag..." oninput="filtrarItemsDebounced(); syncSearchClearBtn()">
+            <button type="button" class="btn-clear-search" id="btn-clear-search" onclick="limpiarBusquedaFiltro()" title="Limpiar" data-i18n-title="tip.limpiar">
+              <svg class="ico ico-sm"><use href="#i-x"/></svg>
+            </button>
           </div>
         </div>
 
@@ -3716,6 +3732,21 @@
       }
     }
 
+    function syncSearchClearBtn() {
+      var wrap = document.getElementById('search-wrapper-box');
+      var inp = document.getElementById('inputBuscar');
+      if (wrap && inp) wrap.classList.toggle('has-text', inp.value.trim().length > 0);
+    }
+
+    function limpiarBusquedaFiltro() {
+      var inp = document.getElementById('inputBuscar');
+      if (!inp) return;
+      inp.value = '';
+      syncSearchClearBtn();
+      filtrarItems();
+      inp.focus();
+    }
+
     function syncAddClearBtn() {
       var box = document.getElementById('add-wrapper-box');
       var inp = document.getElementById('inputAgregar');
@@ -3804,6 +3835,7 @@
       var cfg = CAT_CONFIG[cat];
       document.getElementById('inputBuscar').value = '';
       document.getElementById('inputBuscar').placeholder = catText(cat, 'searchPlaceholder');
+      syncSearchClearBtn();
       document.getElementById('inputAgregar').value = '';
       document.getElementById('inputAgregar').placeholder = catText(cat, 'addPlaceholder');
       cerrarBusquedaAgregar();
