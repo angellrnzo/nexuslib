@@ -921,7 +921,11 @@ These couple touches are the identity layer: they exist **only** because `link_t
 - Can a zone grow beyond 2 members later (add a third person) or is it fixed at link acceptance?
 - Zone activity in the 5B feed: "añadieron X a la zona conjunta" — yes/no.
 
-### 📍 Phase 6: Android APK & Release CI/CD (v2.0)
+### 📍 Phase 6: App nativa Android + iOS (cierre del roadmap — vision 2026-11-27)
+
+> El objetivo final es app nativa en AMBAS plataformas (no solo Capacitor Android). El usuario pasara repos de referencia para evaluar el approach (React Native/Flutter/.NET MAUI/nativo). Mientras tanto esta fase queda en hold hasta que la web v2 este estable.
+
+**Scope original (Android via Capacitor, referencia):**
 
 **Scope — what will be built:**
 
@@ -960,7 +964,7 @@ These couple touches are the identity layer: they exist **only** because `link_t
 - Frontend: página 100% estática, anon key, mismo design system (tokens de `index.html`).
 - Casos a definir en spec: qué datos son "públicos" (¿solo conteos? ¿portadas top?), URL structure, comportamiento si `show_stats=false` (404 vs "perfil privado").
 - Costo: ~1 sesión — 1 página estática + 1 RPC + toggle en perfil.
-- Orden: post-deploy v2, junto con Phase 5H/6 si se prioriza antes que Android.
+- Orden: post-deploy v2. La app nativa (Android+iOS) es el cierre de TODO el roadmap — ver nota en Phase 6.
 
 **Backlog (queued, low priority — user note 2026-11-23):** **import/export interchange with known sources** — beyond the Phase 4 bulk *import* (Trakt/Steam/GoodReads): also support **export** of the NexusLib library to known formats/services (CSV per category, OPML-like lists, or write-back APIs where available: Trakt sync, Steam wishlist export, GoodReads CSV). Candidate sources to support both directions: Trakt.tv, Steam profile/wishlist, GoodReads, MyAnimeList/AniList list export, Letterboxd CSV, Open Library want-to-read. Decide scope when picked up — likely a Phase 8+ item after v2 stabilizes.
 
