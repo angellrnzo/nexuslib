@@ -394,26 +394,39 @@
       transition: max-height .32s var(--ease-out), opacity .22s var(--ease-out), margin .32s var(--ease-out);
     }
     .perfil-edit.open { max-height: 640px; opacity: 1; margin-top: 10px; }
-    .perfil-edit-inner {
-      background: linear-gradient(135deg, rgba(102,192,244,.10), rgba(187,134,252,.08));
-      border: 1px solid rgba(102,192,244,.25); border-radius: 16px;
-      padding: 16px 18px; display: grid; gap: 10px;
+    .perfil-edit-inner { display: grid; gap: 12px; }
+    .pf-card {
+      background: #21262d; border: 1px solid rgba(255,255,255,.08);
+      border-radius: 14px; padding: 14px 16px; display: grid; gap: 12px;
     }
-    .perfil-edit-inner label { font-size: 11px; color: #8f98a0; font-weight: 700; }
-    .perfil-edit-block {
-      display: grid; gap: 8px;
-      padding: 12px; border-radius: 12px;
-      background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.07);
+    .pf-card-title { font-size: 13px; font-weight: 800; color: #fff; }
+    .pf-card label { font-size: 11px; color: #8f98a0; font-weight: 700; display: block; margin-bottom: 5px; }
+    .pf-card .na-in {
+      height: 40px; background: #0d1117; border: 1px solid rgba(255,255,255,.09);
+      border-radius: 10px; padding: 0 12px; font-size: 13px; color: #fff;
+      width: 100%; box-sizing: border-box; font-family: inherit;
     }
-    .perfil-edit-block + .perfil-edit-block { margin-top: 4px; }
-    .perfil-edit-row { display: flex; gap: 8px; align-items: center; }
-    .perfil-edit-row .btn-text { flex: 1; justify-content: center; }
-    .perfil-edit-inner > .btn-text {
-      height: 42px; border-radius: 10px; font-size: 13px;
-      background: rgba(102,192,244,.16); color: var(--accent);
-      border: 1px solid rgba(102,192,244,.4);
+    .pf-card .na-in:focus { border-color: var(--accent); outline: none; }
+    .pf-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .pf-invite-row { display: flex; gap: 8px; align-items: center; }
+    .pf-invite-row .na-in {
+      flex: 1; height: 40px; text-align: center;
+      font-family: monospace; letter-spacing: 1px; text-transform: uppercase;
     }
-    .perfil-edit-inner > .btn-text:hover { background: rgba(102,192,244,.28); filter: none; }
+    .pf-actions-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .pf-btn {
+      height: 42px; border-radius: 10px; font-size: 13px; font-weight: 700;
+      display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+      cursor: pointer; border: none; font-family: inherit;
+      transition: filter var(--t-fast) var(--ease-out);
+    }
+    .pf-btn-save { background: var(--accent); color: #0b0e14; }
+    .pf-btn-danger { background: #ff6b6b; color: #0b0e14; }
+    .pf-btn:hover { filter: brightness(1.08); }
+    @media (max-width: 560px) {
+      .pf-grid-2 { grid-template-columns: 1fr; }
+      .pf-actions-row { grid-template-columns: 1fr; }
+    }
     @media (max-width: 480px) {
       .stats-profile-card { flex-wrap: wrap; row-gap: 10px; }
       .stats-profile-actions { width: 100%; }
@@ -1422,7 +1435,7 @@
             </div>
           </div>
           <div class="pf-card">
-            <div class="pf-card-title">Vinculación de Cuenta</div>
+            <div class="pf-card-title">Código de vinculación</div>
             <div class="pf-invite-row">
               <input id="pf-invite" class="na-in" type="text" readonly>
               <button class="btn btn-circle" onclick="copiarInvitePerfil()" title="Copiar"><svg class="ico"><use href="#i-copy"/></svg></button>
@@ -3550,6 +3563,18 @@
 
     const FALLBACK_SVG = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='450'><rect width='100%25' height='100%25' fill='%23171a21'/><text x='50%25' y='50%25' fill='%2366c0f4' font-family='sans-serif' font-size='16' font-weight='bold' text-anchor='middle' dominant-baseline='middle'>Sin Imagen</text></svg>";
 
+    // Open Library sirve el mismo cover en -S(128px)/-M(250px)/-L(500px).
+    // srcset deja que el browser baje solo el tamaño que necesita (grid/modal/lightbox).
+    function nexusOlSrcset(url) {
+      var m = String(url || '').match(/^(https:\/\/covers\.openlibrary\.org\/b\/id\/\d+)-(?:S|M|L)\.jpg$/);
+      if (!m) return '';
+      var b = m[1];
+      return b + '-S.jpg 128w, ' + b + '-M.jpg 250w, ' + b + '-L.jpg 500w';
+    }
+    function nexusOlFull(url) {
+      return String(url || '').replace(/-(S|M)\.jpg$/, '-L.jpg');
+    }
+
     var _nexusLastTouchTs = 0;
     document.addEventListener('touchstart', function() { _nexusLastTouchTs = Date.now(); }, true);
 
@@ -3647,7 +3672,7 @@
         card.innerHTML = `
           <div class="img-container">
             ${topBadgeHTML} ${wishBadgeHTML}
-            <img src="${escaparHTML(it.portada)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src=FALLBACK_SVG;">
+            <img src="${escaparHTML(it.portada)}" srcset="${nexusOlSrcset(it.portada)}" sizes="(max-width:600px) 50vw, 300px" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src=FALLBACK_SVG;">
           </div>
           <div class="card-content">
             <div class="card-title">${escaparHTML(it.titulo)}</div>
@@ -3720,7 +3745,7 @@
           }
           dd.innerHTML = resultados.map(r => `
             <div class="search-result-item" onclick="ejecutarAgregarDirecto('${escaparHTML(r.id)}')">
-              <img src="${escaparHTML(r.portada)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src=FALLBACK_SVG;">
+              <img src="${escaparHTML(r.portada)}" srcset="${nexusOlSrcset(r.portada)}" sizes="(max-width:600px) 80vw, 340px" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src=FALLBACK_SVG;">
               <div class="search-result-info">
                 <div class="search-result-title">${escaparHTML(r.titulo)}</div>
                 <div class="search-result-sub">${escaparHTML(r.subtitulo)}</div>
@@ -3871,15 +3896,18 @@
 
       var mImg = document.getElementById('m-img');
       mImg.onerror = function() { this.onerror = null; this.src = FALLBACK_SVG; };
+      var _olss = nexusOlSrcset(it.portada);
+      mImg.srcset = _olss;
+      mImg.sizes = _olss ? '(max-width:600px) 80vw, 340px' : '';
       mImg.src = it.portada || FALLBACK_SVG;
       mImg.style.cursor = 'zoom-in';
       mImg.onclick = function() {
         var urls = [];
-        if (it.portada && String(it.portada).startsWith('http')) urls.push(it.portada);
+        if (it.portada && String(it.portada).startsWith('http')) urls.push(nexusOlFull(it.portada));
         if (it.capturas) {
           it.capturas.split(',').forEach(function(u) {
             u = u.trim();
-            if (u.startsWith('http') && urls.indexOf(u) === -1) urls.push(u);
+            if (u.startsWith('http')) { u = nexusOlFull(u); if (urls.indexOf(u) === -1) urls.push(u); }
           });
         }
         if (urls.length) nexusOpenLightbox(urls, 0);
@@ -4773,7 +4801,7 @@
 
       gridEl.innerHTML = matches.map(it => `
         <div class="match-card" onclick="seleccionarMatchItem('${escaparHTML(cat)}', '${escaparHTML(it.id)}')">
-          <img src="${escaparHTML(it.portada)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src=FALLBACK_SVG;">
+          <img src="${escaparHTML(it.portada)}" srcset="${nexusOlSrcset(it.portada)}" sizes="(max-width:600px) 50vw, 300px" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src=FALLBACK_SVG;">
           <div class="match-card-body">
             <div class="match-card-title">${escaparHTML(it.titulo)}</div>
             <div style="font-size:10px;color:var(--accent);margin-top:auto;display:inline-flex;align-items:center;gap:4px;">${svgIcon('i-heart-fill', 'ico-sm ico-wish')} Coincidencia</div>
