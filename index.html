@@ -1757,17 +1757,31 @@
       withFailureHandler: function(f) { this._fail = f; return this; },
       _exec: function(p) {
         // capturar handlers al llamar: el singleton compartia _ok/_fail y una
-        // llamada posterior podia secuestrar el callback de una promesa pendiente
+        // llamada posterior podia secuestrar el callback de una promesa pendiente.
+        // Retorna promesa encadenable: permite RUN.metodo(...).withFailureHandler(fn)
+        // (antes _exec devolvia undefined -> TypeError y el toast de error nunca corria).
         var ok = this._ok, fail = this._fail;
         this._ok = null; this._fail = null;
-        Promise.resolve(p).then(function(r) {
+        var pr = Promise.resolve(p);
+        pr.then(function(r) {
           try { if (ok) ok(r); } catch (e) { console.error(e); }
-        }).catch(function(e) {
+        }, function() {});
+        pr.catch(function(e) {
           try { if (fail) fail(e); else console.error(e); } catch (_) {}
         });
+        var out = pr.then(function(r) { return { ok: true, data: r }; }, function(e) { return { ok: false, err: e }; });
+        out.withSuccessHandler = function(f) {
+          pr.then(function(r) { try { if (f) f(r); } catch (e) { console.error(e); } }, function() {});
+          return out;
+        };
+        out.withFailureHandler = function(f) {
+          pr.catch(function(e) { try { if (f) f(e); else console.error(e); } catch (_) {} });
+          return out;
+        };
+        return out;
       },
       getItems: function(cat) {
-        this._exec((async function() {
+        return this._exec((async function() {
           var sb = await nexusSb();
           await nexusEnsureProfile();
           var r = await sb.rpc('get_items_merged', { p_category: cat });
@@ -1776,7 +1790,7 @@
         })());
       },
       guardarProgresoItem: function(cat, id, persona, estado, estrellas, progreso) {
-        this._exec((async function() {
+        return this._exec((async function() {
           await nexusSb(); await nexusEnsureProfile();
           if (!nexusPersonaOk(persona)) return { success: false, msg: t('err.owntrack') };
           return nexusTrackingUpsert(cat, id, {
@@ -1787,21 +1801,21 @@
         })());
       },
       guardarDeseadoItem: function(cat, id, persona, deseado) {
-        this._exec((async function() {
+        return this._exec((async function() {
           await nexusSb(); await nexusEnsureProfile();
           if (!nexusPersonaOk(persona)) return { success: false, msg: t('err.owntrack') };
           return nexusTrackingUpsert(cat, id, { is_wishlisted: Boolean(deseado) });
         })());
       },
       guardarNotaItem: function(cat, id, persona, nota) {
-        this._exec((async function() {
+        return this._exec((async function() {
           await nexusSb(); await nexusEnsureProfile();
           if (!nexusPersonaOk(persona)) return { success: false, msg: t('err.owntrack') };
           return nexusTrackingUpsert(cat, id, { personal_notes: nota || null });
         })());
       },
       guardarTotalCapitulos: function(cat, id, total) {
-        this._exec((async function() {
+        return this._exec((async function() {
           var sb = await nexusSb();
           var r = await sb.from('media_items').select('id')
             .eq('category', cat).eq('external_id', String(id)).single();
@@ -1812,7 +1826,7 @@
         })());
       },
       eliminarItem: function(cat, id) {
-        this._exec((async function() {
+        return this._exec((async function() {
           var sb = await nexusSb(); await nexusEnsureProfile();
           var mediaId = await nexusMediaId(cat, id);
           if (!mediaId || !_nexusLibId) return { success: false, msg: t('err.elemnf') };
@@ -1824,7 +1838,7 @@
         })());
       },
       restaurarItem: function(cat, id) {
-        this._exec((async function() {
+        return this._exec((async function() {
           var sb = await nexusSb(); await nexusEnsureProfile();
           var mediaId = await nexusMediaId(cat, id);
           if (!mediaId || !_nexusLibId) return { success: false };
@@ -1836,7 +1850,7 @@
         })());
       },
       getItemsEliminados: function() {
-        this._exec((async function() {
+        return this._exec((async function() {
           var sb = await nexusSb(); await nexusEnsureProfile();
           if (!_nexusLibId) return [];
           var r = await sb.from('library_items')
@@ -1850,7 +1864,7 @@
         })());
       },
       buscarCatalogoExterno: function(cat, query) {
-        this._exec((async function() {
+        return this._exec((async function() {
           var sb = await nexusSb(); await nexusEnsureProfile();
           var r = await sb.functions.invoke('catalog-search', { body: { category: cat, query: query, lang: NEXUS_LANG } });
           if (r.error) throw new Error(r.error.message);
@@ -1858,7 +1872,7 @@
         })());
       },
       agregarItem: function(cat, idOUrlOrName) {
-        this._exec((async function() {
+        return this._exec((async function() {
           var sb = await nexusSb(); await nexusEnsureProfile();
           var r = await sb.functions.invoke('catalog-add', { body: { category: cat, idOrUrlOrName: idOUrlOrName, lang: NEXUS_LANG } });
           if (r.error) {
@@ -1872,7 +1886,7 @@
         })());
       },
       repararItemIndividual: function(cat, id) {
-        this._exec((async function() {
+        return this._exec((async function() {
           var sb = await nexusSb(); await nexusEnsureProfile();
           var r = await sb.functions.invoke('item-refresh', { body: { category: cat, id: id, lang: NEXUS_LANG } });
           if (r.error) {
@@ -3102,6 +3116,7 @@
         'mods.noname': 'Ponle nombre al mod.', 'btn.cerrar': 'Cerrar', 'btn.guardar': 'Guardar',
         'sh.withn': 'Con {n} {w}', 'upd.hist': 'Historial de Updates', 'ed.btn': 'Ediciones', 'rv.btn': 'Reseñas Steam',
         'fl.nota_min': 'Nota Mínima', 'st.comp_lc': 'completados', 'st.proc_lc': 'en proceso',
+        'st.showing': 'Mostrando', 'st.deseados': 'Deseados',
         'upd.hide': 'Ocultar Updates', 'ed.hide': 'Ocultar Ediciones', 'rv.hide': 'Ocultar Reseñas',
         'md.singenres': 'Sin géneros', 'md.sindesc': 'Sin descripción.', 'md.sintitulo': 'Sin título',
         'md.tipo': 'Tipo', 'md.duracion': 'Duración / Temporadas', 'md.plataformas': 'Plataformas',
@@ -3227,6 +3242,7 @@
         'mods.noname': 'Name the mod.', 'btn.cerrar': 'Close', 'btn.guardar': 'Save',
         'sh.withn': 'With {n} {w}', 'upd.hist': 'Update History', 'ed.btn': 'Editions', 'rv.btn': 'Steam Reviews',
         'fl.nota_min': 'Min rating', 'st.comp_lc': 'completed', 'st.proc_lc': 'in progress',
+        'st.showing': 'Showing', 'st.deseados': 'Wishlisted',
         'upd.hide': 'Hide Updates', 'ed.hide': 'Hide Editions', 'rv.hide': 'Hide Reviews',
         'md.singenres': 'No genres', 'md.sindesc': 'No description.', 'md.sintitulo': 'Untitled',
         'md.tipo': 'Type', 'md.duracion': 'Runtime / Seasons', 'md.plataformas': 'Platforms',
@@ -3936,7 +3952,7 @@
         var cN = lista.filter(function(x) {
           return x['estado' + p.suffix] === 'Completado' && x['visible' + p.suffix] !== false;
         }).length;
-        pills += `<div class="stat-pill">${nexusPersonaDot(p, 12)} Completados: <strong>${cN}</strong></div>`;
+        pills += `<div class="stat-pill">${nexusPersonaDot(p, 12)} ${t('st.comp_lc')}: <strong>${cN}</strong></div>`;
       });
       var des = lista.filter(function(x) {
         return (_personas || []).some(function(p) { return x['deseado' + p.suffix] && x['visible' + p.suffix] !== false; });
@@ -3944,9 +3960,9 @@
 
       bar.style.display = 'flex';
       bar.innerHTML =
-        `<div class="stat-pill">${svgIcon('i-folder', 'ico-sm')} Mostrando <strong>${mostrados} / ${total}</strong></div>` +
+        `<div class="stat-pill">${svgIcon('i-folder', 'ico-sm')} ${t('st.showing')} <strong>${mostrados} / ${total}</strong></div>` +
         pills +
-        `<div class="stat-pill">${svgIcon('i-heart-fill', 'ico-sm ico-wish')} Deseados: <strong>${des}</strong></div>`;
+        `<div class="stat-pill">${svgIcon('i-heart-fill', 'ico-sm ico-wish')} ${t('st.deseados')}: <strong>${des}</strong></div>`;
     }
 
     function escaparHTML(s) {
@@ -4798,7 +4814,7 @@
       try { localStorage.setItem(`media_lib_${CACHE_VERSION}_${currentCategory}`, JSON.stringify(itemsByCategory[currentCategory])); } catch (e) {}
       filtrarItems();
 
-      RUN.guardarProgresoItem(currentCategory, currentItemId, persona, est, pts, prog).withFailureHandler(function(){ showToast('No se pudo guardar el cambio.', 'error'); });
+      RUN.guardarProgresoItem(currentCategory, currentItemId, persona, est, pts, prog).withFailureHandler(function(){ showToast(t('toast.savefail'), 'error'); });
     }
 
     function toggleDeseado(persona) {
@@ -4812,7 +4828,7 @@
       try { localStorage.setItem(`media_lib_${CACHE_VERSION}_${currentCategory}`, JSON.stringify(itemsByCategory[currentCategory])); } catch (e) {}
       filtrarItems();
 
-      RUN.guardarDeseadoItem(currentCategory, currentItemId, persona, nuevo).withFailureHandler(function(){ showToast('No se pudo guardar el cambio.', 'error'); });
+      RUN.guardarDeseadoItem(currentCategory, currentItemId, persona, nuevo).withFailureHandler(function(){ showToast(t('toast.savefail'), 'error'); });
     }
 
     function guardarNotaJugador(persona, valor) {
@@ -4822,7 +4838,7 @@
       it['nota' + persona] = valor;
       actualizarResumenJugador(k, it['estado' + persona] || 'No jugado', it['estrellas' + persona] || 0, Boolean(it['deseado' + persona]), valor);
       try { localStorage.setItem(`media_lib_${CACHE_VERSION}_${currentCategory}`, JSON.stringify(itemsByCategory[currentCategory])); } catch (e) {}
-      RUN.guardarNotaItem(currentCategory, currentItemId, persona, valor).withFailureHandler(function(){ showToast('No se pudo guardar el cambio.', 'error'); });
+      RUN.guardarNotaItem(currentCategory, currentItemId, persona, valor).withFailureHandler(function(){ showToast(t('toast.savefail'), 'error'); });
     }
 
     function repararItemActual() {

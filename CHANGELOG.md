@@ -26,6 +26,8 @@ Deploy versions for the Apps Script web app are noted per entry.
 - Dead Apps Script path removed from `RUN` (`RUN = nexusRun`); Sheets code frozen in `WebAPP.legacy.gs`.
 - Supabase free-tier pause handling: `cargarCategoria` detects wake/network errors, shows `err.pause` state and auto-retries once after 35 s.
 - Fixed: global string replacements had poisoned `STR` dictionary values with self-referencing `t()` calls (would have crashed the whole script at runtime); restored literals.
+- Fixed: `nexusRun._exec` returned `undefined`, so post-call chaining `RUN.method(...).withFailureHandler(fn)` threw a TypeError — tracking error toasts never fired. `_exec` now returns a chainable promise; all 11 methods return it.
+- i18n sweep 2: stats-bar pills (`Mostrando`/`Deseados`/`completados`), remaining `toast.savefail` literals.
 
 ### Added (shell PWA — pre-launch checklist)
 
