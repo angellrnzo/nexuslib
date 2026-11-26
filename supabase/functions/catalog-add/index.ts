@@ -86,7 +86,7 @@ Deno.serve(async (req: Request) => {
   try {
     const body = await req.json();
     const category = String(body.category || '') as Category;
-    const input = String(body.idOrUrlOrName || '').trim();
+    const input = String(body.idOrUrlOrName || '').trim().slice(0, 300);
     const lang = body.lang === 'en' ? 'en' : 'es';
     if (!CATEGORIES.includes(category)) return json({ success: false, msg: 'Categoría inválida.' }, 400);
     if (!input) return json({ success: false, msg: 'Introduce un valor válido.' });
@@ -108,6 +108,11 @@ Deno.serve(async (req: Request) => {
       const meta = await obtenerMetadataDetallada(category, idDirecto, lang);
       if (!meta) return json({ success: false, msg: 'No se encontraron datos para el ID indicado.' });
       const row = flatMetaToRow(category, meta);
+      // check autoritativo: el probe anterior usa el ID crudo (isbn:/mal- no
+      // coinciden con el external_id almacenado); aqui ya es canonico
+      if (await alreadyInLibrary(admin, libIds, row.external_id, category)) {
+        return json({ success: false, msg: 'Este elemento ya está en tu biblioteca.' });
+      }
 
       let item = await findMediaItem(admin, category, row.provider, row.external_id);
       if (!item) {
@@ -142,6 +147,9 @@ Deno.serve(async (req: Request) => {
       const meta = await obtenerMetadataDetallada(category, primero.id, lang);
       if (meta) {
         const row = flatMetaToRow(category, meta);
+        if (await alreadyInLibrary(admin, libIds, row.external_id, category)) {
+          return json({ success: false, msg: 'Ya existe en tu lista: ' + (meta.titulo || primero.titulo) });
+        }
         let item = await findMediaItem(admin, category, row.provider, row.external_id);
         if (!item) {
           const ins = await admin.from('media_items').insert({

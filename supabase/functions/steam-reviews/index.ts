@@ -71,8 +71,10 @@ Deno.serve(async (req: Request) => {
     const total = all ? all.total : (d30 ? d30.total : 0);
 
     // tier 5-bloques (spec): 0-20 muy negativas ... 80-100 muy positivas
-    const tier = pct >= 80 ? 'Muy positivas' : pct >= 60 ? 'Mayormente positivas'
-      : pct >= 40 ? 'Neutras' : pct >= 20 ? 'Mayormente negativas' : 'Muy negativas';
+    // tier_idx es language-neutral; el frontend lo traduce via STR (i18n capa 2)
+    const tierIdx = pct >= 80 ? 4 : pct >= 60 ? 3 : pct >= 40 ? 2 : pct >= 20 ? 1 : 0;
+    const tierNames = ['Muy negativas', 'Mayormente negativas', 'Neutras', 'Mayormente positivas', 'Muy positivas'];
+    const tier = tierNames[tierIdx];
 
     return json({
       appid,
@@ -80,6 +82,7 @@ Deno.serve(async (req: Request) => {
       pct30: d30 ? d30.pct : null,
       total30: d30 ? d30.total : null,
       tier,
+      tier_idx: tierIdx,
     });
   } catch (e) {
     return json({ error: (e as Error).message || 'error consultando steam' }, 500);

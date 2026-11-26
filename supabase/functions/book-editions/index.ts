@@ -36,11 +36,16 @@ async function resolveWorkKey(id: string): Promise<string | null> {
   return null;
 }
 
-function langName(key: string): string {
+function langName(key: string, lang: 'es' | 'en' = 'es'): string {
   const m = String(key || '').match(/\/languages\/([a-z]{3})/i);
   if (!m) return '';
+  const code = m[1].toLowerCase();
+  if (lang === 'en') {
+    const mapEn: Record<string, string> = { spa: 'Spanish', eng: 'English', fre: 'French', ger: 'German', ita: 'Italian', por: 'Portuguese' };
+    return mapEn[code] || code;
+  }
   const map: Record<string, string> = { spa: 'Español', eng: 'Inglés', fre: 'Francés', ger: 'Alemán', ita: 'Italiano', por: 'Portugués' };
-  return map[m[1].toLowerCase()] || m[1];
+  return map[code] || code;
 }
 
 function yearOf(date: string): number {
@@ -59,6 +64,7 @@ Deno.serve(async (req: Request) => {
     const body = await req.json();
     const id = String(body.id || '').trim();
     if (!id) return json({ error: 'id vacío' }, 400);
+    const lang = body.lang === 'en' ? 'en' : 'es';
 
     const workKey = await resolveWorkKey(id);
     if (!workKey) return json({ error: 'obra no encontrada en OpenLibrary', editions: [] });
@@ -84,7 +90,7 @@ Deno.serve(async (req: Request) => {
       const translators = (e.translators || [])
         .map((t: any) => (t && t.key ? (tNames.get(String(t.key)) || String(t.key).split('/').pop()) : null))
         .filter(Boolean);
-      const langs = (e.languages || []).map((l: any) => langName(l && l.key)).filter(Boolean);
+      const langs = (e.languages || []).map((l: any) => langName(l && l.key, lang)).filter(Boolean);
       const isbns = [...(e.isbn_10 || []), ...(e.isbn_13 || [])];
       return {
         key: String(e.key || '').replace('/books/', ''),

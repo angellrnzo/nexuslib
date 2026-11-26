@@ -11,7 +11,7 @@ Deno.serve(async (req: Request) => {
   try {
     const body = await req.json();
     const category = String(body.category || '') as Category;
-    const query = String(body.query || '');
+    const query = String(body.query || '').slice(0, 200);
     if (!['Juegos', 'Peliculas_Series', 'Libros', 'Mangas'].includes(category)) {
       return json({ error: 'categoría inválida' }, 400);
     }

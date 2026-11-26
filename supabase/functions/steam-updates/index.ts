@@ -34,8 +34,9 @@ Deno.serve(async (req: Request) => {
     const body = await req.json();
     const appid = String(body.appid || '').trim();
     if (!/^\d+$/.test(appid)) return json({ error: 'appid inválido' }, 400);
+    const lang = body.lang === 'en' ? 'en' : 'es';
 
-    const url = `https://store.steampowered.com/feeds/news/app/${appid}?l=spanish&cc=US`;
+    const url = `https://store.steampowered.com/feeds/news/app/${appid}?l=${lang === 'en' ? 'english' : 'spanish'}&cc=US`;
     const res = await fetch(url, {
       headers: { 'User-Agent': 'NexusLib/1.0 (+https://angellrnzo.github.io/nexuslib)' },
     });

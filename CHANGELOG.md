@@ -6,6 +6,13 @@ Deploy versions for the Apps Script web app are noted per entry.
 
 ## [Unreleased]
 
+### Fixed (Edge Functions audit)
+
+- i18n capa 2 completada: steam-updates y book-editions aceptan lang (updates/news en ingles, idiomas de ediciones EN); steam-reviews devuelve tier_idx language-neutral y el frontend lo traduce via STR.
+- Frontend pasa lang: NEXUS_LANG a las 3 functions que faltaban; toLocaleString/toLocaleDateString ya no hardcodean 'es'.
+- catalog-add: check "ya existe" ahora usa el external_id canonico post-metadata — re-anadir por ISBN o MAL ya no miente "Anadido!".
+- Hardening: query/idOrUrlOrName con cap de longitud en catalog-search/catalog-add.
+
 ### Fixed (visual/responsive audit)
 
 - Tracking accordion: single-persona items now span full modal width (`.tracking-container.single`).

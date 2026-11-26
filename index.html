@@ -3117,6 +3117,7 @@
         'ed.edition': 'Edición', 'ed.transl': 'Trad: ', 'ed.read': 'Leer ↗',
         'rv.load': 'Cargando reseñas...', 'rv.none': 'Sin datos de reseñas.', 'rv.err': 'Error en steam-reviews',
         'rv.pos': 'positivas', 'rv.neg': 'negativas', 'rv.total': 'total', 'rv.30d': 'en 30d', 'rv.vs30d': 'vs 30d',
+        'rv.t0': 'Muy negativas', 'rv.t1': 'Mayormente negativas', 'rv.t2': 'Neutras', 'rv.t3': 'Mayormente positivas', 'rv.t4': 'Muy positivas',
         'trail.show': 'Ver Tráiler', 'trail.hide': 'Ocultar Tráiler', 'ficha.ver': 'Ver ficha', 'ficha.more': 'Más info',
         'ficha.tech': 'Ver ficha técnica completa', 'cap.title': 'Capturas',
         'fl.todos': 'Todos', 'fl.allf': 'Todas', 'fl.cualquiera': 'Cualquiera', 'fl.ninguno': 'Ninguno',
@@ -3243,6 +3244,7 @@
         'ed.edition': 'Edition', 'ed.transl': 'Trans: ', 'ed.read': 'Read ↗',
         'rv.load': 'Loading reviews...', 'rv.none': 'No review data.', 'rv.err': 'steam-reviews error',
         'rv.pos': 'positive', 'rv.neg': 'negative', 'rv.total': 'total', 'rv.30d': 'in 30d', 'rv.vs30d': 'vs 30d',
+        'rv.t0': 'Very Negative', 'rv.t1': 'Mostly Negative', 'rv.t2': 'Mixed', 'rv.t3': 'Mostly Positive', 'rv.t4': 'Very Positive',
         'trail.show': 'Watch Trailer', 'trail.hide': 'Hide Trailer', 'ficha.ver': 'View entry', 'ficha.more': 'More info',
         'ficha.tech': 'View full specs', 'cap.title': 'Screenshots',
         'fl.todos': 'All', 'fl.allf': 'All', 'fl.cualquiera': 'Any', 'fl.ninguno': 'None',
@@ -5061,7 +5063,7 @@
       var iconoCat = { Juegos: 'i-gamepad', Peliculas_Series: 'i-film', Libros: 'i-book', Mangas: 'i-manga' };
       var listaEstrenos = proximos35.slice(0, 12).map(function(x) {
         return '<div class="stat-detail-line">' + svgIcon(iconoCat[x.cat], 'ico-sm') + ' ' +
-          '<strong>' + x.d.toLocaleDateString('es', { day: 'numeric', month: 'short' }) + '</strong> — ' +
+          '<strong>' + x.d.toLocaleDateString(NEXUS_LANG === 'en' ? 'en-US' : 'es', { day: 'numeric', month: 'short' }) + '</strong> — ' +
           escaparHTML(x.it.titulo) + ' <span style="color:var(--muted);">(' + CAT_CONFIG[x.cat].label + ')</span></div>';
       }).join('');
       if (proximos35.length > 12) listaEstrenos += '<div class="stat-detail-line" style="color:var(--muted);">' + tf('st.more', { n: proximos35.length - 12 }) + '</div>';
@@ -5468,7 +5470,7 @@
     function nexusFmtDate(pub) {
       try {
         var d = new Date(pub);
-        return isNaN(d) ? String(pub || '') : d.toLocaleDateString('es', { day: 'numeric', month: 'short', year: 'numeric' });
+        return isNaN(d) ? String(pub || '') : d.toLocaleDateString(NEXUS_LANG === 'en' ? 'en-US' : 'es', { day: 'numeric', month: 'short', year: 'numeric' });
       } catch (e) { return String(pub || ''); }
     }
 
@@ -5479,7 +5481,7 @@
         var sb = await nexusSb();
         var it = (itemsByCategory[currentCategory] || []).find(function(x) { return String(x.id) === String(currentItemId); });
         var appid = it ? String(it.id) : '';
-        var r = await sb.functions.invoke('steam-updates', { body: { appid: appid } });
+        var r = await sb.functions.invoke('steam-updates', { body: { appid: appid, lang: NEXUS_LANG } });
         if (r.error) throw new Error(r.error.message || 'Error en steam-updates');
         var items = (r.data && r.data.items) || [];
         _updatesLoaded = true;
@@ -5524,7 +5526,7 @@
       try {
         var sb = await nexusSb();
         var it = (itemsByCategory[currentCategory] || []).find(function(x) { return String(x.id) === String(currentItemId); });
-        var r = await sb.functions.invoke('book-editions', { body: { id: it ? String(it.id) : '' } });
+        var r = await sb.functions.invoke('book-editions', { body: { id: it ? String(it.id) : '', lang: NEXUS_LANG } });
         if (r.error) throw new Error(r.error.message || 'Error en book-editions');
         var editions = (r.data && r.data.editions) || [];
         _editionsLoaded = true;
@@ -5574,7 +5576,7 @@
       var total = Number(d.total) || 0;
       var pos = Math.round(pct * total / 100);
       var neg = Math.max(0, total - pos);
-      var fmt = function(n) { return n.toLocaleString('es'); };
+      var fmt = function(n) { return n.toLocaleString(NEXUS_LANG === 'en' ? 'en-US' : 'es'); };
       var tierColor = pct >= 60 ? 'var(--positive)' : pct >= 40 ? '#8f98a0' : '#ff8585';
       var segs = ['#c93b3b', '#d98e4a', '#8f98a0', '#a4c96b', '#5ba32b'];
       var bar = '<div class="rev-bar5">' + segs.map(function(c) {
@@ -5589,7 +5591,7 @@
       }
       return '<div class="rev-wrap">'
         + '<div class="rev-top"><span class="rev-big">' + pct + '%</span>'
-        + '<span class="rev-tier" style="color:' + tierColor + '">' + escaparHTML(d.tier || '') + '</span>' + trend + '</div>'
+        + '<span class="rev-tier" style="color:' + tierColor + '">' + escaparHTML(d.tier_idx != null ? t('rv.t' + d.tier_idx) : (d.tier || '')) + '</span>' + trend + '</div>'
         + bar
         + '<div class="rev-meta"><span>' + fmt(pos) + ' ' + t('rv.pos') + '</span><span>' + fmt(neg) + ' ' + t('rv.neg') + '</span><span>' + fmt(total) + ' ' + t('rv.total') + (d.total30 ? ' · ' + fmt(d.total30) + ' ' + t('rv.30d') : '') + '</span></div>'
         + '</div>';
@@ -5602,7 +5604,7 @@
         var sb = await nexusSb();
         var it = (itemsByCategory[currentCategory] || []).find(function(x) { return String(x.id) === String(currentItemId); });
         var appid = it ? String(it.id) : '';
-        var r = await sb.functions.invoke('steam-reviews', { body: { appid: appid } });
+        var r = await sb.functions.invoke('steam-reviews', { body: { appid: appid, lang: NEXUS_LANG } });
         if (r.error) throw new Error(r.error.message || 'Error en steam-reviews');
         _resenasLoaded = true;
         if (!r.data || r.data.pct == null) { box.innerHTML = '<div class="upd-empty">' + t('rv.none') + '</div>'; return; }
