@@ -57,7 +57,7 @@
 
 | Requirement | Status | Location | Details |
 | :--- | :---: | :--- | :--- |
-| **Mobile Top Search (`popstate` Back Button)** | 🔴 **PENDING** | `Index.html` (~L1303, ~L1335) | `#inputBuscar` only calls `cerrarBusquedaAgregar()` on `focus`/`click`; no `history.pushState()`. `popstate` covers modals, `#panel-filtros`, `#inputAgregar`/dropdown — not the top search. Android back button exits instead of blurring search. |
+| **Mobile Top Search (`popstate` Back Button)** | ✅ DONE (en `index.html` PWA) | `inputBuscar` focus/click + `popstate` | Focus hace `pushState({sf:true})`; back button → blur + reset estado. |
 | **Strip `[YYYY-MM-DD]` dates from Patch Notes** | ✅ DONE | `WebAPP.gs` L807 / `Index.html` ~L1937 | `WebAPP.gs` stores `'[' + fDate + '] ' + title` into `notaParche`; the modal renders it raw in the `rows` array (`'Nota Parche'` row) with no cleanup regex. |
 | **Reset modal scroll on open/close** | ✅ DONE | `Index.html` ~L1855 / ~L2040 | No `scrollTop` usage exists. `.modal-content` is the `overflow-y: auto` container (~L560) shared by `#modal`, `#modal-papelera`, `#modal-match`; `abrirModal()`/`cerrarModal()` don't reset it. |
 
@@ -437,9 +437,9 @@ See [AppScript/BETA.md](BETA.md) — one entry per working session: what was don
 
 ### Phase 3 — Backend & offline (v1.x)
 
-- [x] **Mods Tracker:** implementado 2026-11-26 directo sobre Supabase (`mods` table + RLS, sin sheet) — ver spec arriba. UI lista en `index.html`; pendiente prueba visual.
+- [x] **Mods Tracker:** ✅ implementado — UI en acordeón `.mods-accordion` del modal juegos (spec arriba).
 - [x] **Steam Reviews:** implementado 2026-11-26 — Edge Function `steam-reviews` (scrape store page, tooltips 30d+all-time, tier 5-bloques, trend chip) + botón lazy "Reseñas Steam" en modal de juegos. E2E: Cyberpunk 92%/23,297.
-- [ ] **Game Update History:** Steam news RSS `feeds/news/app/{appid}` — public, no key; same cookie chain as reviews. Needs appid only.
+- [x] **Game Update History:** ✅ implementado 2026-11-26 — Edge Function `steam-updates` + botón lazy en modal juegos (updates = título+fecha+link, sin descripción).
 - [ ] **Book Editions:** OpenLibrary `works/{key}/editions.json` — free, no key. **Input needed:** the OL **work key** (not edition key) per book — verify resolver captures it at search time or derive via edition→`works[]`; if missing, add work-key capture to the resolver first.
 - [x] **Open Library `fetchAll`:** refactor hecho 2026-11-26 en `providers.ts` (Promise.all).
 - [x] **Health check + offline read-only:** ambos hechos 2026-11-26 (Edge Function `health` + modo offline frontend).
