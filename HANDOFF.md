@@ -1,13 +1,13 @@
 # NexusLib — Handoff
 
-Estado actual para la próxima sesión. Último commit: `8383b87` (SW v78, rama `beta`).
+Estado actual para la próxima sesión. Último commit: `384acfc` (SW v93, rama `beta`).
 
 ## Estado del código
 
 **Rama:** `beta` — working tree limpio, commits pusheados.
 **Producción:** `main` — no tocar sin `Confirmar deploy` literal.
 **DB:** prod + standby en espejo (datos idénticos, schema sincronizado tras delta 07).
-**Último commit:** `be45666` (SW v92).
+**Último commit:** `384acfc` (SW v93).
 
 ## Trabajo realizado en esta sesión
 
@@ -119,3 +119,25 @@ F12 → Application → Service Workers → Unregister (si hay cache vieja)
 
 ---
 Generado 2026-11-26. Último commit: `8383b87`.
+
+### Sesión UI — dropdowns custom en TODOS los filtros (commit `384acfc`, SW v93)
+
+- `initCustomSelect(id, onChange)` reescrito: delegación de clicks en el wrap
+  (los `<li>` se regeneran sin perder listeners), callback por wrapper,
+  idempotente vía `dataset.csInit`, cierra otros dropdowns abiertos.
+- Helpers nuevos: `nexusCSMenuHTML`, `nexusCustomSelectWrap`,
+  `nexusCSSyncSelect`, `nexusSyncPanelCustomSelects`, `nexusCSRebuildMenu`,
+  `nexusCSCloseOthers`. Patrón: hidden input conserva el id que lee
+  `filtrarItems`; wrapper id = `<hiddenId>-dropdown`.
+- `nexusRenderFilterPersonas` ahora genera custom-selects para
+  `filter-est-*`/`filter-nota-*` y reconstruye menús de `filter-deseado`
+  (todos/cualquiera/ninguno/solo:key/all) y `filter-orden`
+  (az/za/recientes/nota:key/puntuacion) — opciones por persona restauradas.
+- `configurarFiltrosCategoria` genera custom-selects para `f-extra-1/2/3`
+  en las 4 categorías; en Películas f-extra-1 setea `fSubcat` antes de filtrar.
+- Eliminado `<select id="filter-orden">` nativo duplicado; corregidos valores
+  inválidos (`deseado`→`cualquiera`, `recent`→`recientes`).
+- `resetFiltros` llama `nexusSyncPanelCustomSelects()` para actualizar labels.
+- `.custom-select-menu` fondo opaco `#0d1322` (sin transparencia).
+- Verificado en vivo: 9 custom-selects en panel, 0 selects nativos,
+  selección filtra, reset sincroniza labels.
