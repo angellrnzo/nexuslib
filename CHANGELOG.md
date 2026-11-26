@@ -9,7 +9,7 @@ Deploy versions for the Apps Script web app are noted per entry.
 ### Improved (web verifications 2026-11-27)
 
 - Service Worker: navegaciones ahora network-first con fallback a cache (estandar web.dev/MDN) — el HTML ya no queda stale tras un deploy; assets siguen cache-first.
-- OpenLibrary: User-Agent identificado (app + repo URL) en TODOS los fetchers de providers.ts y book-editions — antes iban sin UA (rate limit base 1 req/s, riesgo de block). Pendiente: email de contacto del usuario para subir a 3 req/s.
+- OpenLibrary: User-Agent identificado (app + repo URL) en TODOS los fetchers de providers.ts y book-editions — antes iban sin UA (rate limit base 1 req/s, riesgo de block). Email de contacto incluido (angellrnzo@gmail.com) -> rate limit OL 3x activo.
 - Verificado sin cambios: Steam appdetails sigue keyless/vivo; AniList en rate limit degradado 30 req/min (uso actual muy por debajo); pg_cron+pg_net disponibles en Supabase free tier (scheduler TTL refresh ya no esta bloqueado por plataforma).
 
 ### Security (RLS hardening)

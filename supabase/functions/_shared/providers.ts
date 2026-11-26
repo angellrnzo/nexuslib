@@ -20,9 +20,8 @@ export interface FlatMeta {
 const STEAMGRIDDB_API_KEY = (Deno.env.get('STEAMGRIDDB_API_KEY') || '').trim();
 const TMDB_API_KEY = (Deno.env.get('TMDB_API_KEY') || '').trim();
 
-// OpenLibrary pide UA identificado (app + contacto) para rate limit 3x.
-// TODO: agregar email de contacto cuando el usuario lo defina (sube a 3 req/s).
-const OL_UA = 'NexusLib/1.0 (+https://github.com/angellrnzo/nexuslib)';
+// OpenLibrary pide UA identificado (app + email) para rate limit 3x (3 req/s).
+const OL_UA = 'NexusLib/1.0 (angellrnzo@gmail.com; https://github.com/angellrnzo/nexuslib)';
 
 export type Lang = 'es' | 'en';
 const steamL = (l: Lang) => l === 'en' ? 'english' : 'spanish';
