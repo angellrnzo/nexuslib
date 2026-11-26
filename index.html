@@ -4638,19 +4638,21 @@
         var pct = totalElementos > 0 ? Math.round((st[field] / totalElementos) * 100) : 0;
         return '<div class="stat-bar-row">' +
           '<div class="stat-bar-labels"><span style="color:' + p.color + ';">' + nexusPersonaDot(p, 14) + ' ' +
-          vinculosEsc(p.label || p.suffix) + ': ' + st[field] + '</span><span>' + pct + '%</span></div>' +
+          (multiPers ? vinculosEsc(p.label || p.suffix) + ': ' : '') + st[field] + '</span><span>' + pct + '%</span></div>' +
           '<div class="stat-bar-track"><div class="stat-bar-fill" style="width:' + pct + '%;background:' + p.color + ';"></div></div>' +
         '</div>';
       }
+      var multiPers = selPers.length > 1;
       function barras(field) {
-        return pers.map(function(p) { return barraPersona(p, field); }).join('');
+        return selPers.map(function(p) { return barraPersona(p, field); }).join('');
       }
       function lineasNota() {
-        return pers.map(function(p) {
+        return selPers.map(function(p) {
           var st = stats[p.suffix];
           var media = st.cuenta > 0 ? (st.suma / st.cuenta).toFixed(1) : '0.0';
-          return '<div class="stat-detail-line">' + nexusPersonaDot(p, 14) + ' Nota media ' +
-            vinculosEsc(p.label || p.suffix) + ': <strong>' + media + ' / 10</strong> (' + st.cuenta + ' valoraciones)</div>';
+          return '<div class="stat-detail-line">' + nexusPersonaDot(p, 14) + ' ' +
+            (multiPers ? vinculosEsc(p.label || p.suffix) + ' — ' : '') +
+            'nota media <strong>' + media + ' / 10</strong> (' + st.cuenta + ' valoraciones)</div>';
         }).join('');
       }
 
@@ -4689,7 +4691,7 @@
       var lineasBalance = selPers.map(function(p) {
         var st = stats[p.suffix];
         var pctWish = (st.comp + st.wish) > 0 ? Math.round((st.comp / (st.comp + st.wish)) * 100) : 0;
-        return '<div class="br-line">' + nexusPersonaDot(p, 14) + ' <strong>' + vinculosEsc(p.label || p.suffix) + '</strong>: ' +
+        return '<div class="br-line">' + nexusPersonaDot(p, 14) + ' ' + (selPers.length > 1 ? '<strong>' + vinculosEsc(p.label || p.suffix) + '</strong>: ' : '') +
           st.comp + ' completados · ' + st.proc + ' en proceso · ' + st.wish + ' en wishlist · ' +
           'nota media <strong>' + (st.cuenta > 0 ? (st.suma / st.cuenta).toFixed(1) : '0.0') + '</strong>' +
           ' · <span style="color:#8f98a0;">' + pctWish + '% de tu backlog+cosechados resueltos</span></div>';
