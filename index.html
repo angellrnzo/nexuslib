@@ -380,11 +380,15 @@
     .stats-profile-email { font-size: 11px; color: #8f98a0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .stats-profile-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
     .stats-profile-actions .btn {
-      height: 36px; padding: 0 16px; font-size: 12px; font-weight: 700;
+      height: 34px; padding: 0 14px; font-size: 12px; font-weight: 700;
       border-radius: 10px; display: inline-flex; align-items: center; justify-content: center;
       white-space: nowrap;
+      background: rgba(102,192,244,.12); color: var(--accent);
+      border: 1px solid rgba(102,192,244,.35);
+      transition: background var(--t-fast) var(--ease-out), border-color var(--t-fast) var(--ease-out);
     }
-    .stats-profile-actions .btn.open { background: rgba(255,255,255,.14); color: var(--text); }
+    .stats-profile-actions .btn:hover { background: rgba(102,192,244,.22); }
+    .stats-profile-actions .btn.open { background: rgba(102,192,244,.28); border-color: var(--accent); }
     .perfil-edit {
       max-height: 0; opacity: 0; overflow: hidden; margin-top: 0;
       transition: max-height .32s var(--ease-out), opacity .22s var(--ease-out), margin .32s var(--ease-out);
@@ -396,8 +400,25 @@
       padding: 16px 18px; display: grid; gap: 10px;
     }
     .perfil-edit-inner label { font-size: 11px; color: #8f98a0; font-weight: 700; }
+    .perfil-edit-block {
+      display: grid; gap: 8px;
+      padding: 12px; border-radius: 12px;
+      background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.07);
+    }
+    .perfil-edit-block + .perfil-edit-block { margin-top: 4px; }
     .perfil-edit-row { display: flex; gap: 8px; align-items: center; }
     .perfil-edit-row .btn-text { flex: 1; justify-content: center; }
+    .perfil-edit-inner > .btn-text {
+      height: 42px; border-radius: 10px; font-size: 13px;
+      background: rgba(102,192,244,.16); color: var(--accent);
+      border: 1px solid rgba(102,192,244,.4);
+    }
+    .perfil-edit-inner > .btn-text:hover { background: rgba(102,192,244,.28); filter: none; }
+    @media (max-width: 480px) {
+      .stats-profile-card { flex-wrap: wrap; row-gap: 10px; }
+      .stats-profile-actions { width: 100%; }
+      .stats-profile-actions .btn { flex: 1; }
+    }
 
     .filter-panel {
       position: fixed;
@@ -1374,13 +1395,20 @@
       <div class="stats-profile-card" id="stats-profile-card"></div>
       <div class="perfil-edit" id="perfil-edit">
         <div class="perfil-edit-inner">
-          <label for="pf-display">NOMBRE PÚBLICO</label>
-          <input id="pf-display" class="na-in" type="text" maxlength="60" style="margin-bottom:0;">
-          <button class="btn btn-text" onclick="guardarPerfil()">Guardar cambios</button>
-          <div style="border-top:1px solid var(--border);padding-top:12px;">
-            <label for="pf-invite">TU CÓDIGO DE VÍNCULO</label>
+          <div class="perfil-edit-block">
+            <label for="pf-display">NOMBRE PÚBLICO</label>
+            <input id="pf-display" class="na-in" type="text" maxlength="60" style="margin-bottom:0;">
+            <label for="pf-username" style="margin-top:10px;">USUARIO</label>
+            <div class="perfil-edit-row">
+              <span style="color:#8f98a0;font-weight:700;font-size:13px;">@</span>
+              <input id="pf-username" class="na-in" type="text" maxlength="30" style="margin-bottom:0;flex:1;">
+            </div>
+            <button class="btn btn-text" onclick="guardarPerfil()">Guardar cambios</button>
+          </div>
+          <div class="perfil-edit-block">
+            <label for="pf-invite">CÓDIGO DE VÍNCULO</label>
             <div class="perfil-edit-row" style="margin-top:6px;">
-              <input id="pf-invite" class="na-in" type="text" readonly style="margin-bottom:0;font-family:monospace;letter-spacing:1px;">
+              <input id="pf-invite" class="na-in" type="text" readonly style="margin-bottom:0;font-family:monospace;letter-spacing:1px;flex:1;">
               <button class="btn btn-circle" onclick="copiarInvitePerfil()" title="Copiar"><svg class="ico"><use href="#i-copy"/></svg></button>
             </div>
           </div>
@@ -1777,6 +1805,7 @@
       var p = _nexusProfile || {};
       var user = _nexusUser || {};
       document.getElementById('pf-display').value = p.display_name || '';
+      document.getElementById('pf-username').value = p.username || '';
       // invite_code de mi biblioteca personal
       try {
         var sb = await nexusSb();
@@ -1795,10 +1824,20 @@
       try {
         var nombre = document.getElementById('pf-display').value.trim();
         if (!nombre) { showToast && showToast('El nombre no puede estar vacío.', 'error'); return; }
+        var uname = document.getElementById('pf-username').value.trim().toLowerCase()
+          .replace(/[^a-z0-9_]/g, '').slice(0, 30);
+        if (!uname) { showToast && showToast('El usuario no puede estar vacío (solo a-z, 0-9 y _).', 'error'); return; }
         var sb = await nexusSb();
-        var r = await sb.from('profiles').update({ display_name: nombre }).eq('id', _nexusUser.id);
-        if (r.error) throw new Error(r.error.message);
+        var r = await sb.from('profiles').update({ display_name: nombre, username: uname }).eq('id', _nexusUser.id);
+        if (r.error) {
+          if (/duplicate|unique|already/i.test(r.error.message || '')) {
+            showToast && showToast('Ese usuario ya está en uso.', 'error'); return;
+          }
+          throw new Error(r.error.message);
+        }
         _nexusProfile.display_name = nombre;
+        _nexusProfile.username = uname;
+        nexusRenderProfileHeader();
         showToast && showToast('Perfil guardado.', 'success');
         cerrarPerfilEdit();
       } catch (e) {
