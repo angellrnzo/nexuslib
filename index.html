@@ -648,6 +648,17 @@
     .btn-trailer.active { background: rgba(201, 59, 59, 0.14); border-color: rgba(201, 59, 59, 0.4); color: #ff8585; }
     .trailer-box { display: none; margin-top: 8px; border-radius: 8px; overflow: hidden; background: #000; }
     .trailer-box iframe, .trailer-box video { width: 100%; aspect-ratio: 16 / 9; display: block; border: 0; max-height: 320px; }
+    .updates-box { display: none; margin-top: 8px; padding: 8px 10px; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); max-height: 340px; overflow-y: auto; }
+    .upd-item { padding: 8px 2px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .upd-item:last-child { border-bottom: none; }
+    .upd-title { font-size: 12px; font-weight: 600; color: var(--text); line-height: 1.35; }
+    .upd-title a { color: inherit; text-decoration: none; }
+    .upd-title a:hover { color: var(--accent); }
+    .upd-meta { display: flex; align-items: center; gap: 8px; margin-top: 3px; font-size: 10px; color: #8f98a0; }
+    .upd-badge { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; padding: 1px 6px; border-radius: 20px; background: rgba(91,163,43,0.15); color: #7ec850; border: 1px solid rgba(91,163,43,0.35); }
+    .upd-summary { font-size: 11px; color: #8f98a0; margin-top: 3px; line-height: 1.4; }
+    .upd-empty { font-size: 12px; color: #8f98a0; text-align: center; padding: 14px 0; }
+
 
     #modal-vinculos .modal-title { min-height: 38px; }
     .share-person-row { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 6px; cursor: pointer; }
@@ -1167,6 +1178,13 @@
           <svg class="ico ico-sm"><use href="#i-play"/></svg> Ver Tráiler
         </button>
         <div id="m-trailer-box" class="trailer-box"></div>
+      </div>
+
+      <div id="m-updates-bar" class="trailer-bar" style="display:none;">
+        <button type="button" id="btn-toggle-updates" class="btn-trailer" onclick="toggleUpdates()">
+          <svg class="ico ico-sm"><use href="#i-sync"/></svg> Historial de Updates
+        </button>
+        <div id="m-updates-box" class="updates-box"></div>
       </div>
 
       <p id="m-desc" class="modal-desc"></p>
@@ -3172,6 +3190,18 @@
         trBar.style.display = 'none';
       }
 
+      var updBar = document.getElementById('m-updates-bar');
+      var esJuegoNexus = (NEXUS_MODE && currentCategory === 'Juegos' && /^\d+$/.test(String(it.id || '')));
+      updBar.style.display = esJuegoNexus ? 'block' : 'none';
+      if (esJuegoNexus) {
+        var ubox = document.getElementById('m-updates-box');
+        ubox.style.display = 'none'; ubox.innerHTML = '';
+        var ubtn = document.getElementById('btn-toggle-updates');
+        ubtn.classList.remove('active');
+        ubtn.innerHTML = `${svgIcon('i-sync', 'ico-sm')} Historial de Updates`;
+        _updatesLoaded = false;
+      }
+
       var rows = [['ID', it.id], ['Autor', autorTexto], ['Lanzamiento / Fecha', it.fecha], ['Editorial / Estudio', it.editorial]];
       if (currentCategory === 'Juegos') {
         rows.push(
@@ -3399,6 +3429,7 @@
 
     function cerrarModal() {
       detenerTrailer();
+      detenerUpdates();
       document.querySelectorAll('.modal-content').forEach(function(el) { el.scrollTop = 0; });
       resetearDesplegablesModal();
       var modal = document.getElementById('modal');
@@ -3946,6 +3977,60 @@
     function extraerYouTubeId(url) {
       var m = String(url || '').match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
       return m ? m[1] : null;
+    }
+
+    // ---- GAME UPDATE HISTORY (Steam news RSS via Edge Function steam-updates) ----
+    var _updatesLoaded = false;
+
+    function detenerUpdates() {
+      var box = document.getElementById('m-updates-box');
+      var btn = document.getElementById('btn-toggle-updates');
+      if (box) { box.style.display = 'none'; }
+      if (btn) { btn.classList.remove('active'); btn.innerHTML = `${svgIcon('i-sync', 'ico-sm')} Historial de Updates`; }
+    }
+
+    async function toggleUpdates() {
+      var box = document.getElementById('m-updates-box');
+      var btn = document.getElementById('btn-toggle-updates');
+      if (box.style.display === 'block') { detenerUpdates(); return; }
+      box.style.display = 'block';
+      btn.classList.add('active');
+      btn.innerHTML = `${svgIcon('i-x', 'ico-sm')} Ocultar Updates`;
+      if (!_updatesLoaded) await nexusFetchUpdates();
+    }
+
+    function nexusFmtDate(pub) {
+      try {
+        var d = new Date(pub);
+        return isNaN(d) ? String(pub || '') : d.toLocaleDateString('es', { day: 'numeric', month: 'short', year: 'numeric' });
+      } catch (e) { return String(pub || ''); }
+    }
+
+    async function nexusFetchUpdates() {
+      var box = document.getElementById('m-updates-box');
+      box.innerHTML = '<div class="upd-empty">Cargando updates...</div>';
+      try {
+        var sb = await nexusSb();
+        var it = (itemsByCategory[currentCategory] || []).find(function(x) { return String(x.id) === String(currentItemId); });
+        var appid = it ? String(it.id) : '';
+        var r = await sb.functions.invoke('steam-updates', { body: { appid: appid } });
+        if (r.error) throw new Error(r.error.message || 'Error en steam-updates');
+        var items = (r.data && r.data.items) || [];
+        _updatesLoaded = true;
+        if (!items.length) { box.innerHTML = '<div class="upd-empty">Sin noticias en Steam para este juego.</div>'; return; }
+        box.innerHTML = items.map(function(u) {
+          return '<div class="upd-item">'
+            + '<div class="upd-title">' + (u.url
+                ? '<a href="' + escaparHTML(u.url) + '" target="_blank" rel="noopener noreferrer">' + escaparHTML(u.title) + '</a>'
+                : escaparHTML(u.title)) + '</div>'
+            + '<div class="upd-meta"><span>' + escaparHTML(nexusFmtDate(u.date)) + '</span>'
+            + (u.is_update ? '<span class="upd-badge">Update</span>' : '') + '</div>'
+            + (u.summary ? '<div class="upd-summary">' + escaparHTML(u.summary) + '</div>' : '')
+            + '</div>';
+        }).join('');
+      } catch (e) {
+        box.innerHTML = '<div class="upd-empty">' + escaparHTML('Error: ' + (e.message || '')) + '</div>';
+      }
     }
 
     function toggleTrailer() {

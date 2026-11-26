@@ -179,7 +179,7 @@ Plus RLS policies mirroring the existing per-user tracking rules, and the same m
 
 ## 🔧 Planned Feature: Game Update History — Steam patch log (v1.x — spec only, not implemented)
 
-> **Status:** 📋 **SPEC** — documented 2026-11-23, pending implementation decision.
+> **Status:** ✅ **IMPLEMENTADO 2026-11-26 (Supabase)** — Edge Function `steam-updates` (POST {appid} → RSS `feeds/news/app/{appid}` parseado: date/title/url/summary/is_update, últimos 20 items, badge Update por keywords ES/EN). Deployada en principal + standby. UI en `index.html`: botón "Historial de Updates" en el modal de juego (solo Juegos con appid numérico + NEXUS_MODE), caja lazy-load estilo trailer, items con fecha + título-link + badge + resumen. Verificado E2E con Cyberpunk 2079 (10 items reales). El `doGet` de Apps Script del spec original quedó obsoleto — el proxy vive en Supabase.
 > User idea: keep the full patch/changelog history per game — Steam publishes every update on the store page (e.g. *Mewgenics* update history), and users want it tracked inside the app instead of checking Steam manually.
 
 ### Patch log concept
