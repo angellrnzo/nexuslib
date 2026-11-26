@@ -65,15 +65,15 @@
 
 | Pattern | Status | Target | Implementation Notes |
 | :--- | :---: | :--- | :--- |
-| **Skeleton Shimmer Loading** | 🔴 **PENDING** | `cargarCategoria()` (~L1482) | Replace `.spinner-container` with 6–8 proportion-locked skeleton cards (`460/215` landscape, `2/3` poster). |
-| **Spring Micro-Feedback** | 🟡 PARCIAL 2026-11-26 (--ease-spring/--t-micro/--t-pop tokens + aplicada a chevrons/dots; optimistic UI pendiente) | `:root` (~L15), `.wish-toggle`, `.star` | Add `--ease-spring` tactile curves + 0ms Optimistic UI updates. |
-| **Directional Tab Transitions** | 🔴 **PENDING** | `.category-tabs`, `inicializarGestosSwipe()` (~L1254) | Animate `#grid` entry (`slideInRight`/`slideInLeft`, ±22px) matching swipe direction. |
-| **Double-Tap Heart Burst** | 🔴 **PENDING** | `.img-container` (~L404), `renderGrid()` (~L1679) | Double-tap cover → `igHeartBurst` + wishlist toggle without opening the modal. |
-| **Bottom Sheet & Pull-to-Dismiss** | 🔴 **PENDING** | `#modal .modal-content` (~L559, ~L754) | Mobile modals as bottom-sheet drawers with drag handle and pull-to-close. |
+| **Skeleton Shimmer Loading** | ✅ DONE 2026-11-27 (`nexusSkeletonGrid` + `.skel-grid` en `index.html`) | `cargarCategoria()` | Skeleton cards con proporción de `.card` reemplazan el spinner en carga inicial y refresh. |
+| **Spring Micro-Feedback** | ✅ DONE 2026-11-27 (tokens + optimistic UI en wish/stars/progreso/nota/capitulos con toast de error; fix race de handlers en `nexusRun._exec`) | `index.html` | Updates 0ms sobre `it`+localStorage+rerender, `RUN.*` en background con `.withFailureHandler` toast. |
+| **Directional Tab Transitions** | ✅ DONE 2026-11-27 (`#grid` slide ±22px según dirección tabs/swipe + stagger por filas) | `index.html` | Verificado en beta. |
+| **Double-Tap Heart Burst** | ✅ DONE 2026-11-27 (`nexusHeartBurst` + `nexusToggleDeseadoCard` en touchend/dblclick) | `index.html` | En touch no abre modal; desktop `dblclick`. |
+| **Bottom Sheet & Pull-to-Dismiss** | ✅ DONE 2026-11-27 (≤768px bottom-sheet + handle sticky + pull-down >90px cierra + overscroll-behavior + scroll-lock) | `index.html` | `body.modal-open` via MutationObserver en los 5 modales + lightbox. |
 | **Carousel Scroll-Snap & Dots** | ✅ DONE 2026-11-26 (scroll-snap + dots dinámicos) | `#m-screenshots` (~L1064, ~L1943) | `scroll-snap-type: x mandatory` + dynamic pagination dots for Steam screenshots. |
 | **Image Lightbox Viewer** | ✅ DONE 2026-11-26 (fullscreen, flechas, teclado, counter) | `#m-screenshots`, `.carousel img` (~L650) | Fullscreen in-app lightbox for covers/screenshots/backdrops — arrows, keyboard/swipe nav, ESC/backdrop close. Keeps user inside the app (preferred over `window.open`/new tab, which breaks PWA context). User idea 2026-11-23. |
 | **Dialog Semantics & Focus Trap** | ✅ DONE 2026-11-27 (4 modales con role=dialog/aria-modal, Escape cierra, focus al abrir, Tab/Shift+Tab cicla dentro del modal) | `#modal`, `#modal-papelera`, `#modal-match`, `#modal-perfil` | `role="dialog"`/`aria-modal`/`aria-labelledby`, focus trap Tab-cycle, focus restore on close. Spec in Phase 2E. |
-| **Empty & Error State Boxes** | ✅ DONE 2026-11-27 (`nexusStateBox` compartido aplicado en grid error/vacío; pendiente papelera/search) | `cargarCategoria()`, `renderGrid()` | Shared `.state-box` (icon+title+desc+action) — error variant con **Reintentar**, empty variant con sugerencia. Offline variant queda para wiring con `body.offline`. Spec in Phase 2F. |
+| **Empty & Error State Boxes** | ✅ DONE 2026-11-27 (`nexusStateBox` en grid error/vacío/búsqueda + papelera empty/error con Reintentar) | `index.html` | Offline variant queda para wiring con `body.offline`. |
 
 ### 🧪 3. Backend, Infrastructure & Data Audit
 

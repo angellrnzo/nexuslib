@@ -1751,10 +1751,14 @@
       withSuccessHandler: function(f) { this._ok = f; return this; },
       withFailureHandler: function(f) { this._fail = f; return this; },
       _exec: function(p) {
+        // capturar handlers al llamar: el singleton compartia _ok/_fail y una
+        // llamada posterior podia secuestrar el callback de una promesa pendiente
+        var ok = this._ok, fail = this._fail;
+        this._ok = null; this._fail = null;
         Promise.resolve(p).then(function(r) {
-          try { if (nexusRun._ok) nexusRun._ok(r); } catch (e) { console.error(e); }
+          try { if (ok) ok(r); } catch (e) { console.error(e); }
         }).catch(function(e) {
-          try { if (nexusRun._fail) nexusRun._fail(e); else console.error(e); } catch (_) {}
+          try { if (fail) fail(e); else console.error(e); } catch (_) {}
         });
       },
       getItems: function(cat) {
@@ -3654,7 +3658,7 @@
       it['deseado' + suf] = nuevo;
       try { localStorage.setItem('media_lib_' + CACHE_VERSION + '_' + currentCategory, JSON.stringify(itemsByCategory[currentCategory])); } catch (e) {}
       filtrarItems();
-      RUN.guardarDeseadoItem(currentCategory, it.id, suf, nuevo);
+      RUN.guardarDeseadoItem(currentCategory, it.id, suf, nuevo).withFailureHandler(function(){ showToast('No se pudo guardar el cambio.', 'error'); });
     }
 
     function renderGrid(items) {
@@ -4438,7 +4442,7 @@
         try { localStorage.setItem(`media_lib_${CACHE_VERSION}_${currentCategory}`, JSON.stringify(itemsByCategory[currentCategory])); } catch (e) {}
         filtrarItems();
       }
-      RUN.guardarTotalCapitulos(currentCategory, currentItemId, total);
+      RUN.guardarTotalCapitulos(currentCategory, currentItemId, total).withFailureHandler(function(){ showToast('No se pudo guardar el cambio.', 'error'); });
     }
 
     function guardarTracking(persona, estrellasOverride) {
@@ -4457,7 +4461,7 @@
       try { localStorage.setItem(`media_lib_${CACHE_VERSION}_${currentCategory}`, JSON.stringify(itemsByCategory[currentCategory])); } catch (e) {}
       filtrarItems();
 
-      RUN.guardarProgresoItem(currentCategory, currentItemId, persona, est, pts, prog);
+      RUN.guardarProgresoItem(currentCategory, currentItemId, persona, est, pts, prog).withFailureHandler(function(){ showToast('No se pudo guardar el cambio.', 'error'); });
     }
 
     function toggleDeseado(persona) {
@@ -4471,7 +4475,7 @@
       try { localStorage.setItem(`media_lib_${CACHE_VERSION}_${currentCategory}`, JSON.stringify(itemsByCategory[currentCategory])); } catch (e) {}
       filtrarItems();
 
-      RUN.guardarDeseadoItem(currentCategory, currentItemId, persona, nuevo);
+      RUN.guardarDeseadoItem(currentCategory, currentItemId, persona, nuevo).withFailureHandler(function(){ showToast('No se pudo guardar el cambio.', 'error'); });
     }
 
     function guardarNotaJugador(persona, valor) {
@@ -4481,7 +4485,7 @@
       it['nota' + persona] = valor;
       actualizarResumenJugador(k, it['estado' + persona] || 'No jugado', it['estrellas' + persona] || 0, Boolean(it['deseado' + persona]), valor);
       try { localStorage.setItem(`media_lib_${CACHE_VERSION}_${currentCategory}`, JSON.stringify(itemsByCategory[currentCategory])); } catch (e) {}
-      RUN.guardarNotaItem(currentCategory, currentItemId, persona, valor);
+      RUN.guardarNotaItem(currentCategory, currentItemId, persona, valor).withFailureHandler(function(){ showToast('No se pudo guardar el cambio.', 'error'); });
     }
 
     function repararItemActual() {
@@ -4889,7 +4893,7 @@
       RUN
         .withSuccessHandler(function(items) {
           if (!items || items.length === 0) {
-            l.innerHTML = '<p style="text-align:center;color:#8f98a0;">La papelera está vacía.</p>';
+            l.innerHTML = nexusStateBox('empty', 'i-trash', 'Papelera vacía', 'Los elementos que elimines aparecerán aquí por 30 días.');
             return;
           }
           l.innerHTML = items.map(it => `
@@ -4903,7 +4907,7 @@
           `).join('');
         })
         .withFailureHandler(function(err) {
-          l.innerHTML = '<p style="text-align:center;color:#ff6b6b;">Error al cargar papelera: ' + escaparHTML(err.message) + '</p>';
+          l.innerHTML = nexusStateBox('err', 'i-x', 'No se pudo cargar la papelera', err.message || '', '<button class="sb-action" onclick="abrirPapelera()">Reintentar</button>');
         })
         .getItemsEliminados();
     }
