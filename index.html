@@ -1151,7 +1151,9 @@
     .mods-form-row { display: grid; grid-template-columns: 2fr 1.2fr 1fr; gap: 6px; width: 100%; }
     .mods-form-row > * { min-width: 0; }
     .btn-mods { background: rgba(155, 89, 182, 0.12); color: var(--mods); border-color: rgba(155, 89, 182, 0.35); }
-    .mods-form .btn-save { justify-content: center; padding: 10px; font-size: 13px; border-radius: 8px; margin-top: 2px; background: rgba(155, 89, 182, 0.12); color: var(--mods); border-color: rgba(155, 89, 182, 0.35); }
+    .mods-form .btn-save { justify-content: center; padding: 10px; font-size: 13px; border-radius: 8px; margin-top: 2px; background: rgba(155, 89, 182, 0.12); color: var(--mods); border-color: rgba(155, 89, 182, 0.35); transition: opacity var(--t-base) var(--ease-out), background var(--t-base) var(--ease-out), box-shadow var(--t-base) var(--ease-out); }
+    .mods-form .btn-save:disabled { opacity: 0.4; cursor: not-allowed; }
+    .mods-form .btn-save:not(:disabled):hover { background: rgba(155, 89, 182, 0.18); box-shadow: 0 0 0 1px rgba(187, 134, 252, 0.35), 0 0 22px rgba(187, 134, 252, 0.18), 0 12px 30px rgba(0,0,0,0.30); }
     .mods-empty { font-size: 12px; color: var(--muted); text-align: center; padding: 10px 0; }
     .mods-group { margin-bottom: 8px; }
     .mods-group summary {
@@ -1643,7 +1645,7 @@
           </div>
           <input type="url" id="mod-url" placeholder="URL del mod" data-i18n-ph="mods.urlph" maxlength="500">
           <textarea id="mod-notas" placeholder="Notas (load order, dependencias...)" data-i18n-ph="mods.notesph" maxlength="500"></textarea>
-          <button type="button" class="btn btn-mods btn-full btn-save" onclick="nexusModGuardar()">
+          <button type="button" id="btn-mods-save" class="btn btn-mods btn-full btn-save" disabled onclick="nexusModGuardar()">
             <svg class="ico ico-sm"><use href="#i-plus"/></svg> <span data-i18n="mods.save">Guardar mod</span>
           </button>
         </div>
@@ -4589,6 +4591,8 @@
         _modsList = r.data || [];
         nexusRenderMods();
         nexusRenderModsSearch();
+        document.getElementById('mod-nombre').oninput = nexusValidarFormMods;
+        document.getElementById('mod-url').oninput = nexusValidarFormMods;
       } catch (e) {
         list.innerHTML = '<div class="mods-empty">' + t('err.prefix') + escaparHTML(e.message || '') + '</div>';
       }
@@ -4643,6 +4647,16 @@
         return '<a class="mods-search-btn" href="' + l[1] + '" target="_blank" rel="noopener noreferrer">'
           + svgIcon('i-search', 'ico-sm') + escaparHTML(l[0]) + '</a>';
       }).join('');
+      nexusValidarFormMods();
+    }
+
+    function nexusValidarFormMods() {
+      var nombre = document.getElementById('mod-nombre').value.trim();
+      var url = document.getElementById('mod-url').value.trim();
+      var btn = document.getElementById('btn-mods-save');
+      if (!btn) return;
+      var valid = nombre.length > 0 && url.length > 0;
+      btn.disabled = !valid;
     }
 
     async function nexusModGuardar() {
@@ -4651,6 +4665,7 @@
       var version = document.getElementById('mod-version').value.trim();
       var url = document.getElementById('mod-url').value.trim();
       var notas = document.getElementById('mod-notas').value.trim();
+      nexusValidarFormMods();
       if (!nombre) { showToast && showToast('Ponle nombre al mod.', 'error'); return; }
       try {
         await nexusEnsureProfile();
