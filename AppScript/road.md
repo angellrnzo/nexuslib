@@ -947,6 +947,8 @@ These couple touches are the identity layer: they exist **only** because `link_t
 
 **Explicitly discarded:** music (streaming owns it; Last.fm covers scrobbling), shopping list (out of scope).
 
+**Backlog (agregado 2026-11-25):** **caché de portadas en Supabase Storage** — proxy Edge Function que descarga covers de OL/TMDB/Steam una vez y los sirve desde bucket público `covers/` con `cache-control` inmutable (~50-100ms vs ~0.5-1s de archive.org). srcset multi-proveedor ya aplicado (OL -S/M/L, TMDB w342/500/780, Steam header/capsule616). **Caveat escalado:** si el catálogo crece mucho o se comparte entre varios usuarios, el bucket puede llenarse (free tier ~1GB); evaluar límite, TTL o solo-cachear-items-propios en ese momento.
+
 **Backlog (queued, low priority — user note 2026-11-23):** **import/export interchange with known sources** — beyond the Phase 4 bulk *import* (Trakt/Steam/GoodReads): also support **export** of the NexusLib library to known formats/services (CSV per category, OPML-like lists, or write-back APIs where available: Trakt sync, Steam wishlist export, GoodReads CSV). Candidate sources to support both directions: Trakt.tv, Steam profile/wishlist, GoodReads, MyAnimeList/AniList list export, Letterboxd CSV, Open Library want-to-read. Decide scope when picked up — likely a Phase 8+ item after v2 stabilizes.
 
 ---
