@@ -1887,7 +1887,7 @@
       }
     };
 
-    var RUN = NEXUS_MODE ? nexusRun : google.script.run;
+    var RUN = nexusRun; // Supabase-only — el path google.script.run/Sheets quedo en WebAPP.legacy.gs
 
     // ---- auth gate ----
     // ---- PERFIL (modal) ----
@@ -3036,7 +3036,7 @@
         'toast.noresults': 'Sin resultados.', 'toast.addbtn': '+ Añadir', 'toast.noadd': 'No se pudo añadir',
         'toast.vincacept': 'Vínculo aceptado.', 'toast.rechazada': 'Solicitud rechazada.',
         'toast.itemadded': 'Elemento añadido a tu biblioteca.', 'toast.visupd': 'Visibilidad actualizada.',
-        'toast.privupd': 'Privacidad actualizada.', 'prof.userused': 'Ese usuario ya está en uso.',
+        'toast.privupd': 'Privacidad actualizada.', 'err.pause': 'El servicio está despertando — puede tardar ~30 segundos. Reintentando…', 'prof.userused': 'Ese usuario ya está en uso.',
         'cat.collectdesc': 'Figuras, juegos de mesa, rompecabezas, LEGO y más. Esta sección llega en una fase posterior del roadmap.',
         'ext.steam': 'Ver en Steam', 'ext.tmdb': 'Ver en TMDB', 'ext.anilist': 'Ver en AniList',
         'ext.anisearch': 'Buscar en AniList',
@@ -3161,7 +3161,7 @@
         'toast.noresults': 'No results.', 'toast.addbtn': '+ Add', 'toast.noadd': 'Could not add',
         'toast.vincacept': 'Link accepted.', 'toast.rechazada': 'Request declined.',
         'toast.itemadded': 'Item added to your library.', 'toast.visupd': 'Visibility updated.',
-        'toast.privupd': 'Privacy updated.', 'prof.userused': 'That username is taken.',
+        'toast.privupd': 'Privacy updated.', 'err.pause': 'The service is waking up — may take ~30 seconds. Retrying…', 'prof.userused': 'That username is taken.',
         'cat.collectdesc': 'Figures, board games, puzzles, LEGO and more. This section lands in a later roadmap phase.',
         'ext.steam': 'View on Steam', 'ext.tmdb': 'View on TMDB', 'ext.anilist': 'View on AniList',
         'ext.anisearch': 'Search AniList',
@@ -3665,11 +3665,20 @@
           else if (currentCategory === 'Estadisticas') renderizarEstadisticas();
         })
         .withFailureHandler(function(err) {
+          // Supabase free-tier pause: el proyecto duerme tras ~7d sin uso y el
+          // primer request tarda ~30s en despertar. Detectar y reintentar una vez.
+          var paused = !navigator.onLine || /pause|timed?\s*out|timeout|failed to fetch|network|503|502/i.test(String(err && err.message || ''));
           // si habia cache stale, el grid ya tiene datos — solo avisar
           if (currentCategory === cat && !(itemsByCategory[cat] && itemsByCategory[cat].length)) {
-            grid.innerHTML = nexusStateBox('err', 'i-x', t('toast.errload'), err.message || '', '<button class="sb-action" onclick="cargarCategoria(\'' + cat + '\', true)">' + t('toast.reintentar') + '</button>');
+            if (paused && !window._nexusWakeRetry) {
+              window._nexusWakeRetry = true;
+              grid.innerHTML = nexusStateBox('err', 'i-x', t('err.pause'), '', '<button class="sb-action" onclick="cargarCategoria(\'' + cat + '\', true)">' + t('toast.reintentar') + '</button>');
+              setTimeout(function() { window._nexusWakeRetry = false; cargarCategoria(cat, true); }, 35000);
+            } else {
+              grid.innerHTML = nexusStateBox('err', 'i-x', t('toast.errload'), paused ? t('err.pause') : (err.message || ''), '<button class="sb-action" onclick="cargarCategoria(\'' + cat + '\', true)">' + t('toast.reintentar') + '</button>');
+            }
           } else if (currentCategory === cat) {
-            showToast && showToast(t('toast.offupd'), 'warning');
+            showToast && showToast(paused ? t('err.pause') : t('toast.offupd'), 'warning');
           }
         })
         .getItems(cat);
