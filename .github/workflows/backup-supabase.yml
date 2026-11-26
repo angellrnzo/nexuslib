@@ -2,7 +2,7 @@ name: Backup Supabase DB
 
 on:
   schedule:
-    - cron: '0 5 * * 1' # Lunes 5:00 AM UTC (domingo noche en US-East)
+    - cron: '0 5 * * 1' # Lunes 5:00 AM UTC
   workflow_dispatch:    # Ejecucion manual desde Actions
 
 permissions:
@@ -40,22 +40,17 @@ jobs:
           retention-days: 90
           if-no-files-found: error
 
-      # --- STANDBY (opcional) -------------------------------------------
-      # Para activar: crear 2do proyecto Supabase free, aplicar schema.sql
-      # + phase*.sql, y definir estos secrets:
-      #   SUPABASE_STANDBY_DB_URL  -> postgres://...pooler.../postgres del proyecto B
-#   (standby real: ref uxixiwrvobkulkjkicjm, region us-west-2 ->
-#    host aws-0-us-west-2.pooler.supabase.com, MISMA DB password)
-      # El dump se restaura completo en el standby (reemplaza datos public).
-      # auth.users NO viaja en el dump -> recrear usuarios via admin API
-      # (ver database/RESTORE.md). Switch = cambiar SUPABASE_URL + anon key.
-      - name: Restore to standby project
+      # --- STANDBY MIRROR -------------------------------------------------
+      # Espejo vivo via database/mirror_to_standby.py: vuelca tablas public
+      # del principal al standby con TRUNCATE+INSERT y remap de profile ids
+      # por username (auth.users tiene UUIDs distintos por proyecto).
+      # Requiere var SUPABASE_STANDBY_ENABLED=true + secrets standby.
+      # Standby real: uxixiwrvobkulkjkicjm (us-west-2).
+      - name: Mirror data to standby
         if: ${{ vars.SUPABASE_STANDBY_ENABLED == 'true' }}
         env:
-          PGPASSWORD: ${{ secrets.SUPABASE_STANDBY_DB_PASSWORD }}
-          STANDBY_URL: ${{ secrets.SUPABASE_STANDBY_DB_URL }}
+          SOURCE_URL: ${{ secrets.SUPABASE_DB_URL }}
+          TARGET_URL: ${{ secrets.SUPABASE_STANDBY_DB_URL }}
         run: |
-          DUMP=$(ls nexuslib_*.dump | head -1)
-          # Restore completo con clean: el standby es espejo del principal.
-          # --clean --if-exists dropea y recrea objetos del schema public.
-          pg_restore --clean --if-exists --no-owner             --dbname="$STANDBY_URL" "$DUMP"
+          pip install -q psycopg2-binary
+          python database/mirror_to_standby.py --source-url "$SOURCE_URL" --target-url "$TARGET_URL"
