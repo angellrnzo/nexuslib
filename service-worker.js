@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nexuslib-cache-v91';
+const CACHE_NAME = 'nexuslib-cache-v92';
 const urlsToCache = [
   './index.html',
   './manifest.json',
