@@ -1641,7 +1641,7 @@
   <div id="modal-papelera" role="presentation" onclick="cerrarPapelera()">
     <div class="modal-content" role="dialog" aria-modal="true" onclick="event.stopPropagation()" style="max-width:500px;">
       <button class="modal-close" onclick="cerrarPapelera()"><svg class="ico"><use href="#i-x"/></svg></button>
-      <h2 class="modal-title"><svg class="ico ico-lg" style="color:var(--accent);"><use href="#i-trash"/></svg> Papelera de Reciclaje</h2>
+      <h2 class="modal-title"><svg class="ico ico-lg" style="color:var(--accent);"><use href="#i-trash"/></svg> <span data-i18n="modal.papelera">Papelera de Reciclaje</span></h2>
       <div id="lista-papelera" class="papelera-list"></div>
     </div>
   </div>
@@ -1650,7 +1650,7 @@
   <div id="modal-match" role="presentation" onclick="cerrarMatchModal()">
     <div class="modal-content" role="dialog" aria-modal="true" onclick="event.stopPropagation()" style="max-width:650px;">
       <button class="modal-close" onclick="cerrarMatchModal()"><svg class="ico"><use href="#i-x"/></svg></button>
-      <h2 class="modal-title"><svg class="ico ico-lg ico-wish"><use href="#i-heart-fill"/></svg> Match de Pareja</h2>
+      <h2 class="modal-title"><svg class="ico ico-lg ico-wish"><use href="#i-heart-fill"/></svg> <span data-i18n="modal.match">Match de Pareja</span></h2>
       <p style="font-size:12px;color:#8f98a0;margin-top:0;">Elementos que ambos tienen en estado Pendiente o en su Lista de Deseados:</p>
       <div class="match-container">
         <div class="match-tabs">
@@ -1676,7 +1676,7 @@
   <div id="modal-vinculos" role="presentation" onclick="cerrarVinculosModal()">
     <div class="modal-content" role="dialog" aria-modal="true" onclick="event.stopPropagation()" style="max-width:520px;">
       <button class="modal-close" onclick="cerrarVinculosModal()"><svg class="ico"><use href="#i-x"/></svg></button>
-      <h2 class="modal-title"><svg class="ico ico-lg"><use href="#i-users"/></svg> Vínculos</h2>
+      <h2 class="modal-title"><svg class="ico ico-lg"><use href="#i-users"/></svg> <span data-i18n="modal.vinculos">Vínculos</span></h2>
       <div id="vinculos-body" style="margin-top:10px;"></div>
     </div>
   </div>
@@ -1994,35 +1994,35 @@
         '<div class="na-hero"><div class="na-logo">NexusLib</div></div>' +
         '<div class="na-card">' +
         '<div class="na-tabs">' +
-        '<button class="na-tab active" data-na="login">Entrar</button>' +
-        '<button class="na-tab" data-na="signup">Crear cuenta</button>' +
-        '<button class="na-tab" data-na="recover">Recuperar</button>' +
+        '<button class="na-tab active" data-na="login">' + t('auth.login') + '</button>' +
+        '<button class="na-tab" data-na="signup">' + t('auth.signup') + '</button>' +
+        '<button class="na-tab" data-na="recover">' + t('auth.recover') + '</button>' +
         '</div>' +
         '<div class="na-pane" id="na-pane-login">' +
         '<input class="na-in" id="na-email" type="email" placeholder="Email" autocomplete="username">' +
-        '<input class="na-in" id="na-pass" type="password" placeholder="Contraseña" autocomplete="current-password">' +
-        '<button class="na-btn" id="na-btn-login">Entrar</button>' +
-        '<button class="na-alt" id="na-btn-magic">Enviar enlace mágico</button>' +
+        '<input class="na-in" id="na-pass" type="password" placeholder="' + t('auth.pass') + '" autocomplete="current-password">' +
+        '<button class="na-btn" id="na-btn-login">' + t('auth.login') + '</button>' +
+        '<button class="na-alt" id="na-btn-magic">' + t('auth.magic') + '</button>' +
         '</div>' +
         '<div class="na-pane" id="na-pane-signup" style="display:none;">' +
-        '<input class="na-in" id="na-sname" type="text" placeholder="Tu nombre" autocomplete="name" maxlength="60">' +
+        '<input class="na-in" id="na-sname" type="text" placeholder="' + t('auth.yourname') + '" autocomplete="name" maxlength="60">' +
         '<input class="na-in" id="na-sem" type="email" placeholder="Email" autocomplete="email">' +
-        '<input class="na-in" id="na-spass" type="password" placeholder="Contraseña (mín. 6)" autocomplete="new-password">' +
-        '<button class="na-btn" id="na-btn-signup">Crear cuenta</button>' +
+        '<input class="na-in" id="na-spass" type="password" placeholder="' + t('auth.pass6') + '" autocomplete="new-password">' +
+        '<button class="na-btn" id="na-btn-signup">' + t('auth.signup') + '</button>' +
         '</div>' +
         '<div class="na-pane" id="na-pane-recover" style="display:none;">' +
-        '<div style="font-size:12px;color:#8f98a0;margin-bottom:12px;">Te enviaremos un enlace para restablecer tu contraseña.</div>' +
+        '<div style="font-size:12px;color:#8f98a0;margin-bottom:12px;">' + t('auth.recoverdesc') + '</div>' +
         '<input class="na-in" id="na-rem" type="email" placeholder="Email" autocomplete="email">' +
-        '<button class="na-btn" id="na-btn-recover">Enviar enlace</button>' +
+        '<button class="na-btn" id="na-btn-recover">' + t('auth.sendlink') + '</button>' +
         '</div>' +
         '<div class="na-msg" id="na-msg"></div>' +
         '</div>' +
         '<div class="na-feats">' +
-        '<span class="na-feat"><svg class="ico ico-sm"><use href="#i-gamepad"/></svg> Juegos</span>' +
-        '<span class="na-feat"><svg class="ico ico-sm"><use href="#i-film"/></svg> Cine y Series</span>' +
-        '<span class="na-feat"><svg class="ico ico-sm"><use href="#i-book"/></svg> Libros</span>' +
-        '<span class="na-feat"><svg class="ico ico-sm"><use href="#i-manga"/></svg> Mangas</span>' +
-        '<span class="na-feat"><svg class="ico ico-sm"><use href="#i-users"/></svg> Vínculos</span>' +
+        '<span class="na-feat"><svg class="ico ico-sm"><use href="#i-gamepad"/></svg> ' + t('cat.Juegos') + '</span>' +
+        '<span class="na-feat"><svg class="ico ico-sm"><use href="#i-film"/></svg> ' + t('cat.Peliculas_Series') + '</span>' +
+        '<span class="na-feat"><svg class="ico ico-sm"><use href="#i-book"/></svg> ' + t('cat.Libros') + '</span>' +
+        '<span class="na-feat"><svg class="ico ico-sm"><use href="#i-manga"/></svg> ' + t('cat.Mangas') + '</span>' +
+        '<span class="na-feat"><svg class="ico ico-sm"><use href="#i-users"/></svg> ' + t('menu.vinculos') + '</span>' +
         '</div>' +
         '</div>';
       document.body.appendChild(ov);
@@ -2051,7 +2051,7 @@
       async function doLogin() {
         var email = val('#na-email'), pass = ov.querySelector('#na-pass').value;
         setMsg('');
-        if (!email || !pass) { setMsg('Escribe email y contraseña.'); return; }
+        if (!email || !pass) { setMsg(t('auth.err.emailpass')); return; }
         var sb = await nexusSb();
         var r = await sb.auth.signInWithPassword({ email: email, password: pass });
         if (r.error) { setMsg(r.error.message); return; }
@@ -2061,8 +2061,8 @@
       async function doSignup() {
         var name = val('#na-sname'), email = val('#na-sem'), pass = ov.querySelector('#na-spass').value;
         setMsg('');
-        if (!email || !pass) { setMsg('Email y contraseña son obligatorios.'); return; }
-        if (pass.length < 6) { setMsg('La contraseña debe tener al menos 6 caracteres.'); return; }
+        if (!email || !pass) { setMsg(t('auth.err.req')); return; }
+        if (pass.length < 6) { setMsg(t('auth.err.pass6')); return; }
         var sb = await nexusSb();
         var r = await sb.auth.signUp({
           email: email, password: pass,
@@ -2070,28 +2070,28 @@
         });
         if (r.error) { setMsg(r.error.message); return; }
         if (r.data.session && r.data.session.user) { await finishLogin(r.data.session.user); return; }
-        setMsg('Cuenta creada — revisa tu email para confirmarla y luego entra.', true);
+        setMsg(t('auth.msg.created'), true);
         ov.querySelector('.na-tab[data-na="login"]').click();
       }
 
       async function doMagic() {
         var email = val('#na-email');
         setMsg('');
-        if (!email) { setMsg('Escribe tu email.'); return; }
+        if (!email) { setMsg(t('auth.err.email')); return; }
         var sb = await nexusSb();
         var r = await sb.auth.signInWithOtp({ email: email });
-        setMsg(r.error ? r.error.message : 'Revisa tu email — enlace enviado.', !r.error);
+        setMsg(r.error ? r.error.message : t('auth.msg.magic'), !r.error);
       }
 
       async function doRecover() {
         var email = val('#na-rem');
         setMsg('');
-        if (!email) { setMsg('Escribe tu email.'); return; }
+        if (!email) { setMsg(t('auth.err.email')); return; }
         var sb = await nexusSb();
         var r = await sb.auth.resetPasswordForEmail(email, {
           redirectTo: window.location.origin + window.location.pathname
         });
-        setMsg(r.error ? r.error.message : 'Enlace de recuperación enviado — revisa tu email.', !r.error);
+        setMsg(r.error ? r.error.message : t('auth.msg.recover'), !r.error);
       }
 
       ov.querySelector('#na-btn-login').onclick = doLogin;
@@ -2115,11 +2115,11 @@
       ov.style.cssText = 'position:fixed;inset:0;z-index:99999;background:var(--bg,#0b0e14);display:flex;align-items:center;justify-content:center;padding:20px;';
       ov.innerHTML =
         '<div class="na-wrap"><div class="na-hero"><div class="na-logo">NexusLib</div>' +
-        '<div class="na-tag">Elige tu nueva contraseña</div></div>' +
+        '<div class="na-tag">' + t('auth.reset.title') + '</div></div>' +
         '<div class="na-card">' +
-        '<input class="na-in" id="nr-pass1" type="password" placeholder="Nueva contraseña (mín. 6)" autocomplete="new-password">' +
-        '<input class="na-in" id="nr-pass2" type="password" placeholder="Repite la contraseña" autocomplete="new-password">' +
-        '<button class="na-btn" id="nr-btn">Guardar y entrar</button>' +
+        '<input class="na-in" id="nr-pass1" type="password" placeholder="' + t('auth.reset.pass1') + '" autocomplete="new-password">' +
+        '<input class="na-in" id="nr-pass2" type="password" placeholder="' + t('auth.reset.pass2') + '" autocomplete="new-password">' +
+        '<button class="na-btn" id="nr-btn">' + t('auth.reset.save') + '</button>' +
         '<div class="na-msg" id="nr-msg"></div>' +
         '</div></div>';
       document.body.appendChild(ov);
@@ -2127,8 +2127,8 @@
       ov.querySelector('#nr-btn').onclick = async function() {
         var p1 = ov.querySelector('#nr-pass1').value, p2 = ov.querySelector('#nr-pass2').value;
         msg.textContent = ''; msg.style.color = '#ff8585';
-        if (p1.length < 6) { msg.textContent = 'Mínimo 6 caracteres.'; return; }
-        if (p1 !== p2) { msg.textContent = 'Las contraseñas no coinciden.'; return; }
+        if (p1.length < 6) { msg.textContent = t('auth.err.min6'); return; }
+        if (p1 !== p2) { msg.textContent = t('auth.err.mismatch'); return; }
         var sb = await nexusSb();
         var r = await sb.auth.updateUser({ password: p1 });
         if (r.error) { msg.textContent = r.error.message; return; }
@@ -3004,7 +3004,23 @@
         'cfg.Juegos.search': 'Filtrar juegos por título, dev, género o tag...', 'cfg.Juegos.add': 'AppID, URL o nombre...',
         'cfg.Peliculas_Series.search': 'Filtrar películas, series y animes...', 'cfg.Peliculas_Series.add': 'Buscar película, serie o URL...',
         'cfg.Libros.search': 'Filtrar libros por título, autor o género...', 'cfg.Libros.add': 'Buscar libro, autor o ISBN...',
-        'cfg.Mangas.search': 'Filtrar mangas por título, mangaka o género...', 'cfg.Mangas.add': 'Buscar manga o URL...'
+        'cfg.Mangas.search': 'Filtrar mangas por título, mangaka o género...', 'cfg.Mangas.add': 'Buscar manga o URL...',
+        'auth.login': 'Entrar', 'auth.signup': 'Crear cuenta', 'auth.recover': 'Recuperar',
+        'auth.pass': 'Contraseña', 'auth.pass6': 'Contraseña (mín. 6)', 'auth.yourname': 'Tu nombre',
+        'auth.magic': 'Enviar enlace mágico', 'auth.sendlink': 'Enviar enlace',
+        'auth.recoverdesc': 'Te enviaremos un enlace para restablecer tu contraseña.',
+        'auth.err.emailpass': 'Escribe email y contraseña.', 'auth.err.req': 'Email y contraseña son obligatorios.',
+        'auth.err.pass6': 'La contraseña debe tener al menos 6 caracteres.', 'auth.err.email': 'Escribe tu email.',
+        'auth.msg.created': 'Cuenta creada — revisa tu email para confirmarla y luego entra.',
+        'auth.msg.magic': 'Revisa tu email — enlace enviado.', 'auth.msg.recover': 'Enlace de recuperación enviado — revisa tu email.',
+        'auth.reset.title': 'Elige tu nueva contraseña', 'auth.reset.pass1': 'Nueva contraseña (mín. 6)',
+        'auth.reset.pass2': 'Repite la contraseña', 'auth.reset.save': 'Guardar y entrar',
+        'auth.err.min6': 'Mínimo 6 caracteres.', 'auth.err.mismatch': 'Las contraseñas no coinciden.',
+        'modal.papelera': 'Papelera de Reciclaje', 'modal.match': 'Match de Pareja', 'modal.vinculos': 'Vínculos',
+        'pa.pendiente': 'Pendiente', 'pa.sinnota': 'Sin nota', 'pa.wish': 'Marcar como deseado',
+        'st.nojugado': 'Pendiente / No jugado', 'st.enproceso': 'En proceso', 'st.completado': 'Completado',
+        'pa.progph': 'Progreso (ej. T2 E04)...', 'pa.chaps': 'Capítulos leídos', 'pa.chapstotal': 'Total manual',
+        'pa.leidos': 'Leídos', 'pa.total': 'Total', 'pa.noteph': 'Apunte rápido de {n}...', 'btn.send': 'Enviar'
       },
       en: {
         'cat.Juegos': 'Games', 'cat.Peliculas_Series': 'Movies & TV', 'cat.Libros': 'Books',
@@ -3021,13 +3037,34 @@
         'cfg.Juegos.search': 'Filter games by title, dev, genre or tag...', 'cfg.Juegos.add': 'AppID, URL or name...',
         'cfg.Peliculas_Series.search': 'Filter movies, shows and anime...', 'cfg.Peliculas_Series.add': 'Search movie, show or URL...',
         'cfg.Libros.search': 'Filter books by title, author or genre...', 'cfg.Libros.add': 'Search book, author or ISBN...',
-        'cfg.Mangas.search': 'Filter manga by title, mangaka or genre...', 'cfg.Mangas.add': 'Search manga or URL...'
+        'cfg.Mangas.search': 'Filter manga by title, mangaka or genre...', 'cfg.Mangas.add': 'Search manga or URL...',
+        'auth.login': 'Log in', 'auth.signup': 'Sign up', 'auth.recover': 'Recover',
+        'auth.pass': 'Password', 'auth.pass6': 'Password (min. 6)', 'auth.yourname': 'Your name',
+        'auth.magic': 'Send magic link', 'auth.sendlink': 'Send link',
+        'auth.recoverdesc': "We'll email you a link to reset your password.",
+        'auth.err.emailpass': 'Enter email and password.', 'auth.err.req': 'Email and password are required.',
+        'auth.err.pass6': 'Password must be at least 6 characters.', 'auth.err.email': 'Enter your email.',
+        'auth.msg.created': 'Account created — check your email to confirm it, then log in.',
+        'auth.msg.magic': 'Check your email — link sent.', 'auth.msg.recover': 'Recovery link sent — check your email.',
+        'auth.reset.title': 'Choose your new password', 'auth.reset.pass1': 'New password (min. 6)',
+        'auth.reset.pass2': 'Repeat password', 'auth.reset.save': 'Save & log in',
+        'auth.err.min6': 'Minimum 6 characters.', 'auth.err.mismatch': "Passwords don't match.",
+        'modal.papelera': 'Trash', 'modal.match': "Couple's Match", 'modal.vinculos': 'Links',
+        'pa.pendiente': 'Pending', 'pa.sinnota': 'No rating', 'pa.wish': 'Mark as wanted',
+        'st.nojugado': 'Pending / Not started', 'st.enproceso': 'In progress', 'st.completado': 'Completed',
+        'pa.progph': 'Progress (e.g. S2 E04)...', 'pa.chaps': 'Chapters read', 'pa.chapstotal': 'Manual total',
+        'pa.leidos': 'Read', 'pa.total': 'Total', 'pa.noteph': 'Quick note for {n}...', 'btn.send': 'Send'
       }
     };
     function t(k) {
       var d = STR[NEXUS_LANG] || STR.es;
       if (d[k] !== undefined) return d[k];
       return STR.es[k] !== undefined ? STR.es[k] : k;
+    }
+    function tf(k, vars) {
+      var str = t(k);
+      if (vars) for (var key in vars) str = str.split('{' + key + '}').join(vars[key]);
+      return str;
     }
     function catText(cat, field) { // label/searchPlaceholder/addPlaceholder por idioma
       if (NEXUS_LANG === 'en') {
@@ -3950,34 +3987,34 @@
             '<span id="sum-note-' + k + '" style="display:none;"><svg class="ico ico-sm" style="color:var(--accent);"><use href="#i-note"/></svg></span>' +
           '</div>' +
           '<div class="ps-row ps-row-bottom">' +
-            '<div class="status-chip status-none" id="sum-status-' + k + '">Pendiente</div>' +
-            '<span class="preview-stars no-stars" id="sum-stars-' + k + '">Sin nota</span>' +
+            '<div class="status-chip status-none" id="sum-status-' + k + '">' + t('pa.pendiente') + '</div>' +
+            '<span class="preview-stars no-stars" id="sum-stars-' + k + '">' + t('pa.sinnota') + '</span>' +
             '<svg class="ico ico-sm pa-chev"><use href="#i-chevron-down"/></svg>' +
           '</div>' +
         '</div>' +
         '<div class="player-details">' +
-          '<button type="button" id="btn-wish-' + k + '" class="wish-toggle" onclick="toggleDeseado(\'' + jsN + '\')"><svg class="ico ico-sm"><use href="#i-heart"/></svg> Marcar como deseado</button>' +
+          '<button type="button" id="btn-wish-' + k + '" class="wish-toggle" onclick="toggleDeseado(\'' + jsN + '\')"><svg class="ico ico-sm"><use href="#i-heart"/></svg> ' + t('pa.wish') + '</button>' +
           '<select id="select-estado-' + k + '" class="status-select" onchange="guardarTracking(\'' + jsN + '\')">' +
-            '<option value="No jugado">Pendiente / No jugado</option><option value="En proceso">En proceso</option><option value="Completado">Completado</option></select>' +
-          '<input type="text" id="prog-' + k + '" class="progress-input" placeholder="Progreso (ej. T2 E04)..." style="display:' + progDisp + ';" onchange="guardarTracking(\'' + jsN + '\')">' +
+            '<option value="No jugado">' + t('st.nojugado') + '</option><option value="En proceso">' + t('st.enproceso') + '</option><option value="Completado">' + t('st.completado') + '</option></select>' +
+          '<input type="text" id="prog-' + k + '" class="progress-input" placeholder="' + t('pa.progph') + '" style="display:' + progDisp + ';" onchange="guardarTracking(\'' + jsN + '\')">' +
           '<div id="chap-box-' + k + '" class="chapter-tracker-box" style="display:' + chapDisp + ';">' +
             '<div style="font-size:11px;color:#8f98a0;font-weight:700;margin-bottom:5px;display:flex;justify-content:space-between;align-items:center;gap:6px;">' +
-              '<span style="display:inline-flex;align-items:center;gap:4px;"><svg class="ico ico-sm"><use href="#i-book"/></svg> Capítulos leídos</span>' +
-              '<span id="chap-hint-' + k + '" style="color:var(--accent);">Total manual</span></div>' +
+              '<span style="display:inline-flex;align-items:center;gap:4px;"><svg class="ico ico-sm"><use href="#i-book"/></svg> ' + t('pa.chaps') + '</span>' +
+              '<span id="chap-hint-' + k + '" style="color:var(--accent);">' + t('pa.chapstotal') + '</span></div>' +
             '<div class="chapter-inputs-row">' +
-              '<input type="number" min="0" id="chap-cur-' + k + '" class="chapter-num-input" placeholder="Leídos" onchange="actualizarCapitulosUI(\'' + jsN + '\')">' +
+              '<input type="number" min="0" id="chap-cur-' + k + '" class="chapter-num-input" placeholder="' + t('pa.leidos') + '" onchange="actualizarCapitulosUI(\'' + jsN + '\')">' +
               '<span class="chapter-sep">/</span>' +
-              '<input type="number" min="0" id="chap-tot-' + k + '" class="chapter-num-input" placeholder="Total" onchange="guardarTotalCapsDesdeModal(\'' + jsN + '\')">' +
+              '<input type="number" min="0" id="chap-tot-' + k + '" class="chapter-num-input" placeholder="' + t('pa.total') + '" onchange="guardarTotalCapsDesdeModal(\'' + jsN + '\')">' +
               '<span id="chap-pct-' + k + '" class="chapter-pct-badge">0%</span>' +
             '</div>' +
             '<div class="reading-progress-track"><div id="chap-bar-' + k + '" class="reading-progress-fill"></div></div>' +
           '</div>' +
           '<div class="stars" id="stars-' + k + '"></div>' +
-          '<textarea id="note-' + k + '" class="player-note" placeholder="Apunte rápido de ' + vinculosEsc(lbl) + '..." onchange="guardarNotaJugador(\'' + jsN + '\', this.value)"></textarea>' +
+          '<textarea id="note-' + k + '" class="player-note" placeholder="' + tf('pa.noteph', { n: vinculosEsc(lbl) }) + '" onchange="guardarNotaJugador(\'' + jsN + '\', this.value)"></textarea>' +
           '<div id="share-box-' + k + '" style="display:none;margin-top:10px;">' +
             '<div style="display:flex;gap:8px;">' +
               '<button type="button" id="btn-share-' + k + '" class="btn-text" style="flex:1;background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--border);" onclick="toggleSharePanel(\'' + k + '\')"></button>' +
-              '<button type="button" id="btn-send-' + k + '" class="btn-text" style="flex:1;background:rgba(102,192,244,.1);color:var(--accent);border:1px solid rgba(102,192,244,.3);" onclick="toggleSendPanel(\'' + k + '\')"><svg class="ico ico-sm"><use href="#i-send"/></svg> Enviar</button>' +
+              '<button type="button" id="btn-send-' + k + '" class="btn-text" style="flex:1;background:rgba(102,192,244,.1);color:var(--accent);border:1px solid rgba(102,192,244,.3);" onclick="toggleSendPanel(\'' + k + '\')"><svg class="ico ico-sm"><use href="#i-send"/></svg> ' + t('btn.send') + '</button>' +
             '</div>' +
             '<div class="sp-panel" id="share-panel-' + k + '" style="display:none;margin-top:8px;"></div>' +
             '<div class="sp-panel" id="send-panel-' + k + '" style="display:none;margin-top:8px;"></div>' +
