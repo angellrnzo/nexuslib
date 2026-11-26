@@ -70,6 +70,7 @@
       touch-action: pan-y;
     }
 
+    body.modal-open { overflow: hidden; }
     body.view-stats {
       padding-top: calc(62px + env(safe-area-inset-top, 0px));
     }
@@ -625,6 +626,7 @@
     .modal-content {
       background: #182332; padding: 20px; border-radius: 16px; width: 100%; max-width: 620px; min-width: 0;
       max-height: 90dvh; overflow-y: auto; overflow-x: hidden; position: relative;
+      overscroll-behavior: contain;
       border: 1px solid rgba(102, 192, 244, 0.38);
       box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9);
       transform: translateY(10px) scale(0.985);
@@ -4792,6 +4794,12 @@
             if (c) c.focus();
           }, 60);
         }
+        // bloquear scroll del fondo cuando hay algun modal/lightbox abierto
+        var anyOpen = ['modal-vinculos', 'modal-match', 'modal-papelera', 'modal-perfil', 'modal']
+          .some(function(id) { var m = document.getElementById(id); return m && m.style.display === 'flex'; });
+        var lb = document.getElementById('nexus-lightbox');
+        if (lb && lb.style.display === 'flex') anyOpen = true;
+        document.body.classList.toggle('modal-open', anyOpen);
       }).observe(el, { attributes: true, attributeFilter: ['style'] });
     });
 
@@ -4890,7 +4898,6 @@
                 : escaparHTML(u.title)) + '</div>'
             + '<div class="upd-meta"><span>' + escaparHTML(nexusFmtDate(u.date)) + '</span>'
             + (u.is_update ? '<span class="upd-badge">Update</span>' : '') + '</div>'
-            + (u.summary ? '<div class="upd-summary">' + escaparHTML(u.summary) + '</div>' : '')
             + '</div>';
         }).join('');
       } catch (e) {
@@ -5057,6 +5064,7 @@
         });
       }
       lb.style.display = 'flex';
+      document.body.classList.add('modal-open');
       nexusLightboxRender();
     }
     function nexusLightboxRender() {
@@ -5074,6 +5082,9 @@
     function nexusCloseLightbox() {
       var lb = document.getElementById('nexus-lightbox');
       if (lb) lb.style.display = 'none';
+      var anyModal = ['modal-vinculos', 'modal-match', 'modal-papelera', 'modal-perfil', 'modal']
+        .some(function(id) { var m = document.getElementById(id); return m && m.style.display === 'flex'; });
+      document.body.classList.toggle('modal-open', anyModal);
     }
 
     function toggleTrailer() {
