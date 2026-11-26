@@ -294,7 +294,7 @@
     .btn:disabled { opacity: 0.55; cursor: not-allowed; }
 
     .btn-circle {
-      width: 32px; height: 32px; border-radius: 50%; padding: 0;
+      width: 34px; height: 34px; border-radius: 50%; padding: 0;
       background: var(--btn-primary); color: var(--on-accent); border: 1px solid rgba(255, 255, 255, 0.15);
       position: relative; opacity: 0.7; transition: opacity var(--t-base) var(--ease-out), filter var(--t-base) var(--ease-out);
     }
@@ -457,12 +457,12 @@
       background: linear-gradient(180deg, rgba(27, 40, 56, 0.99) 0%, rgba(18, 27, 40, 0.99) 100%);
       border: 1px solid rgba(102, 192, 244, 0.35);
       border-radius: 14px;
-      padding: 16px;
+      padding: 14px;
       box-shadow: 0 14px 40px rgba(0,0,0,0.85);
       z-index: 9998;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
       max-height: calc(100dvh - 205px);
       overflow-y: auto;
       opacity: 0;
@@ -471,13 +471,20 @@
       transition: opacity var(--t-base) var(--ease-out), visibility var(--t-base) var(--ease-out), transform var(--t-base) var(--ease-out);
     }
     .filter-panel.open { opacity: 1; visibility: visible; transform: translateY(0); }
-    .filter-group { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+    .filter-group { display: flex; flex-direction: column; gap: 6px; width: 100%; }
     .filter-group:empty { display: none; }
     .filter-group label { font-size: 11px; color: var(--muted); font-weight: 600; display: inline-flex; align-items: center; gap: 5px; }
     .filter-group select {
       background: rgba(0,0,0,0.45); color: white; border: 1px solid rgba(255,255,255,0.12);
-      padding: 7px 10px; border-radius: 8px; font-size: 12px; outline: none; cursor: pointer; width: 100%;
+      padding: 0 2.2rem 0 0.75rem; border-radius: 8px; font-size: 12px; outline: none; cursor: pointer; width: 100%;
+      height: 38px; line-height: 36px; font-family: inherit; min-width: 0; box-sizing: border-box;
+      color-scheme: dark; -webkit-appearance: none; -moz-appearance: none; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 15px 15px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
+    .filter-group select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.18); }
+    .filter-group select option { background-color: rgba(0,0,0,0.45); color: white; }
     .filter-reset {
       width: 100%; margin-top: 4px; padding: 8px;
       background: rgba(201, 59, 59, 0.15); color: var(--danger-text);
@@ -1147,9 +1154,17 @@
     .mods-form input, .mods-form select, .mods-form textarea {
       width: 100%; min-width: 0; padding: 10px 12px; border-radius: 8px; font-size: 13px;
       background: rgba(0,0,0,0.25); color: var(--text);
-      border: 1px solid var(--border); font-family: inherit;
+      border: 1px solid var(--border); font-family: inherit; height: 38px; line-height: 36px; box-sizing: border-box;
     }
-    .mods-form textarea { resize: vertical; min-height: 80px; }
+    .mods-form select {
+      color-scheme: dark; -webkit-appearance: none; -moz-appearance: none; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 15px 15px;
+      padding: 0 2.2rem 0 0.75rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .mods-form select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.18); }
+    .mods-form select option { background-color: rgba(0,0,0,0.25); color: var(--text); }
+    .mods-form textarea { resize: vertical; min-height: 80px; height: auto; line-height: 1.4; }
     .mods-form-row { display: grid; grid-template-columns: 2fr 1.2fr 1fr; gap: 10px; width: 100%; }
     .mods-form-row > * { min-width: 0; }
     .btn-mods { background: rgba(155, 89, 182, 0.12); color: var(--mods); border-color: rgba(155, 89, 182, 0.35); }
