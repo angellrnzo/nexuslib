@@ -154,3 +154,16 @@ Generado 2026-11-26. Último commit: `8383b87`.
 - VERIFICADO: el "no sugiere / debo dar Enter" del usuario era el service
   worker cacheando index.html viejo — tras unregister+reload funciona.
   Regla: para probar cambios de UI, Ctrl+Shift+R o desregistrar SW.
+
+### Sesión UI — barra agregar unificada (commit `3440f47`, SW v97)
+
+- Barra de agregar ahora es UN solo contenedor bordeado: filtro + menu +
+  plus + input + clear + add dentro de `.add-wrapper` (patron
+  `search-header-bar` de la muestra del usuario).
+- `.add-collapse`: botones nav colapsan animados (width/flex/opacity/
+  transform) al expandir — equivalente a `.is-searching .nav-trigger`.
+- `.add-wrapper .btn-circle` = 30px dentro de la barra; `.add-plus` clickeable.
+- `expanded` usa anillo `0 0 0 3px rgba(102,192,244,.16)` + glow.
+- Eliminado `.right-controls`/`#right-ctrls`; `activarModoBusquedaAgregar`
+  ya no lo referencia y llama `cerrarMenuPanel()` al activar.
+- Verificado: colapso 30px->0 con opacity, regresa al cerrar, ring visible.
