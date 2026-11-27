@@ -17,3 +17,6 @@ $RECYCLE.BIN/
 conversor.py
 supabase/.temp/
 
+
+# Datos locales (secretos/backups) - viven en ../_local, nunca aqui
+_local/

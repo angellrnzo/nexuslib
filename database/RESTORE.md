@@ -2,6 +2,9 @@
 
 Como reconstruir la base de datos completa desde cero o desde un respaldo.
 
+> `_local/` = la carpeta hermana del repo (`../_local` desde `database/`,
+> en la practica `master_nexuslib/_local/`). Nunca commitear.
+
 ## Capas de respaldo
 
 | Capa | Que | Frecuencia | Donde |

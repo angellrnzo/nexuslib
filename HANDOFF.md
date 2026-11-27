@@ -9,6 +9,10 @@ Logs de sesiones anteriores: `HANDOFF_LOG.md`.
 **Producción:** `main` — no tocar sin `Confirmar deploy` literal.
 **DB:** prod + standby en espejo (datos idénticos, schema sincronizado tras delta 07).
 **Último commit:** `ac9849d` (SW v101).
+**Ubicación:** `Workspace/master_nexuslib/NexusLib/` — los datos locales
+(secretos `.env`, `backup_key.key`, `backups/`) viven en la carpeta
+hermana `master_nexuslib/_local/` (los scripts `database/*.py` la
+resuelven como `../_local`). No mover ni renombrar.
 
 ## Trabajo realizado en esta sesión
 

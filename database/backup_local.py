@@ -27,7 +27,7 @@ import pg8000.dbapi
 from cryptography.fernet import Fernet
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-LOCAL = os.path.join(ROOT, "..", "_local")  # _local vive en la raiz del workspace
+LOCAL = os.path.join(ROOT, "..", "_local")  # _local vive junto al repo (master_nexuslib/_local)
 ENV_FILE = os.path.join(LOCAL, "supabase_credentials.env")
 KEY_FILE = os.path.join(LOCAL, "backup_key.key")
 BACKUP_DIR = os.path.join(LOCAL, "backups")
