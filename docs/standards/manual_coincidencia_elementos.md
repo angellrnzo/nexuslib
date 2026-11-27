@@ -1,6 +1,8 @@
 # Manual Técnico: Coincidencia de Elementos Comunes y Organización de Ítems en NexusLib
 
-Este manual está diseñado para guiar el diseño, la implementación y la refactorización de la **organización de ítems** en **NexusLib** mediante la **coincidencia de elementos comunes**, manteniendo intacta la uniformidad visual, los tokens de diseño, la accesibilidad y los flujos de datos actuales (grid, chips, estados, privacidad, vínculos, filtros, acordeones, papelera y sincronización con Supabase).
+Este manual está diseñado para guiar el diseño, la implementación y la refactorización de la **organización de ítems** en **NexusLib** mediante la **coincidencia de elementos comunes**, manteniendo
+intacta la uniformidad visual, los tokens de diseño, la accesibilidad y los flujos de datos actuales (grid, chips, estados, privacidad, vínculos, filtros, acordeones, papelera y sincronización con
+Supabase).
 
 ---
 
@@ -8,10 +10,14 @@ Este manual está diseñado para guiar el diseño, la implementación y la refac
 
 Antes de agrupar, ordenar o renderizar ítems, todo componente debe respetar estas reglas base:
 
-1. **Un solo contenedor de superficie por ítem:** Cada tarjeta o fila de ítem usa un único contenedor principal con los tokens de superficie, borde y radio existentes. Evita bordes múltiples anidados dentro del mismo ítem.
-2. **Coincidencia semántica antes que visual:** Dos ítems pertenecen al mismo grupo o coinciden en un filtro/índice cuando comparten un **valor canónico normalizado** (estado, estado de emisión, persona/vínculo, categoría o nivel de privacidad), no por coincidencia casual de mayúsculas, espacios o idiomas distintos.
-3. **Preservación de la voz y estética del sistema:** Los chips, badges, acordeones, separadores y modales deben reutilizar los estilos y clases ya establecidos en NexusLib, evitando introducir patrones visuales desconectados.
-4. **Estado único de verdad:** Toda mutación sobre un ítem (estado, emisión, privacidad `is_private` / `shared_with` / `privado{Sufijo}`, vínculos/personas o eliminación a papelera) debe actualizar primero el modelo en memoria (`itemsByCategory`) y la persistencia (`localStorage` / caché / Supabase), y luego reflejarse en la UI.
+1. **Un solo contenedor de superficie por ítem:** Cada tarjeta o fila de ítem usa un único contenedor principal con los tokens de superficie, borde y radio existentes. Evita bordes múltiples anidados
+  dentro del mismo ítem.
+2. **Coincidencia semántica antes que visual:** Dos ítems pertenecen al mismo grupo o coinciden en un filtro/índice cuando comparten un **valor canónico normalizado** (estado, estado de emisión,
+  persona/vínculo, categoría o nivel de privacidad), no por coincidencia casual de mayúsculas, espacios o idiomas distintos.
+3. **Preservación de la voz y estética del sistema:** Los chips, badges, acordeones, separadores y modales deben reutilizar los estilos y clases ya establecidos en NexusLib, evitando introducir
+  patrones visuales desconectados.
+4. **Estado único de verdad:** Toda mutación sobre un ítem (estado, emisión, privacidad `is_private` / `shared_with` / `privado{Sufijo}`, vínculos/personas o eliminación a papelera) debe actualizar
+  primero el modelo en memoria (`itemsByCategory`) y la persistencia (`localStorage` / caché / Supabase), y luego reflejarse en la UI.
 
 ---
 
@@ -35,7 +41,8 @@ Para organizar ítems sin romper la uniformidad, clasifica los atributos compart
 
 ### 2.4. Dimensión de Personas y Vínculos
 * **Personas / vínculos asociados:** Colaboradores, amigos, parejas, creadores o vínculos registrados en el sistema.
-* **Coincidencia común:** Permite filtrar o agrupar ítems que comparten una misma persona o vínculo, asegurando que el índice de personas (`nexusRebuildPersonas()`) considere todos los ítems relevantes y no solo los primeros elementos de cada arreglo.
+* **Coincidencia común:** Permite filtrar o agrupar ítems que comparten una misma persona o vínculo, asegurando que el índice de personas (`nexusRebuildPersonas()`) considere todos los ítems
+  relevantes y no solo los primeros elementos de cada arreglo.
 
 ### 2.5. Dimensión de Búsqueda y Texto
 * **Campos buscables:** Título, etiquetas/géneros, estado, persona/vínculo o notas clave.
@@ -54,7 +61,8 @@ Antes de comparar cadenas para búsqueda, agrupación o filtros:
 ### 3.2. Normalización Canónica de Estados y `estadoEmision`
 En categorías como `Peliculas_Series` y `Mangas`, los valores pueden provenir de distintas fuentes o idiomas (por ejemplo `"Airing"`, `"En emisión"`, `"Ongoing"`, `"Finished"`, `"Finalizado"`).
 
-* **Regla:** Definir un mapa canónico de equivalencias que traduzca cualquier variante conocida a una clave interna estándar (ej. `airing`, `finished`, `hiatus`, `upcoming`) y, a su vez, resuelva la etiqueta visible según el idioma activo (`STR.es` / `STR.en`).
+* **Regla:** Definir un mapa canónico de equivalencias que traduzca cualquier variante conocida a una clave interna estándar (ej. `airing`, `finished`, `hiatus`, `upcoming`) y, a su vez, resuelva la
+  etiqueta visible según el idioma activo (`STR.es` / `STR.en`).
 * **Beneficio:** El filtro por `estadoEmision` y las agrupaciones por estado coincidirán de forma fiable sin depender de `.includes()` sensibles al idioma o formato.
 
 ### 3.3. Coincidencia por Persona / Vínculo
@@ -81,7 +89,8 @@ Mantén una anatomía coherente en cada tarjeta o fila de ítem:
 * **Vista agrupada por elemento común:** Cuando el usuario agrupa por estado, `estadoEmision`, persona/vínculo o privacidad:
   * Inserta una cabecera de grupo uniforme (con el nombre normalizado del grupo y el contador de ítems coincidentes).
   * Renderiza debajo la **misma cuadrícula o lista** de ítems que en la vista plana, evitando cambiar el diseño de la tarjeta dentro de cada grupo.
-* **Vista filtrada:** Muestra únicamente los ítems que cumplen todas las condiciones activas (búsqueda + filtros de categoría/estado/emisión/persona/privacidad), manteniendo el orden coherente con el criterio seleccionado.
+* **Vista filtrada:** Muestra únicamente los ítems que cumplen todas las condiciones activas (búsqueda + filtros de categoría/estado/emisión/persona/privacidad), manteniendo el orden coherente con el
+  criterio seleccionado.
 
 ### 4.3. Criterios de Ordenación Coherentes
 * Define un orden determinista (por ejemplo: orden manual/posición, fecha de actualización, título alfabético o prioridad/estado) con desempate estable por `id`.
@@ -94,9 +103,11 @@ Mantén una anatomía coherente en cada tarjeta o fila de ítem:
 Para evitar ruido visual, dobles líneas o recuadros innecesarios, la vista debe apoyarse en **superficies, espaciado (`gap`), tipografía y peso** antes que en bordes.
 
 ### 5.1. Reglas para Eliminar Bordes Extraños
-1. **Un solo borde por superficie contenedora:** Solo el contenedor principal del ítem (si la estética base usa borde) o su superficie de fondo define el contorno. Nunca coloques bordes adicionales en chips secundarios, filas internas o wrappers de texto si ya existe un borde padre.
+1. **Un solo borde por superficie contenedora:** Solo el contenedor principal del ítem (si la estética base usa borde) o su superficie de fondo define el contorno. Nunca coloques bordes adicionales en
+  chips secundarios, filas internas o wrappers de texto si ya existe un borde padre.
 2. **Separación por aire (`gap`) y superficie en vez de líneas:** Usa `gap` entre chips y metadatos en lugar de `border-right` o `border-bottom` que fragmentan la tarjeta en cuadrículas accidentales.
-3. **Bordes solo con propósito funcional o de énfasis:** Reserva un borde destacado únicamente para estados activos, selección, foco de teclado (`:focus-visible`) o privacidad/urgencia cuando realmente aporte señal.
+3. **Bordes solo con propósito funcional o de énfasis:** Reserva un borde destacado únicamente para estados activos, selección, foco de teclado (`:focus-visible`) o privacidad/urgencia cuando
+  realmente aporte señal.
 4. **Cuidado en `box-sizing` y `overflow`:** Usa `box-sizing: border-box` en todos los elementos y evita `overflow: hidden` agresivo que recorte anillos de foco (`outline`) o sombras sutiles.
 
 ### 5.2. Jerarquía de Acentuación por Importancia y Peso Visual
@@ -105,15 +116,20 @@ Cada ítem o grupo debe comunicar qué importa primero sin saturar la pantalla c
 * **Nivel 1 — Máxima importancia (Título / Identificador principal):**
   * Mayor peso tipográfico (`font-weight: 600` o `700`), color de texto principal (`--text-primary`) y prioridad de lectura inmediata.
 * **Nivel 2 — Importancia operativa / Estado clave (Estado, `estadoEmision`, Privacidad/Vínculo):**
-  * Peso medio (`font-weight: 500`), tamaño ligeramente menor y acento sutil (tinte suave de superficie o icono claro como candado/vínculo) solo cuando el estado es relevante o activo (por ejemplo, privado/compartido o en emisión).
+  * Peso medio (`font-weight: 500`), tamaño ligeramente menor y acento sutil (tinte suave de superficie o icono claro como candado/vínculo) solo cuando el estado es relevante o activo (por ejemplo,
+    privado/compartido o en emisión).
 * **Nivel 3 — Peso secundario / Contexto (Metadatos auxiliares, fecha, contador, etiquetas):**
   * Peso normal (`font-weight: 400`), tono atenuado (`--text-muted`) y menor contraste para que no compitan con el título ni con los estados activos.
 
 ### 5.3. Oportunidades Concretas de Mejora UI/UX
-1. **Evitar exceso de chips por tarjeta:** Limita los chips visibles en cada ítem a los más útiles (p. ej. estado + privacidad/vínculo) y envía detalles secundarios al modal/detalle o a filtros, reduciendo el "efecto etiqueta".
-2. **Diferenciar estado activo vs. estado neutro:** Si casi todos los ítems tienen el mismo estado neutro, darle un color fuerte a todos anula el acento; deja el color/acento para lo que destaque o esté activo, y mantén lo neutro sobrio.
-3. **Soporte claro de `:focus-visible` y accesibilidad táctil:** Asegura áreas táctiles cómodas (`min-height` / padding adecuado en móvil) y un indicador `:focus-visible` visible que no sea recortado por el contenedor.
-4. **Cabeceras de grupo ligeras:** Al agrupar por elemento común (persona/vínculo, estado o privacidad), usa una cabecera limpia con título, peso semibold y contador discreto, sin encerrar cada grupo en cajas pesadas dobles.
+1. **Evitar exceso de chips por tarjeta:** Limita los chips visibles en cada ítem a los más útiles (p. ej. estado + privacidad/vínculo) y envía detalles secundarios al modal/detalle o a filtros,
+  reduciendo el "efecto etiqueta".
+2. **Diferenciar estado activo vs. estado neutro:** Si casi todos los ítems tienen el mismo estado neutro, darle un color fuerte a todos anula el acento; deja el color/acento para lo que destaque o
+  esté activo, y mantén lo neutro sobrio.
+3. **Soporte claro de `:focus-visible` y accesibilidad táctil:** Asegura áreas táctiles cómodas (`min-height` / padding adecuado en móvil) y un indicador `:focus-visible` visible que no sea recortado
+  por el contenedor.
+4. **Cabeceras de grupo ligeras:** Al agrupar por elemento común (persona/vínculo, estado o privacidad), usa una cabecera limpia con título, peso semibold y contador discreto, sin encerrar cada grupo
+  en cajas pesadas dobles.
 
 ---
 
@@ -321,8 +337,11 @@ function inicializarDelegacionItems(contenedorEl, handlers = {}) {
 ## 7. Checklist Práctico de Implementación para el Agente
 
 1. **Crear utilidades de normalización:** Funciones puras para normalizar texto, mapear `estadoEmision` a valores canónicos, resolver estado de privacidad y extraer personas/vínculos.
-2. **Unificar criterios de coincidencia:** Usar las mismas funciones de normalización en búsqueda, filtros (`filtrarItems()`), agrupación y construcción del índice de personas (`nexusRebuildPersonas()`).
-3. **Estandarizar plantillas de ítems:** Asegurar un único contenedor por ítem, chips uniformes sin bordes internos redundantes y atributos `data-item-id` / `data-action` con delegación de eventos en el contenedor.
+2. **Unificar criterios de coincidencia:** Usar las mismas funciones de normalización en búsqueda, filtros (`filtrarItems()`), agrupación y construcción del índice de personas
+  (`nexusRebuildPersonas()`).
+3. **Estandarizar plantillas de ítems:** Asegurar un único contenedor por ítem, chips uniformes sin bordes internos redundantes y atributos `data-item-id` / `data-action` con delegación de eventos en
+  el contenedor.
 4. **Aplicar peso visual escalonado:** Diferenciar título principal, chips operativos/activos y metadatos secundarios sin saturar ni usar recuadros dobles.
 5. **Garantizar sincronización completa:** Al modificar privacidad, compartir o propiedades de un ítem, actualizar `itemsByCategory` y `localStorage` antes de refrescar la UI.
-6. **Validar casos borde:** Ítems sin `estadoEmision`, sin personas/vínculos, títulos con comillas o acentos, filtros sin resultados, `:focus-visible`, `prefers-reduced-motion` y cambio de idioma (`ES`/`EN`) o tema.
+6. **Validar casos borde:** Ítems sin `estadoEmision`, sin personas/vínculos, títulos con comillas o acentos, filtros sin resultados, `:focus-visible`, `prefers-reduced-motion` y cambio de idioma
+  (`ES`/`EN`) o tema.

@@ -1,6 +1,7 @@
 # Guía de Diseño Web y Estándares UI/UX — NexusLib
 
-Este documento establece los lineamientos oficiales de diseño, arquitectura frontend, interacción, accesibilidad y mantenimiento para **NexusLib** (PWA con soporte i18n ES/EN, caché local con TTL + *stale-while-revalidate*, filtros dinámicos, acordeones, modales y sincronización con Supabase).
+Este documento establece los lineamientos oficiales de diseño, arquitectura frontend, interacción, accesibilidad y mantenimiento para **NexusLib** (PWA con soporte i18n ES/EN, caché local con TTL +
+*stale-while-revalidate*, filtros dinámicos, acordeones, modales y sincronización con Supabase).
 
 ---
 
@@ -10,11 +11,14 @@ Este documento establece los lineamientos oficiales de diseño, arquitectura fro
    - Todo contenedor interactivo (barra de búsqueda, tarjetas de ítems, modales, paneles de filtros) define su contorno en el elemento padre.
    - Nunca agregues bordes independientes a inputs, botones o chips internos si el contenedor padre ya posee un borde visible.
 2. **Jerarquía visual basada en peso, no en ruido:**
-   - Diferencia la importancia de la información mediante tamaño tipográfico, peso (`font-weight`), espaciado (`gap`) y contraste de color antes que añadiendo recuadros, sombras pesadas o colores saturados en cada elemento.
+   - Diferencia la importancia de la información mediante tamaño tipográfico, peso (`font-weight`), espaciado (`gap`) y contraste de color antes que añadiendo recuadros, sombras pesadas o colores
+     saturados en cada elemento.
 3. **Coherencia en temas y tokens CSS:**
-   - Utiliza siempre variables CSS (`--bg-surface`, `--border-color`, `--text-primary`, `--text-muted`, etc.) para que tanto el modo claro como el modo oscuro respondan de manera uniforme sin valores de color hardcodeados.
+   - Utiliza siempre variables CSS (`--bg-surface`, `--border-color`, `--text-primary`, `--text-muted`, etc.) para que tanto el modo claro como el modo oscuro respondan de manera uniforme sin valores
+     de color hardcodeados.
 4. **Estado único de verdad:**
-   - Toda modificación de datos (privacidad, estado, emisión, vínculos, eliminación) debe actualizar primero el estado en memoria (`itemsByCategory`) y la persistencia local (`localStorage`), y luego reflejarse en la interfaz sin requerir recarga de página.
+   - Toda modificación de datos (privacidad, estado, emisión, vínculos, eliminación) debe actualizar primero el estado en memoria (`itemsByCategory`) y la persistencia local (`localStorage`), y luego
+     reflejarse en la interfaz sin requerir recarga de página.
 
 ---
 
@@ -22,7 +26,8 @@ Este documento establece los lineamientos oficiales de diseño, arquitectura fro
 
 * **`box-sizing: border-box` universal:** Aplica `box-sizing: border-box` en todos los componentes para evitar desbordes inesperados al combinar `padding`, `border` y anchos flexibles.
 * **Control de espaciado con `gap`:** Usa `display: flex` o `display: grid` con `gap` explícito en lugar de márgenes asimétricos entre hermanos (`margin-left` / `margin-right` condicionales).
-* **Prevención de recortes de foco (`outline`):** Evita `overflow: hidden` permanente en contenedores donde existan elementos enfocables que necesiten mostrar `:focus-visible`, o compénsalo usando `outline-offset` interno o anillo `box-shadow` controlado en el contenedor padre.
+* **Prevención de recortes de foco (`outline`):** Evita `overflow: hidden` permanente en contenedores donde existan elementos enfocables que necesiten mostrar `:focus-visible`, o compénsalo usando
+  `outline-offset` interno o anillo `box-shadow` controlado en el contenedor padre.
 
 ```css
 /* Patrón base de contenedor limpio sin doble borde */
@@ -55,7 +60,8 @@ Este documento establece los lineamientos oficiales de diseño, arquitectura fro
 
 ## 3. Animaciones y Microinteracciones
 
-* **Propiedades ligeras:** Prioriza animar `transform` (`scale`, `translateX`, `translateY`) y `opacity`. Cuando necesites colapsar botones laterales en una barra flexible, acompaña `opacity` y `transform` con `width` / `flex-basis` y `padding: 0` usando una curva suave como `cubic-bezier(0.22, 1, 0.36, 1)`.
+* **Propiedades ligeras:** Prioriza animar `transform` (`scale`, `translateX`, `translateY`) y `opacity`. Cuando necesites colapsar botones laterales en una barra flexible, acompaña `opacity` y
+  `transform` con `width` / `flex-basis` y `padding: 0` usando una curva suave como `cubic-bezier(0.22, 1, 0.36, 1)`.
 * **Duraciones breves y predecibles:**
   - Microinteracciones de hover/tap: `140ms – 180ms`.
   - Transiciones de estado de barra, paneles o acordeones: `200ms – 260ms`.
@@ -79,12 +85,15 @@ Este documento establece los lineamientos oficiales de diseño, arquitectura fro
 ## 4. Barra de Búsqueda Superior y Navegación
 
 1. **Activación limpia:**
-   - Al enfocar el campo de búsqueda o pulsar el botón de búsqueda, activa una única clase de estado (por ejemplo `.is-searching`) en el contenedor padre para ocultar suavemente los iconos secundarios (hamburguesa y filtro) y dar protagonismo al campo de texto.
+   - Al enfocar el campo de búsqueda o pulsar el botón de búsqueda, activa una única clase de estado (por ejemplo `.is-searching`) en el contenedor padre para ocultar suavemente los iconos secundarios
+     (hamburguesa y filtro) y dar protagonismo al campo de texto.
 2. **Cierre al tocar o hacer clic fuera:**
-   - Usa un único listener `pointerdown` sobre `document` comprobando `!searchBar.contains(event.target)` (más soporte para la tecla `Escape`) para desactivar `.is-searching` y restaurar los iconos laterales.
+   - Usa un único listener `pointerdown` sobre `document` comprobando `!searchBar.contains(event.target)` (más soporte para la tecla `Escape`) para desactivar `.is-searching` y restaurar los iconos
+     laterales.
    - **Prohibido cerrar la búsqueda por eventos `scroll` o `touchmove`** con umbrales arbitrarios, ya que interrumpe el desplazamiento natural del usuario por los resultados en móvil.
 3. **Gestión limpia del historial (`history`):**
-   - No ejecutes `history.pushState(...)` cada vez que se enfoca un input de búsqueda; reserva `pushState` únicamente para vistas/modales reales que requieran navegación con el botón "Atrás" y mantén sincronizado `popstate`.
+   - No ejecutes `history.pushState(...)` cada vez que se enfoca un input de búsqueda; reserva `pushState` únicamente para vistas/modales reales que requieran navegación con el botón "Atrás" y mantén
+     sincronizado `popstate`.
 
 ---
 
@@ -101,8 +110,10 @@ Cada ítem de biblioteca debe organizarse en tres niveles claros de lectura:
 
 ### 5.2. Coincidencia Semántica y Normalización
 * **Normalización de texto:** Convierte a minúsculas, elimina diacríticos (`NFD`) y colapsa espacios antes de comparar cadenas en búsqueda o agrupación.
-* **Valores canónicos de `estadoEmision`:** Mapea variantes en distintos idiomas (ej. `"Airing"`, `"En emisión"`, `"Ongoing"`, `"Finished"`, `"Finalizado"`) a claves canónicos internos antes de filtrar en `Peliculas_Series` y `Mangas`.
-* **Agrupación uniforme:** Al agrupar ítems por estado, emisión, privacidad o persona/vínculo, utiliza cabeceras de grupo ligeras (título + contador) y conserva exactamente la misma cuadrícula y diseño de tarjeta debajo.
+* **Valores canónicos de `estadoEmision`:** Mapea variantes en distintos idiomas (ej. `"Airing"`, `"En emisión"`, `"Ongoing"`, `"Finished"`, `"Finalizado"`) a claves canónicos internos antes de
+  filtrar en `Peliculas_Series` y `Mangas`.
+* **Agrupación uniforme:** Al agrupar ítems por estado, emisión, privacidad o persona/vínculo, utiliza cabeceras de grupo ligeras (título + contador) y conserva exactamente la misma cuadrícula y
+  diseño de tarjeta debajo.
 
 ---
 
@@ -112,7 +123,8 @@ Cada ítem de biblioteca debe organizarse en tres niveles claros de lectura:
    - No interpoles IDs, títulos ni strings dinámicos dentro de atributos `onclick="..."` en plantillas HTML.
    - Usa atributos `data-item-id` y `data-action` en el marcado y gestiona las interacciones mediante delegación de eventos en el contenedor padre.
 2. **Accesibilidad móvil y zoom:**
-   - No bloquees el zoom del usuario en `<meta name="viewport">` (evita `user-scalable=no` y `maximum-scale=1.0`). Para evitar el auto-zoom indeseado en iOS al enfocar inputs, asegúrate de que los campos de texto tengan `font-size: 16px` en pantallas móviles.
+   - No bloquees el zoom del usuario en `<meta name="viewport">` (evita `user-scalable=no` y `maximum-scale=1.0`). Para evitar el auto-zoom indeseado en iOS al enfocar inputs, asegúrate de que los
+     campos de texto tengan `font-size: 16px` en pantallas móviles.
    - Garantiza áreas táctiles cómodas (`min-width: 36px; min-height: 36px` o `44px` en acciones principales móviles).
 3. **Integridad de i18n (`STR.es` / `STR.en`):**
    - Mantén cero claves duplicadas en los objetos de traducción y extrae cualquier texto visible hardcodeado en JavaScript hacia el diccionario de idiomas.

@@ -15,9 +15,11 @@ Cloud-synced via **Google Sheets**, powered by a **Google Apps Script** backend,
 
 ---
 
-[🌐 Live App](https://angellrnzo.github.io/nexuslib/) • [📖 Technical Wiki](WIKI.md) • [🗺️ Roadmap & Audit](AppScript/road.md) • [🎨 Design System](DESIGN.md) • [Report a Bug](https://github.com/angellrnzo/nexuslib/issues)
+[🌐 Live App](https://angellrnzo.github.io/nexuslib/) • [📖 Technical Wiki](WIKI.md) • [🗺️ Roadmap & Audit](AppScript/road.md) • [🎨 Design System](DESIGN.md) • [Report a
+Bug](https://github.com/angellrnzo/nexuslib/issues)
 
-> **Status (2026-11-23):** v1.x in production — Phase 1 UX fixes deployed (`v1.9.0`). Dev on `beta`; `main` = production (docs sync freely, app code frozen until an explicit deploy). Next: Phase 2 motion → Phase 3 backend/mods/reviews/updates/editions → Phase 4 is the **v1→v2 cut** to Supabase (see `road.md` for the cut-over rule + pre-flight inputs checklist).
+> **Status (2026-11-23):** v1.x in production — Phase 1 UX fixes deployed (`v1.9.0`). Dev on `beta`; `main` = production (docs sync freely, app code frozen until an explicit deploy). Next: Phase 2
+> motion → Phase 3 backend/mods/reviews/updates/editions → Phase 4 is the **v1→v2 cut** to Supabase (see `road.md` for the cut-over rule + pre-flight inputs checklist).
 
 </div>
 
@@ -54,7 +56,8 @@ Cloud-synced via **Google Sheets**, powered by a **Google Apps Script** backend,
 - **📖 Reading Progress:** Percentage progress bar and dynamic chapter tracking for manga and books.
 - **🎮 Game Mods Tracker** *(planned)* — per-user mod lists inside each game's detail (Nexus Mods / Steam Workshop / CurseForge / custom URL), grouped by game version. Spec in `AppScript/road.md`.
 - **🎮 Game Update History** *(planned)* — Steam patch log per game (news RSS, lazy fetch on modal open) with links to full patch notes. Spec in `road.md` → Phase 3 item 6.
-- **📚 Book Editions** *(planned)* — per-work editions browser (translator · publisher · year · language · ISBN) via Open Library; "my edition" ownership is a v2 field feeding Phase 5A visibility. Spec in `road.md` → Phase 3 item 7.
+- **📚 Book Editions** *(planned)* — per-work editions browser (translator · publisher · year · language · ISBN) via Open Library; "my edition" ownership is a v2 field feeding Phase 5A visibility. Spec
+  in `road.md` → Phase 3 item 7.
 
 ### 📱 High-Performance PWA Experience
 
@@ -186,7 +189,8 @@ NexusLib/
 The project includes a dual automatic backup system:
 
 1. **Weekly GitHub Actions Backup:**  
-   The workflow [.github/workflows/backup-excel.yml](.github/workflows/backup-excel.yml) runs **every Sunday at 3:00 AM UTC**. It downloads the live spreadsheet as `.xlsx` and automatically updates `AppScript/GameList.xlsx` with a commit — no human intervention required.
+   The workflow [.github/workflows/backup-excel.yml](.github/workflows/backup-excel.yml) runs **every Sunday at 3:00 AM UTC**. It downloads the live spreadsheet as `.xlsx` and automatically updates
+   `AppScript/GameList.xlsx` with a commit — no human intervention required.
 2. **Weekly Google Drive Backup:**  
    From the **NexusLib** menu in Google Sheets, you can enable `Activar backup semanal automático (.xlsx)` to save dated historical copies inside a `NexusLib_Backups` folder in your own Google Drive.
 

@@ -35,8 +35,10 @@ Como reconstruir la base de datos completa desde cero o desde un respaldo.
 
 3. **Datos** — caminos automatizados:
 
-   - `python database/restore_backup.py --project-ref <ref> --host <pooler>` — restaura el ultimo `.enc` local (descifra con `_local/backup_key.key`, remapea profile ids por username, INSERT ON CONFLICT). **Probado: 1093 filas**
-   - `python database/apply_schema.py --url <standby> --deltas` — sync de schema (solo 02+, idempotente). **El Action ya lo corre antes del mirror** — un delta nuevo en `database/` se propaga solo al standby en el proximo backup semanal
+   - `python database/restore_backup.py --project-ref <ref> --host <pooler>` — restaura el ultimo `.enc` local (descifra con `_local/backup_key.key`, remapea profile ids por username, INSERT ON
+     CONFLICT). **Probado: 1093 filas**
+   - `python database/apply_schema.py --url <standby> --deltas` — sync de schema (solo 02+, idempotente). **El Action ya lo corre antes del mirror** — un delta nuevo en `database/` se propaga solo al
+     standby en el proximo backup semanal
    - `python database/mirror_to_standby.py --source-url <url> --target-url <url>` — espejo vivo source→target (TRUNCATE+INSERT con remap). Es lo que corre el Action semanal
    - Desde dump del Action: `pg_restore <url> --data-only --disable-triggers dump.dump`
    - Catalogo (`media_items`/`library_items`): re-ETL desde `database/etl/*.py` si el dump falla

@@ -2,7 +2,8 @@
 
 **Comprehensive Architecture, API Specification, and Development Guide**
 
-This document is the technical and architectural reference manual for **NexusLib**, detailing the end-to-end design, the client-server communication protocol, external service integrations, failure-recovery strategies, and mobile optimization patterns.
+This document is the technical and architectural reference manual for **NexusLib**, detailing the end-to-end design, the client-server communication protocol, external service integrations,
+failure-recovery strategies, and mobile optimization patterns.
 
 ---
 
@@ -97,11 +98,13 @@ function doGet(e) {
 }
 ```
 
-- **`XFrameOptionsMode.ALLOWALL`:** Required to allow clean embedding from the GitHub Pages domain (`angellrnzo.github.io`) without the browser blocking the page due to `X-Frame-Options: SAMEORIGIN` header directives.
+- **`XFrameOptionsMode.ALLOWALL`:** Required to allow clean embedding from the GitHub Pages domain (`angellrnzo.github.io`) without the browser blocking the page due to `X-Frame-Options: SAMEORIGIN`
+  header directives.
 
 ### 2.2. Dynamic Header Relational Mapping
 
-To let spreadsheets evolve (added columns, reordering, or minor name variations such as `AppID` vs `App ID` or `Fecha` vs `Lanzamiento`), a canonical `HEADER_TO_KEY` dictionary and normalizer are used:
+To let spreadsheets evolve (added columns, reordering, or minor name variations such as `AppID` vs `App ID` or `Fecha` vs `Lanzamiento`), a canonical `HEADER_TO_KEY` dictionary and normalizer are
+used:
 
 ```javascript
 function mapearHeaderAKey_(rawHeader) {
@@ -129,7 +132,8 @@ This guarantees that reads (`getItems`) and writes (`guardarFilaSheet`, `guardar
 When a classic or age-restricted game (e.g. AppID `238960` or delisted titles) is queried, Valve's standard API usually responds `{ success: false }`. `WebAPP.gs` cascades through:
 
 1. **Step 1:** Browser simulation with an age-verification bypass cookie (`birthtime=283993201; mature_content=1`).
-2. **Step 2:** Query to SteamCMD PICS records (`api.steamcmd.net/v1/info/{id}`) to extract the real name, developer, Steam Deck compatibility (`steam_deck_compatibility`), and public/beta branch builds (`depots.branches`).
+2. **Step 2:** Query to SteamCMD PICS records (`api.steamcmd.net/v1/info/{id}`) to extract the real name, developer, Steam Deck compatibility (`steam_deck_compatibility`), and public/beta branch
+  builds (`depots.branches`).
 3. **Step 3:** If no official artwork is available, query SteamGridDB for banners in `460x215` or `920x430` aspect ratios.
 
 ### 2.4. Batch Processing & Beating the 6-Minute Timeout
@@ -194,7 +198,8 @@ Rendering 500+ cards with images saturates the mobile DOM. NexusLib applies ligh
 
 - **Rating Scale:** The 10 visual stars represent a direct **1-to-10** scale (`idx`). Clicking star 10 saves `10`, lights all 10 stars, and displays `10/10`.
 - **Rating Filters:** Allow selecting minimum ratings of `5+`, `7+`, and `9+` (evaluated via `pts >= notaMinima`).
-- **Global Rating Normalization:** When sorting by rating (`fOrden === 'puntuacion'`), the `obtenerPuntuacionNormalizada()` function divides by 10 any ratings expressed as percentages (e.g. `94% Steam` → `9.4`) so they compete fairly against TMDB and AniList scores (`8.5`).
+- **Global Rating Normalization:** When sorting by rating (`fOrden === 'puntuacion'`), the `obtenerPuntuacionNormalizada()` function divides by 10 any ratings expressed as percentages (e.g.
+  `94% Steam` → `9.4`) so they compete fairly against TMDB and AniList scores (`8.5`).
 
 ### 3.4. Couple Match Algorithm
 
@@ -260,11 +265,16 @@ The `manifest.json` file defines:
 
 ### 5.1. Continuous Deployment (native GitHub Pages)
 
-Pages **Source = "Deploy from a branch" (`main`, root `/`)** — every push to `main` is published automatically by GitHub's internal `pages build and deployment` workflow. The whole repo root is served as static files, including `AppScript/` sources (public but harmless).
+Pages **Source = "Deploy from a branch" (`main`, root `/`)** — every push to `main` is published automatically by GitHub's internal `pages build and deployment` workflow. The whole repo root is served
+as static files, including `AppScript/` sources (public but harmless).
 
-> ⚠️ History note (2026-11-22): a custom `.github/workflows/deploy.yml` (upload-pages-artifact + deploy-pages) previously ran in parallel with the native deploy — redundant under branch-source Pages and it produced intermittent `Desplegar en GitHub Pages` failures from the two deployers racing. **Removed**; do not re-add an Actions-based Pages deploy unless the Pages source is switched to "GitHub Actions".
+> ⚠️ History note (2026-11-22): a custom `.github/workflows/deploy.yml` (upload-pages-artifact + deploy-pages) previously ran in parallel with the native deploy — redundant under branch-source Pages
+> and it produced intermittent `Desplegar en GitHub Pages` failures from the two deployers racing. **Removed**; do not re-add an Actions-based Pages deploy unless the Pages source is switched to "GitHub
+> Actions".
 >
-> **Beta workflow (2026-11-22):** development happens on the `beta` branch; `main` stays production. Beta builds are tested via the Apps Script `/dev` URL (latest saved code, no new version needed); promotion to `/exec` requires merging `beta`→`main` + a new Apps Script deployment version. **Docs may be updated on `main` anytime (they don't ship); app code (frontend + `WebAPP.gs`) is frozen on `main` until an explicit deploy is prepared after the release work is finished.** Full process + daily log in `road.md` → "Branching, Beta & Release Workflow" and `AppScript/BETA.md`.
+> **Beta workflow (2026-11-22):** development happens on the `beta` branch; `main` stays production. Beta builds are tested via the Apps Script `/dev` URL (latest saved code, no new version needed);
+> promotion to `/exec` requires merging `beta`→`main` + a new Apps Script deployment version. **Docs may be updated on `main` anytime (they don't ship); app code (frontend + `WebAPP.gs`) is frozen on
+> `main` until an explicit deploy is prepared after the release work is finished.** Full process + daily log in `road.md` → "Branching, Beta & Release Workflow" and `AppScript/BETA.md`.
 
 ### 5.2. Automated Weekly Excel Backup (backup-excel.yml)
 
@@ -366,7 +376,8 @@ Rules for all frontend work (v1 and v2):
 
 > Full DDL lives in `database/00_schema.sql` (+ `01_`–`05_` phase deltas; `database/legacy/` is historical).
 
-**How cross-user linking works:** each user owns a personal `libraries` workspace. Exchanging a 10-char `invite_code` creates a `library_links` row (`pending` → `accepted`). Since both libraries reference the same canonical `media_items.id`, the views detect titles both linked users marked `is_wishlisted` or `status = 'backlog'` — without exposing private `personal_notes`.
+**How cross-user linking works:** each user owns a personal `libraries` workspace. Exchanging a 10-char `invite_code` creates a `library_links` row (`pending` → `accepted`). Since both libraries
+reference the same canonical `media_items.id`, the views detect titles both linked users marked `is_wishlisted` or `status = 'backlog'` — without exposing private `personal_notes`.
 
 | Table | Purpose |
 | :--- | :--- |
@@ -379,9 +390,14 @@ Rules for all frontend work (v1 and v2):
 | `user_media_tracking` | Per-user status, rating (1.0–10.0), progress, `is_wishlisted`, notes. **Phase 5A adds:** `is_private boolean` — item never crosses any library link regardless of visibility matrices. |
 | `mods` *(planned)* | Per-user mod lists per game — name, source (`nexus_mods`/`steam_workshop`/`curseforge`/`otra_url`), URL, `version_juego` (grouped in UI), notes. Spec in `road.md` → "Game Mods Tracker". |
 
-**Lightweight social layer (Phase 5D, planned):** item-anchored interactions between linked libraries — shared notes per item, "visto también" reactions, ephemeral `watching_now` status, preset quick-reaction "toques" scaled by `link_type` — full catalog + couple-exclusive touches for `pareja`, softer casual set for `amigo`, minimal for `familia`, configurable for `custom` — each maps to a real library action, e.g. "Me interesa" → wishlist — plus recommendations with a one-click "add to my library" button (`recommended_by` attribution). Free-form chat is explicitly out of scope. Spec in `road.md` → Phase 5D.
+**Lightweight social layer (Phase 5D, planned):** item-anchored interactions between linked libraries — shared notes per item, "visto también" reactions, ephemeral `watching_now` status, preset
+quick-reaction "toques" scaled by `link_type` — full catalog + couple-exclusive touches for `pareja`, softer casual set for `amigo`, minimal for `familia`, configurable for `custom` — each maps to a
+real library action, e.g. "Me interesa" → wishlist — plus recommendations with a one-click "add to my library" button (`recommended_by` attribution). Free-form chat is explicitly out of scope. Spec in
+`road.md` → Phase 5D.
 
-**Other planned features (specs in `road.md`):** Game Mods Tracker (per-user mod lists per game), Steam Reviews breakdown (5-block CSS chart), **Game Update History** (Steam patch log via news RSS — v1.x read-only), **Book Editions by Translator** (OpenLibrary editions browser — read-only half v1.x; "my edition" ownership field right of the cut, feeds Phase 5A visibility). **Pre-flight inputs per phase:** `road.md` → "Implementation Inputs Checklist".
+**Other planned features (specs in `road.md`):** Game Mods Tracker (per-user mod lists per game), Steam Reviews breakdown (5-block CSS chart), **Game Update History** (Steam patch log via news RSS —
+v1.x read-only), **Book Editions by Translator** (OpenLibrary editions browser — read-only half v1.x; "my edition" ownership field right of the cut, feeds Phase 5A visibility). **Pre-flight inputs per
+phase:** `road.md` → "Implementation Inputs Checklist".
 
 **Key DB objects:**
 
@@ -391,7 +407,8 @@ Rules for all frontend work (v1 and v2):
 - `bootstrap_user_default_library()` trigger — auto-creates a personal library on signup.
 - RLS on all tables; `pg_trgm` + GIN indexes on title/genres/metadata.
 
-**⚠️ Dedup caveat:** `UNIQUE(category, provider, external_id)` must keep `movie` and `series` strictly separated for TMDB — the same TMDB id space is shared, so the ETL must map `search/multi` results to the correct category before insert.
+**⚠️ Dedup caveat:** `UNIQUE(category, provider, external_id)` must keep `movie` and `series` strictly separated for TMDB — the same TMDB id space is shared, so the ETL must map `search/multi` results
+to the correct category before insert.
 
 ### 7.4. Android APK Pipeline (Capacitor + GitHub Actions)
 
@@ -402,11 +419,15 @@ Rules for all frontend work (v1 and v2):
 
 ### 7.5. Phase Ordering Rationale
 
-Phases are ordered by **user-visible impact per effort**: UX fixes and motion deliver immediate perceived quality; backend hardening (fetchAll, health checks, offline mode) is invisible until something breaks; the v2 migration is the largest bet and only makes sense once v1 feels polished. See `AppScript/road.md` for the full phase checklist.
+Phases are ordered by **user-visible impact per effort**: UX fixes and motion deliver immediate perceived quality; backend hardening (fetchAll, health checks, offline mode) is invisible until
+something breaks; the v2 migration is the largest bet and only makes sense once v1 feels polished. See `AppScript/road.md` for the full phase checklist.
 
-**Future categories (v2+, optional ⭐ high interest):** *Coleccionables* (figures, board games, puzzles, LEGO — ownership model `tengo/quiero/vendido`, providers Rebrickable/BoardGameGeek/`manual`) and *Podcasts* (RSS episodic, separate category — never inside Peliculas_Series). Full spec in `road.md` → Phase 7.
+**Future categories (v2+, optional ⭐ high interest):** *Coleccionables* (figures, board games, puzzles, LEGO — ownership model `tengo/quiero/vendido`, providers Rebrickable/BoardGameGeek/`manual`) and
+*Podcasts* (RSS episodic, separate category — never inside Peliculas_Series). Full spec in `road.md` → Phase 7.
 
-> **Status 2026-11-21:** Phase 1 UX fixes implemented **and verified in production** (deploy `v1.9.0`, commits `b4dc8ef` + `87f291f`): Android back dismisses the search filter progressively, patch-note dates are hidden, modals reset scroll. Roadmap reorganized with an explicit **v1→v2 cut-over rule** — Phase 4 (Cloud SQL & Auth) is the cut; everything after assumes Supabase. See `AppScript/road.md`.
+> **Status 2026-11-21:** Phase 1 UX fixes implemented **and verified in production** (deploy `v1.9.0`, commits `b4dc8ef` + `87f291f`): Android back dismisses the search filter progressively,
+> patch-note dates are hidden, modals reset scroll. Roadmap reorganized with an explicit **v1→v2 cut-over rule** — Phase 4 (Cloud SQL & Auth) is the cut; everything after assumes Supabase. See
+> `AppScript/road.md`.
 
 ---
 
