@@ -24,9 +24,9 @@ Este documento establece los lineamientos oficiales de diseño, arquitectura fro
 
 ## 2. Layout, Bordes y Geometría
 
-* **`box-sizing: border-box` universal:** Aplica `box-sizing: border-box` en todos los componentes para evitar desbordes inesperados al combinar `padding`, `border` y anchos flexibles.
-* **Control de espaciado con `gap`:** Usa `display: flex` o `display: grid` con `gap` explícito en lugar de márgenes asimétricos entre hermanos (`margin-left` / `margin-right` condicionales).
-* **Prevención de recortes de foco (`outline`):** Evita `overflow: hidden` permanente en contenedores donde existan elementos enfocables que necesiten mostrar `:focus-visible`, o compénsalo usando
+- **`box-sizing: border-box` universal:** Aplica `box-sizing: border-box` en todos los componentes para evitar desbordes inesperados al combinar `padding`, `border` y anchos flexibles.
+- **Control de espaciado con `gap`:** Usa `display: flex` o `display: grid` con `gap` explícito en lugar de márgenes asimétricos entre hermanos (`margin-left` / `margin-right` condicionales).
+- **Prevención de recortes de foco (`outline`):** Evita `overflow: hidden` permanente en contenedores donde existan elementos enfocables que necesiten mostrar `:focus-visible`, o compénsalo usando
   `outline-offset` interno o anillo `box-shadow` controlado en el contenedor padre.
 
 ```css
@@ -60,12 +60,12 @@ Este documento establece los lineamientos oficiales de diseño, arquitectura fro
 
 ## 3. Animaciones y Microinteracciones
 
-* **Propiedades ligeras:** Prioriza animar `transform` (`scale`, `translateX`, `translateY`) y `opacity`. Cuando necesites colapsar botones laterales en una barra flexible, acompaña `opacity` y
+- **Propiedades ligeras:** Prioriza animar `transform` (`scale`, `translateX`, `translateY`) y `opacity`. Cuando necesites colapsar botones laterales en una barra flexible, acompaña `opacity` y
   `transform` con `width` / `flex-basis` y `padding: 0` usando una curva suave como `cubic-bezier(0.22, 1, 0.36, 1)`.
-* **Duraciones breves y predecibles:**
+- **Duraciones breves y predecibles:**
   - Microinteracciones de hover/tap: `140ms – 180ms`.
   - Transiciones de estado de barra, paneles o acordeones: `200ms – 260ms`.
-* **Respeto a `prefers-reduced-motion`:** Incluye siempre la regla de accesibilidad para desactivar o minimizar transiciones cuando el usuario lo solicite en su sistema operativo.
+- **Respeto a `prefers-reduced-motion`:** Incluye siempre la regla de accesibilidad para desactivar o minimizar transiciones cuando el usuario lo solicite en su sistema operativo.
 
 ```css
 @media (prefers-reduced-motion: reduce) {
@@ -100,6 +100,7 @@ Este documento establece los lineamientos oficiales de diseño, arquitectura fro
 ## 5. Organización y Jerarquía Visual de Ítems
 
 ### 5.1. Escala de Peso Visual en Tarjetas
+
 Cada ítem de biblioteca debe organizarse en tres niveles claros de lectura:
 
 | Nivel | Contenido | Tratamiento Visual |
@@ -109,10 +110,11 @@ Cada ítem de biblioteca debe organizarse en tres niveles claros de lectura:
 | **Nivel 3 (Peso bajo)** | Metadatos auxiliares (`estadoEmision`, categoría, etiquetas secundarias) | `font-weight: 400`, tamaño reducido (`0.78rem–0.82rem`), color `--text-muted`. |
 
 ### 5.2. Coincidencia Semántica y Normalización
-* **Normalización de texto:** Convierte a minúsculas, elimina diacríticos (`NFD`) y colapsa espacios antes de comparar cadenas en búsqueda o agrupación.
-* **Valores canónicos de `estadoEmision`:** Mapea variantes en distintos idiomas (ej. `"Airing"`, `"En emisión"`, `"Ongoing"`, `"Finished"`, `"Finalizado"`) a claves canónicos internos antes de
+
+- **Normalización de texto:** Convierte a minúsculas, elimina diacríticos (`NFD`) y colapsa espacios antes de comparar cadenas en búsqueda o agrupación.
+- **Valores canónicos de `estadoEmision`:** Mapea variantes en distintos idiomas (ej. `"Airing"`, `"En emisión"`, `"Ongoing"`, `"Finished"`, `"Finalizado"`) a claves canónicos internos antes de
   filtrar en `Peliculas_Series` y `Mangas`.
-* **Agrupación uniforme:** Al agrupar ítems por estado, emisión, privacidad o persona/vínculo, utiliza cabeceras de grupo ligeras (título + contador) y conserva exactamente la misma cuadrícula y
+- **Agrupación uniforme:** Al agrupar ítems por estado, emisión, privacidad o persona/vínculo, utiliza cabeceras de grupo ligeras (título + contador) y conserva exactamente la misma cuadrícula y
   diseño de tarjeta debajo.
 
 ---

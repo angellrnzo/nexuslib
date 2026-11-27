@@ -47,7 +47,7 @@ resuelven como `../_local`). No mover ni renombrar.
 ### 5. Verificaciones web estándar
 
 - SW navigation strategy: network-first para navegaciones (estándar web.dev)
-- OpenLibrary User-Agent identificado (app + repo URL + email angellrnzo@gmail.com) → rate limit 3x
+- OpenLibrary User-Agent identificado (app + repo URL + email <angellrnzo@gmail.com>) → rate limit 3x
 - pg_cron + pg_net disponibles en free tier (scheduler TTL resuelto)
 
 ### 6. DB mirror
@@ -108,6 +108,7 @@ Deploy activará:
 ## Opcionales (no bloquean deploy)
 
 **Roadmap:**
+
 - Bulk import por CSV/JSON (spec en road.md)
 - pg_cron scheduler TTL refresh (posible ahora con pg_cron+pg_net)
 - 2FA (roadmap web launch)
@@ -117,6 +118,7 @@ Deploy activará:
 - Phase 6: native Android+iOS app (repos pendientes de usuario)
 
 **Handoff:**
+
 - Revisar EN dict cuando tengas tiempo
 - Repos para native app evaluation (cuando llegue Phase 6)
 

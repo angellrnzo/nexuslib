@@ -264,7 +264,7 @@ Real requests made against every provider the backend uses. Findings per categor
 Fields returned by API but **NOT extracted** by `obtenerMetadataSteam` (`WebAPP.gs` ~L650):
 
 | Field | Value example | Use |
-|---|---|---|
+| --- | --- | --- |
 | `recommendations.total` | 916,028 | **≈ positive review count — FREE, no scraping.** Feeds the reviews chart (pos ≈ this; pct still needs store page or derive) |
 | `achievements.total` | n/a | Could fill a future "logros" stat |
 | `supported_languages` | list | → `plataformas`/language field |
@@ -299,7 +299,7 @@ Earlier 404s were wrong id types (id:2 is ANIME, not MANGA) — the code's `Medi
 ### Backup sources tested
 
 | Source | Status | Verdict |
-|---|---|---|
+| --- | --- | --- |
 | Jikan (MyAnimeList wrapper) | timed out from this network | Keep as fallback only — slow/unreliable |
 | Google Books API | `429` without key | Viable backup **with free API key** |
 | Steam `appreviews?json=1` | `302 → homepage` | DEAD — use store-page scrape (already in spec) |
@@ -311,7 +311,7 @@ Keyless endpoints verified with real requests; key-required sources listed as **
 **Juegos (primary: Steam `appdetails` + store scrape):**
 
 | Source | Test | Verdict |
-|---|---|---|
+| --- | --- | --- |
 | Steam `appdetails` JSON | `200` (~1.2s) | ✅ primary, healthy |
 | Steam news RSS `feeds/news/app/{appid}` | `200` (~0.9s) | ✅ **verified — powers Game Update History spec (Phase 3 item 6)** |
 | IGDB (Twitch) | not tested — needs Twitch client id/secret | 🔑 possible — richer game metadata (genres, platforms, screenshots) |
@@ -320,7 +320,7 @@ Keyless endpoints verified with real requests; key-required sources listed as **
 **Peliculas_Series (primary: TMDB):**
 
 | Source | Test | Verdict |
-|---|---|---|
+| --- | --- | --- |
 | TMDB | key in ScriptProperties — can't test externally | ✅ primary (assumed healthy) |
 | OMDB | not tested — needs free API key | 🔑 possible — thin metadata, good for quick lookups |
 | TVDB | not tested — needs free API key | 🔑 possible — strong series/episode data, good TMDB complement for episodic tracking |
@@ -328,7 +328,7 @@ Keyless endpoints verified with real requests; key-required sources listed as **
 **Libros (primary: OpenLibrary):**
 
 | Source | Test | Verdict |
-|---|---|---|
+| --- | --- | --- |
 | OL `works/{key}/editions.json` | `200` — Gatsby work returned **1,181 editions** | ✅ **verified — powers Book Editions spec (Phase 3 item 7)**; earlier 404s were invalid work keys, endpoint is healthy |
 | OL `works/{key}/ratings.json` | `200` | ✅ verified (fills `puntuacion` gap) |
 | Google Books API | `429` without key | 🔑 possible **with free key** — ISBN lookup + page count fallback |
@@ -337,7 +337,7 @@ Keyless endpoints verified with real requests; key-required sources listed as **
 **Mangas (primary: AniList):**
 
 | Source | Test | Verdict |
-|---|---|---|
+| --- | --- | --- |
 | AniList GraphQL `Media(id:,type:MANGA)` | `200` (MONSTER id 30001 verified) | ✅ primary, healthy |
 | Kitsu `api/edge/manga` | `200` | ✅ **NEW viable backup** — JSON:API, no key, covers manga+anime; good AniList fallback |
 | Jikan (MAL wrapper) | timeout again (15s) | ❌ confirmed unreliable — do NOT rely on it |
@@ -356,7 +356,7 @@ Keyless endpoints verified with real requests; key-required sources listed as **
 Reference apps: **Backloggd** (closest — games/anime/books/manga/movies + social), **Trakt.tv** (movies/series scrobbling + lists), **Serializ** (books), **IGDB/Playnite** (game metadata).
 
 | Feature they have | NexusLib status | Priority |
-|---|---|---|
+| --- | --- | --- |
 | Bulk import/scrobbling (Trakt, Steam, GoodReads) | Manual add only | 🔥 High — v2 ETL, one-time |
 | Release calendar for wishlist items | Dates arrive via TMDB/Steam, no view | High — cheap, filter `deseado*` + upcoming `fecha` |
 | Shared activity feed (what each played/read) | Couple's Match exists, no feed | Medium — v2, extends match |
@@ -390,7 +390,7 @@ Reference apps: **Backloggd** (closest — games/anime/books/manga/movies + soci
 **Feature placement map (current roadmap):**
 
 | Feature | Side | Phase |
-|---|---|---|
+| --- | --- | --- |
 | UI polish, single-user reads, lazy metadata fetches, i18n ES/EN | v1 | 2.5 |
 | UX fixes, motion, fetchAll, health, offline RO | v1 | 1–3 |
 | Mods Tracker (Sheets read/write) | v1 | 3 |
@@ -631,8 +631,8 @@ See [AppScript/BETA.md](BETA.md) — one entry per working session: what was don
     `suf` para el tracking propio y la reasignaba dentro del loop de vinculados → del 2º item en adelante MIS campos se emitían con el sufijo del vinculado y eran sobrescritos (mi sección desaparecía en
     casi todos los items). Fix: `my_suf` separada para el bloque propio. **Aplicado en vivo + en `phase5h_username.sql`.**
 **Sustituye a phase5f (unique display_name) y phase5g (trigger sin username)** — el 5h los reemplaza; si ya corriste f/g no pasa nada, el 5h hace drop del índice viejo.
-  - **Phase 5h APLICADO EN VIVO (2026-11-26, verificado vía Management API):** `profiles.username` único creado (angellrnzo / talbetancourt — email de Talmai migrado de angellrnzor@gmail.com a
-    talbetancourt@gmail.com vía admin API, email_confirm=true). `display_name` quedó como nombre real (Angel/Talmai por ahora, el usuario lo ajusta). `profiles_username_uniq` activo,
+  - **Phase 5h APLICADO EN VIVO (2026-11-26, verificado vía Management API):** `profiles.username` único creado (angellrnzo / talbetancourt — email de Talmai migrado de <angellrnzor@gmail.com> a
+    <talbetancourt@gmail.com> vía admin API, email_confirm=true). `display_name` quedó como nombre real (Angel/Talmai por ahora, el usuario lo ajusta). `profiles_username_uniq` activo,
     `profiles_display_name_uniq` eliminado. `get_items_merged`/`get_my_library_links`/`get_my_item_shares` reemplazadas — sufijos `Angellrnzo`/`Talbetancourt`, campos `username{Sufijo}` emitidos.
   - **Fix `suf` compartida ✅ aplicado en vivo:** del 2º item en adelante el tracking propio se emitía con sufijo del vinculado y era sobrescrito → mi sección desaparecía en casi todos los items (solo
     el 1º alfabético salía). `my_suf` separada. Verificado: 251/251 juegos y 3/3 pelis emiten ambas personas.
@@ -686,7 +686,7 @@ Arquitectura de respaldo en 3 capas — runbook completo en `database/RESTORE.md
 - [x] Backup local cifrado — `database/backup_local.py` (Fernet AES, clave en `_local/backup_key.key` — respaldar aparte). Probado en vivo: 237 KB, 8 tablas.
 - [x] Standby `uxixiwrvobkulkjkicjm` (us-west-2) **REPLICADO 2026-11-25**: schema identico (12t/49f/12p/2v) + datos completos (1093 filas via `restore_backup.py` con remap de profile ids) + 2 auth
   users (via `sync_auth_users.py`). REST/Auth responden. **COMPLETADO 2026-11-25:** PAT account-level `SUPABASE_ADMIN_TOKEN` (org angellrnzo, 2 proyectos, Never) → 3 Edge Functions deployadas + secrets
-  + auth URLs (site_url=Pages). **E2E verificado: catalog-search OK, get_items_merged 251 items.** Secrets GitHub cargados + var activa → **workflow verificado E2E 2026-11-26** (run 45730023321:
+  - auth URLs (site_url=Pages). **E2E verificado: catalog-search OK, get_items_merged 251 items.** Secrets GitHub cargados + var activa → **workflow verificado E2E 2026-11-26** (run 45730023321:
   dump+artifact+mirror todo verde). Mirror usa `mirror_to_standby.py` (pg_restore no servia: auth UUIDs difieren entre proyectos).
 
 ### Phase 6a — Perf `get_items_merged` (2026-11-26)

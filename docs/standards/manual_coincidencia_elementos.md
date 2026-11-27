@@ -26,25 +26,30 @@ Antes de agrupar, ordenar o renderizar ítems, todo componente debe respetar est
 Para organizar ítems sin romper la uniformidad, clasifica los atributos compartidos en cinco dimensiones:
 
 ### 2.1. Dimensión de Identidad y Categoría
+
 * **Identificador (`id`):** Clave única del ítem dentro de su categoría o colección.
 * **Categoría (`category` / `currentCategory`):** Ej. `Peliculas_Series`, `Mangas`, libros u otras colecciones soportadas.
 * **Título y subtítulo/metadato principal:** Nombre del ítem y dato identificativo rápido (año, autor, volumen, episodio o progreso).
 
 ### 2.2. Dimensión de Estado y Progreso
+
 * **Estado del ítem:** Valores de seguimiento (ej. completado, en proceso, pendiente/deseado, pausado, abandonado).
 * **Estado de emisión (`estadoEmision`):** Especialmente relevante en `Peliculas_Series` y `Mangas` (ej. en emisión, finalizado, hiato/pausado, próximo).
 * **Coincidencia común:** Permite agrupar o filtrar ítems que comparten el mismo momento de consumo o publicación.
 
 ### 2.3. Dimensión de Privacidad y Compartición
+
 * **Indicadores de privacidad:** `is_private`, `privado{Sufijo}` y lista de compartidos (`shared_with`).
 * **Coincidencia común:** Agrupa o destaca ítems privados, compartidos con personas específicas o públicos/locales, manteniendo el mismo chip o icono de candado (`i-lock`) de forma consistente.
 
 ### 2.4. Dimensión de Personas y Vínculos
+
 * **Personas / vínculos asociados:** Colaboradores, amigos, parejas, creadores o vínculos registrados en el sistema.
 * **Coincidencia común:** Permite filtrar o agrupar ítems que comparten una misma persona o vínculo, asegurando que el índice de personas (`nexusRebuildPersonas()`) considere todos los ítems
   relevantes y no solo los primeros elementos de cada arreglo.
 
 ### 2.5. Dimensión de Búsqueda y Texto
+
 * **Campos buscables:** Título, etiquetas/géneros, estado, persona/vínculo o notas clave.
 * **Coincidencia común:** Normalización de texto (minúsculas, sin acentos/diacríticos, `trim()`) para que búsquedas parciales coincidan de forma predecible.
 
@@ -53,12 +58,15 @@ Para organizar ítems sin romper la uniformidad, clasifica los atributos compart
 ## 3. Normalización y Coincidencia de Elementos Comunes
 
 ### 3.1. Normalización de Texto
+
 Antes de comparar cadenas para búsqueda, agrupación o filtros:
+
 * Convertir a minúsculas (`String(val || '').toLowerCase()`).
 * Recortar espacios extremos y colapsar espacios múltiples (`replace(/\s+/g, ' ').trim()`).
 * Normalizar caracteres acentuados si se requiere búsqueda tolerante (`NFD` + eliminación de marcas diacríticas), conservando el texto original intacto para mostrar en pantalla.
 
 ### 3.2. Normalización Canónica de Estados y `estadoEmision`
+
 En categorías como `Peliculas_Series` y `Mangas`, los valores pueden provenir de distintas fuentes o idiomas (por ejemplo `"Airing"`, `"En emisión"`, `"Ongoing"`, `"Finished"`, `"Finalizado"`).
 
 * **Regla:** Definir un mapa canónico de equivalencias que traduzca cualquier variante conocida a una clave interna estándar (ej. `airing`, `finished`, `hiatus`, `upcoming`) y, a su vez, resuelva la
@@ -66,11 +74,13 @@ En categorías como `Peliculas_Series` y `Mangas`, los valores pueden provenir d
 * **Beneficio:** El filtro por `estadoEmision` y las agrupaciones por estado coincidirán de forma fiable sin depender de `.includes()` sensibles al idioma o formato.
 
 ### 3.3. Coincidencia por Persona / Vínculo
+
 * Extraer todas las referencias a personas o vínculos de cada ítem de forma uniforme.
 * Normalizar el identificador/nombre de la persona o vínculo para evitar duplicados por mayúsculas o espacios.
 * Al construir o actualizar el índice de personas, recorrer de forma íntegra o incremental los ítems de las categorías para no omitir coincidencias más allá de los primeros elementos.
 
 ### 3.4. Coincidencia por Privacidad
+
 * Evaluar de manera centralizada si un ítem es privado o compartido (`is_private`, `privado{Sufijo}`, `shared_with.length > 0`).
 * Usar esa misma función auxiliar tanto para mostrar el indicador visual (candado/chip) como para filtrar o agrupar por privacidad.
 
@@ -79,12 +89,15 @@ En categorías como `Peliculas_Series` y `Mangas`, los valores pueden provenir d
 ## 4. Patrones de Organización Uniforme en la Interfaz
 
 ### 4.1. Estructura Interna Estándar de Cada Ítem
+
 Mantén una anatomía coherente en cada tarjeta o fila de ítem:
+
 1. **Cabecera del ítem:** Título principal + acción rápida o indicador clave.
 2. **Cuerpo / Metadatos comunes:** Chips de estado, `estadoEmision`, privacidad/vínculo o progreso, usando los mismos estilos de pastilla y tipografía secundaria.
 3. **Pie / Acciones:** Controles secundarios o de gestión consistentes en todas las tarjetas de la misma vista.
 
 ### 4.2. Modos de Organización sin Romper el Layout
+
 * **Vista plana (Grid / Lista estándar):** Todos los ítems comparten exactamente las mismas dimensiones y distribución. Ideal cuando no hay agrupación activa.
 * **Vista agrupada por elemento común:** Cuando el usuario agrupa por estado, `estadoEmision`, persona/vínculo o privacidad:
   * Inserta una cabecera de grupo uniforme (con el nombre normalizado del grupo y el contador de ítems coincidentes).
@@ -93,6 +106,7 @@ Mantén una anatomía coherente en cada tarjeta o fila de ítem:
   criterio seleccionado.
 
 ### 4.3. Criterios de Ordenación Coherentes
+
 * Define un orden determinista (por ejemplo: orden manual/posición, fecha de actualización, título alfabético o prioridad/estado) con desempate estable por `id`.
 * Evita que al alternar filtros o refrescar un ítem cambie el orden de los demás elementos de forma inesperada.
 
@@ -103,6 +117,7 @@ Mantén una anatomía coherente en cada tarjeta o fila de ítem:
 Para evitar ruido visual, dobles líneas o recuadros innecesarios, la vista debe apoyarse en **superficies, espaciado (`gap`), tipografía y peso** antes que en bordes.
 
 ### 5.1. Reglas para Eliminar Bordes Extraños
+
 1. **Un solo borde por superficie contenedora:** Solo el contenedor principal del ítem (si la estética base usa borde) o su superficie de fondo define el contorno. Nunca coloques bordes adicionales en
   chips secundarios, filas internas o wrappers de texto si ya existe un borde padre.
 2. **Separación por aire (`gap`) y superficie en vez de líneas:** Usa `gap` entre chips y metadatos en lugar de `border-right` o `border-bottom` que fragmentan la tarjeta en cuadrículas accidentales.
@@ -111,6 +126,7 @@ Para evitar ruido visual, dobles líneas o recuadros innecesarios, la vista debe
 4. **Cuidado en `box-sizing` y `overflow`:** Usa `box-sizing: border-box` en todos los elementos y evita `overflow: hidden` agresivo que recorte anillos de foco (`outline`) o sombras sutiles.
 
 ### 5.2. Jerarquía de Acentuación por Importancia y Peso Visual
+
 Cada ítem o grupo debe comunicar qué importa primero sin saturar la pantalla con colores llamativos simultáneos:
 
 * **Nivel 1 — Máxima importancia (Título / Identificador principal):**
@@ -122,6 +138,7 @@ Cada ítem o grupo debe comunicar qué importa primero sin saturar la pantalla c
   * Peso normal (`font-weight: 400`), tono atenuado (`--text-muted`) y menor contraste para que no compitan con el título ni con los estados activos.
 
 ### 5.3. Oportunidades Concretas de Mejora UI/UX
+
 1. **Evitar exceso de chips por tarjeta:** Limita los chips visibles en cada ítem a los más útiles (p. ej. estado + privacidad/vínculo) y envía detalles secundarios al modal/detalle o a filtros,
   reduciendo el "efecto etiqueta".
 2. **Diferenciar estado activo vs. estado neutro:** Si casi todos los ítems tienen el mismo estado neutro, darle un color fuerte a todos anula el acento; deja el color/acento para lo que destaque o

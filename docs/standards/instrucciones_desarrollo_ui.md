@@ -48,12 +48,14 @@ con Supabase).
 ## 3. Protocolo Estricto ante Bucles o Fallos Repetidos
 
 **Detente de inmediato y NO sigas aplicando parches a ciegas** si ocurre cualquiera de estas situaciones:
+
 1. Repites el mismo cambio o una variación similar **2 veces** sin resolver el problema.
 2. Un ajuste rompe otro comportamiento existente (por ejemplo: `history.pushState` / `popstate`, `itemsByCategory`, `is_private` / `shared_with`, `estadoEmision`, filtros, acordeones, modales o el
   service worker de la PWA).
 3. El error de consola, estado o layout es ambiguo o no queda claro con el código disponible.
 
 Cuando esto ocurra, **detén la edición**, resume brevemente qué intentaste y **pide al usuario exactamente los siguientes datos** para que los pase a su revisor:
+
 1. **Acción y resultado:** qué flujo se ejecutó exactamente (ej. enfocar `#inputAgregar`, tocar fuera de la barra, guardar en `guardarSharePanel`, filtrar `Peliculas_Series`/`Mangas`), qué ocurrió y
   qué debía ocurrir.
 2. **Código exacto involucrado:** las funciones, bloques HTML/CSS/JS o líneas exactas afectadas y el `git diff` corto del intento fallido.

@@ -104,7 +104,7 @@ Reglas:
 - Orden determinista: criterio elegido + desempate por `id`.
 - `nexusRebuildPersonas` escanea TODOS los items (no muestrear).
 - Migración pendiente: `onclick` inline → `data-item-id`/`data-action`
-  + delegación en contenedor.
+  - delegación en contenedor.
 
 ---
 
