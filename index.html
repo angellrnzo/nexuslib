@@ -77,7 +77,7 @@
       touch-action: pan-y;
     }
 
-    body.modal-open { overflow: hidden; }
+    html.modal-open, body.modal-open { overflow: hidden !important; overscroll-behavior: none; }
     body.view-stats {
       padding-top: calc(62px + env(safe-area-inset-top, 0px));
     }
@@ -181,7 +181,7 @@
     .controls-row {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 6px;
       width: 100%;
       min-width: 0;
     }
@@ -203,7 +203,7 @@
       border-color: var(--accent);
       box-shadow: 0 0 0 3px rgba(102, 192, 244, 0.16), 0 0 18px rgba(102, 192, 244, 0.22);
     }
-    .search-wrapper .ico { margin-right: 8px; color: var(--muted); flex-shrink: 0; }
+    .search-wrapper .ico { margin-right: 2px; color: var(--muted); flex-shrink: 0; }
     #inputBuscar { width: 100%; min-width: 0; border: none; background: transparent; color: white; outline: none; font-family: 'Inter', sans-serif; font-size: 13px; }
     .btn-clear-search {
       background: transparent; border: none; color: var(--muted); cursor: pointer;
@@ -220,63 +220,39 @@
       column-gap: 6px;
       background: rgba(0, 0, 0, 0.45);
       border-radius: 14px;
-      padding: 0 4px 0 10px;
+      padding: 0 4px 0 12px;
       height: 34px;
       border: 1.5px solid rgba(255, 255, 255, 0.08);
       position: relative;
       flex-grow: 1;
       min-width: 0;
-      transition: flex-grow var(--t-slow) var(--ease-inout), width var(--t-slow) var(--ease-inout), background-color var(--t-slow) var(--ease-inout), border-color var(--t-slow) var(--ease-inout), box-shadow var(--t-slow) var(--ease-inout);
+      transition: background-color var(--t-base) var(--ease-out), border-color var(--t-base) var(--ease-out), box-shadow var(--t-base) var(--ease-out);
     }
     .add-wrapper.expanded {
-      flex-grow: 1;
-      width: 100%;
       background: rgba(11, 14, 20, 0.98);
       border-color: var(--accent);
       box-shadow: 0 0 0 3px rgba(102, 192, 244, 0.16), 0 0 24px rgba(102, 192, 244, 0.28);
     }
 
-    /* botones nav dentro de la barra: colapsan animados al expandir (estilo muestra) */
-    .add-collapse {
-      flex-shrink: 0; overflow: hidden;
-      transition: width var(--t-slow) var(--ease-inout), flex-basis var(--t-slow) var(--ease-inout),
-                  max-width var(--t-slow) var(--ease-inout), opacity var(--t-slow) var(--ease-inout),
-                  transform var(--t-slow) var(--ease-inout), margin var(--t-slow) var(--ease-inout),
-                  padding var(--t-slow) var(--ease-inout);
-    }
-    .menu-wrap.add-collapse { display: flex; align-items: center; }
-    .add-wrapper .btn-circle { width: 30px; height: 30px; }
+    .menu-wrap { position: relative; flex-shrink: 0; display: flex; align-items: center; }
 
-    /* animaciones de botones nav — lineamientos de la muestra:
-       opacity 180ms / transform 240ms spring cubic-bezier(0.22,1,0.36,1) */
-    .add-wrapper .btn-circle {
-      transition: opacity 180ms ease, transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
-                  background-color 150ms ease, color 150ms ease, border-color var(--t-base) var(--ease-out),
-                  filter var(--t-base) var(--ease-out), box-shadow var(--t-base) var(--ease-out);
+    .add-wrapper .add-ico {
+      margin-right: 2px; color: var(--muted); flex-shrink: 0;
+      transition: color var(--t-fast) var(--ease-out);
     }
-    .add-wrapper .btn-circle:active { transform: scale(0.94); }
-    @media (prefers-reduced-motion: reduce) {
-      .add-wrapper .btn-circle, .add-collapse, .search-results-dropdown, .custom-select-menu,
-      .custom-select-trigger, .search-wrapper, .add-wrapper {
-        transition: none !important; animation: none !important;
-      }
+    .add-wrapper.expanded .add-ico { color: var(--accent); }
+    .btn-add-cta {
+      height: 26px; padding: 0 11px; border-radius: 10px;
+      font-size: 11px; font-weight: 800; letter-spacing: 0.2px; font-family: inherit;
+      background: rgba(102, 192, 244, 0.14); color: var(--accent);
+      border: 1px solid rgba(102, 192, 244, 0.32);
     }
-    .add-wrapper.expanded .add-collapse {
-      width: 0; min-width: 0; max-width: 0; flex-basis: 0;
-      padding: 0; margin: 0; opacity: 0;
-      transform: scale(0.8) translateX(-6px);
-      pointer-events: none;
+    .btn-add-cta:hover { background: rgba(102, 192, 244, 0.24); border-color: rgba(102, 192, 244, 0.55); }
+    .add-wrapper.has-text .btn-add-cta {
+      background: var(--accent); color: var(--on-accent); border-color: var(--accent);
+      box-shadow: 0 0 12px rgba(102, 192, 244, 0.35);
     }
-
-    .add-plus {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 30px; height: 30px; border-radius: 50%; border: none; padding: 0;
-      background: transparent; color: var(--muted); cursor: pointer; flex-shrink: 0;
-      transition: color var(--t-fast) var(--ease-out), background var(--t-fast) var(--ease-out);
-    }
-    .add-plus:hover { color: var(--bright); background: rgba(255,255,255,0.08); }
-    .add-plus:active { transform: scale(0.94); }
-    .add-wrapper.expanded .add-plus { color: var(--accent); }
+    .add-wrapper.has-text .btn-add-cta:hover { filter: brightness(1.1); }
     
     .btn-clear-add {
       background: transparent; border: none; color: var(--muted); cursor: pointer;
@@ -342,52 +318,53 @@
 
     .btn-circle {
       width: 34px; height: 34px; border-radius: 50%; padding: 0;
-      background: var(--btn-primary); color: var(--on-accent); border: 1px solid rgba(255, 255, 255, 0.15);
-      position: relative; opacity: 0.7; transition: opacity var(--t-base) var(--ease-out), filter var(--t-base) var(--ease-out), border-color var(--t-base) var(--ease-out);
+      background: rgba(0, 0, 0, 0.45); color: var(--text); border: 1.5px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+      transition: background-color var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out), border-color var(--t-fast) var(--ease-out), box-shadow var(--t-fast) var(--ease-out), transform var(--t-fast) var(--ease-out);
     }
-    .btn-circle:hover { opacity: 1; filter: brightness(1.1); border-color: rgba(255, 255, 255, 0.25); }
-    .btn-circle:active { filter: brightness(0.95); }
-    .btn-circle.active { background: var(--accent); color: var(--on-accent); border-color: var(--accent); opacity: 1; }
-    #btn-menu { transition: opacity var(--t-base) var(--ease-out), filter var(--t-base) var(--ease-out), border-color var(--t-base) var(--ease-out); }
-    #btn-menu:hover { opacity: 1; filter: brightness(1.1); border-color: rgba(255, 255, 255, 0.25); }
-    #btn-menu:active { filter: brightness(0.95); }
-    #btn-menu.active { background: var(--accent); color: var(--on-accent); border-color: var(--accent); opacity: 1; }
-    .btn-circle.has-filters { border-color: var(--accent); box-shadow: 0 0 0 1px rgba(102, 192, 244, 0.5); }
+    .btn-circle:hover { background: rgba(102, 192, 244, 0.14); color: var(--bright); border-color: rgba(102, 192, 244, 0.45); }
+    .btn-circle:active { transform: scale(0.94); }
+    .btn-circle.active { background: var(--accent); color: var(--on-accent); border-color: var(--accent); box-shadow: 0 0 12px rgba(102, 192, 244, 0.35); }
+    .btn-circle.has-filters { color: var(--accent); border-color: rgba(102, 192, 244, 0.55); box-shadow: 0 0 0 1px rgba(102, 192, 244, 0.25); }
     .btn-circle.has-filters::after {
       content: ''; position: absolute; top: 4px; right: 4px; width: 6px; height: 6px;
-      border-radius: 50%; background: var(--accent);
+      border-radius: 50%; background: var(--accent); box-shadow: 0 0 6px var(--accent);
     }
+    .btn-circle.active.has-filters::after { background: var(--on-accent); box-shadow: none; }
 
     .custom-select { position: relative; width: 100%; min-width: 0; }
     .custom-select-trigger {
-      width: 100%; height: 38px; padding: 0 10px 0 12px;
-      display: flex; align-items: center; justify-content: space-between; gap: 8px;
-      background: rgba(0,0,0,0.25); color: var(--text); border: 1px solid var(--border);
-      border-radius: 8px; font-family: inherit; font-size: 13px; cursor: pointer;
-      transition: border-color var(--t-base) var(--ease-out), box-shadow var(--t-base) var(--ease-out);
+      width: 100%; height: 34px; padding: 0 10px 0 11px;
+      display: flex; align-items: center; justify-content: space-between; gap: 6px;
+      background: rgba(0, 0, 0, 0.38); color: var(--text); border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px; font-family: inherit; font-size: 12px; font-weight: 500; cursor: pointer;
+      transition: border-color var(--t-base) var(--ease-out), box-shadow var(--t-base) var(--ease-out), background-color var(--t-fast) var(--ease-out);
     }
+    .custom-select-trigger:hover { background: rgba(0, 0, 0, 0.5); border-color: rgba(255, 255, 255, 0.18); }
     .custom-select-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .custom-select-chevron { flex-shrink: 0; color: var(--muted); transition: transform var(--t-base) var(--ease-out); }
+    .custom-select-chevron { flex-shrink: 0; color: var(--muted); transition: transform var(--t-base) var(--ease-out), color var(--t-fast) var(--ease-out); }
     .custom-select-trigger:focus, .custom-select-trigger:focus-visible { outline: none; }
-    .custom-select.open .custom-select-trigger { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(155, 89, 182, 0.12); }
+    .custom-select-trigger:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(102, 192, 244, 0.25); }
+    .custom-select.open .custom-select-trigger { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(102, 192, 244, 0.16); }
     #fuente-dropdown.open .custom-select-trigger { border-color: rgba(187, 134, 252, 0.55); box-shadow: 0 0 0 2px rgba(187, 134, 252, 0.14); }
     .custom-select.open .custom-select-chevron { transform: rotate(180deg); color: var(--accent); }
     .custom-select-menu {
-      position: absolute; top: calc(100% + 6px); left: 0; right: 0; min-width: 170px; margin: 0;
-      padding: 5px; list-style: none; background: #0d1322; border: 1px solid var(--border);
-      border-radius: 9px; box-shadow: 0 14px 30px rgba(0,0,0,0.8); z-index: 100;
+      position: absolute; top: calc(100% + 5px); left: 0; right: 0; min-width: 150px; max-height: 220px; overflow-y: auto; margin: 0;
+      padding: 5px; list-style: none; background: #0d1322; border: 1px solid rgba(102, 192, 244, 0.35);
+      border-radius: 10px; box-shadow: 0 14px 30px rgba(0,0,0,0.85); z-index: 100;
       opacity: 0; visibility: hidden; transform: translateY(-6px) scale(0.98);
       transform-origin: top center; transition: opacity 0.16s ease, transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.16s;
     }
     .custom-select.open .custom-select-menu { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
     .custom-select-menu li {
       display: flex; align-items: center; justify-content: space-between; gap: 8px;
-      padding: 8px 10px; border-radius: 6px; font-size: 13px; color: var(--text); cursor: pointer;
+      padding: 7px 9px; border-radius: 7px; font-size: 12px; color: var(--text); cursor: pointer;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
       transition: background var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out);
     }
     .custom-select-menu li:hover { background: rgba(255,255,255,0.08); color: var(--bright); }
-    .custom-select-menu li[aria-selected="true"] { background: rgba(155, 89, 182, 0.18); color: var(--mods); font-weight: 600; }
+    .custom-select-menu li[aria-selected="true"] { background: rgba(102, 192, 244, 0.16); color: var(--accent); font-weight: 600; }
+    #fuente-dropdown .custom-select-menu li[aria-selected="true"] { background: rgba(155, 89, 182, 0.18); color: var(--mods); }
     .custom-select-menu li .check-icon { opacity: 0; color: var(--accent); flex-shrink: 0; transition: opacity 0.12s ease; }
     .custom-select-menu li[aria-selected="true"] .check-icon { opacity: 1; }
 
@@ -463,20 +440,26 @@
       display: flex; align-items: center; justify-content: center;
       font-size: 24px; font-weight: 900; color: var(--bright);
       background: linear-gradient(135deg, var(--accent), var(--mods));
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.14), 0 6px 16px rgba(102, 192, 244, 0.25);
     }
     .stats-profile-info { flex: 1; min-width: 0; }
-    .stats-profile-name { font-size: 17px; font-weight: 800; color: var(--text); }
-    .stats-profile-user { font-size: 12px; color: var(--accent); font-weight: 600; }
-    .stats-profile-email { font-size: 11px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .stats-profile-name {
+      font-size: 17px; font-weight: 800; color: var(--bright);
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .stats-profile-user { font-size: 12px; color: var(--accent); font-weight: 600; margin-top: 1px; }
+    .stats-profile-email { font-size: 11px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 1px; }
     .stats-profile-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
     .stats-profile-actions .btn {
       height: 34px; padding: 0 14px; font-size: 12px; font-weight: 700;
-      border-radius: 10px; display: inline-flex; align-items: center; justify-content: center;
+      border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
       white-space: nowrap;
       background: rgba(102,192,244,.12); color: var(--accent);
       border: 1px solid rgba(102,192,244,.35);
       transition: background var(--t-fast) var(--ease-out), border-color var(--t-fast) var(--ease-out);
     }
+    .stats-profile-actions .btn .pf-chev { transition: transform var(--t-base) var(--ease-out); }
+    .stats-profile-actions .btn.open .pf-chev { transform: rotate(180deg); }
     .stats-profile-actions .btn:hover { background: rgba(102,192,244,.22); }
     .stats-profile-actions .btn.open {
       background: rgba(102,192,244,.28); border-color: var(--accent);
@@ -511,17 +494,25 @@
     .pf-invite-row .btn-circle {
       width: 36px; height: 36px; flex-shrink: 0; align-self: center;
       border-radius: 10px; padding: 0; /* misma forma/altura que el input del codigo */
+      background: rgba(102, 192, 244, 0.12); color: var(--accent);
+      border: 1px solid rgba(102, 192, 244, 0.35);
     }
+    .pf-invite-row .btn-circle:hover { background: rgba(102, 192, 244, 0.22); border-color: var(--accent); }
     .pf-actions-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-top: 2px; }
     .pf-btn {
       height: 40px; border-radius: 10px; font-size: 13px; font-weight: 700;
       display: inline-flex; align-items: center; justify-content: center; gap: 7px;
       cursor: pointer; border: none; font-family: inherit;
-      transition: filter var(--t-fast) var(--ease-out);
+      transition: filter var(--t-fast) var(--ease-out), background-color var(--t-fast) var(--ease-out), border-color var(--t-fast) var(--ease-out), transform var(--t-fast) var(--ease-out);
     }
+    .pf-btn:active { transform: scale(0.98); }
     .pf-btn-save { background: linear-gradient(135deg, var(--accent), var(--mods)); color: var(--on-accent); }
-    .pf-btn-danger { background: var(--danger-text); color: var(--on-accent); }
-    .pf-btn:hover { filter: brightness(1.08); }
+    .pf-btn-save:hover { filter: brightness(1.08); }
+    .pf-btn-danger {
+      background: rgba(201, 59, 59, 0.14); color: var(--danger-text);
+      border: 1px solid rgba(201, 59, 59, 0.35);
+    }
+    .pf-btn-danger:hover { background: rgba(201, 59, 59, 0.24); border-color: rgba(255, 133, 133, 0.55); }
     @media (max-width: 560px) {
       .pf-grid-2 { grid-template-columns: 1fr; }
       .pf-actions-row { grid-template-columns: 1fr; }
@@ -534,48 +525,74 @@
 
     .filter-panel {
       position: fixed;
-      top: calc(185px + env(safe-area-inset-top, 0px));
-      left: 12px;
-      right: 12px;
-      max-width: 350px;
+      top: calc(156px + env(safe-area-inset-top, 0px));
+      left: 10px;
+      right: 10px;
+      max-width: 420px;
       margin: 0 auto;
-      background: linear-gradient(180deg, rgba(27, 40, 56, 0.99) 0%, rgba(18, 27, 40, 0.99) 100%);
+      background: linear-gradient(180deg, rgba(27, 40, 56, 0.99) 0%, rgba(16, 24, 36, 0.99) 100%);
       border: 1px solid rgba(102, 192, 244, 0.35);
-      border-radius: 14px;
+      border-radius: 16px;
       padding: 14px;
-      box-shadow: 0 14px 40px rgba(0,0,0,0.85);
+      box-shadow: 0 18px 44px rgba(0,0,0,0.88);
       z-index: 9998;
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      max-height: calc(100dvh - 205px);
+      gap: 10px;
+      max-height: calc(100dvh - 172px - env(safe-area-inset-top, 0px));
       overflow-y: auto;
       opacity: 0;
       visibility: hidden;
-      transform: translateY(-10px);
+      transform: translateY(-8px) scale(0.985);
+      transform-origin: top center;
       transition: opacity var(--t-base) var(--ease-out), visibility var(--t-base) var(--ease-out), transform var(--t-base) var(--ease-out);
     }
-    .filter-panel.open { opacity: 1; visibility: visible; transform: translateY(0); }
-    .filter-group { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+    .filter-panel.open { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
+    .filter-panel-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-bottom: 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .filter-panel-title {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; font-weight: 800; color: var(--bright); letter-spacing: 0.2px;
+    }
+    .filter-panel-title .ico { color: var(--accent); }
+    .filter-grid-2, #filter-personas, .filter-extras-grid {
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; width: 100%;
+    }
+    #filter-personas:empty { display: none; }
+    .filter-extras-grid:not(:has(.filter-group:not(:empty))) { display: none; }
+    .filter-extras-grid:has(#extra-filter-2:empty) { grid-template-columns: 1fr; }
+    .filter-extras-grid > #extra-filter-3:not(:empty) { grid-column: 1 / -1; }
+    .filter-sep { height: 1px; background: rgba(255, 255, 255, 0.07); margin: 0; }
+    .filter-group { display: flex; flex-direction: column; gap: 5px; width: 100%; min-width: 0; }
     .filter-group:empty { display: none; }
-    .filter-group label { font-size: 11px; color: var(--muted); font-weight: 600; display: inline-flex; align-items: center; gap: 5px; }
+    .filter-group label {
+      font-size: 11px; color: var(--muted); font-weight: 600;
+      display: inline-flex; align-items: center; gap: 5px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
     .filter-group select {
       background: rgba(0,0,0,0.45); color: white; border: 1px solid rgba(255,255,255,0.12);
-      padding: 0 2.2rem 0 0.75rem; border-radius: 8px; font-size: 12px; outline: none; cursor: pointer; width: 100%;
-      height: 38px; line-height: 36px; font-family: inherit; min-width: 0; box-sizing: border-box;
+      padding: 0 2.2rem 0 0.75rem; border-radius: 10px; font-size: 12px; outline: none; cursor: pointer; width: 100%;
+      height: 34px; line-height: 32px; font-family: inherit; min-width: 0; box-sizing: border-box;
       color-scheme: dark; -webkit-appearance: none; -moz-appearance: none; appearance: none;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
       background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 15px 15px;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    .filter-group select:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(155, 89, 182, 0.12); }
+    .filter-group select:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(102, 192, 244, 0.16); }
     .filter-group select option { background-color: rgba(0,0,0,0.45); color: white; }
     .filter-reset {
-      width: 100%; margin-top: 4px; padding: 8px;
-      background: rgba(201, 59, 59, 0.15); color: var(--danger-text);
-      border: 1px solid rgba(201, 59, 59, 0.3); border-radius: 8px;
-      cursor: pointer; font-weight: 700; font-size: 12px;
+      width: 100%; margin-top: 2px; padding: 8px 12px;
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      background: rgba(201, 59, 59, 0.12); color: var(--danger-text);
+      border: 1px solid rgba(201, 59, 59, 0.28); border-radius: 10px;
+      cursor: pointer; font-weight: 700; font-size: 12px; font-family: inherit;
+      transition: background-color var(--t-fast) var(--ease-out), border-color var(--t-fast) var(--ease-out), transform var(--t-fast) var(--ease-out);
     }
+    .filter-reset:hover { background: rgba(201, 59, 59, 0.22); border-color: rgba(255, 133, 133, 0.48); }
+    .filter-reset:active { transform: scale(0.98); }
 
     #grid {
       display: grid;
@@ -692,7 +709,7 @@
       gap: 6px;
       background: rgba(16, 24, 36, 0.95);
       padding: 5px;
-      border-radius: 10px;
+      border-radius: 12px;
       border: 1px solid rgba(102, 192, 244, 0.22);
       overflow-x: auto;
       scrollbar-width: none;
@@ -705,7 +722,7 @@
       min-width: max-content;
       padding: 6px 8px;
       border: none;
-      border-radius: 7px;
+      border-radius: 8px;
       background: transparent;
       color: var(--muted);
       font-family: 'Inter', sans-serif;
@@ -772,7 +789,7 @@
       margin-top: 0px;
     }
     .stat-card.open .stat-accordion-content {
-      max-height: 220px;
+      max-height: 420px;
       opacity: 1;
       border-top-width: 1px;
       padding-top: 8px;
@@ -800,13 +817,14 @@
     #modal, #modal-papelera, #modal-match, #modal-vinculos, #modal-share {
       display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(6, 9, 14, 0.88); z-index: 10000;
+      overscroll-behavior: contain; touch-action: none;
       justify-content: center; align-items: center; opacity: 0;
       transition: opacity var(--t-base) var(--ease-out); padding: 10px;
     }
     .modal-content {
       background: #182332; padding: 20px; border-radius: 16px; width: 100%; max-width: 620px; min-width: 0;
       max-height: 90dvh; overflow-y: auto; overflow-x: hidden; position: relative;
-      overscroll-behavior: contain;
+      overscroll-behavior: contain; touch-action: pan-y;
       border: 1px solid rgba(102, 192, 244, 0.38);
       box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9);
       transform: translateY(10px) scale(0.985);
@@ -823,7 +841,7 @@
        dentro del modal; margin-bottom negativo evita reservar fila extra */
     .modal-close {
       position: sticky; top: 12px; z-index: 50;
-      margin-left: auto; margin-bottom: -34px; display: flex;
+      margin-left: auto; margin-bottom: -34px;
       width: 34px; height: 34px; padding: 0;
       border-radius: 50%; background: rgba(13, 19, 27, 0.9);
       border: 1px solid rgba(255, 255, 255, 0.28); color: var(--bright);
@@ -835,6 +853,7 @@
     /* reserva lateral solo donde el boton puede pisar texto del header */
     .modal-content .modal-title { padding-right: 48px; }
     .modal-header-grid.poster .modal-header-info { padding-right: 44px; }
+    .modal-header-grid.poster .modal-title { padding-right: 0; }
 
     .modal-header-grid { display: flex; gap: 16px; margin-bottom: 14px; align-items: flex-start; width: 100%; }
     .modal-header-grid.landscape { flex-direction: column; }
@@ -909,7 +928,7 @@
     .state-box.err .ico { color: var(--danger-text); }
 
     /* 2A skeleton shimmer — mismos ritmos que .card */
-    .skel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; width: 100%; }
+    .skel-grid { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; width: 100%; }
     .skel-card { background: var(--panel); border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,.06); }
     .skel-img { aspect-ratio: 460 / 215; }
     .skel-body { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
@@ -987,10 +1006,14 @@
 
     /* ---- OFFLINE READ-ONLY ---- */
     #offline-banner {
-      display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+      display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 10002;
       background: rgba(214,169,24,0.95); color: #1b1405; font-size: 12px; font-weight: 700;
-      text-align: center; padding: 6px 10px; letter-spacing: 0.3px;
+      text-align: center; padding: calc(6px + env(safe-area-inset-top, 0px)) 10px 6px; letter-spacing: 0.3px;
     }
+    body.offline { padding-top: calc(188px + env(safe-area-inset-top, 0px)); }
+    body.offline.view-stats { padding-top: calc(90px + env(safe-area-inset-top, 0px)); }
+    body.offline .top-header { top: calc(38px + env(safe-area-inset-top, 0px)); }
+    body.offline .filter-panel { top: calc(184px + env(safe-area-inset-top, 0px)); }
     body.offline .status-select, body.offline .progress-input, body.offline .chap-input,
     body.offline  .wish-toggle, body.offline .star, body.offline .btn-delete,
     body.offline .btn-repair, body.offline .btn-mods, body.offline .mod-act.del,
@@ -1000,19 +1023,29 @@
       pointer-events: none; opacity: 0.45;
     }
 
-    /* ---- STEAM REVIEWS ---- */
+    /* ---- STEAM REVIEWS & UPDATES ---- */
+    #m-resenas-box, #m-updates-box {
+      border-color: rgba(102, 192, 244, 0.35); background: rgba(102, 192, 244, 0.05);
+      box-shadow: 0 0 18px rgba(102, 192, 244, 0.10), 0 8px 22px rgba(0, 0, 0, 0.28);
+    }
+    #btn-toggle-resenas.active, #btn-toggle-updates.active {
+      background: rgba(102, 192, 244, 0.16); border-color: rgba(102, 192, 244, 0.5); color: var(--bright);
+      box-shadow: 0 0 12px rgba(102, 192, 244, 0.22);
+    }
     .rev-wrap { padding: 6px 2px; }
-    .rev-top { display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px; }
-    .rev-big { font-size: 26px; font-weight: 900; color: var(--text); line-height: 1; }
+    .rev-top { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; margin-bottom: 10px; }
+    .rev-big { font-size: 26px; font-weight: 900; color: var(--bright); line-height: 1; font-variant-numeric: tabular-nums; }
     .rev-tier { font-size: 12px; font-weight: 700; }
-    .rev-bar5 { position: relative; display: flex; height: 10px; border-radius: 6px; overflow: visible; margin: 10px 0 6px; }
-    .rev-seg { flex: 1; }
+    .rev-bar5 { position: relative; display: flex; gap: 2px; height: 10px; border-radius: 6px; overflow: visible; margin: 10px 0 8px; }
+    .rev-seg { flex: 1; border-radius: 2px; }
+    .rev-seg:first-child { border-radius: 5px 2px 2px 5px; }
+    .rev-seg:last-child { border-radius: 2px 5px 5px 2px; }
     .rev-needle {
       position: absolute; top: -4px; width: 3px; height: 18px; border-radius: 2px;
-      background: var(--bright); box-shadow: 0 0 4px rgba(0,0,0,0.6); transform: translateX(-50%);
+      background: var(--bright); box-shadow: 0 0 0 2px var(--bg), 0 0 6px rgba(0,0,0,0.8); transform: translateX(-50%);
     }
-    .rev-meta { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 11px; color: var(--muted); }
-    .rev-trend { font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 20px; }
+    .rev-meta { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+    .rev-trend { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; margin-left: auto; flex-shrink: 0; }
     .rev-trend.up { background: rgba(91,163,43,0.15); color: var(--positive); }
     .rev-trend.down { background: rgba(201,59,59,0.15); color: var(--danger-text); }
     .rev-trend.flat { background: rgba(255,255,255,0.08); color: var(--muted); }
@@ -1165,6 +1198,7 @@
       color: var(--bright); font-family: 'Inter', sans-serif; font-size: 11px; outline: none;
       resize: vertical;
     }
+    .player-note:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(102, 192, 244, 0.16); }
 
     .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
     .btn-full { grid-column: span 2; }
@@ -1343,6 +1377,8 @@
     @media (pointer: coarse) {
       .tab-btn { padding: 9px 12px; }
       .stats-prof-btn, .stats-cat-btn { padding: 9px 10px; font-size: 12px; }
+      .search-wrapper, .add-wrapper { height: 36px; }
+      .btn-add-cta { height: 28px; padding: 0 12px; }
       .btn-circle { width: 36px; height: 36px; }
       .menu-item { padding: 12px 14px; font-size: 14px; min-height: 44px; }
       #inputBuscar, #inputAgregar { font-size: 16px; }
@@ -1369,8 +1405,6 @@
         background: rgba(255,255,255,.28); margin: 0 auto 10px; flex-shrink: 0;
         position: sticky; top: 0; z-index: 2;
       }
-    }
-    @media (max-width: 768px) {
       #inputBuscar, #inputAgregar { font-size: 16px; }
       .perfil-edit-inner .na-in, .mods-form input, .mods-form select, .mods-form textarea { font-size: 16px; }
     }
@@ -1425,9 +1459,9 @@
       }
       .modal-header-grid.poster .modal-header-info {
         grid-area: body;
-        padding-right: 44px;
+        padding-right: 0;
       }
-      .modal-header-grid.poster .modal-title { padding-right: 36px; justify-content: flex-start; font-size: 17px; }
+      .modal-header-grid.poster .modal-title { padding-right: 0; justify-content: flex-start; font-size: 17px; }
       .modal-header-grid.poster .version-badges { justify-content: flex-start; }
       .modal-header-grid.poster .modal-genres { justify-content: flex-start; }
       .tab-btn { padding: 7px 8px; font-size: 11px; }
@@ -1485,6 +1519,7 @@
     <symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></symbol>
     <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
     <symbol id="i-chevron-down" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></symbol>
+    <symbol id="i-sort" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="6" y1="12" x2="18" y2="12"/><line x1="9" y1="18" x2="15" y2="18"/></symbol>
       </svg>
 
   <div id="app-screen">
@@ -1517,52 +1552,50 @@
               <svg class="ico ico-sm"><use href="#i-x"/></svg>
             </button>
           </div>
+          <button id="btn-toggle-filtros" class="btn btn-circle" onclick="toggleFiltros(event)" title="Filtros y Orden" data-i18n-title="tip.filtros">
+            <svg class="ico"><use href="#i-filter"/></svg>
+          </button>
+          <div class="menu-wrap">
+            <button class="btn btn-circle" id="btn-menu" onclick="toggleMenu(event)" title="Menú" data-i18n-title="tip.menu">
+              <svg class="ico"><use href="#i-menu"/></svg>
+            </button>
+            <div id="menu-panel" class="menu-panel">
+              <button class="menu-item" onclick="menuRun(abrirMatchModal)">
+                <svg class="ico ico-sm" style="color:#ff8fa3;"><use href="#i-heart-fill"/></svg> <span data-i18n="menu.match">Match de Pareja</span>
+              </button>
+              <button class="menu-item" onclick="menuRun(elegirAleatorio)">
+                <svg class="ico ico-sm"><use href="#i-dice"/></svg> <span data-i18n="menu.random">Elección aleatoria</span>
+              </button>
+              <button class="menu-item" onclick="menuRun(forzarSincronizacion)">
+                <svg class="ico ico-sm"><use href="#i-sync"/></svg> <span data-i18n="menu.sync">Sincronizar</span>
+              </button>
+              <button class="menu-item" onclick="menuRun(abrirPapelera)">
+                <svg class="ico ico-sm" style="color:var(--danger-text);"><use href="#i-trash"/></svg> <span data-i18n="menu.papelera">Papelera</span>
+              </button>
+              <button class="menu-item" onclick="menuRun(abrirVinculosModal)">
+                <svg class="ico ico-sm" style="color:var(--links);"><use href="#i-users"/></svg> <span data-i18n="menu.vinculos">Vínculos</span>
+                <span id="vinc-badge" class="menu-badge">0</span>
+              </button>
+              <div class="menu-sep"></div>
+              <button class="menu-item" onclick="menuRun(cambiarIdioma)">
+                <svg class="ico ico-sm"><use href="#i-globe"/></svg> <span data-i18n="menu.lang">English</span>
+              </button>
+              <button class="menu-item" onclick="menuRun(function(){ cambiarCategoria('Estadisticas'); })">
+                <svg class="ico ico-sm"><use href="#i-user"/></svg> <span data-i18n="menu.perfil">Mi perfil</span>
+              </button>
+            </div>
+          </div>
         </div>
 
         <div class="controls-row">
           <div class="add-wrapper" id="add-wrapper-box">
-            <button id="btn-toggle-filtros" class="btn btn-circle add-collapse" onclick="toggleFiltros(event)" title="Filtros y Orden" data-i18n-title="tip.filtros">
-              <svg class="ico"><use href="#i-filter"/></svg>
-            </button>
-            <div class="menu-wrap add-collapse">
-              <button class="btn btn-circle" id="btn-menu" onclick="toggleMenu(event)" title="Menú" data-i18n-title="tip.menu">
-                <svg class="ico"><use href="#i-menu"/></svg>
-              </button>
-              <div id="menu-panel" class="menu-panel">
-                <button class="menu-item" onclick="menuRun(abrirMatchModal)">
-                  <svg class="ico ico-sm" style="color:#ff8fa3;"><use href="#i-heart-fill"/></svg> <span data-i18n="menu.match">Match de Pareja</span>
-                </button>
-                <button class="menu-item" onclick="menuRun(elegirAleatorio)">
-                  <svg class="ico ico-sm"><use href="#i-dice"/></svg> <span data-i18n="menu.random">Elección aleatoria</span>
-                </button>
-                <button class="menu-item" onclick="menuRun(forzarSincronizacion)">
-                  <svg class="ico ico-sm"><use href="#i-sync"/></svg> <span data-i18n="menu.sync">Sincronizar</span>
-                </button>
-                <button class="menu-item" onclick="menuRun(abrirPapelera)">
-                  <svg class="ico ico-sm" style="color:var(--danger-text);"><use href="#i-trash"/></svg> <span data-i18n="menu.papelera">Papelera</span>
-                </button>
-                <button class="menu-item" onclick="menuRun(abrirVinculosModal)">
-                  <svg class="ico ico-sm" style="color:var(--links);"><use href="#i-users"/></svg> <span data-i18n="menu.vinculos">Vínculos</span>
-                  <span id="vinc-badge" class="menu-badge">0</span>
-                </button>
-                <div class="menu-sep"></div>
-                <button class="menu-item" onclick="menuRun(cambiarIdioma)">
-                  <svg class="ico ico-sm"><use href="#i-globe"/></svg> <span data-i18n="menu.lang">English</span>
-                </button>
-                <button class="menu-item" onclick="menuRun(function(){ cambiarCategoria('Estadisticas'); })">
-                  <svg class="ico ico-sm"><use href="#i-user"/></svg> <span data-i18n="menu.perfil">Mi perfil</span>
-                </button>
-              </div>
-            </div>
-            <button type="button" class="add-plus" onclick="document.getElementById('inputAgregar').focus()" title="Buscar o añadir" data-i18n-title="tip.buscar">
-              <svg class="ico ico-sm"><use href="#i-plus"/></svg>
-            </button>
+            <svg class="ico add-ico"><use href="#i-plus"/></svg>
             <input type="text" id="inputAgregar" data-i18n-ph="cfg.Juegos.add" placeholder="AppID, URL o nombre..." onfocus="activarModoBusquedaAgregar(true)" oninput="syncAddClearBtn(); autocompletarAgregarInput()" onkeydown="if(event.key==='Enter') manejarAgregar()">
             <button type="button" class="btn-clear-add" onclick="cerrarBusquedaAgregar(true)" title="Limpiar" data-i18n-title="tip.limpiar">
               <svg class="ico ico-sm"><use href="#i-x"/></svg>
             </button>
-            <button id="btn-add" class="btn btn-primary" onclick="manejarAgregar()" title="Buscar o añadir" data-i18n-title="tip.buscar" style="margin-left:3px;">
-              <svg class="ico ico-sm"><use href="#i-plus"/></svg>
+            <button id="btn-add" class="btn btn-add-cta" onclick="manejarAgregar()" title="Buscar o añadir" data-i18n-title="tip.buscar">
+              <span data-i18n="btn.add">Añadir</span>
             </button>
             <div id="search-dropdown" class="search-results-dropdown"></div>
           </div>
@@ -1577,68 +1610,75 @@
 
     <!-- PANEL DE FILTROS -->
     <div id="panel-filtros" class="filter-panel" onclick="event.stopPropagation()">
+      <div class="filter-panel-head">
+        <span class="filter-panel-title"><svg class="ico ico-sm"><use href="#i-filter"/></svg> <span data-i18n="tip.filtros">Filtros y Orden</span></span>
+      </div>
       <div id="filter-personas"></div>
-      <div class="filter-group">
-        <label><svg class="ico ico-sm ico-wish"><use href="#i-heart-fill"/></svg> <span data-i18n="filter.deseados">Lista de Deseados</span></label>
-        <div class="custom-select" id="filter-deseado-dropdown">
-          <input type="hidden" id="filter-deseado" value="todos">
-          <button type="button" class="custom-select-trigger" aria-haspopup="listbox" aria-expanded="false">
-            <span class="custom-select-label">Todos</span>
-            <svg class="custom-select-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="m6 9 6 6 6-6"/>
-            </svg>
-          </button>
-          <ul class="custom-select-menu" role="listbox">
-            <li role="option" data-value="todos" aria-selected="true">
-              <span>Todos</span>
-              <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            </li>
-            <li role="option" data-value="cualquiera">
-              <span>Cualquiera</span>
-              <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            </li>
-            <li role="option" data-value="ninguno">
-              <span>Sin desear</span>
-              <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            </li>
-          </ul>
+      <div class="filter-grid-2">
+        <div class="filter-group">
+          <label><svg class="ico ico-sm ico-wish"><use href="#i-heart-fill"/></svg> <span data-i18n="filter.deseados">Lista de Deseados</span></label>
+          <div class="custom-select" id="filter-deseado-dropdown">
+            <input type="hidden" id="filter-deseado" value="todos">
+            <button type="button" class="custom-select-trigger" aria-haspopup="listbox" aria-expanded="false">
+              <span class="custom-select-label">Todos</span>
+              <svg class="custom-select-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m6 9 6 6 6-6"/>
+              </svg>
+            </button>
+            <ul class="custom-select-menu" role="listbox">
+              <li role="option" data-value="todos" aria-selected="true">
+                <span>Todos</span>
+                <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </li>
+              <li role="option" data-value="cualquiera">
+                <span>Cualquiera</span>
+                <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </li>
+              <li role="option" data-value="ninguno">
+                <span>Sin desear</span>
+                <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="filter-group">
+          <label><svg class="ico ico-sm"><use href="#i-sort"/></svg> <span data-i18n="filter.ordenar">Orden</span></label>
+          <div class="custom-select" id="filter-orden-dropdown">
+            <input type="hidden" id="filter-orden" value="az">
+            <button type="button" class="custom-select-trigger" aria-haspopup="listbox" aria-expanded="false">
+              <span class="custom-select-label">A-Z</span>
+              <svg class="custom-select-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m6 9 6 6 6-6"/>
+              </svg>
+            </button>
+            <ul class="custom-select-menu" role="listbox">
+              <li role="option" data-value="az" aria-selected="true">
+                <span>Alfabético (A - Z)</span>
+                <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </li>
+              <li role="option" data-value="za">
+                <span>Alfabético (Z - A)</span>
+                <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </li>
+              <li role="option" data-value="recientes">
+                <span>Últimos añadidos</span>
+                <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </li>
+              <li role="option" data-value="puntuacion">
+                <span>Puntuación</span>
+                <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
-      <div class="filter-group">
-        <label><svg class="ico ico-sm"><use href="#i-sort"/></svg> <span data-i18n="filter.orden">Orden</span></label>
-        <div class="custom-select" id="filter-orden-dropdown">
-          <input type="hidden" id="filter-orden" value="az">
-          <button type="button" class="custom-select-trigger" aria-haspopup="listbox" aria-expanded="false">
-            <span class="custom-select-label">A-Z</span>
-            <svg class="custom-select-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="m6 9 6 6 6-6"/>
-            </svg>
-          </button>
-          <ul class="custom-select-menu" role="listbox">
-            <li role="option" data-value="az" aria-selected="true">
-              <span>Alfabético (A - Z)</span>
-              <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            </li>
-            <li role="option" data-value="za">
-              <span>Alfabético (Z - A)</span>
-              <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            </li>
-            <li role="option" data-value="recientes">
-              <span>Últimos añadidos</span>
-              <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            </li>
-            <li role="option" data-value="puntuacion">
-              <span>Puntuación</span>
-              <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            </li>
-          </ul>
-        </div>
+      <div class="filter-extras-grid">
+        <div class="filter-group" id="extra-filter-1"></div>
+        <div class="filter-group" id="extra-filter-2"></div>
+        <div class="filter-group" id="extra-filter-3"></div>
       </div>
-      <div class="filter-group" id="extra-filter-1"></div>
-      <div class="filter-group" id="extra-filter-2"></div>
-      <div class="filter-group" id="extra-filter-3"></div>
 
-      <button class="filter-reset" onclick="resetFiltros()"><span data-i18n="filter.limpiar">Limpiar Filtros</span></button>
+      <button class="filter-reset" onclick="resetFiltros()"><svg class="ico ico-sm"><use href="#i-x"/></svg> <span data-i18n="filter.limpiar">Limpiar Filtros</span></button>
     </div>
 
     <div id="stats-bar" class="stats-bar" style="display:none;"></div>
@@ -1673,7 +1713,7 @@
               <svg class="ico ico-sm"><use href="#i-logout"/></svg> <span data-i18n="pf.logout">Cerrar sesión</span>
             </button>
             <button class="pf-btn pf-btn-save" onclick="guardarPerfil()">
-              <svg class="ico ico-sm"><use href="#i-save"/></svg> Guardar cambios
+              <svg class="ico ico-sm"><use href="#i-save"/></svg> <span data-i18n="pf.save">Guardar cambios</span>
             </button>
           </div>
         </div>
@@ -1682,19 +1722,19 @@
       <div class="stats-selectors-row" id="stats-prof-buttons"></div>
       <div class="stats-selectors-row">
         <button class="stats-cat-btn active" data-statcat="todas" onclick="cambiarCategoriaStats('todas')">
-          <svg class="ico ico-sm"><use href="#i-globe"/></svg> Global
+          <svg class="ico ico-sm"><use href="#i-globe"/></svg> <span data-i18n="st.global">Global</span>
         </button>
         <button class="stats-cat-btn" data-statcat="Juegos" onclick="cambiarCategoriaStats('Juegos')">
-          <svg class="ico ico-sm"><use href="#i-gamepad"/></svg> Juegos
+          <svg class="ico ico-sm"><use href="#i-gamepad"/></svg> <span data-i18n="cat.Juegos">Juegos</span>
         </button>
         <button class="stats-cat-btn" data-statcat="Peliculas_Series" onclick="cambiarCategoriaStats('Peliculas_Series')">
-          <svg class="ico ico-sm"><use href="#i-film"/></svg> Cine
+          <svg class="ico ico-sm"><use href="#i-film"/></svg> <span data-i18n="cat.Peliculas_Series">Cine y Series</span>
         </button>
         <button class="stats-cat-btn" data-statcat="Libros" onclick="cambiarCategoriaStats('Libros')">
-          <svg class="ico ico-sm"><use href="#i-book"/></svg> Libros
+          <svg class="ico ico-sm"><use href="#i-book"/></svg> <span data-i18n="cat.Libros">Libros</span>
         </button>
         <button class="stats-cat-btn" data-statcat="Mangas" onclick="cambiarCategoriaStats('Mangas')">
-          <svg class="ico ico-sm"><use href="#i-manga"/></svg> Mangas
+          <svg class="ico ico-sm"><use href="#i-manga"/></svg> <span data-i18n="cat.Mangas">Mangas</span>
         </button>
       </div>
       <div class="stats-cards-grid" id="stats-cards-container"></div>
@@ -1850,16 +1890,16 @@
       <div class="match-container">
         <div class="match-tabs">
           <button class="match-tab active" data-matchcat="Juegos" onclick="cambiarMatchCat('Juegos')">
-            <svg class="ico ico-sm"><use href="#i-gamepad"/></svg> Juegos
+            <svg class="ico ico-sm"><use href="#i-gamepad"/></svg> <span data-i18n="cat.Juegos">Juegos</span>
           </button>
           <button class="match-tab" data-matchcat="Peliculas_Series" onclick="cambiarMatchCat('Peliculas_Series')">
-            <svg class="ico ico-sm"><use href="#i-film"/></svg> Cine y Series
+            <svg class="ico ico-sm"><use href="#i-film"/></svg> <span data-i18n="cat.Peliculas_Series">Cine y Series</span>
           </button>
           <button class="match-tab" data-matchcat="Libros" onclick="cambiarMatchCat('Libros')">
-            <svg class="ico ico-sm"><use href="#i-book"/></svg> Libros
+            <svg class="ico ico-sm"><use href="#i-book"/></svg> <span data-i18n="cat.Libros">Libros</span>
           </button>
           <button class="match-tab" data-matchcat="Mangas" onclick="cambiarMatchCat('Mangas')">
-            <svg class="ico ico-sm"><use href="#i-manga"/></svg> Mangas
+            <svg class="ico ico-sm"><use href="#i-manga"/></svg> <span data-i18n="cat.Mangas">Mangas</span>
           </button>
         </div>
         <div id="match-grid" class="match-grid"></div>
@@ -1883,6 +1923,8 @@
   <!-- MODAL PERFIL -->
 
   <script>
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    window.scrollTo(0, 0);
     const NEXUS_MODE = true; // false = Apps Script/Sheets (v1)
     const NEXUS_URL = 'https://vkmgnwnlceycauleluwl.supabase.co';
     const NEXUS_KEY = 'sb_publishable_nLhtLiQ7uZ0I2noqeZMNcg_c0sKq9nO';
@@ -3236,7 +3278,7 @@
         'menu.match': 'Match de Pareja', 'menu.random': 'Elección aleatoria', 'menu.sync': 'Sincronizar',
         'menu.papelera': 'Papelera', 'menu.vinculos': 'Vínculos', 'menu.perfil': 'Mi perfil',
         'menu.lang': 'English',
-        'tip.filtros': 'Filtros y Orden', 'tip.menu': 'Menú', 'tip.limpiar': 'Limpiar', 'tip.buscar': 'Buscar o añadir',
+        'tip.filtros': 'Filtros y Orden', 'tip.menu': 'Menú', 'tip.limpiar': 'Limpiar', 'tip.buscar': 'Buscar o añadir', 'btn.add': 'Añadir', 'st.global': 'Global',
         'filter.deseados': 'Lista de Deseados', 'filter.ordenar': 'Ordenar por',
         'sort.az': 'Alfabético (A - Z)', 'sort.za': 'Alfabético (Z - A)', 'sort.recientes': 'Últimos añadidos', 'sort.puntuacion': 'Puntuación',
         'filter.limpiar': 'Limpiar Filtros', 'progress.init': 'Iniciando...',
@@ -3366,7 +3408,7 @@
         'menu.match': "Couple's Match", 'menu.random': 'Random pick', 'menu.sync': 'Sync',
         'menu.papelera': 'Trash', 'menu.vinculos': 'Links', 'menu.perfil': 'My profile',
         'menu.lang': 'Español',
-        'tip.filtros': 'Filters & Sort', 'tip.menu': 'Menu', 'tip.limpiar': 'Clear', 'tip.buscar': 'Search or add',
+        'tip.filtros': 'Filters & Sort', 'tip.menu': 'Menu', 'tip.limpiar': 'Clear', 'tip.buscar': 'Search or add', 'btn.add': 'Add', 'st.global': 'Global',
         'filter.deseados': 'Wishlist', 'filter.ordenar': 'Sort by',
         'sort.az': 'Alphabetical (A - Z)', 'sort.za': 'Alphabetical (Z - A)', 'sort.recientes': 'Recently added', 'sort.puntuacion': 'Rating',
         'filter.limpiar': 'Clear Filters', 'progress.init': 'Starting...',
@@ -3812,6 +3854,7 @@
       currentCategory = cat;
       paginaActual = 1;
       window._pendingGridDir = _dir;
+      window.scrollTo(0, 0);
 
       var panel = document.getElementById('panel-filtros');
       if (panel.classList.contains('open')) {
@@ -4063,6 +4106,8 @@
     function toggleMenu(e) {
       e.stopPropagation();
       cerrarBusquedaAgregar();
+      var fp = document.getElementById('panel-filtros');
+      if (fp) { fp.classList.remove('open'); var fb = document.getElementById('btn-toggle-filtros'); if (fb) fb.classList.remove('active'); }
       var panel = document.getElementById('menu-panel');
       var btn = document.getElementById('btn-menu');
       var open = !panel.classList.contains('open');
@@ -5255,7 +5300,7 @@
             '<div class="stats-profile-email">' + escaparHTML(user.email || '') + '</div>' +
           '</div>' +
           '<div class="stats-profile-actions">' +
-            '<button class="btn btn-text" onclick="togglePerfilEdit(this)">' + t('st.edit') + '</button>' +
+            '<button class="btn btn-text" onclick="togglePerfilEdit(this)">' + t('st.edit') + ' ' + svgIcon('i-chevron-down', 'ico-sm pf-chev') + '</button>' +
           '</div>';
       } catch (e) { card.innerHTML = ''; }
     }
@@ -5694,6 +5739,7 @@
           .some(function(id) { var m = document.getElementById(id); return m && m.style.display === 'flex'; });
         var lb = document.getElementById('nexus-lightbox');
         if (lb && lb.style.display === 'flex') anyOpen = true;
+        document.documentElement.classList.toggle('modal-open', anyOpen);
         document.body.classList.toggle('modal-open', anyOpen);
       }).observe(el, { attributes: true, attributeFilter: ['style'] });
     });
@@ -5736,6 +5782,7 @@
       document.body.classList.toggle('offline', off);
       var b = document.getElementById('offline-banner');
       if (b) b.style.display = off ? 'block' : 'none';
+      if (typeof nexusSyncHeaderSpace === 'function') nexusSyncHeaderSpace();
     }
     window.addEventListener('online', function() {
       nexusSyncOffline();
@@ -5959,6 +6006,7 @@
         });
       }
       lb.style.display = 'flex';
+      document.documentElement.classList.add('modal-open');
       document.body.classList.add('modal-open');
       nexusLightboxRender();
     }
@@ -5979,6 +6027,7 @@
       if (lb) lb.style.display = 'none';
       var anyModal = ['modal-vinculos', 'modal-match', 'modal-papelera', 'modal']
         .some(function(id) { var m = document.getElementById(id); return m && m.style.display === 'flex'; });
+      document.documentElement.classList.toggle('modal-open', anyModal);
       document.body.classList.toggle('modal-open', anyModal);
     }
 

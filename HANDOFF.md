@@ -58,6 +58,14 @@ Estado actual para la próxima sesión. Último commit: `384acfc` (SW v93, rama 
 - Gaps contenedores principales unificados a 10px: tracking-container, action-buttons, stats-bar, filter-group, stats-profile-actions, pf-grid-2, pf-invite-row, stats-view
 - Gaps internos compactos (4-6px) se mantienen para chips/iconos/labels — mejor densidad visual
 
+### 9. Repaso visual y UX completo (2026-11-26, SW v101)
+- Controles superiores: `#btn-toggle-filtros` y `#btn-menu` reubicados en fila 1 junto a búsqueda, rediseñados como `.btn-circle` oscuros translúcidos con `.has-filters` visible y exclusión mutua al abrir.
+- Barra agregar (`#add-wrapper-box`): eliminado botón `+` duplicado; icono pasivo izquierdo alineado con búsqueda y CTA `#btn-add` tipo píldora (`btn.add`).
+- Panel de filtros (`#panel-filtros`): cabecera `tip.filtros`, layout compacto en 2 columnas (`#filter-personas`, `.filter-grid-2`, `.filter-extras-grid`), selectores uniformados en `--accent` (`--mods` solo en `#fuente-dropdown`), corregido `data-i18n="filter.ordenar"`.
+- Perfil y stats (`#stats-view`): chevron animado en Editar, botón copiar código resaltado, `Cerrar sesión` sutil, `max-height: 420px` en acordeones de stats, `data-i18n` completo en perfil y categorías stats (`st.global`).
+- Modales Juegos (Reseñas Steam y Updates): lavado de cara en `--accent` respetando espaciado original, barra `.rev-bar5` segmentada.
+- Scroll y SVG: añadido `<symbol id="i-sort">`, `grid-column: 1 / -1` en `.skel-grid`, `#offline-banner` sin solapar `.top-header`, bloqueo real de scroll (`html.modal-open` + `overscroll-behavior: contain`), `history.scrollRestoration = 'manual'` + `scrollTo(0, 0)` al recargar y cambiar de categoría.
+
 ## Documentación actualizada
 
 - `AUDIT.md` — registro de 13 bugs + checklist mecanico para auditorías futuras
