@@ -1688,6 +1688,8 @@
     <symbol id="i-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></symbol>
     <symbol id="i-chevron-left" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></symbol>
     <symbol id="i-chevron-right" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></symbol>
+    <symbol id="i-prof-male" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.5 3.6-7.5 8-7.5s8 3 8 7.5"/></symbol>
+    <symbol id="i-prof-female" viewBox="0 0 24 24"><circle cx="12" cy="9" r="3.2"/><path d="M12 2.8c-1.6 0-2.8.7-3.3 2"/><circle cx="12" cy="4.2" r="1.1"/><path d="M5.5 21c0-4.4 2.9-7.3 6.5-7.3s6.5 2.9 6.5 7.3"/></symbol>
       </svg>
 
   <div id="app-screen">
@@ -3369,6 +3371,15 @@
                  color: (g && g.color) || PERSONA_PALETTE[0],
                  label: nexusPersonaLabel(it, suf) };
       });
+    }
+
+    // icono SVG de perfil por género — m=masculino, f=femenino, u=generico
+    var NEXUS_PROF_GENDER = { angellrnzo: 'm', talbetancourt: 'f' };
+    function nexusProfIcon(p, cls) {
+      var g = (p && (p.gender || p.sexo)) || NEXUS_PROF_GENDER[p && p.key] || 'u';
+      var id = g === 'f' ? 'i-prof-female' : (g === 'm' ? 'i-prof-male' : 'i-user');
+      var color = (p && p.color) || 'var(--accent)';
+      return '<svg class="' + (cls || 'ico ico-sm') + '" style="color:' + color + ';flex-shrink:0;"><use href="#' + id + '"/></svg>';
     }
 
     // dot de color de persona para chips/badges
@@ -5470,7 +5481,7 @@
       (_personas || []).forEach(function(p) {
         h += '<button class="stats-prof-btn' + (currentStatsProfile === p.key ? ' active' : '') +
           '" data-prof="' + p.key + '" onclick="cambiarPerfilStats(\'' + p.key + '\')">' +
-          nexusPersonaDot(p, 14) + ' <span class="stat-prof-name">' + vinculosEsc(nexusPersonaDisplay(p.label || p.key)) + '</span></button>';
+          nexusProfIcon(p) + ' <span class="stat-prof-name">' + vinculosEsc(nexusPersonaDisplay(p.label || p.key)) + '</span></button>';
       });
       wrap.innerHTML = h;
     }
