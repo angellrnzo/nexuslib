@@ -1,6 +1,6 @@
 # NexusLib — Handoff
 
-Estado actual para la próxima sesión. Último commit: `5aed290` (ui mejoras, rama `beta`).
+Estado actual para la próxima sesión. Último commit: `34d7922` (ui botones cierre + flechas SVG, rama `beta`).
 Logs de sesiones anteriores: `HANDOFF_LOG.md`.
 
 ## Estado del código
@@ -8,7 +8,7 @@ Logs de sesiones anteriores: `HANDOFF_LOG.md`.
 **Rama:** `beta` — working tree limpio, commits pusheados.
 **Producción:** `main` — no tocar sin `Confirmar deploy` literal.
 **DB:** prod + standby en espejo (datos idénticos, schema sincronizado tras delta 07).
-**Último commit:** `5aed290` (ui: mejoras visuales gemini + carrusel capturas + capitalizacion usernames).
+**Último commit:** `34d7922` (ui: botones de cierre estilo btn-circle + flechas SVG + hover azul/rojo).
 **Ubicación:** `Workspace/master_nexuslib/NexusLib/` — los datos locales
 (secretos `.env`, `backup_key.key`, `backups/`) viven en la carpeta
 hermana `master_nexuslib/_local/` (los scripts `database/*.py` la
