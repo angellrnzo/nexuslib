@@ -2850,8 +2850,8 @@
       if (!p || !info) return;
       var sel = visSel(pid);
       var dirs = [];
-      if (info.rows.out) dirs.push({ k: 'out', label: 'Yo → ' + info.name });
-      if (info.rows.in)  dirs.push({ k: 'in',  label: info.name + ' → yo' });
+      if (info.rows.out) dirs.push({ k: 'out', label: tf('vis.you_to', { n: info.name }) });
+      if (info.rows.in)  dirs.push({ k: 'in',  label: tf('vis.them_to', { n: info.name }) });
       if (!dirs.length) { p.innerHTML = '<div class="sp-empty">' + t('vis.none') + '</div>'; return; }
       if (!info.rows[sel.dir]) sel.dir = dirs[0].k;
       var row = info.rows[sel.dir];
@@ -3456,6 +3456,7 @@
         'lt.pareja': 'Pareja', 'lt.familia': 'Familia', 'lt.amigo': 'Amigo', 'lt.custom': 'Personalizado',
         'vf.status': 'Estado', 'vf.rating': 'Valoración', 'vf.wishlist': 'Deseado', 'vf.progress': 'Progreso', 'vf.notes': 'Notas',
         'vis.none': 'Sin vínculo activo.', 'vis.dir': 'Dirección', 'vis.cat': 'Categoría',
+        'vis.you_to': 'Yo → {n}', 'vis.them_to': '{n} → yo',
         'vis.fields': 'Campos visibles', 'vis.you': 'lo que tú compartes', 'vis.them': 'lo que te comparte',
         'vis.hint': 'Aplica a todas las personas de ese tipo de vínculo según su propia matriz — esto edita solo esta relación.',
         'vis.owneronly': 'Solo {n} puede cambiar lo que comparte contigo.',
@@ -3586,6 +3587,7 @@
         'lt.pareja': 'Partner', 'lt.familia': 'Family', 'lt.amigo': 'Friend', 'lt.custom': 'Custom',
         'vf.status': 'Status', 'vf.rating': 'Rating', 'vf.wishlist': 'Wishlist', 'vf.progress': 'Progress', 'vf.notes': 'Notes',
         'vis.none': 'No active link.', 'vis.dir': 'Direction', 'vis.cat': 'Category',
+        'vis.you_to': 'Me → {n}', 'vis.them_to': '{n} → me',
         'vis.fields': 'Visible fields', 'vis.you': 'what you share', 'vis.them': 'what they share',
         'vis.hint': 'Applies to everyone of that link type per their own matrix — this edits only this relationship.',
         'vis.owneronly': 'Only {n} can change what they share with you.',
@@ -4611,8 +4613,10 @@
       dd.classList.add('open');
 
       var finalizado = false;
+      window._nexusSearchSeq = (window._nexusSearchSeq || 0) + 1;
+      var mySeq = window._nexusSearchSeq;
       var timer = setTimeout(function() {
-        if (finalizado) return;
+        if (finalizado || mySeq !== window._nexusSearchSeq) return;
         finalizado = true;
         btn.innerHTML = svgIcon('i-plus', 'ico-sm'); btn.disabled = false;
         dd.innerHTML = '<div style="padding:12px;text-align:center;color:var(--danger-text);font-size:12px;"">' + t('toast.timeout') + '</div>';
@@ -4620,7 +4624,7 @@
 
       RUN
         .withSuccessHandler(function(resultados) {
-          if (finalizado) return;
+          if (finalizado || mySeq !== window._nexusSearchSeq) return;
           finalizado = true; clearTimeout(timer);
           btn.innerHTML = svgIcon('i-plus', 'ico-sm'); btn.disabled = false;
           if (!resultados || resultados.length === 0) {
@@ -4639,7 +4643,7 @@
           `).join('');
         })
         .withFailureHandler(function(err) {
-          if (finalizado) return;
+          if (finalizado || mySeq !== window._nexusSearchSeq) return;
           finalizado = true; clearTimeout(timer);
           btn.innerHTML = svgIcon('i-plus', 'ico-sm'); btn.disabled = false;
           dd.classList.remove('open');
@@ -5081,6 +5085,7 @@
     }
 
     async function nexusModGuardar() {
+      if (window._nexusModSaving) return;
       var nombre = document.getElementById('mod-nombre').value.trim();
       var fuente = document.getElementById('mod-fuente').value;
       var version = document.getElementById('mod-version').value.trim();
@@ -5088,6 +5093,7 @@
       var notas = document.getElementById('mod-notas').value.trim();
       nexusValidarFormMods();
       if (!nombre) { showToast && showToast('Ponle nombre al mod.', 'error'); return; }
+      window._nexusModSaving = true;
       try {
         await nexusEnsureProfile();
         var mediaId = await nexusModsMediaId();
@@ -5105,6 +5111,8 @@
         await nexusLoadMods();
       } catch (e) {
         showToast && showToast(t('err.prefix') + (e.message || ''), 'error');
+      } finally {
+        window._nexusModSaving = false;
       }
     }
 
