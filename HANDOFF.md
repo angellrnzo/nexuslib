@@ -55,6 +55,23 @@ resuelven como `../_local`). No mover ni renombrar.
 - Prod vs standby: datos idénticos, schema sincronizado tras delta 07 manual
 - Workflow semanal lunes 5AM UTC: pg_dump + mirror + deltas automáticos
 
+### 7. Sección Mods — tema morado (sesión UI botones/flechas)
+
+- **Tema:** toda la sección usa morado `--mods`/`rgba(187,134,252)`/`rgba(155,89,182)`; cero azul residual (incluye `#fuente-dropdown` con overrides scoped)
+- **Botones cierre** (`.modal-close`, `.lb-close`): estilo `.btn-circle`, hover rojo danger, `:focus` sin cambios visuales
+- **Flechas** (`.lb-nav`, `.carousel-arrow`): SVG `i-chevron-*`, estilo `.btn-circle`, hover azul; tamaño 34px (lightbox) / 44px (carousel)
+- **Mods form:** alturas unificadas 38px, fuente 13px; `.mods-title` blanco + glow morado; `.mods-search-btn` texto `#f3e8ff`
+- **Perf:** `.mods-panel` transición 0.25s, `translateZ(0)` + `will-change`
+
+**Pendiente probar (F5 en :8646):**
+
+- Accordion mods abre/cierra fluido en desktop y móvil
+- Select fuente: base/hover/open/items/check todo morado
+- Inputs mods misma altura (38px) en grid 2fr/1.2fr/1fr y móvil 1fr
+- Botones cierre: hover rojo, sin borde permanente, tap 44px
+- Flechas carousel/lightbox: SVG centrado, hover azul, ocultas en touch
+- Contraste textos mods sobre fondo oscuro
+
 ### 7. Mods Tracker UI refinamiento
 
 - Layout: Nombre/Fuente/Versión en 3 columnas (2fr 1.2fr 1fr), URL/Notas full-width debajo
