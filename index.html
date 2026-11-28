@@ -916,15 +916,17 @@
        dentro del modal; margin-bottom negativo evita reservar fila extra */
     .modal-close {
       position: sticky; top: 12px; z-index: 50;
-      margin-left: auto; margin-bottom: -34px;
-      width: 34px; height: 34px; padding: 0;
-      border-radius: 50%; background: rgba(13, 19, 27, 0.9);
-      border: 1px solid rgba(255, 255, 255, 0.28); color: var(--bright);
+      margin-left: auto; margin-bottom: -40px;
+      width: 40px; height: 40px; padding: 0;
+      border-radius: 50%; background: rgba(24, 35, 50, 0.9);
+      border: 1px solid rgba(102, 192, 244, 0.5);
+      color: var(--bright);
       cursor: pointer; display: flex; align-items: center; justify-content: center;
       transition: background var(--t-base) var(--ease-out), border-color var(--t-base) var(--ease-out), transform var(--t-base) var(--ease-out), box-shadow var(--t-base) var(--ease-out);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.7), 0 0 10px rgba(102, 192, 244, 0.25);
     }
-    .modal-close:hover { background: rgba(201, 59, 59, 0.9); border-color: rgba(255, 133, 133, 0.7); box-shadow: 0 0 0 1px rgba(255, 133, 133, 0.4), 0 0 18px rgba(201, 59, 59, 0.25), 0 8px 24px rgba(0,0,0,0.35); }
-    .modal-close:active { transform: scale(0.92); }
+    .modal-close:hover { background: var(--accent); color: #0b1118; border-color: var(--accent); box-shadow: 0 4px 20px rgba(102, 192, 244, 0.5); transform: scale(1.05); }
+    .modal-close:active { transform: scale(0.95); }
     /* reserva lateral solo donde el boton puede pisar texto del header */
     .modal-content .modal-title { padding-right: 48px; }
     .modal-header-grid.poster .modal-header-info { padding-right: 44px; }
@@ -1519,7 +1521,16 @@
     @media (max-width: 600px) {
       .mods-form-row { grid-template-columns: 1fr; }
       .modal-content { padding: 14px; border-radius: 16px 16px 0 0; }
-      .modal-title { font-size: 17px; padding-right: 36px; }
+      .modal-title { font-size: 17px; padding-right: 48px; }
+      .modal-close {
+        top: 6px;
+        width: 44px; height: 44px;
+        margin-bottom: -48px;
+        margin-right: 6px;
+        background: rgba(16, 24, 36, 0.95);
+        border: 1px solid rgba(102, 192, 244, 0.6);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8), 0 0 12px rgba(102, 192, 244, 0.35);
+      }
       .stats-cards-grid { grid-template-columns: minmax(0, 1fr); gap: 10px; }
       .tracking-container { grid-template-columns: 1fr; }
       .match-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; }
