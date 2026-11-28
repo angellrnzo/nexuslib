@@ -79,6 +79,8 @@ resuelven como `../_local`). No mover ni renombrar.
   iconos SVG `i-prof-male`/`i-prof-female`/`i-user` automáticos
   para muchos usuarios (mapa temporal `NEXUS_PROF_GENDER` solo
   cubre angellrnzo/talbetancourt mientras tanto)
+- A futuro: ofrecer **avatares/iconos personalizados** por usuario
+  (elección propia más allá de los 3 de género)
 
 ### 7. Mods Tracker UI refinamiento
 
