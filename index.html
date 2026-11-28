@@ -3088,8 +3088,14 @@
       return '<span class="sp-badge" style="background:' + c.bg + '22;color:' + c.bg + ';border:1px solid ' + c.bg + '55;">' + vinculosEsc(label) + '</span>';
     }
     function nexusAvatar(name, color) {
-      var ini = (name || '?').trim().charAt(0);
-      return '<span class="sp-avatar" style="background:' + color + ';">' + vinculosEsc(ini) + '</span>';
+      // resuelve persona por label/key para icono de genero; fallback neutro
+      var p = null;
+      var nm = (name || '').toLowerCase();
+      (_personas || []).forEach(function(x) {
+        if (!p && ((x.label || '').toLowerCase() === nm || (x.key || '').toLowerCase() === nm)) p = x;
+      });
+      var gid = nexusProfGenderId(p || { key: nm });
+      return '<span class="sp-avatar" style="background:' + color + ';"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><use href="#' + gid + '"/></svg></span>';
     }
 
     function renderSharePanel(st, links) {
@@ -4770,7 +4776,7 @@
       return '<div class="player-accordion' + (NEXUS_MODE && !p.mine ? ' is-remote' : '') + '" id="acc-' + k + '" style="--pa:' + p.color + ';--pa-soft:' + p.color + '22;">' +
         '<div class="player-summary" onclick="togglePlayerAccordion(\'' + k + '\')">' +
           '<div class="ps-row ps-row-top">' +
-            '<span class="pa-avatar" style="background:' + p.color + ';">' + vinculosEsc(lbl.charAt(0)) + '</span>' +
+            '<span class="pa-avatar" style="background:' + p.color + ';"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><use href="#' + nexusProfGenderId(p) + '"/></svg></span>' +
             '<span class="pa-name">' + vinculosEsc(lbl) + '</span>' +
             '<span id="sum-wish-' + k + '" style="display:none;"><svg class="ico ico-sm ico-wish"><use href="#i-heart-fill"/></svg></span>' +
             '<span id="sum-note-' + k + '" style="display:none;"><svg class="ico ico-sm" style="color:var(--accent);"><use href="#i-note"/></svg></span>' +
