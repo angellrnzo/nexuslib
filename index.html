@@ -3373,22 +3373,27 @@
       });
     }
 
-    // icono SVG de perfil por género — m=masculino, f=femenino, u=generico
+    // icono SVG de perfil por género — m=masculino, f=femenino, u=generico/neutro
+    // mapa temporal para las 2 personas conocidas; escala con p.gender/p.sexo
+    // cuando el registro guarde sexo (muchos usuarios)
     var NEXUS_PROF_GENDER = { angellrnzo: 'm', talbetancourt: 'f' };
-    function nexusProfIcon(p, cls) {
+    function nexusProfGenderId(p) {
       var g = (p && (p.gender || p.sexo)) || NEXUS_PROF_GENDER[p && p.key] || 'u';
-      var id = g === 'f' ? 'i-prof-female' : (g === 'm' ? 'i-prof-male' : 'i-user');
+      return g === 'f' ? 'i-prof-female' : (g === 'm' ? 'i-prof-male' : 'i-user');
+    }
+    function nexusProfIcon(p, cls) {
       var color = (p && p.color) || 'var(--accent)';
-      return '<svg class="' + (cls || 'ico ico-sm') + '" style="color:' + color + ';flex-shrink:0;"><use href="#' + id + '"/></svg>';
+      return '<svg class="' + (cls || 'ico ico-sm') + '" style="color:' + color + ';flex-shrink:0;"><use href="#' + nexusProfGenderId(p) + '"/></svg>';
     }
 
-    // dot de color de persona para chips/badges
+    // dot de persona: circulo con color propio + icono SVG por genero
+    // (reemplaza la inicial — aplica a chips, badges y vinculos en toda la app)
     function nexusPersonaDot(p, size) {
       var s = size || 14;
-      var initial = nexusPersonaDisplay(p.label || p.key || p.suffix || '?').charAt(0);
+      var isz = Math.max(8, Math.round(s * 0.62));
       return '<span style="display:inline-flex;align-items:center;justify-content:center;width:' + s + 'px;height:' + s +
-        'px;border-radius:50%;background:' + p.color + ';color:var(--on-accent);font-size:' + Math.round(s * 0.55) +
-        'px;font-weight:800;flex-shrink:0;">' + vinculosEsc(initial) + '</span>';
+        'px;border-radius:50%;background:' + (p && p.color ? p.color : 'var(--muted)') + ';flex-shrink:0;">' +
+        '<svg width="' + isz + '" height="' + isz + '" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><use href="#' + nexusProfGenderId(p) + '"/></svg></span>';
     }
 
     // reconstruye los controles de filtro por persona (estado, nota mín.,
