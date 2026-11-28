@@ -81,6 +81,10 @@ resuelven como `../_local`). No mover ni renombrar.
   cubre angellrnzo/talbetancourt mientras tanto)
 - A futuro: ofrecer **avatares/iconos personalizados** por usuario
   (elección propia más allá de los 3 de género)
+- A futuro: si el proyecto pasa a **multi-agente o cloud**, evaluar
+  gestor de secretos real (HashiCorp Vault, AWS Secrets Manager,
+  etc.) — hoy las keys viven en env vars del shell + norma en
+  `AGENTS.md` ("API keys y secretos"), suficiente para uso local
 
 ### 7. Mods Tracker UI refinamiento
 
