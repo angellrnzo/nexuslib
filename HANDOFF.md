@@ -72,6 +72,14 @@ resuelven como `../_local`). No mover ni renombrar.
 - Flechas carousel/lightbox: SVG centrado, hover azul, ocultas en touch
 - Contraste textos mods sobre fondo oscuro
 
+**Roadmap — registro de usuarios (pendiente):**
+
+- Agregar campo `sexo`/`género` al registro (DB + formulario)
+- La UI ya consume `p.gender`/`p.sexo` en `nexusProfGenderId()` —
+  iconos SVG `i-prof-male`/`i-prof-female`/`i-user` automáticos
+  para muchos usuarios (mapa temporal `NEXUS_PROF_GENDER` solo
+  cubre angellrnzo/talbetancourt mientras tanto)
+
 ### 7. Mods Tracker UI refinamiento
 
 - Layout: Nombre/Fuente/Versión en 3 columnas (2fr 1.2fr 1fr), URL/Notas full-width debajo
