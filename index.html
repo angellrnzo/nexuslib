@@ -40,15 +40,15 @@
       --warning: #d6a918;
       --danger: #c93b3b;
       --wish: #ff4d6d;
-      --muted: #8f98a0;
+      --muted: #a0aec0;
       --bright: #ffffff;
       --danger-text: #ff8585;
       --links: #7ee0a3;
       --mods: #bb86fc;
       --on-accent: #0b0e14;
       --positive: #7ec850;
-      --angel-color: var(--accent);
-      --talmai-color: var(--wish);
+      --angel-color: #f59e0b;
+      --talmai-color: #f472b6;
       --t-fast: 150ms;
       --t-base: 220ms;
       --t-slow: 320ms;
@@ -63,6 +63,13 @@
       --shadow-glow: 0 0 24px rgba(102, 192, 244, 0.22);
       --radius-sm: 8px;
       --radius-base: 12px;
+      --radius-lg: 16px;
+      --radius-pill: 9999px;
+      --layer-toast: 1000;
+      --layer-dropdown: 900;
+      --layer-modal: 800;
+      --layer-tooltip: 700;
+      --layer-sticky: 600;
       --radius-lg: 16px;
       --radius-pill: 9999px;
     }
@@ -130,7 +137,7 @@
       width: auto;
       max-width: 1400px;
       margin: 0 auto;
-      z-index: 9999;
+      z-index: var(--layer-dropdown);
       display: flex;
       flex-direction: column;
       gap: 6px;
@@ -289,7 +296,7 @@
       border: 1px solid rgba(102, 192, 244, 0.45);
       border-radius: 12px;
       box-shadow: 0 18px 45px rgba(0, 0, 0, 0.9);
-      z-index: 10001;
+      z-index: var(--layer-modal);
       padding: 6px;
       transform-origin: top center;
     }
@@ -880,7 +887,7 @@
     /* MODALES GENERALES */
     #modal, #modal-papelera, #modal-match, #modal-vinculos, #modal-share {
       display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(6, 9, 14, 0.88); z-index: 10000;
+      background: rgba(6, 9, 14, 0.88); z-index: var(--layer-modal);
       overscroll-behavior: contain; touch-action: none;
       justify-content: center; align-items: center; opacity: 0;
       transition: opacity var(--t-base) var(--ease-out); padding: 10px;
@@ -1036,7 +1043,7 @@
       100% { opacity: 0; transform: scale(1.1) translateY(-14px); }
     }
     .lightbox {
-      display: none; position: fixed; inset: 0; z-index: 10000;
+      display: none; position: fixed; inset: 0; z-index: var(--layer-modal);
       background: rgba(0,0,0,0.92); align-items: center; justify-content: center;
       touch-action: none;
     }
@@ -1071,7 +1078,7 @@
 
     /* ---- OFFLINE READ-ONLY ---- */
     #offline-banner {
-      display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 10002;
+      display: none; position: fixed; top: 0; left: 0; right: 0; z-index: var(--layer-toast);
       background: rgba(214,169,24,0.95); color: #1b1405; font-size: 12px; font-weight: 700;
       text-align: center; padding: calc(6px + env(safe-area-inset-top, 0px)) 10px 6px; letter-spacing: 0.3px;
     }
@@ -1454,7 +1461,7 @@
     #toast-container {
       position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
       width: max-content; max-width: calc(100vw - 24px);
-      z-index: 20000; display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none;
+      z-index: var(--layer-toast); display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none;
     }
     .toast {
       background: rgba(24, 35, 50, 0.96); color: var(--bright); padding: 8px 16px; border-radius: 25px;
@@ -1472,7 +1479,7 @@
     @keyframes spin { to { transform: rotate(360deg); } }
 
     @media (pointer: coarse) {
-      .tab-btn { padding: 9px 12px; }
+      .tab-btn { padding: 10px 12px; min-height: 44px; }
       .stats-prof-btn, .stats-cat-btn { padding: 9px 10px; font-size: 12px; }
       .search-wrapper, .add-wrapper { height: 36px; }
       .btn-add-cta { height: 28px; padding: 0 12px; }
@@ -1561,7 +1568,7 @@
       .modal-header-grid.poster .modal-title { padding-right: 0; justify-content: flex-start; font-size: 17px; }
       .modal-header-grid.poster .version-badges { justify-content: flex-start; }
       .modal-header-grid.poster .modal-genres { justify-content: flex-start; }
-      .tab-btn { padding: 7px 8px; font-size: 11px; }
+      .tab-btn { padding: 8px 10px; font-size: 11px; min-height: 44px; }
       .tab-btn .ico { width: 16px; height: 16px; }
       .tab-btn .tab-text { display: none; }
     }
