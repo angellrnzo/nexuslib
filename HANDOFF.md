@@ -1,6 +1,6 @@
 # NexusLib — Handoff
 
-Estado actual para la próxima sesión. Último commit: `ac9849d` (SW v101, rama `beta`).
+Estado actual para la próxima sesión. Último commit: `5aed290` (ui mejoras, rama `beta`).
 Logs de sesiones anteriores: `HANDOFF_LOG.md`.
 
 ## Estado del código
@@ -8,7 +8,7 @@ Logs de sesiones anteriores: `HANDOFF_LOG.md`.
 **Rama:** `beta` — working tree limpio, commits pusheados.
 **Producción:** `main` — no tocar sin `Confirmar deploy` literal.
 **DB:** prod + standby en espejo (datos idénticos, schema sincronizado tras delta 07).
-**Último commit:** `ac9849d` (SW v101).
+**Último commit:** `5aed290` (ui: mejoras visuales gemini + carrusel capturas + capitalizacion usernames).
 **Ubicación:** `Workspace/master_nexuslib/NexusLib/` — los datos locales
 (secretos `.env`, `backup_key.key`, `backups/`) viven en la carpeta
 hermana `master_nexuslib/_local/` (los scripts `database/*.py` la
@@ -55,7 +55,7 @@ resuelven como `../_local`). No mover ni renombrar.
 - Prod vs standby: datos idénticos, schema sincronizado tras delta 07 manual
 - Workflow semanal lunes 5AM UTC: pg_dump + mirror + deltas automáticos
 
-### 7. Mods Tracker UI refinamiento (último trabajo)
+### 7. Mods Tracker UI refinamiento
 
 - Layout: Nombre/Fuente/Versión en 3 columnas (2fr 1.2fr 1fr), URL/Notas full-width debajo
 - Responsive: apilar en 1 columna bajo 600px
@@ -66,23 +66,39 @@ resuelven como `../_local`). No mover ni renombrar.
 - Bordes/buttons: uniformidad con acordeón (border-radius 12px, hover glow sin ring)
 - Icono papelera: hover rojo (ya implementado)
 
-### 8. Uniformidad visual general (último trabajo)
+### 8. Uniformidad visual general
 
 - Gaps contenedores principales unificados a 10px: tracking-container, action-buttons, stats-bar, filter-group, stats-profile-actions, pf-grid-2, pf-invite-row, stats-view
 - Gaps internos compactos (4-6px) se mantienen para chips/iconos/labels — mejor densidad visual
 
-### 9. Repaso visual y UX completo (2026-11-26, SW v101)
+### 9. Repaso visual y UX completo (SW v101)
 
-- Controles superiores: `#btn-toggle-filtros` y `#btn-menu` reubicados en fila 1 junto a búsqueda, rediseñados como `.btn-circle` oscuros translúcidos con `.has-filters` visible y exclusión mutua al
-  abrir.
+- Controles superiores: `#btn-toggle-filtros` y `#btn-menu` reubicados en fila 1 junto a búsqueda, rediseñados como `.btn-circle` oscuros translúcidos con `.has-filters` visible y exclusión mutua al abrir.
 - Barra agregar (`#add-wrapper-box`): eliminado botón `+` duplicado; icono pasivo izquierdo alineado con búsqueda y CTA `#btn-add` tipo píldora (`btn.add`).
-- Panel de filtros (`#panel-filtros`): cabecera `tip.filtros`, layout compacto en 2 columnas (`#filter-personas`, `.filter-grid-2`, `.filter-extras-grid`), selectores uniformados en `--accent`
-  (`--mods` solo en `#fuente-dropdown`), corregido `data-i18n="filter.ordenar"`.
-- Perfil y stats (`#stats-view`): chevron animado en Editar, botón copiar código resaltado, `Cerrar sesión` sutil, `max-height: 420px` en acordeones de stats, `data-i18n` completo en perfil y
-  categorías stats (`st.global`).
+- Panel de filtros (`#panel-filtros`): cabecera `tip.filtros`, layout compacto en 2 columnas (`#filter-personas`, `.filter-grid-2`, `.filter-extras-grid`), selectores uniformados en `--accent` (`--mods` solo en `#fuente-dropdown`), corregido `data-i18n="filter.ordenar"`.
+- Perfil y stats (`#stats-view`): chevron animado en Editar, botón copiar código resaltado, `Cerrar sesión` sutil, `max-height: 420px` en acordeones de stats, `data-i18n` completo en perfil y categorías stats (`st.global`).
 - Modales Juegos (Reseñas Steam y Updates): lavado de cara en `--accent` respetando espaciado original, barra `.rev-bar5` segmentada.
-- Scroll y SVG: añadido `<symbol id="i-sort">`, `grid-column: 1 / -1` en `.skel-grid`, `#offline-banner` sin solapar `.top-header`, bloqueo real de scroll (`html.modal-open` +
-  `overscroll-behavior: contain`), `history.scrollRestoration = 'manual'` + `scrollTo(0, 0)` al recargar y cambiar de categoría.
+- Scroll y SVG: añadido `<symbol id="i-sort">`, `grid-column: 1 / -1` en `.skel-grid`, `#offline-banner` sin solapar `.top-header`, bloqueo real de scroll (`html.modal-open` + `overscroll-behavior: contain`), `history.scrollRestoration = 'manual'` + `scrollTo(0, 0)` al recargar y cambiar de categoría.
+
+### 10. Mejoras visuales Gemini + carrusel capturas + capitalización usernames (commit 5aed290)
+
+- Tokens CSS (shadow, radius, glow)
+- Glassmorphism en tabs/controls
+- Hover cards con lift + glow
+- Active states con scale(0.96)
+- Status chips con gradiente
+- Shimmer skeletons suaves
+- Carrusel capturas: flechas overlay estilo Steam + peek 15%
+- Capitalización usernames: inicial minúscula en botones, dots, labels, balance/reto
+- Dropdowns estadísticas: gradiente glassmorphism, hover barra lateral, active glow
+- Iconos SVG custom: i-trophy, i-star-half, i-target, i-check
+- Nota media: barras de rating con gradiente, ancho nombre fijo 13ch
+- Balance y retos: mini-bloques por persona con chips + viñetas iconizadas
+
+### 11. Mapa de navegación de index.html
+
+- `MAPA.md` creado — guía rápida por secciones visuales → funciones JS → clases CSS
+- IDs/clases/funciones documentadas para encontrar cualquier componente sin conocer el archivo
 
 ## Documentación actualizada
 
