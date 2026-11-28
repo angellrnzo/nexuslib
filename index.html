@@ -1344,7 +1344,9 @@
       border: 1px solid rgba(255,255,255,0.10);
       border-radius: 12px;
       overflow: hidden;
-      transition: border-color var(--t-base) var(--ease-out), box-shadow var(--t-base) var(--ease-out), background var(--t-base) var(--ease-out);
+      transform: translateZ(0);
+      will-change: border-color, box-shadow, background;
+      transition: border-color var(--t-fast) var(--ease-out), box-shadow var(--t-fast) var(--ease-out), background var(--t-fast) var(--ease-out);
     }
     .mods-accordion.open {
       border-color: rgba(187,134,252,0.55);
@@ -1367,7 +1369,9 @@
       max-height: 0; opacity: 0; overflow: hidden;
       padding: 0 12px;
       border-top: 1px solid transparent;
-      transition: max-height .45s var(--ease-inout), opacity .3s var(--ease-inout), padding .45s var(--ease-inout), box-shadow .45s var(--ease-inout);
+      transform: translateZ(0);
+      will-change: max-height, opacity, padding;
+      transition: max-height 0.25s var(--ease-out), opacity 0.15s var(--ease-out), padding 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out);
     }
     .mods-accordion.open .mods-panel {
       max-height: 3000px; opacity: 1; padding: 12px;
@@ -1382,9 +1386,14 @@
       flex: 1 1 auto; min-width: 64px;
       display: inline-flex; align-items: center; justify-content: center; gap: 5px;
       padding: 6px 8px; border-radius: 8px; font-size: 12px; font-weight: 600;
-      background: rgba(102,192,244,0.08); color: var(--accent);
-      border: 1px solid rgba(102,192,244,0.25); text-decoration: none;
+      background: rgba(187,134,252,0.08); color: var(--mods);
+      border: 1px solid rgba(187,134,252,0.25); text-decoration: none;
       white-space: nowrap;
+      transition: background var(--t-fast) var(--ease-out), border-color var(--t-fast) var(--ease-out);
+    }
+    .mods-search-btn:hover {
+      background: rgba(187,134,252,0.15);
+      border-color: rgba(187,134,252,0.45);
     }
     .mods-accordion, .mods-accordion * { box-sizing: border-box; }
     .mods-form { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
@@ -1406,7 +1415,7 @@
     .mods-form-row { display: grid; grid-template-columns: 2fr 1.2fr 1fr; gap: 10px; width: 100%; }
     .mods-form-row > * { min-width: 0; }
     .btn-mods { background: rgba(155, 89, 182, 0.12); color: var(--mods); border-color: rgba(155, 89, 182, 0.35); }
-    .mods-form .btn-save { justify-content: center; padding: 10px; font-size: 13px; border-radius: 8px; margin-top: 0; background: rgba(155, 89, 182, 0.12); color: var(--mods); border-color: rgba(155, 89, 182, 0.35); transition: opacity var(--t-base) var(--ease-out), background var(--t-base) var(--ease-out), box-shadow var(--t-base) var(--ease-out); }
+    .mods-form .btn-save { justify-content: center; padding: 10px; font-size: 13px; border-radius: 8px; margin-top: 0; background: rgba(155, 89, 182, 0.12); color: var(--mods); border-color: rgba(155, 89, 182, 0.35); transition: opacity var(--t-fast) var(--ease-out), background var(--t-fast) var(--ease-out), box-shadow var(--t-fast) var(--ease-out), border-color var(--t-fast) var(--ease-out); }
     .mods-form .btn-save:disabled { opacity: 0.4; cursor: not-allowed; }
     .mods-form .btn-save:not(:disabled):hover { background: rgba(155, 89, 182, 0.18); border-color: rgba(187, 134, 252, 0.7); box-shadow: 0 0 0 1px rgba(187, 134, 252, 0.35), 0 0 22px rgba(187, 134, 252, 0.18), 0 12px 30px rgba(0,0,0,0.30); }
     .mods-empty { font-size: 12px; color: var(--muted); text-align: center; padding: 10px 0; }
@@ -1422,7 +1431,13 @@
     .mod-row {
       display: flex; align-items: flex-start; gap: 8px;
       padding: 8px 10px; margin-bottom: 6px; border-radius: 8px;
-      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+      background: rgba(187,134,252,0.03); border: 1px solid rgba(187,134,252,0.12);
+      transition: background var(--t-fast) var(--ease-out), border-color var(--t-fast) var(--ease-out), box-shadow var(--t-fast) var(--ease-out);
+    }
+    .mod-row:hover {
+      background: rgba(187,134,252,0.07);
+      border-color: rgba(187,134,252,0.25);
+      box-shadow: 0 0 12px rgba(187,134,252,0.08);
     }
     .mod-row-main { flex: 1; min-width: 0; }
     .mod-name { font-size: 12px; font-weight: 600; color: var(--text); word-break: break-word; }
